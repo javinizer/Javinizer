@@ -1,0 +1,24 @@
+jobs:
+  - job: build_pwsh_win2016
+    pool:
+      vmImage: vs2017-win2016
+    steps:
+      - pwsh: ./build.ps1 -Task Test -Bootstrap -Verbose
+        displayName: "Build and Test"
+      - task: PublishTestResults@2
+        inputs:
+          testRunner: "NUnit"
+          testResultsFiles: "**/Tests/testresults.xml"
+          testRunTitle: "pwsh_win2016"
+        displayName: "Publish Test Results"
+      - task: CopyFiles@2
+        inputs:
+          contents: "Output/JAV Organizer/**"
+          targetFolder: $(Build.ArtifactStagingDirectory)
+        displayName: "Copy Output Files"
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: "JAV OrganizerBuildOutput"
+        displayName: "Publish Build Artifacts"
+
