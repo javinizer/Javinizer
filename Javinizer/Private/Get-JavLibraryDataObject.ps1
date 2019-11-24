@@ -15,7 +15,7 @@ function Get-JavLibraryDataObject {
             $javlibraryUrl = Get-JavLibraryUrl -Id $Id
             if ($null -ne $javlibraryUrl) {
                 try {
-                    $html = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+                    $script:html = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
                 } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                     Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
                     Write-Warning "Attempting to start a new session..."
@@ -24,7 +24,7 @@ function Get-JavLibraryDataObject {
                     } catch {
                         throw $_
                     }
-                    $html = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+                    $script:html = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
                 }
 
                 $movieDataObject = [pscustomobject]@{
@@ -47,17 +47,6 @@ function Get-JavLibraryDataObject {
     }
 
     end {
-        <# Write-Debug "Title is [$movieTitle]"
-        Write-Debug "Id is [$movieId]"
-        Write-Debug "Date is [$movieDate]"
-        Write-Debug "Year is [$movieYear]"
-        Write-Debug "Length is [$movieLength]"
-        Write-Debug "Directory is [$movieDirector]"
-        Write-Debug "Maker is [$movieMaker]"
-        Write-Debug "Label is [$movieLabel]"
-        Write-Debug "Rating is [$movieRating]"
-        Write-Debug "Genre is [$movieGenre]"
-        Write-Debug "Actress is [$movieActress]" #>
         $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
