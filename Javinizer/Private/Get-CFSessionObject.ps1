@@ -47,7 +47,7 @@ function Get-CFSessionObject {
     }
 
     end {
-        Write-Output $session
+        $global:Session = $session
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
