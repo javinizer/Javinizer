@@ -16,8 +16,15 @@ function Get-JavLibraryUrl {
 
         try {
             $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
-        } catch {
-            throw $_
+        } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+            Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
+            Write-Warning "Attempting to start a new session..."
+            try {
+                New-CFSession
+            } catch {
+                throw $_
+            }
+            $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
         }
 
         # Check if the search uniquely matched a video page
@@ -29,14 +36,15 @@ function Get-JavLibraryUrl {
             $numResults = $searchResults.count
             Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
 
-            if ($searchResults -ge 3) {
+            if ($searchResults -ge 2) {
                 if ($Tries.IsPresent) {
                     $Tries = $Tries
                 } else {
                     $Tries = 3
                 }
-            } else {
-                $Tries = 2
+            } elseif ($searchResults -eq 0 -or $null -eq $searchResults) {
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping"
+                break
             }
 
             $count = 1
@@ -49,6 +57,7 @@ function Get-JavLibraryUrl {
 
                 if ($resultId -eq $Id) {
                     $javlibraryUrl = Test-UrlMatch -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri -JavLibrary
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id matched"
                     break
                 }
 
@@ -60,7 +69,6 @@ function Get-JavLibraryUrl {
             }
         }
 
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id matched"
         Write-Output $javlibraryUrl
     }
 
