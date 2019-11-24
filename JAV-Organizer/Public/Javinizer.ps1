@@ -1,0 +1,3 @@
+function Javinizer {
+    Get-JavLibraryUrl
+}
