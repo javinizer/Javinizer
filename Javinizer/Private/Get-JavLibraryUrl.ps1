@@ -34,9 +34,9 @@ function Get-JavLibraryUrl {
         if ($null -eq $javlibraryUrl) {
             $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
             $numResults = $searchResults.count
-            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
 
             if ($searchResults -ge 2) {
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
                 if ($Tries.IsPresent) {
                     $Tries = $Tries
                 } else {
@@ -62,7 +62,7 @@ function Get-JavLibraryUrl {
                 }
 
                 if ($count -gt $Tries) {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping"
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping..."
                     break
                 }
                 $count++

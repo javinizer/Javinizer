@@ -5,11 +5,22 @@ function Test-UrlMatch {
         [switch]$R18
     )
 
-    if ($JavLibrary.IsPresent) {
-        if ($Url -match 'http:\/\/www\.javlibrary\.com\/(.*)\/\?v=(.*)') {
-            return $Url
+    begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+    }
+
+    process {
+        if ($JavLibrary.IsPresent) {
+            if ($Url -match 'http:\/\/www\.javlibrary\.com\/(.*)\/\?v=(.*)') {
+                $match = $Url
+            }
+        } elseif ($R18.IsPresent) {
+            $match = $Url
         }
-    } elseif ($R18.IsPresent) {
-        return $Url
+    }
+
+    end {
+        Write-Output $match
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
