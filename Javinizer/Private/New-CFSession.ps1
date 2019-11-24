@@ -1,4 +1,4 @@
-function Get-CFSessionObject {
+function New-CFSession {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true, Position = 0)]

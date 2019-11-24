@@ -10,13 +10,12 @@ function Get-JavLibraryUrl {
     begin {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
         $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
-        $session = Get-CFSessionObject -Url $searchUrl
     }
 
     process {
 
         try {
-            $webRequest = Invoke-WebRequest $searchUrl -WebSession $session -UserAgent $session.UserAgent
+            $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
         } catch {
             throw $_
         }
@@ -44,7 +43,7 @@ function Get-JavLibraryUrl {
             foreach ($result in $searchResults) {
                 $videoId = ($result -split '=')[1]
                 $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
-                $webRequest = Invoke-WebRequest $directUrl -WebSession $session -UserAgent $session.UserAgent
+                $webRequest = Invoke-WebRequest $directUrl -WebSession $Session -UserAgent $Session.UserAgent
                 $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
                 Write-Verbose "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
