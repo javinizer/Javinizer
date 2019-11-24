@@ -1,8 +1,8 @@
 function New-CFSession {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Url
+        [Parameter(Position = 0)]
+        [string]$Url = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword="
     )
 
     begin {
