@@ -1,6 +1,7 @@
 function Get-JavLibraryUrl {
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory = $true, Position = 0)]
         [string]$Id,
         [ValidateRange(2, 5)]
         [int]$Tries
@@ -8,46 +9,14 @@ function Get-JavLibraryUrl {
 
     begin {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
-        $cookieName = @()
-        $cookieContent = @()
-        $requestObject = @()
-        $cfPath = Join-Path -Path $PSScriptRoot -ChildPath 'cf.py'
+        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
+        $session = Get-CFSessionObject -Url $searchUrl
     }
 
     process {
-        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
-
-        # Run cfscrape request to get cookies and user agent to authorize PowerShell webrequest
-        try {
-            $cfScrape = python $cfPath $searchUrl
-            #$cfScrape = python cf.py $searchUrl
-        } catch {
-            throw $_
-        }
-
-        $cfScrapeSplit = $cfScrape -split "'"
-        $cookieName += $cfScrapeSplit[1], $cfScrapeSplit[5]
-        $cookieContent += $cfScrapeSplit[3], $cfScrapeSplit[7]
-        $userAgent = $cfScrapeSplit[9]
-
-        $requestObject += [pscustomobject]@{
-            CookieName    = $cookieName
-            CookieContent = $cookieContent
-            UserAgent     = $userAgent
-        }
-
-        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-
-        # Create __cfuid cookie
-        $cookie = New-Object System.Net.Cookie($requestObject.CookieName[0], $requestObject.CookieContent[0], '/', 'javlibrary.com')
-        $session.Cookies.Add($cookie)
-
-        # Create cf_clearance cookie
-        $cookie = New-Object System.Net.Cookie($requestObject.CookieName[1], $requestObject.CookieContent[1], '/', 'javlibrary.com')
-        $session.Cookies.Add($cookie)
 
         try {
-            $webRequest = Invoke-WebRequest $searchUrl -WebSession $session -UserAgent $requestObject.UserAgent
+            $webRequest = Invoke-WebRequest $searchUrl -WebSession $session -UserAgent $session.UserAgent
         } catch {
             throw $_
         }
@@ -73,10 +42,9 @@ function Get-JavLibraryUrl {
 
             $count = 1
             foreach ($result in $searchResults) {
-                Write-Host $Tries
                 $videoId = ($result -split '=')[1]
                 $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
-                $webRequest = Invoke-WebRequest $directUrl -WebSession $session -UserAgent $requestObject.userAgent
+                $webRequest = Invoke-WebRequest $directUrl -WebSession $session -UserAgent $session.UserAgent
                 $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
                 Write-Verbose "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
