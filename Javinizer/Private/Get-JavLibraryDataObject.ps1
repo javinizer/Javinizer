@@ -28,8 +28,8 @@ function Get-JavLibraryDataObject {
                 }
 
                 $movieDataObject = [pscustomobject]@{
-                    movieTitle    = Get-Title
                     movieId       = Get-MovieId
+                    movieTitle    = Get-Title
                     movieDate     = Get-MovieReleaseDate
                     movieYear     = Get-MovieReleaseYear
                     movieLength   = Get-MovieLength
