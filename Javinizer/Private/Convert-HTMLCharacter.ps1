@@ -14,7 +14,9 @@ function Convert-HTMLCharacter {
             -replace '&amp;', '&' `
             -replace '&apos;', "'" `
             -replace '&lt;', '<' `
-            -replace '&gt;', '>'
+            -replace '&gt;', '>' `
+            -replace '&#039;', "'" `
+            -replace '#39;s', "'"
 
         $String = $String.Trim()
     }
