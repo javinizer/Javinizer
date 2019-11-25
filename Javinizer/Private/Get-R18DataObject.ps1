@@ -15,25 +15,27 @@ function Get-R18DataObject {
         if ($null -ne $R18Url) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $r18Url
-                $html = $webRequest.Content
             } catch {
                 throw $_
             }
 
             $movieDataObject = [pscustomobject]@{
-                contentId     = Get-R18ContentId -Html $html
-                movieId       = Get-R18MovieId -Html $html
-                movieTitle    = Get-R18MovieTitle -Html $html
-                movieDate     = Get-R18MovieReleaseDate -Html $html
-                movieYear     = Get-R18MovieReleaseYear -Html $html
-                movieLength   = Get-R18MovieLength -Html $html
-                movieDirector = Get-R18MovieDirector -Html $html
-                movieMaker    = Get-R18MovieMaker -Html $html
-                movieLabel    = Get-R18MovieLabel -Html $html
-                movieSeries   = Get-R18MovieSeries -Html $html
-                movieRating   = Get-R18MovieRating -Html $html
-                movieActress  = Get-R18MovieActress -Html $html
-                movieGenre    = Get-R18MovieGenre -Html $html
+                Url           = $r18Url
+                ContentId     = Get-R18ContentId -WebRequest $webRequest
+                Id            = Get-R18MovieId -WebRequest $webRequest
+                Title         = Get-R18MovieTitle -WebRequest $webRequest
+                Date          = Get-R18MovieReleaseDate -WebRequest $webRequest
+                Year          = Get-R18MovieReleaseYear -WebRequest $webRequest
+                Length        = Get-R18MovieLength -WebRequest $webRequest
+                Director      = Get-R18MovieDirector -WebRequest $webRequest
+                Maker         = Get-R18MovieMaker -WebRequest $webRequest
+                Label         = Get-R18MovieLabel -WebRequest $webRequest
+                Series        = Get-R18MovieSeries -WebRequest $webRequest
+                Rating        = Get-R18MovieRating -WebRequest $webRequest
+                Actress       = Get-R18MovieActress -WebRequest $webRequest
+                Genre         = Get-R18MovieGenre -WebRequest $webRequest
+                CoverUrl      = Get-R18MovieCoverUrl -WebRequest $webRequest
+                ScreenshotUrl = Get-R18MovieScreenshotUrl -WebRequest $webRequest
             }
         }
 
@@ -48,40 +50,40 @@ function Get-R18DataObject {
 
 function Get-R18ContentId {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieContentId = (((($Html -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
+    $movieContentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
     $movieContentId = Convert-HTMLCharacter -String $movieContentId
     Write-Output $movieContentId
 }
 
 function Get-R18MovieId {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieId = (((($Html -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
+    $movieId = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
     $movieId = Convert-HTMLCharacter -String $movieId
     Write-Output $movieId
 }
 
 function Get-R18MovieTitle {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieTitle = (($Html -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
+    $movieTitle = (($WebRequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
     $movieTitle = Convert-HTMLCharacter -String $movieTitle
     Write-Output $movieTitle
 }
 
 function Get-R18MovieReleaseDate {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieReleaseDate = (($Html -split '<dd itemprop=\"dateCreated\">')[1] -split '<br>')[0]
+    $movieReleaseDate = (($WebRequest.Content -split '<dd itemprop=\"dateCreated\">')[1] -split '<br>')[0]
     $movieReleaseDate = ($movieReleaseDate.Trim() -replace '\.', '') -replace ',', ''
     $month, $day, $year = $movieReleaseDate -split ' '
 
@@ -100,30 +102,30 @@ function Get-R18MovieReleaseDate {
 
 function Get-R18MovieReleaseYear {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieReleaseYear = Get-R18MovieReleaseDate -Html $Html
+    $movieReleaseYear = Get-R18MovieReleaseDate -WebRequest $WebRequest
     $movieReleaseYear = ($movieReleaseYear -split '-')[0]
     Write-Output $movieReleaseYear
 }
 
 function Get-R18MovieLength {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieLength = ((($Html -split '<dd itemprop="duration">')[1] -split '\.')[0]) -replace 'min', ''
+    $movieLength = ((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '\.')[0]) -replace 'min', ''
     $movieLength = Convert-HTMLCharacter -String $movieLength
     Write-Output $movieLength
 }
 
 function Get-R18MovieDirector {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieDirector = (($Html -split '<dd itemprop="director">')[1] -split '<br>')[0]
+    $movieDirector = (($WebRequest.Content -split '<dd itemprop="director">')[1] -split '<br>')[0]
     $movieDirector = Convert-HTMLCharacter -String $movieDirector
 
     if ($movieDirector -eq '----') {
@@ -135,37 +137,42 @@ function Get-R18MovieDirector {
 
 function Get-R18MovieMaker {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieMaker = ((($Html -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
+    $movieMaker = ((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
     $movieMaker = Convert-HTMLCharacter -String $movieMaker
     Write-Output $movieMaker
 }
 
 function Get-R18MovieLabel {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieLabel = ((($Html -split '<dt>Label:<\/dt>')[1] -split '<br>')[0] -split '<dd>')[1]
+    $movieLabel = ((($WebRequest.Content -split '<dt>Label:<\/dt>')[1] -split '<br>')[0] -split '<dd>')[1]
     $movieLabel = Convert-HTMLCharacter -String $movieLabel
     Write-Output $movieLabel
 }
 
 function Get-R18MovieSeries {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
-    $movieSeries = (((($Html -split '<dt>Series:</dt>')[1] -split '<\/a><br>')[0] -split '<dd>')[1] -split '>')[1]
+    $movieSeries = (((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '<\/a><br>')[0] -split '<dd>')[1] -split '>')[1]
     $movieSeries = Convert-HTMLCharacter -String $movieSeries
+
+    if ($movieSeries -like '</dd*') {
+        $movieSeries = $null
+    }
+
     Write-Output $movieSeries
 }
 
 function Get-R18MovieRating {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
     $movieRating = ''
@@ -174,11 +181,11 @@ function Get-R18MovieRating {
 
 function Get-R18MovieGenre {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
     $movieGenre = @()
-    $movieGenreHtml = ((($Html -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
+    $movieGenreHtml = ((($WebRequest.Content -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
 
     foreach ($genre in $movieGenreHtml) {
         $genre = $genre.trim()
@@ -193,11 +200,12 @@ function Get-R18MovieGenre {
 
 function Get-R18MovieActress {
     param (
-        [string]$Html
+        [object]$WebRequest
     )
 
     $movieActress = @()
-    $movieActressHtml = (($Html -split '<div itemprop="actors" data-type="actress-list" class="pop-list">')[1] -split '<div class="product-categories-list product-box-list">')[0]
+    $movieActressThumb = @()
+    $movieActressHtml = (($WebRequest.Content -split '<div itemprop="actors" data-type="actress-list" class="pop-list">')[1] -split '<div class="product-categories-list product-box-list">')[0]
     $movieActressHtml = $movieActressHtml -replace '<a itemprop="url" href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)\/pagesize=(.*)\/price=all\/sort=popular\/type=actress\/page=(.*)\/">', ''
     $movieActressHtml = $movieActressHtml -replace '<span itemscope itemtype="http:\/\/schema.org\/Person">', ''
     $movieActressHtml = $movieActressHtml -split '<\/a>'
@@ -212,5 +220,35 @@ function Get-R18MovieActress {
         $movieActress = $null
     }
 
-    Write-Output $movieActress
+    foreach ($actress in $movieActress) {
+        $movieActressThumb += ($WebRequest.Images | Where-Object { $_.alt -eq "$actress" }).src
+    }
+
+    $movieActressObject = [pscustomobject]@{
+        Name     = $movieActress
+        ThumbUrl = $movieActressThumb
+    }
+
+    Write-Output $movieActressObject
+}
+
+function Get-R18MovieCoverUrl {
+    param (
+        [object]$WebRequest
+    )
+
+    $movieCoverUrl = $WebRequest.Images | Where-Object { $_.alt -like '*cover*' }
+    $movieCoverUrl = $movieCoverUrl.src
+    Write-Output $movieCoverUrl
+}
+
+function Get-R18MovieScreenshotUrl {
+    param (
+        [object]$WebRequest
+    )
+
+    $movieScreenshotUrl = @()
+    $movieScreenshotUrl = $WebRequest.Images | Where-Object { $_.alt -like '*screenshot*' }
+    $movieScreenshotUrl = $movieScreenshot.'data-src'
+    Write-Output $movieScreenshotUrl
 }
