@@ -1,13 +1,9 @@
 function Convert-HTMLCharacter {
     [CmdletBinding()]
-    param(
+    param (
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$String
     )
-
-    begin {
-
-    }
 
     process {
         $String = $String -replace '&quot;', '"' `
@@ -19,9 +15,6 @@ function Convert-HTMLCharacter {
             -replace '#39;s', "'"
 
         $String = $String.Trim()
-    }
-
-    end {
         Write-Output $String
     }
 }

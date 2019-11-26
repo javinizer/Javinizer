@@ -1,6 +1,6 @@
 function New-CFSession {
     [CmdletBinding(SupportsShouldProcess = $true)]
-    param(
+    param (
         [Parameter(Position = 0)]
         [string]$Url = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword="
     )
@@ -46,10 +46,11 @@ function New-CFSession {
             # This is needed so that you will not be flagged as a bot by CloudFlare
             $session.UserAgent = $requestObject.UserAgent
         }
+
+        $script:Session = $session
     }
 
     end {
-        $script:Session = $session
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

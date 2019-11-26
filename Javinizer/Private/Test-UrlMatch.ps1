@@ -1,5 +1,5 @@
 function Test-UrlMatch {
-    param(
+    param (
         [string]$Url,
         [switch]$JavLibrary,
         [switch]$R18
@@ -17,10 +17,11 @@ function Test-UrlMatch {
         } elseif ($R18.IsPresent) {
             $match = $Url
         }
+
+        Write-Output $match
     }
 
     end {
-        Write-Output $match
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

@@ -1,6 +1,6 @@
 function Convert-JavTitle {
     [CmdletBinding()]
-    param(
+    param (
         [ValidateScript( {
                 if ( -Not ($_ | Test-Path) ) {
                     throw "File or folder does not exist"
@@ -13,7 +13,7 @@ function Convert-JavTitle {
 
     function Get-Files {
         [CmdletBinding()]
-        param(
+        param (
             [Parameter()]
             [string]$Path
         )

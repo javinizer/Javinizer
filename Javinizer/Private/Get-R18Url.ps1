@@ -1,6 +1,6 @@
 function Get-R18Url {
     [CmdletBinding()]
-    param(
+    param (
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Id,
         [ValidateRange(2, 5)]
@@ -44,10 +44,11 @@ function Get-R18Url {
         } else {
             $directUrl = $searchResults
         }
+
+        Write-Output $directUrl
     }
 
     end {
-        Write-Output $directUrl
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

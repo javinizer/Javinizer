@@ -1,6 +1,7 @@
 function Get-JavLibraryDataObject {
     [CmdletBinding()]
-    param(
+    [OutputType([pscustomobject])]
+    param (
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Id
     )
@@ -11,200 +12,237 @@ function Get-JavLibraryDataObject {
     }
 
     process {
-        try {
-            $javlibraryUrl = Get-JavLibraryUrl -Id $Id
-            if ($null -ne $javlibraryUrl) {
+        $javlibraryUrl = Get-JavLibraryUrl -Id $Id
+        if ($null -ne $javlibraryUrl) {
+            try {
+                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+            } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+                Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
+                Write-Warning "Attempting to start a new session..."
                 try {
-                    $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
-                } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                    Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
-                    Write-Warning "Attempting to start a new session..."
-                    try {
-                        New-CFSession
-                    } catch {
-                        throw $_
-                    }
-                    $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+                    New-CFSession
+                } catch {
+                    throw $_
                 }
 
-                $movieDataObject = [pscustomobject]@{
-                    Url           = $javlibraryUrl
-                    Id            = Get-JLMovieId -WebRequest $webRequest
-                    Title         = Get-JLMovieTitle -WebRequest $webRequest
-                    Date          = Get-JLMovieReleaseDate -WebRequest $webRequest
-                    Year          = Get-JLMovieReleaseYear -WebRequest $webRequest
-                    Length        = Get-JLMovieLength -WebRequest $webRequest
-                    Director      = Get-JLMovieDirector -WebRequest $webRequest
-                    Maker         = Get-JLMovieMaker -WebRequest $webRequest
-                    Label         = Get-JLMovieLabel -WebRequest $webRequest
-                    Rating        = Get-JLMovieRating -WebRequest $webRequest
-                    Actress       = Get-JLMovieActress -WebRequest $webRequest
-                    Genre         = Get-JLMovieGenre -WebRequest $webRequest
-                    CoverUrl      = Get-JLMovieCoverUrl -WebRequest $webRequest
-                    ScreenshotUrl = Get-JLMovieScreenshotUrl -WebRequest $webRequest
-                }
+                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
             }
-        } catch {
-            throw $_
+
+            $movieDataObject = [pscustomobject]@{
+                Url           = $javlibraryUrl
+                Id            = Get-JLId -WebRequest $webRequest
+                Title         = Get-JLTitle -WebRequest $webRequest
+                Date          = Get-JLReleaseDate -WebRequest $webRequest
+                Year          = Get-JLReleaseYear -WebRequest $webRequest
+                Length        = Get-JLLength -WebRequest $webRequest
+                Director      = Get-JLDirector -WebRequest $webRequest
+                Maker         = Get-JLMaker -WebRequest $webRequest
+                Label         = Get-JLLabel -WebRequest $webRequest
+                Rating        = Get-JLRating -WebRequest $webRequest
+                Actress       = Get-JLActress -WebRequest $webRequest
+                Genre         = Get-JLGenre -WebRequest $webRequest
+                CoverUrl      = Get-JLCoverUrl -WebRequest $webRequest
+                ScreenshotUrl = Get-JLScreenshotUrl -WebRequest $webRequest
+            }
         }
+
+        $movieDataObject | Format-List | Out-String | Write-Debug
+        Write-Output $movieDataObject
     }
 
     end {
-        $movieDataObject | Format-List | Out-String | Write-Debug
-        Write-Output $movieDataObject
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
-function Get-JLMovieId {
+function Get-JLId {
     param (
         [object]$WebRequest
     )
 
-    $movieId = ((($WebRequest.Content -split '<td class="header">ID:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
-    Write-Output $movieId
+    process {
+        $id = ((($WebRequest.Content -split '<td class="header">ID:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
+        Write-Output $id
+    }
 }
 
-function Get-JLMovieTitle {
+function Get-JLTitle {
     param (
         [object]$WebRequest
     )
-
-    $fullTitle = ((($WebRequest.Content -split '<title>')[1] -split ' - JAVLibrary<\/title>')[0] -split '[a-zA-Z]{1,8}-[0-9]{1,8}')[1]
-    $movieTitle = Convert-HtmlCharacter -String $fullTitle
-    Write-Output $movieTitle
+    process {
+        $fullTitle = ((($WebRequest.Content -split '<title>')[1] -split ' - JAVLibrary<\/title>')[0] -split '[a-zA-Z]{1,8}-[0-9]{1,8}')[1]
+        $title = Convert-HtmlCharacter -String $fullTitle
+        Write-Output $title
+    }
 }
 
-function Get-JLMovieReleaseDate {
+function Get-JLReleaseDate {
     param (
         [object]$WebRequest
     )
 
-    $movieReleaseDate = ((($WebRequest.Content -split '<td class="header">Release Date:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
-    Write-Output $movieReleaseDate
+    process {
+        $releaseDate = ((($WebRequest.Content -split '<td class="header">Release Date:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
+        Write-Output $releaseDate
+    }
 }
 
-function Get-JLMovieReleaseYear {
+function Get-JLReleaseYear {
     param (
         [object]$WebRequest
     )
 
-    $movieReleaseYear = Get-JLMovieReleaseDate -Html $WebRequest
-    $movieReleaseYear = ($movieReleaseYear -split '-')[0]
-    Write-Output $movieReleaseYear
+    process {
+        $releaseYear = Get-JLReleaseDate -WebRequest $WebRequest
+        $releaseYear = ($releaseYear -split '-')[0]
+        Write-Output $releaseYear
+    }
 }
 
-function Get-JLMovieLength {
+function Get-JLLength {
     param (
         [object]$WebRequest
     )
 
-    $movieLength = ((($WebRequest.Content -split '<td class="header">Length:<\/td>')[1] -split '<\/span>')[0] -split '"text">')[1]
-    Write-Output $movieLength
+    process {
+        $length = ((($WebRequest.Content -split '<td class="header">Length:<\/td>')[1] -split '<\/span>')[0] -split '"text">')[1]
+        Write-Output $length
+    }
 }
 
-function Get-JLMovieDirector {
+function Get-JLDirector {
     param (
         [object]$WebRequest
     )
 
-    $movieDirector = (((($WebRequest.Content -split '<td class="header">Director:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
-    $movieDirector = Convert-HtmlCharacter -String $movieDirector
-    Write-Output $movieDirector
+    process {
+        $director = (((($WebRequest.Content -split '<td class="header">Director:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $director = Convert-HtmlCharacter -String $director
+        Write-Output $director
+    }
 }
 
-function Get-JLMovieMaker {
+function Get-JLMaker {
     param (
         [object]$WebRequest
     )
 
-    $movieMaker = (((($WebRequest.Content -split '<td class="header">Maker:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
-    $movieMaker = Convert-HtmlCharacter -String $movieMaker
-    Write-Output $movieMaker
+    process {
+        $maker = (((($WebRequest.Content -split '<td class="header">Maker:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $maker = Convert-HtmlCharacter -String $maker
+        Write-Output $maker
+    }
 }
 
-function Get-JLMovieLabel {
+function Get-JLLabel {
     param (
         [object]$WebRequest
     )
 
-    $movieLabel = (((($WebRequest.Content -split '<td class="header">Label:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
-    $movieLabel = Convert-HtmlCharacter -String $movieLabel
-    Write-Output $movieLabel
+    process {
+        $label = (((($WebRequest.Content -split '<td class="header">Label:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $label = Convert-HtmlCharacter -String $label
+        Write-Output $label
+    }
 }
 
-function Get-JLMovieRating {
+function Get-JLRating {
     param (
         [object]$WebRequest
     )
 
-    $movieRating = (((($WebRequest.Content -split '<td class="header">User Rating:</td>')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
-    $movieRating = ($movieRating -replace '\(', '') -replace '\)', ''
-    Write-Output $movieRating
+    process {
+        $rating = (((($WebRequest.Content -split '<td class="header">User Rating:</td>')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
+        $rating = ($rating -replace '\(', '') -replace '\)', ''
+        Write-Output $rating
+    }
 }
 
-function Get-JLMovieGenre {
+function Get-JLGenre {
     param (
         [object]$WebRequest
     )
 
-    $movieGenre = @()
-    $movieGenreHtml = ($WebRequest.Content -split '<td class="header">Genre\(s\):<\/td>')[1]
-    $movieGenreHtml = ($movieGenreHtml -split '<\/td>')[0]
-    $movieGenreHtml = $movieGenreHtml -split 'rel="category tag">'
-
-    foreach ($genre in $movieGenreHtml[1..($movieGenreHtml.Length - 1)]) {
-        $genre = ($genre -split '<')[0]
-        $genre = Convert-HtmlCharacter -String $genre
-        $movieGenre += $genre
+    begin {
+        $genre = @()
     }
 
-    Write-Output $movieGenre
+    process {
+        $genreHtml = ($WebRequest.Content -split '<td class="header">Genre\(s\):<\/td>')[1]
+        $genreHtml = ($genreHtml -split '<\/td>')[0]
+        $genreHtml = $genreHtml -split 'rel="category tag">'
+
+        foreach ($genres in $genreHtml[1..($genreHtml.Length - 1)]) {
+            $genres = ($genres -split '<')[0]
+            $genres = Convert-HtmlCharacter -String $genres
+            $genre += $genre
+        }
+
+        Write-Output $genre
+    }
 }
 
-function Get-JLMovieActress {
+function Get-JLActress {
     param (
         [object]$WebRequest
     )
 
-    $movieActress = @()
-    $actressSplitString = '<span class="star">'
-    $actressSplitHtml = $WebRequest.Content -split $actressSplitString
+    begin {
+        $actress = @()
+    }
 
-    foreach ($section in $actressSplitHtml) {
-        $fullName = (($section -split "rel=`"tag`">")[1] -split "<\/a><\/span>")[0]
-        if ($fullName -ne '') {
-            if ($fullName.Length -lt 25) {
-                $movieActress += $fullName
+    process {
+        $actressSplitString = '<span class="star">'
+        $actressSplitHtml = $WebRequest.Content -split $actressSplitString
+
+        foreach ($section in $actressSplitHtml) {
+            $fullName = (($section -split "rel=`"tag`">")[1] -split "<\/a><\/span>")[0]
+            if ($fullName -ne '') {
+                if ($fullName.Length -lt 25) {
+                    $actress += $fullName
+                }
             }
         }
-    }
 
-    Write-Output $movieActress
+        Write-Output $actress
+    }
 }
 
-function Get-JLMovieCoverUrl {
+function Get-JLCoverUrl {
     param (
         [object]$WebRequest
     )
 
-    $movieCoverUrl = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/mono\/movie\/adult' }
-    $movieCoverUrl = 'https:' + $movieCoverUrl.src
-    Write-Output $movieCoverUrl
+    process {
+        $coverUrl = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/mono\/movie\/adult' }
+        $coverUrl = 'https:' + $coverUrl.src
+        Write-Output $coverUrl
+    }
 }
 
-function Get-JLMovieScreenshotUrl {
+function Get-JLScreenshotUrl {
     param (
         [object]$WebRequest
     )
 
-    $movieScreenshotUrl = @()
-    $movieScreenshotHtml = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/digital\/video' }
-    $movieScreenshotHtml = $movieScreenshotHtml.src
-    $movieScreenshotHtml = $moviescreenshotHtml -split ' '
-    foreach ($screenshot in $movieScreenshotHtml) {
-        $url = 'https:' + $screenshot
-        $movieScreenshotUrl += $url
+    begin {
+        $screenshotUrl = @()
     }
-    Write-Output $movieScreenshotUrl
+
+    process {
+        $screenshotHtml = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/digital\/video' }
+        $screenshotHtml = $screenshotHtml.src
+        if ($null -ne $screenshotHtml) {
+            $screenshotHtml = $screenshotHtml -split ' '
+            foreach ($screenshot in $screenshotHtml) {
+                $url = 'https:' + $screenshot
+                $screenshotUrl += $url
+            }
+        } else {
+            $screenshotUrl = $null
+        }
+
+        Write-Output $screenshotUrl
+    }
 }

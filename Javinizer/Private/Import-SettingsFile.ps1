@@ -41,47 +41,49 @@ function Import-SettingsFile {
         [string] $commentsKeyPrefix = 'Comment'
     )
 
-    $ini = @{ }
-    switch -regex -file ($Path) {
-        "^\[(.+)\]$" {
-            # Section
-            $section = $matches[1]
-            $ini[$section] = @{ }
-            $CommentCount = 0
-            if ($comments) {
-                $commentsSection = $section + $commentsSectionsSuffix
-                $ini[$commentsSection] = @{ }
+    process {
+        $ini = @{ }
+        switch -regex -file ($Path) {
+            "^\[(.+)\]$" {
+                # Section
+                $section = $matches[1]
+                $ini[$section] = @{ }
+                $CommentCount = 0
+                if ($comments) {
+                    $commentsSection = $section + $commentsSectionsSuffix
+                    $ini[$commentsSection] = @{ }
+                }
+                continue
             }
-            continue
-        }
 
-        "^(;.*)$" {
-            # Comment
-            if ($comments) {
+            "^(;.*)$" {
+                # Comment
+                if ($comments) {
+                    if (!($section)) {
+                        $section = $anonymous
+                        $ini[$section] = @{ }
+                    }
+                    $value = $matches[1]
+                    $CommentCount = $CommentCount + 1
+                    $name = $commentsKeyPrefix + $CommentCount
+                    $commentsSection = $section + $commentsSectionsSuffix
+                    $ini[$commentsSection][$name] = $value
+                }
+                continue
+            }
+
+            "^(.+?)\s*=\s*(.*)$" {
+                # Key
                 if (!($section)) {
                     $section = $anonymous
                     $ini[$section] = @{ }
                 }
-                $value = $matches[1]
-                $CommentCount = $CommentCount + 1
-                $name = $commentsKeyPrefix + $CommentCount
-                $commentsSection = $section + $commentsSectionsSuffix
-                $ini[$commentsSection][$name] = $value
+                $name, $value = $matches[1..2]
+                $ini[$section][$name] = $value
+                continue
             }
-            continue
         }
 
-        "^(.+?)\s*=\s*(.*)$" {
-            # Key
-            if (!($section)) {
-                $section = $anonymous
-                $ini[$section] = @{ }
-            }
-            $name, $value = $matches[1..2]
-            $ini[$section][$name] = $value
-            continue
-        }
+        Write-Output $ini
     }
-
-    Write-Output $ini
 }
