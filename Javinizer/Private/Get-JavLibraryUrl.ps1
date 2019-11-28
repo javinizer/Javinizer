@@ -17,8 +17,7 @@ function Get-JavLibraryUrl {
         try {
             $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
-            Write-Warning "Attempting to start a new session..."
+            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
             try {
                 New-CFSession
             } catch {

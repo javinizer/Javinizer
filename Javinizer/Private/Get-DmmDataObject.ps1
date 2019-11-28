@@ -11,9 +11,13 @@ function Get-DmmDataObject {
     }
 
     process {
+        # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
         $r18Url = Get-R18Url -Id $Id
         $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
         $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
+
         if ($null -ne $dmmUrl) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $dmmUrl
@@ -68,7 +72,7 @@ function Get-DmmTitle {
     )
 
     process {
-        $title = (($WebRequest.Content -split '<meta property="og:title" content="')[1] -split '"')[0]
+        $title = (($WebRequest.Content -split '<h1 id="title" class="item fn">')[1] -split '<\/h1>')[0]
         $title = Convert-HtmlCharacter -String $title
         Write-Output $title
     }
@@ -137,6 +141,11 @@ function Get-DmmDirector {
     process {
         $director = ((($WebRequest.Content -split '監督：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
         $director = Convert-HtmlCharacter -String $director
+
+        if ($director -eq '</tr') {
+            $director = $null
+        }
+
         Write-Output $director
     }
 }
@@ -173,6 +182,11 @@ function Get-DmmSeries {
     process {
         $series = ((($WebRequest.Content -split '<td align="right" valign="top" class="nw">シリーズ：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
         $series = Convert-HtmlCharacter -String $series
+
+        if ($series -eq '</tr') {
+            $series = $null
+        }
+
         Write-Output $series
     }
 }
@@ -201,10 +215,15 @@ function Get-DmmActress {
     }
 
     process {
-        $actressHtml = $webrequest.Links | Where-Object { $_.href -like '*actress/id=*' }
+        $actressHtml = ((($WebRequest.Content -split '出演者：<\/td>')[1] -split '<\/td>')[0] -split '<span id="performer">')[1]
+        $actressHtml = $actressHtml -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(.*)\/">', ''
+        $actressHtml = $actressHtml -split '<\/a>', ''
+
         foreach ($actress in $actressHtml) {
-            $actress = (($actress.outerHTML -split '<a href="\/digital\/videoa\/-\/list\/=\/article=actress/id=(.*)\/">')[2] -split '<\/a>')[0]
-            $actressArray += $actress
+            $actress = Convert-HtmlCharacter -String $actress
+            if ($actress -ne '') {
+                $actressArray += $actress -replace '<\/a>', ''
+            }
         }
 
         Write-Output $actressArray
