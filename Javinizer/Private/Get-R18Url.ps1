@@ -34,7 +34,7 @@ function Get-R18Url {
             foreach ($result in $searchResults) {
                 $webRequest = Invoke-WebRequest $result
                 $html = $webRequest.Content
-                $resultId = Get-R18MovieId -Html $html
+                $resultId = Get-R18Id -Html $html
                 Write-Verbose "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 $count++
             }

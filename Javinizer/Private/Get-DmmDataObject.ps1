@@ -1,8 +1,11 @@
 function Get-DmmDataObject {
     [CmdletBinding()]
+    [OutputType([pscustomobject])]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Name
+        [Parameter(Position = 0)]
+        [string]$Name,
+        [Parameter(Position = 1)]
+        [string]$Url
     )
 
     begin {
@@ -11,12 +14,16 @@ function Get-DmmDataObject {
     }
 
     process {
-        # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
-        $r18Url = Get-R18Url -Name $Name
-        $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
-        $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
+        if ($Url) {
+            $dmmUrl = $Url
+        } else {
+            # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
+            $r18Url = Get-R18Url -Name $Name
+            $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
+            $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
+        }
 
         if ($null -ne $dmmUrl) {
             try {
@@ -91,6 +98,13 @@ function Get-DmmDescription {
         # Remove the last 2 characters of the description string
         # This will remove the extra quotation mark at the end of the description
         $description = $description.Substring(0, $description.Length - 2)
+        $description = Convert-HtmlCharacter -String $description
+        $description = $description -replace '<span style="color:red">', '' `
+            -replace '</span>', '' `
+            -replace '<span>', '' `
+            -replace '<br>', '' `
+            -replace '</br>', ''
+
         Write-Output $description
     }
 }
@@ -219,14 +233,18 @@ function Get-DmmActress {
         $actressHtml = $actressHtml -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(.*)\/">', ''
         $actressHtml = $actressHtml -split '<\/a>', ''
 
-        foreach ($actress in $actressHtml) {
-            $actress = Convert-HtmlCharacter -String $actress
-            if ($actress -ne '') {
-                $actressArray += $actress -replace '<\/a>', ''
+        if ($actressHtml[0] -ne '') {
+            foreach ($actress in $actressHtml) {
+                $actress = Convert-HtmlCharacter -String $actress
+                if ($actress -ne '') {
+                    $actressArray += $actress -replace '<\/a>', ''
+                }
             }
+            Write-Output $actressArray
+        } else {
+            $actressArray = $null
+            Write-Output $actressArray
         }
-
-        Write-Output $actressArray
     }
 }
 

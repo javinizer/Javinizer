@@ -1,8 +1,11 @@
 function Get-R18DataObject {
     [CmdletBinding()]
+    [OutputType([pscustomobject])]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Name
+        [Parameter(Position = 0)]
+        [string]$Name,
+        [Parameter(Position = 1)]
+        [string]$Url
     )
 
     begin {
@@ -11,31 +14,37 @@ function Get-R18DataObject {
     }
 
     process {
-        $r18Url = Get-R18Url -Name $Name
+        if ($Url) {
+            $r18Url = $Url
+        } else {
+            $r18Url = Get-R18Url -Name $Name
+        }
+
         if ($null -ne $R18Url) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $r18Url
+
+                $movieDataObject = [pscustomobject]@{
+                    Url           = $r18Url
+                    ContentId     = Get-R18ContentId -WebRequest $webRequest
+                    Id            = Get-R18Id -WebRequest $webRequest
+                    Title         = Get-R18Title -WebRequest $webRequest
+                    Date          = Get-R18ReleaseDate -WebRequest $webRequest
+                    Year          = Get-R18ReleaseYear -WebRequest $webRequest
+                    Length        = Get-R18Length -WebRequest $webRequest
+                    Director      = Get-R18Director -WebRequest $webRequest
+                    Maker         = Get-R18Maker -WebRequest $webRequest
+                    Label         = Get-R18Label -WebRequest $webRequest
+                    Series        = Get-R18Series -WebRequest $webRequest
+                    Rating        = Get-R18Rating -WebRequest $webRequest
+                    Actress       = (Get-R18Actress -WebRequest $webRequest).Name
+                    ActressThumb  = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
+                    Genre         = Get-R18Genre -WebRequest $webRequest
+                    CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
+                    ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest
+                }
             } catch {
                 throw $_
-            }
-
-            $movieDataObject = [pscustomobject]@{
-                Url           = $r18Url
-                ContentId     = Get-R18ContentId -WebRequest $webRequest
-                Id            = Get-R18Id -WebRequest $webRequest
-                Title         = Get-R18Title -WebRequest $webRequest
-                Date          = Get-R18ReleaseDate -WebRequest $webRequest
-                Year          = Get-R18ReleaseYear -WebRequest $webRequest
-                Length        = Get-R18Length -WebRequest $webRequest
-                Director      = Get-R18Director -WebRequest $webRequest
-                Maker         = Get-R18Maker -WebRequest $webRequest
-                Label         = Get-R18Label -WebRequest $webRequest
-                Series        = Get-R18Series -WebRequest $webRequest
-                Rating        = Get-R18Rating -WebRequest $webRequest
-                Actress       = Get-R18Actress -WebRequest $webRequest
-                Genre         = Get-R18Genre -WebRequest $webRequest
-                CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
-                ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest
             }
         }
 

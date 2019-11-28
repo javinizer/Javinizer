@@ -1,9 +1,11 @@
-function Get-JavLibraryDataObject {
+function Get-JavlibraryDataObject {
     [CmdletBinding()]
     [OutputType([pscustomobject])]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Name
+        [Parameter(Position = 0)]
+        [string]$Name,
+        [Parameter(Position = 1)]
+        [string]$Url
     )
 
     begin {
@@ -12,7 +14,12 @@ function Get-JavLibraryDataObject {
     }
 
     process {
-        $javlibraryUrl = Get-JavLibraryUrl -Name $Name
+        if ($Url) {
+            $javlibraryUrl = $Url
+        } else {
+            $javlibraryUrl = Get-JavLibraryUrl -Name $Name
+        }
+
         if ($null -ne $javlibraryUrl) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent

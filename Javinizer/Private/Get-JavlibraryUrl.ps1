@@ -1,4 +1,4 @@
-function Get-JavLibraryUrl {
+function Get-JavlibraryUrl {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
@@ -13,7 +13,6 @@ function Get-JavLibraryUrl {
     }
 
     process {
-
         try {
             $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {

@@ -11,7 +11,7 @@ function New-CloudflareSession {
         $cookieContent = @()
         $requestObject = @()
         $modulePath = (Get-Item $PSScriptroot).Parent
-        $cfPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'cfscraper.py'
+        $cfPath = Join-Path -Path $modulePath -ChildPath 'cfscraper.py'
     }
 
     process {
