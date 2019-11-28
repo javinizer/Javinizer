@@ -2,14 +2,14 @@ function Get-JavLibraryUrl {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Id,
+        [string]$Name,
         [ValidateRange(2, 5)]
         [int]$Tries
     )
 
     begin {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
-        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
+        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Name"
     }
 
     process {
@@ -19,7 +19,7 @@ function Get-JavLibraryUrl {
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             Write-Verbose "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
             try {
-                New-CFSession
+                New-CloudflareSession
             } catch {
                 throw $_
             }
@@ -35,14 +35,14 @@ function Get-JavLibraryUrl {
             $numResults = $searchResults.count
 
             if ($searchResults -ge 2) {
-                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Name]"
                 if ($Tries.IsPresent) {
                     $Tries = $Tries
                 } else {
-                    $Tries = 3
+                    $Tries = 2
                 }
             } elseif ($searchResults -eq 0 -or $null -eq $searchResults) {
-                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping"
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping"
                 break
             }
 
@@ -54,14 +54,14 @@ function Get-JavLibraryUrl {
                 $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
                 Write-Verbose "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
-                if ($resultId -eq $Id) {
+                if ($resultId -eq $Name) {
                     $javlibraryUrl = Test-UrlMatch -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri -JavLibrary
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id matched"
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Name matched"
                     break
                 }
 
                 if ($count -gt $Tries) {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping..."
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
                     break
                 }
                 $count++
@@ -74,6 +74,5 @@ function Get-JavLibraryUrl {
     end {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
-
 }
 

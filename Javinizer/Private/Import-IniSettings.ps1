@@ -1,6 +1,6 @@
 # This is a borrowed function; Thanks to [GITHUB: beruic] and [STACKOVERFLOW: David Brabant]
 
-function Import-SettingsFile {
+function Import-IniSettings {
     <#
     .SYNOPSIS
     Read an ini file.
@@ -25,7 +25,7 @@ function Import-SettingsFile {
     The prefix for comment keys. The default value is 'Comment'.
 
     .EXAMPLE
-    Import-SettingsFile /path/to/my/inifile.ini
+    Import-IniSettings /path/to/my/inifile.ini
 
     .NOTES
     The resulting hash table has the form [sectionName->sectionContent], where sectionName is a string and sectionContent is a hash table of the form [key->value] where both are strings.
@@ -42,48 +42,53 @@ function Import-SettingsFile {
     )
 
     process {
-        $ini = @{ }
-        switch -regex -file ($Path) {
-            "^\[(.+)\]$" {
-                # Section
-                $section = $matches[1]
-                $ini[$section] = @{ }
-                $CommentCount = 0
-                if ($comments) {
-                    $commentsSection = $section + $commentsSectionsSuffix
-                    $ini[$commentsSection] = @{ }
+        try {
+            $ini = @{ }
+            switch -regex -file ($Path) {
+                "^\[(.+)\]$" {
+                    # Section
+                    $section = $matches[1]
+                    $ini[$section] = @{ }
+                    $CommentCount = 0
+                    if ($comments) {
+                        $commentsSection = $section + $commentsSectionsSuffix
+                        $ini[$commentsSection] = @{ }
+                    }
+                    continue
                 }
-                continue
-            }
 
-            "^(;.*)$" {
-                # Comment
-                if ($comments) {
+                "^(;.*)$" {
+                    # Comment
+                    if ($comments) {
+                        if (!($section)) {
+                            $section = $anonymous
+                            $ini[$section] = @{ }
+                        }
+                        $value = $matches[1]
+                        $CommentCount = $CommentCount + 1
+                        $name = $commentsKeyPrefix + $CommentCount
+                        $commentsSection = $section + $commentsSectionsSuffix
+                        $ini[$commentsSection][$name] = $value
+                    }
+                    continue
+                }
+
+                "^(.+?)\s*=\s*(.*)$" {
+                    # Key
                     if (!($section)) {
                         $section = $anonymous
                         $ini[$section] = @{ }
                     }
-                    $value = $matches[1]
-                    $CommentCount = $CommentCount + 1
-                    $name = $commentsKeyPrefix + $CommentCount
-                    $commentsSection = $section + $commentsSectionsSuffix
-                    $ini[$commentsSection][$name] = $value
+                    $name, $value = $matches[1..2]
+                    $ini[$section][$name] = $value
+                    continue
                 }
-                continue
             }
 
-            "^(.+?)\s*=\s*(.*)$" {
-                # Key
-                if (!($section)) {
-                    $section = $anonymous
-                    $ini[$section] = @{ }
-                }
-                $name, $value = $matches[1..2]
-                $ini[$section][$name] = $value
-                continue
-            }
+            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path] loaded"
+            Write-Output $ini
+        } catch {
+            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded"
         }
-
-        Write-Output $ini
     }
 }

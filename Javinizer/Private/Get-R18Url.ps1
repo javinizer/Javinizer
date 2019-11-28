@@ -2,14 +2,14 @@ function Get-R18Url {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Id,
+        [string]$Name,
         [ValidateRange(2, 5)]
         [int]$Tries
     )
 
     begin {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
-        $searchUrl = "https://www.r18.com/common/search/searchword=$Id/"
+        $searchUrl = "https://www.r18.com/common/search/searchword=$Name/"
     }
 
     process {
@@ -39,7 +39,7 @@ function Get-R18Url {
                 $count++
             }
         } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Id not matched, skipping..."
+            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
             break
         } else {
             $directUrl = $searchResults

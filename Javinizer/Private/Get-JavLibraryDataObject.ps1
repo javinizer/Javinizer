@@ -3,7 +3,7 @@ function Get-JavLibraryDataObject {
     [OutputType([pscustomobject])]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Id
+        [string]$Name
     )
 
     begin {
@@ -12,7 +12,7 @@ function Get-JavLibraryDataObject {
     }
 
     process {
-        $javlibraryUrl = Get-JavLibraryUrl -Id $Id
+        $javlibraryUrl = Get-JavLibraryUrl -Name $Name
         if ($null -ne $javlibraryUrl) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
@@ -20,7 +20,7 @@ function Get-JavLibraryDataObject {
                 Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
                 Write-Warning "Attempting to start a new session..."
                 try {
-                    New-CFSession
+                    New-CloudflareSession
                 } catch {
                     throw $_
                 }
@@ -176,7 +176,7 @@ function Get-JLGenre {
         foreach ($genres in $genreHtml[1..($genreHtml.Length - 1)]) {
             $genres = ($genres -split '<')[0]
             $genres = Convert-HtmlCharacter -String $genres
-            $genre += $genre
+            $genre += $genres
         }
 
         Write-Output $genre

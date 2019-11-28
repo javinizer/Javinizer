@@ -1,4 +1,4 @@
-function New-CFSession {
+function New-CloudflareSession {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter(Position = 0)]
@@ -10,21 +10,24 @@ function New-CFSession {
         $cookieName = @()
         $cookieContent = @()
         $requestObject = @()
-        $cfPath = Join-Path -Path $PSScriptRoot -ChildPath 'cf.py'
+        $modulePath = (Get-Item $PSScriptroot).Parent
+        $cfPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'cfscraper.py'
     }
 
     process {
         if ($PSCmdlet.ShouldProcess('Current Shell', 'Create new CloudFlare session')) {
             try {
-                $cfScrape = python $cfPath $Url
+                $cfScrape, $userAgent = python $cfPath $Url
             } catch {
                 throw $_
             }
 
-            $cfScrapeSplit = $cfScrape -split "'"
-            $cookieName += $cfScrapeSplit[1], $cfScrapeSplit[5]
-            $cookieContent += $cfScrapeSplit[3], $cfScrapeSplit[7]
-            $userAgent = $cfScrapeSplit[9]
+            $cfScrapeSplit = ($cfScrape -split ";").Trim()
+
+            foreach ($cookie in $cfScrapeSplit) {
+                $cookieName += ($cookie -split '=')[0]
+                $cookieContent += ($cookie -split '=')[1]
+            }
 
             $requestObject += [pscustomobject]@{
                 CookieName    = $cookieName
@@ -51,6 +54,7 @@ function New-CFSession {
     }
 
     end {
+        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Successfully created session with Cloudflare"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

@@ -2,7 +2,7 @@ function Get-R18DataObject {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Id
+        [string]$Name
     )
 
     begin {
@@ -11,7 +11,7 @@ function Get-R18DataObject {
     }
 
     process {
-        $r18Url = Get-R18Url -Id $Id
+        $r18Url = Get-R18Url -Name $Name
         if ($null -ne $R18Url) {
             try {
                 $webRequest = Invoke-WebRequest -Uri $r18Url
