@@ -13,6 +13,7 @@ function Get-AggregatedDataObject {
 
     process {
         $actressPriority = Get-MetadataPriority -Settings $Settings -Type 'actress'
+        $actressthumburlPriority = Get-MetadataPriority -Settings $Settings -Type 'actressthumburl'
         $alternatetitlePriority = Get-MetadataPriority -Settings $Settings -Type 'alternatetitle'
         $coverurlPriority = Get-MetadataPriority -Settings $Settings -Type 'coverurl'
         $descriptionPriority = Get-MetadataPriority -Settings $Settings -Type 'description'
@@ -83,30 +84,39 @@ function Get-AggregatedDataObject {
         }
 
         $aggregatedDataObject = [pscustomobject]@{
-            Id             = $null
-            Title          = $null
-            AlternateTitle = $null
-            Description    = $null
-            ReleaseDate    = $null
-            ReleaseYear    = $null
-            Runtime        = $null
-            Director       = $null
-            Maker          = $null
-            Label          = $null
-            Series         = $null
-            Rating         = $null
-            Actress        = $null
-            Genre          = $null
-            CoverUrl       = $null
-            ScreenshotUrl  = $null
-            FileName       = $null
-            FolderName     = $null
+            Id              = $null
+            Title           = $null
+            AlternateTitle  = $null
+            Description     = $null
+            ReleaseDate     = $null
+            ReleaseYear     = $null
+            Runtime         = $null
+            Director        = $null
+            Maker           = $null
+            Label           = $null
+            Series          = $null
+            Rating          = $null
+            Actress         = $null
+            Genre           = $null
+            ActressThumbUrl = $null
+            CoverUrl        = $null
+            ScreenshotUrl   = $null
+            DisplayName     = $null
+            FileName        = $null
+            FolderName      = $null
         }
 
         foreach ($priority in $actressPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Actress) {
                 $aggregatedDataObject.Actress = $var.Value.Actress
+            }
+        }
+
+        foreach ($priority in $actressthumburlPriority) {
+            $var = Get-Variable -Name "$($priority)Data"
+            if ($null -eq $aggregatedDataObject.ActressThumbUrl) {
+                $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
             }
         }
 
@@ -223,6 +233,7 @@ function Get-AggregatedDataObject {
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
         $aggregatedDataObject.FileName = $fileDirName.FileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName
+        $aggregatedDataObject.DisplayName = $fileDirName.DisplayName
 
         Write-Output $aggregatedDataObject
     }

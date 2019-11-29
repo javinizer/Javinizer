@@ -25,23 +25,23 @@ function Get-R18DataObject {
                 $webRequest = Invoke-WebRequest -Uri $r18Url
 
                 $movieDataObject = [pscustomobject]@{
-                    Url           = $r18Url
-                    ContentId     = Get-R18ContentId -WebRequest $webRequest
-                    Id            = Get-R18Id -WebRequest $webRequest
-                    Title         = Get-R18Title -WebRequest $webRequest
-                    Date          = Get-R18ReleaseDate -WebRequest $webRequest
-                    Year          = Get-R18ReleaseYear -WebRequest $webRequest
-                    Runtime       = Get-R18Runtime -WebRequest $webRequest
-                    Director      = Get-R18Director -WebRequest $webRequest
-                    Maker         = Get-R18Maker -WebRequest $webRequest
-                    Label         = Get-R18Label -WebRequest $webRequest
-                    Series        = Get-R18Series -WebRequest $webRequest
-                    Rating        = Get-R18Rating -WebRequest $webRequest
-                    Actress       = (Get-R18Actress -WebRequest $webRequest).Name
-                    ActressThumb  = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
-                    Genre         = Get-R18Genre -WebRequest $webRequest
-                    CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
-                    ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest
+                    Url             = $r18Url
+                    ContentId       = Get-R18ContentId -WebRequest $webRequest
+                    Id              = Get-R18Id -WebRequest $webRequest
+                    Title           = Get-R18Title -WebRequest $webRequest
+                    Date            = Get-R18ReleaseDate -WebRequest $webRequest
+                    Year            = Get-R18ReleaseYear -WebRequest $webRequest
+                    Runtime         = Get-R18Runtime -WebRequest $webRequest
+                    Director        = Get-R18Director -WebRequest $webRequest
+                    Maker           = Get-R18Maker -WebRequest $webRequest
+                    Label           = Get-R18Label -WebRequest $webRequest
+                    Series          = Get-R18Series -WebRequest $webRequest
+                    Rating          = Get-R18Rating -WebRequest $webRequest
+                    Actress         = (Get-R18Actress -WebRequest $webRequest).Name
+                    Genre           = Get-R18Genre -WebRequest $webRequest
+                    ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
+                    CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
+                    ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
                 }
             } catch {
                 throw $_
@@ -263,7 +263,8 @@ function Get-R18Actress {
         }
 
         foreach ($actress in $movieActress) {
-            $movieActressThumb += ($WebRequest.Images | Where-Object { $_.alt -eq "$actress" }).src
+            $movieActressHtml = ((($WebRequest.Content -split "<p><img alt=""$actress"" ")[1] -split '"')[1] -split '"')[0]
+            $movieActressThumb += $movieActressHtml
         }
 
         $movieActressObject = [pscustomobject]@{

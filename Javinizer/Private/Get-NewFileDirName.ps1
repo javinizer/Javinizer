@@ -11,32 +11,38 @@ function Get-NewFileDirName {
         $settings = Import-IniSettings -Path $settingsPath
         $folderFormat = $settings.General.'rename-folder-string'
         $fileFormat = $settings.General.'rename-file-string'
+        $displayNameFormat = $settings.General.'cms-displayname-string'
         $fileDirObject = @()
     }
 
     process {
-        $folderFormat = $folderFormat[1..($folderFormat.Length - 2)] -join ''
-        $fileFormat = $fileFormat[1..($fileFormat.Length - 2)] -join ''
-
-        $newFolderName = $folderFormat `
-            -replace '<ID>', "$($DataObject.Id)" `
-            -replace '<TITLE>', "$($DataObject.Title)" `
-            -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
-            -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
-            -replace '<STUDIO>', "$($DataObject.Maker)" `
-
-        $newFileName = $fileFormat `
-            -replace '<ID>', "$($DataObject.Id)" `
-            -replace '<TITLE>', "$($DataObject.Title)" `
-            -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
-            -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
-            -replace '<STUDIO>', "$($DataObject.Maker)" `
+        $newFolderName = Convert-FormatString -FormatString $folderFormat
+        $newFileName = Convert-FormatString -FormatString $fileFormat
+        $newDisplayName = Convert-FormatString -FormatString $displayNameFormat
 
         $fileDirObject = [pscustomobject]@{
-            FolderName = $newFolderName
-            FileName   = $newFileName
+            FolderName  = $newFolderName
+            FileName    = $newFileName
+            DisplayName = $newDisplayName
         }
 
         Write-Output $fileDirObject
+    }
+}
+
+function Convert-FormatString {
+    param (
+        [string]$FormatString
+    )
+
+    process {
+        $FormatString = $FormatString[1..($FormatString.Length - 2)] -join ''
+        $newName = $FormatString `
+            -replace '<ID>', "$($DataObject.Id)" `
+            -replace '<TITLE>', "$($DataObject.Title)" `
+            -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
+            -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
+            -replace '<STUDIO>', "$($DataObject.Maker)"
+        Write-Output $newName
     }
 }
