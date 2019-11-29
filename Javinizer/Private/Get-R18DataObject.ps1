@@ -263,8 +263,14 @@ function Get-R18Actress {
         }
 
         foreach ($actress in $movieActress) {
-            $movieActressHtml = ((($WebRequest.Content -split "<p><img alt=""$actress"" ")[1] -split '"')[1] -split '"')[0]
-            $movieActressThumb += $movieActressHtml
+            $movieActressHtml = $WebRequest.Content -split '\n'
+            $movieActressHtml = $movieActressHtml | Select-String -Pattern 'src="https:\/\/pics.r18.com\/mono\/actjpgs\/(.*).jpg"' -AllMatches
+            foreach ($actressThumb in $movieActressHtml) {
+                $actressName = Convert-HtmlCharacter -String ((($actressThumb -split '<img alt="')[1] -split '"')[0])
+                if ($actress -match $actressName) {
+                    $movieActressThumb += (($actressThumb -split 'src="')[1] -split '"')[0]
+                }
+            }
         }
 
         $movieActressObject = [pscustomobject]@{
