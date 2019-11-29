@@ -14,7 +14,7 @@ function Get-TranslatedString {
         if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
             $translatedString = python $translatePath $String
         } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-            $translatedString = python3 $translatePath $String
+            $translatedString = python $translatePath $String
         }
 
         Write-Output $translatedString

@@ -20,7 +20,7 @@ function New-CloudflareSession {
                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                     $cfScrape, $userAgent = python $cfPath $Url
                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                    $cfScrape, $userAgent = python3 $cfPath $Url
+                    $cfScrape, $userAgent = python $cfPath $Url
                 }
             } catch {
                 throw $_
