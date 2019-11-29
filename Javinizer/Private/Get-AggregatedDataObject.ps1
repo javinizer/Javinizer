@@ -10,11 +10,6 @@ function Get-AggregatedDataObject {
         [object]$Settings
     )
 
-    begin {
-        $modulePath = (Get-Item $PSScriptroot).Parent
-        $translatePath = Join-Path -Path $modulePath -ChildPath 'translate.py'
-    }
-
     process {
         $actressPriority = Get-MetadataPriority -Settings $Settings -Type 'actress'
         $coverurlPriority = Get-MetadataPriority -Settings $Settings -Type 'coverurl'
@@ -45,17 +40,14 @@ function Get-AggregatedDataObject {
         if ($UrlLocation) {
             foreach ($url in $UrlLocation) {
                 if ($url.Result -contains 'r18') {
-                    Write-Host -BackgroundColor Green "r18"
                     $r18Data = Get-R18DataObject -Url $url.Url
                 }
 
                 if ($url.Result -contains 'dmm') {
-                    Write-Host -BackgroundColor Green "dmm"
                     $dmmData = Get-DmmDataObject -Url $url.Url
                 }
 
                 if ($url.Result -contains 'javlibrary') {
-                    Write-Host -BackgroundColor Green "javlib"
                     $javlibraryData = Get-JavlibraryDataObject -Url $url.Url
                 }
             }

@@ -25,7 +25,6 @@ function Test-UrlLocation {
                 $testUrlObject = [pscustomobject]@{
                     Url    = $link
                     Result = 'dmm'
-
                 }
             } else {
                 # do nothing
