@@ -6,5 +6,11 @@ Tool to organize your local Japanese Adult Video (JAV) collection
 
 ## Installation
 
+pip install googletrans
+https://github.com/ssut/py-googletrans
+
+pip install cloud-scraper
+https://github.com/VeNoMouS/cloudscraper
+
 ## Examples
 
