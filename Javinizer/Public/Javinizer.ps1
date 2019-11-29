@@ -4,22 +4,26 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias('f')]
         [string]$Find,
+        [Parameter(ParameterSetNAme = 'Info', Mandatory = $false)]
+        [switch]$Aggregated,
         [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 0)]
-        [Alias('s', 'p')]
+        [Alias('p')]
         [system.io.fileinfo]$Path,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
         [Alias('u')]
         [string]$Url,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [switch]$PassThru,
         [Alias('a')]
         [switch]$Apply,
         [switch]$Parallel,
         [switch]$R18,
         [switch]$Dmm,
-        [Alias('jl')]
         [switch]$Javlibrary
     )
 
     begin {
+        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
         $urlLocation = @()
         $urlList = @()
     }
@@ -27,6 +31,8 @@ function Javinizer {
     process {
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
+        if (($settings.Other.'verbose-shell-output' -eq 'True') -and ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
+        $ProgressPreference = 'SilentlyContinue'
 
         Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
         Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
@@ -46,7 +52,7 @@ function Javinizer {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
-                $dataObject = Get-FindDataObject -Find $Find
+                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated
                 Write-Output $dataObject
             }
 
@@ -61,7 +67,6 @@ function Javinizer {
                     Write-Debug "Mode: $($getItem.Mode)"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
-                            #$urlList = $Url -split ','
                             $urlList = $Url -split ','
                             $urlLocation = Test-UrlLocation -Url $urlList
                             $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
@@ -84,6 +89,10 @@ function Javinizer {
                 }
             }
         }
+    }
+
+    end {
+        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

@@ -7,7 +7,8 @@ function Get-AggregatedDataObject {
         [switch]$R18,
         [switch]$Dmm,
         [switch]$Javlibrary,
-        [object]$Settings
+        [object]$Settings,
+        [string]$Id
     )
 
     process {
@@ -63,26 +64,38 @@ function Get-AggregatedDataObject {
             if ($javlibrary.IsPresent) {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
             }
+        } elseif ($PSBoundParameters.ContainsKey('Id')) {
+            if ($r18.IsPresent) {
+                $r18Data = Get-R18DataObject -Name $Id
+            }
+
+            if ($dmm.IsPresent) {
+                $dmmData = Get-DmmDataObject -Name $Id
+            }
+
+            if ($javlibrary.IsPresent) {
+                $javlibraryData = Get-JavlibraryDataObject -Name $Id
+            }
         }
 
         $aggregatedDataObject = [pscustomobject]@{
-            Actress       = $null
-            CoverUrl      = $null
-            Description   = $null
-            Director      = $null
-            FolderName    = $null
-            FileName      = $null
-            Genre         = $null
             Id            = $null
-            Label         = $null
-            Maker         = $null
             Title         = $null
-            Rating        = $null
             ReleaseDate   = $null
             ReleaseYear   = $null
             Runtime       = $null
+            Director      = $null
+            Maker         = $null
+            Label         = $null
             Series        = $null
+            Rating        = $null
+            Genre         = $null
+            Actress       = $null
+            Description   = $null
+            CoverUrl      = $null
             ScreenshotUrl = $null
+            FileName      = $null
+            FolderName    = $null
         }
 
         foreach ($priority in $actressPriority) {
