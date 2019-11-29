@@ -222,8 +222,8 @@ function Get-JLCoverUrl {
     )
 
     process {
-        $coverUrl = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/mono\/movie\/adult' }
-        $coverUrl = 'https:' + $coverUrl.src
+        $coverUrl = (($WebRequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
+        $coverUrl = 'https:' + $coverUrl
         Write-Output $coverUrl
     }
 }
@@ -238,16 +238,14 @@ function Get-JLScreenshotUrl {
     }
 
     process {
-        $screenshotHtml = $WebRequest.Images | Where-Object { $_.src -match 'pics.dmm.co.jp\/digital\/video' }
-        $screenshotHtml = $screenshotHtml.src
-        if ($null -ne $screenshotHtml) {
-            $screenshotHtml = $screenshotHtml -split ' '
-            foreach ($screenshot in $screenshotHtml) {
-                $url = 'https:' + $screenshot
-                $screenshotUrl += $url
+        $screenshotHtml = (($WebRequest.Content -split '<div class="previewthumbs" style="display:block; margin:10px auto;">')[1] -split '<\/div>')[0]
+        $screenshotHtml = $screenshotHtml -split '<img src="'
+        foreach ($screenshot in $screenshotHtml) {
+            if ($screenshot -ne '') {
+                $screenshot = 'https:' + ($screenshot -split '"')[0]
+                $screenshot = $screenshot -replace '-', 'jp-'
+                $screenshotUrl += $screenshot
             }
-        } else {
-            $screenshotUrl = $null
         }
 
         Write-Output $screenshotUrl

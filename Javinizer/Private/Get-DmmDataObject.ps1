@@ -39,7 +39,7 @@ function Get-DmmDataObject {
                 Description   = Get-DmmDescription -WebRequest $webRequest
                 Date          = Get-DmmReleaseDate -WebRequest $webRequest
                 Year          = Get-DmmReleaseYear -WebRequest $webRequest
-                Runtime        = Get-DmmRuntime -WebRequest $webRequest
+                Runtime       = Get-DmmRuntime -WebRequest $webRequest
                 Director      = Get-DmmDirector -WebRequest $webRequest
                 Maker         = Get-DmmMaker -WebRequest $webRequest
                 Label         = Get-DmmLabel -WebRequest $webRequest
@@ -295,8 +295,14 @@ function Get-DmmScreenshotUrl {
     }
 
     process {
-        $screenshotUrl = $WebRequest.Images | Where-Object { $_.src -like 'https://pics.dmm.co.jp/digital/video/*' -and $_.id -notlike 'package-src-*' }
-        $screenshotUrl = $screenshotUrl.'src'
+        $screenshotHtml = $WebRequest.Links | Where-Object { $_.name -eq 'sample-image' }
+        $screenshotHtml = $screenshotHtml.'outerHTML'
+
+        foreach ($screenshot in $screenshotHtml) {
+            $screenshot = (($screenshot -split '<img src="')[1] -split '"')[0]
+            $screenshotUrl += $screenshot -replace '-', 'jp-'
+        }
+
         Write-Output $screenshotUrl
     }
 }

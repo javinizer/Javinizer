@@ -281,8 +281,8 @@ function Get-R18CoverUrl {
     )
 
     process {
-        $coverUrl = $WebRequest.Images | Where-Object { $_.alt -like '*cover*' }
-        $coverUrl = $coverUrl.src
+        $coverUrl = (($WebRequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
+        $coverUrl = (($coverUrl -split 'src="')[1] -split '">')[0]
         Write-Output $coverUrl
     }
 }
@@ -297,8 +297,16 @@ function Get-R18ScreenshotUrl {
     }
 
     process {
-        $screenshotUrl = $WebRequest.Images | Where-Object { $_.alt -like '*screenshot*' }
-        $screenshotUrl = $screenshotUrl.'data-src'
+        $screenshotHtml = (($WebRequest.Content -split '<ul class="js-owl-carousel clearfix">')[1] -split '<\/ul>')[0]
+        $screenshotHtml = $screenshotHtml -split '<li>'
+        foreach ($screenshot in $screenshotHtml) {
+            $screenshot = $screenshot -replace '<p><img class="lazyOwl" ', ''
+            $screenshot = (($screenshot -split 'data-src="')[1] -split '"')[0]
+            if ($screenshot -ne '') {
+                $screenshotUrl += $screenshot
+            }
+        }
+
         Write-Output $screenshotUrl
     }
 }
