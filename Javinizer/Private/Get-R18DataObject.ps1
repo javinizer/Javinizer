@@ -108,6 +108,8 @@ function Get-R18ReleaseDate {
             $month = 'Jun'
         } elseif ($month -eq 'July') {
             $month = 'Jul'
+        } elseif ($month -eq 'Sept') {
+            $month = 'Sep'
         }
 
         # Convert the month name to a numeric value to conform with CMS datetime standards
