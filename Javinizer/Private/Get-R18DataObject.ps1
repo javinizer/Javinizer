@@ -31,7 +31,7 @@ function Get-R18DataObject {
                     Title         = Get-R18Title -WebRequest $webRequest
                     Date          = Get-R18ReleaseDate -WebRequest $webRequest
                     Year          = Get-R18ReleaseYear -WebRequest $webRequest
-                    Length        = Get-R18Length -WebRequest $webRequest
+                    Runtime       = Get-R18Runtime -WebRequest $webRequest
                     Director      = Get-R18Director -WebRequest $webRequest
                     Maker         = Get-R18Maker -WebRequest $webRequest
                     Label         = Get-R18Label -WebRequest $webRequest
@@ -129,7 +129,7 @@ function Get-R18ReleaseYear {
     }
 }
 
-function Get-R18Length {
+function Get-R18Runtime {
     param (
         [object]$WebRequest
     )

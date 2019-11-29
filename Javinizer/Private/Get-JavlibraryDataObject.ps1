@@ -24,8 +24,7 @@ function Get-JavlibraryDataObject {
             try {
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                Write-Warning "Session to JAVLibrary is unsuccessful (possible CloudFlare session expired)"
-                Write-Warning "Attempting to start a new session..."
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
                     New-CloudflareSession
                 } catch {
@@ -41,7 +40,7 @@ function Get-JavlibraryDataObject {
                 Title         = Get-JLTitle -WebRequest $webRequest
                 Date          = Get-JLReleaseDate -WebRequest $webRequest
                 Year          = Get-JLReleaseYear -WebRequest $webRequest
-                Length        = Get-JLLength -WebRequest $webRequest
+                Runtime       = Get-JLRuntime -WebRequest $webRequest
                 Director      = Get-JLDirector -WebRequest $webRequest
                 Maker         = Get-JLMaker -WebRequest $webRequest
                 Label         = Get-JLLabel -WebRequest $webRequest
@@ -73,6 +72,7 @@ function Get-JLId {
     }
 }
 
+# TODO: Add specific functionality to match video IDs containing trailing alpha characters (e.g. IBW-123z)
 function Get-JLTitle {
     param (
         [object]$WebRequest
@@ -107,7 +107,7 @@ function Get-JLReleaseYear {
     }
 }
 
-function Get-JLLength {
+function Get-JLRuntime {
     param (
         [object]$WebRequest
     )

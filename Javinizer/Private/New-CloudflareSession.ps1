@@ -17,7 +17,11 @@ function New-CloudflareSession {
     process {
         if ($PSCmdlet.ShouldProcess('Current Shell', 'Create new CloudFlare session')) {
             try {
-                $cfScrape, $userAgent = python $cfPath $Url
+                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                    $cfScrape, $userAgent = python $cfPath $Url
+                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                    $cfScrape, $userAgent = python3 $cfPath $Url
+                }
             } catch {
                 throw $_
             }

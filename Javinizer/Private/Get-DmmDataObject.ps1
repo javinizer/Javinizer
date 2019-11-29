@@ -39,7 +39,7 @@ function Get-DmmDataObject {
                 Description   = Get-DmmDescription -WebRequest $webRequest
                 Date          = Get-DmmReleaseDate -WebRequest $webRequest
                 Year          = Get-DmmReleaseYear -WebRequest $webRequest
-                Length        = Get-DmmLength -WebRequest $webRequest
+                Runtime        = Get-DmmRuntime -WebRequest $webRequest
                 Director      = Get-DmmDirector -WebRequest $webRequest
                 Maker         = Get-DmmMaker -WebRequest $webRequest
                 Label         = Get-DmmLabel -WebRequest $webRequest
@@ -135,7 +135,7 @@ function Get-DmmReleaseYear {
     }
 }
 
-function Get-DmmLength {
+function Get-DmmRuntime {
     param (
         [object]$WebRequest
     )

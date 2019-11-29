@@ -21,15 +21,15 @@ function Get-NewFileDirName {
         $newFolderName = $folderFormat `
             -replace '<ID>', "$($DataObject.Id)" `
             -replace '<TITLE>', "$($DataObject.Title)" `
-            -replace '<RELEASEDATE>', "$($DataObject.Date)" `
-            -replace '<YEAR>', "$($DataObject.Year)" `
+            -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
+            -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
             -replace '<STUDIO>', "$($DataObject.Maker)" `
 
         $newFileName = $fileFormat `
             -replace '<ID>', "$($DataObject.Id)" `
             -replace '<TITLE>', "$($DataObject.Title)" `
-            -replace '<RELEASEDATE>', "$($DataObject.Date)" `
-            -replace '<YEAR>', "$($DataObject.Year)" `
+            -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
+            -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
             -replace '<STUDIO>', "$($DataObject.Maker)" `
 
         $fileDirObject = [pscustomobject]@{
