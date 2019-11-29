@@ -3,7 +3,10 @@ function Get-FindDataObject {
     param(
         [string]$Find,
         [object]$Settings,
-        [switch]$Aggregated
+        [switch]$Aggregated,
+        [switch]$Dmm,
+        [switch]$Javlibrary,
+        [switch]$R18
     )
 
     begin {
@@ -15,9 +18,9 @@ function Get-FindDataObject {
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
                     (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $r18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $javlibrary = $true }
+            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
+            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
 

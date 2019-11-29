@@ -138,15 +138,18 @@ function Convert-JavTitle {
             if ($files.Count -eq '1') {
                 $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
                 $originalFileName = $files.Name
+                $fileExtension = $files.Extension
             } else {
                 $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
                 $originalFileName = $files.Name[$x]
+                $fileExtension = $files.Extension[$x]
             }
 
             $dataObject += [PSCustomObject]@{
                 Id               = $fileBaseNameUpperCleaned[$x]
                 NewFileName      = $finalFileName
                 OriginalFileName = $originalFileName
+                Extension        = $fileExtension
             }
         }
 

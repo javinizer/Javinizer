@@ -13,6 +13,7 @@ function Get-AggregatedDataObject {
 
     process {
         $actressPriority = Get-MetadataPriority -Settings $Settings -Type 'actress'
+        $alternatetitlePriority = Get-MetadataPriority -Settings $Settings -Type 'alternatetitle'
         $coverurlPriority = Get-MetadataPriority -Settings $Settings -Type 'coverurl'
         $descriptionPriority = Get-MetadataPriority -Settings $Settings -Type 'description'
         $directorPriority = Get-MetadataPriority -Settings $Settings -Type 'director'
@@ -32,13 +33,14 @@ function Get-AggregatedDataObject {
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
                     (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $r18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $javlibrary = $true }
+            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
+            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
 
         if ($UrlLocation) {
+            $currentSearch = $UrlLocation.Url
             foreach ($url in $UrlLocation) {
                 if ($url.Result -contains 'r18') {
                     $r18Data = Get-R18DataObject -Url $url.Url
@@ -53,6 +55,7 @@ function Get-AggregatedDataObject {
                 }
             }
         } elseif ($FileDetails) {
+            $currentSearch = $FileDetails.Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $fileDetails.Id
             }
@@ -65,6 +68,7 @@ function Get-AggregatedDataObject {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
+            $currentSearch = $Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $Id
             }
@@ -79,29 +83,37 @@ function Get-AggregatedDataObject {
         }
 
         $aggregatedDataObject = [pscustomobject]@{
-            Id            = $null
-            Title         = $null
-            ReleaseDate   = $null
-            ReleaseYear   = $null
-            Runtime       = $null
-            Director      = $null
-            Maker         = $null
-            Label         = $null
-            Series        = $null
-            Rating        = $null
-            Genre         = $null
-            Actress       = $null
-            Description   = $null
-            CoverUrl      = $null
-            ScreenshotUrl = $null
-            FileName      = $null
-            FolderName    = $null
+            Id             = $null
+            Title          = $null
+            AlternateTitle = $null
+            Description    = $null
+            ReleaseDate    = $null
+            ReleaseYear    = $null
+            Runtime        = $null
+            Director       = $null
+            Maker          = $null
+            Label          = $null
+            Series         = $null
+            Rating         = $null
+            Actress        = $null
+            Genre          = $null
+            CoverUrl       = $null
+            ScreenshotUrl  = $null
+            FileName       = $null
+            FolderName     = $null
         }
 
         foreach ($priority in $actressPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Actress) {
                 $aggregatedDataObject.Actress = $var.Value.Actress
+            }
+        }
+
+        foreach ($priority in $alternatetitlePriority) {
+            $var = Get-Variable -Name "$($priority)Data"
+            if ($null -eq $aggregatedDataObject.AlternateTitle) {
+                $aggregatedDataObject.AlternateTitle = $var.Value.Title
             }
         }
 

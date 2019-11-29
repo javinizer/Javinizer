@@ -23,36 +23,35 @@ function Javinizer {
     )
 
     begin {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
+        $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
+        $settings = Import-IniSettings -Path $settingsPath
+        if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
+        $ProgressPreference = 'SilentlyContinue'
         $urlLocation = @()
         $urlList = @()
+        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
     }
 
     process {
-        $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
-        $settings = Import-IniSettings -Path $settingsPath
-        if (($settings.Other.'verbose-shell-output' -eq 'True') -and ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
-        $ProgressPreference = 'SilentlyContinue'
-
         Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
         Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
                     (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $r18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $javlibrary = $true }
+            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
+            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
 
-        Write-Debug "r18: $r18"
-        Write-Debug "dmm: $dmm"
-        Write-Debug "jl: $javlibrary"
+        Write-Debug "R18 toggle: $r18"
+        Write-Debug "Dmm toggle: $dmm"
+        Write-Debug "Javlibrary toggle: $javlibrary"
 
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
-                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated
+                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
                 Write-Output $dataObject
             }
 
@@ -65,7 +64,7 @@ function Javinizer {
                 if ($getItem.Mode -eq '-a----') {
                     Write-Debug "Expected Mode: '-a----'"
                     Write-Debug "Mode: $($getItem.Mode)"
-                    if ($PSBoundParameters.ContainsKey('Url')) {
+                    if ($Url.IsPresent) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
                             $urlLocation = Test-UrlLocation -Url $urlList
