@@ -8,7 +8,7 @@ function Get-R18Url {
     )
 
     begin {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $searchUrl = "https://www.r18.com/common/search/searchword=$Name/"
     }
 
@@ -23,7 +23,7 @@ function Get-R18Url {
         $numResults = $searchResults.count
 
         if ($searchResults.count -ge 2) {
-            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
             if ($Tries.IsPresent) {
                 $Tries = $Tries
             } else {
@@ -33,13 +33,16 @@ function Get-R18Url {
             $count = 1
             foreach ($result in $searchResults) {
                 $webRequest = Invoke-WebRequest $result
-                $html = $webRequest.Content
-                $resultId = Get-R18Id -Html $html
-                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                $resultId = Get-R18Id -WebRequest $webRequest
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                if ($resultId -eq $Name) {
+                    $directUrl = $result
+                    break
+                }
                 $count++
             }
         } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
             break
         } else {
             $directUrl = $searchResults
@@ -49,6 +52,6 @@ function Get-R18Url {
     }
 
     end {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
