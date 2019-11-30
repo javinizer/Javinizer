@@ -92,11 +92,11 @@ function Import-IniSettings {
             Write-Verbose "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path] loaded"
             Write-Output $ini
         } catch {
-            Write-Warning "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded"
+            throw "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded; Check that the path is correct and that the file exists"
         }
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

@@ -52,7 +52,8 @@ function Get-JavlibraryDataObject {
             }
         }
 
-        #$movieDataObject | Format-List | Out-String | Write-Debug
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] JAVLibrary data object:"
+        $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 

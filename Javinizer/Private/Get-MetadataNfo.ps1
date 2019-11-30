@@ -6,10 +6,6 @@ function Get-MetadataNfo {
         [object]$Settings
     )
 
-    begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-    }
-
     process {
         $nfoString = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -63,11 +59,9 @@ function Get-MetadataNfo {
 </movie>
 "@
         $nfoString = $nfoString + $endNfoString
+
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] NFO String: `
+        $nfoString"
         Write-Output $nfoString
-    }
-
-
-    end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

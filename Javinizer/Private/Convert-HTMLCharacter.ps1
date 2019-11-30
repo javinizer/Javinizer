@@ -5,10 +5,6 @@ function Convert-HTMLCharacter {
         [string]$String
     )
 
-    begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-    }
-
     process {
         $String = $String -replace '&quot;', '"' `
             -replace '&amp;', '&' `
@@ -19,11 +15,9 @@ function Convert-HTMLCharacter {
             -replace '#39;s', "'" `
             -replace '※', '*'
 
-        $String = $String.Trim()
-        Write-Output $String
-    }
+        $newString = $String.Trim()
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Begin String: [$String]; End string: [$newString]"
+        Write-Output $newString
 
-    end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

@@ -26,14 +26,15 @@ function Javinizer {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
         $urlLocation = @()
         $urlList = @()
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
+        if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference = 'Continue')) { $DebugPreference = 'Continue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
 
         if ($PSVersionTable.PSVersion -like '7*') {
@@ -99,7 +100,7 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif (($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
+                } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
 
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"

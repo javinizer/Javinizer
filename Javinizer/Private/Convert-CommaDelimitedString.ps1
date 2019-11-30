@@ -6,7 +6,6 @@ function Convert-CommaDelimitedString {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $stringArray = @()
     }
 
@@ -17,10 +16,7 @@ function Convert-CommaDelimitedString {
             $stringArray = $String
         }
 
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Begin string: [$String], End string [$stringArray]"
         Write-Output $stringArray
-    }
-
-    end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

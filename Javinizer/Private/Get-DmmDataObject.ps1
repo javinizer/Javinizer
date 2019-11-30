@@ -54,7 +54,8 @@ function Get-DmmDataObject {
             }
         }
 
-        #$movieDataObject | Format-List | Out-String | Write-Debug
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM data object:"
+        $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 

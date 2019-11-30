@@ -49,7 +49,8 @@ function Get-R18DataObject {
             }
         }
 
-        #$movieDataObject | Format-List | Out-String | Write-Debug
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 data object:"
+        $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
