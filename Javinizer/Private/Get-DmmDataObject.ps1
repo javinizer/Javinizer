@@ -45,10 +45,12 @@ function Get-DmmDataObject {
                 Label         = Get-DmmLabel -WebRequest $webRequest
                 Series        = Get-DmmSeries -WebRequest $webRequest
                 Rating        = Get-DmmRating -WebRequest $webRequest
+                RatingCount   = Get-DmmRatingCount -WebRequest $webRequest
                 Actress       = Get-DmmActress -WebRequest $webRequest
                 Genre         = Get-DmmGenre -WebRequest $webRequest
                 CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
                 ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
+                #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
             }
         }
 
@@ -219,6 +221,18 @@ function Get-DmmRating {
     }
 }
 
+function Get-DmmRatingCount {
+    param (
+        [object]$WebRequest
+    )
+
+    process {
+        $ratingCount = (($WebRequest.Content -split '<p class="d-review__evaluates">')[1] -split '<\/p>')[0]
+        $ratingCount = (($ratingCount -split '<strong>')[1] -split '<\/strong>')[0]
+        Write-Output $ratingCount
+    }
+}
+
 function Get-DmmActress {
     param (
         [object]$WebRequest
@@ -284,7 +298,6 @@ function Get-DmmCoverUrl {
         Write-Output $coverUrl
     }
 }
-
 function Get-DmmScreenshotUrl {
     param (
         [object]$WebRequest
@@ -306,3 +319,26 @@ function Get-DmmScreenshotUrl {
         Write-Output $screenshotUrl
     }
 }
+
+# ! Unable to get trailer url from HTTP from main DMM video page
+<# function Get-DmmTrailerUrl {
+    param (
+        [object]$WebRequest
+    )
+
+    begin {
+        $trailerUrl = @()
+    }
+
+    process {
+        $trailerHtml = $WebRequest.Content -split '\n'
+        $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/cc3001\.dmm\.co\.jp\/litevideo\/freepv' -AllMatches
+
+        foreach ($trailer in $trailerHtml) {
+            $trailer = (($trailer -split '"')[1] -split '"')[0]
+            $trailerUrl += $trailer
+        }
+
+        Write-Output $trailerUrl
+    }
+} #>

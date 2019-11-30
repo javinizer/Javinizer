@@ -42,6 +42,7 @@ function Get-R18DataObject {
                     ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
                     CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
                     ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
+                    TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
                 }
             } catch {
                 throw $_
@@ -315,5 +316,27 @@ function Get-R18ScreenshotUrl {
         }
 
         Write-Output $screenshotUrl
+    }
+}
+
+function Get-R18TrailerUrl {
+    param (
+        [object]$WebRequest
+    )
+
+    begin {
+        $trailerUrl = @()
+    }
+
+    process {
+        $trailerHtml = $WebRequest.Content -split '\n'
+        $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
+
+        foreach ($trailer in $trailerHtml) {
+            $trailer = (($trailer -split '"')[1] -split '"')[0]
+            $trailerUrl += $trailer
+        }
+
+        Write-Output $trailerUrl
     }
 }

@@ -23,12 +23,14 @@ function Get-AggregatedDataObject {
         $labelPriority = Get-MetadataPriority -Settings $Settings -Type 'label'
         $runtimePriority = Get-MetadataPriority -Settings $Settings -Type 'runtime'
         $makerPriority = Get-MetadataPriority -Settings $Settings -Type 'maker'
-        $titlePriority = Get-MetadataPriority -Settings $Settings -Type 'title'
         $ratingPriority = Get-MetadataPriority -Settings $Settings -Type 'rating'
+        $ratingcountPriority = Get-MetadataPriority -Settings $Settings -type 'ratingcount'
         $releasedatePriority = Get-MetadataPriority -Settings $Settings -Type 'releasedate'
         $releaseyearPriority = Get-MetadataPriority -Settings $Settings -Type 'releaseyear'
         $seriesPriority = Get-MetadataPriority -Settings $Settings -Type 'series'
         $screenshoturlPriority = Get-MetadataPriority -Settings $Settings -Type 'screenshoturl'
+        $titlePriority = Get-MetadataPriority -Settings $Settings -Type 'title'
+        $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailer'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
@@ -84,6 +86,7 @@ function Get-AggregatedDataObject {
         }
 
         $aggregatedDataObject = [pscustomobject]@{
+            Search          = $null
             Id              = $null
             Title           = $null
             AlternateTitle  = $null
@@ -101,6 +104,7 @@ function Get-AggregatedDataObject {
             ActressThumbUrl = $null
             CoverUrl        = $null
             ScreenshotUrl   = $null
+            TrailerUrl      = $null
             DisplayName     = $null
             FileName        = $null
             FolderName      = $null
@@ -199,9 +203,21 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Rating) {
                 if ($aggregatedDataObject.Rating -eq '0') {
-                    $aggregatedDataObject = $null
+                    $aggregatedDataObject.Rating = $null
+                } else {
+                    $aggregatedDataObject.Rating = $var.Value.Rating
                 }
-                $aggregatedDataObject.Rating = $var.Value.Rating
+            }
+        }
+
+        foreach ($priority in $ratingcountPriority) {
+            $var = Get-Variable -Name "$($priority)Data"
+            if ($null -eq $aggregatedDataObject.RatingCount) {
+                if ($aggregatedDataObject.RatingCount -eq '0') {
+                    $aggregatedDataObject.RatingCount = $null
+                } else {
+                    $aggregatedDataObject.RatingCount = $var.Value.RatingCount
+                }
             }
         }
 
@@ -233,10 +249,18 @@ function Get-AggregatedDataObject {
             }
         }
 
+        foreach ($priority in $trailerurlPriority) {
+            $var = Get-Variable -Name "$($priority)Data"
+            if ($null -eq $aggregatedDataObject.TrailerUrl) {
+                $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl
+            }
+        }
+
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
         $aggregatedDataObject.FileName = $fileDirName.FileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName
         $aggregatedDataObject.DisplayName = $fileDirName.DisplayName
+        $aggregatedDataObject.Search = $currentSearch
 
         Write-Output $aggregatedDataObject
     }
