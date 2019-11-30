@@ -27,7 +27,7 @@ function Get-JavlibraryUrl {
 
         # Check if the search uniquely matched a video page
         # If not, we will check the search results and check a few for if they are a match
-        $javlibraryUrl = Test-UrlMatch -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri -JavLibrary
+        $javlibraryUrl = Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
 
         if ($null -eq $javlibraryUrl) {
             $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
@@ -54,7 +54,7 @@ function Get-JavlibraryUrl {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
                 if ($resultId -eq $Name) {
-                    $javlibraryUrl = Test-UrlMatch -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri -JavLibrary
+                    $javlibraryUrl = Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name matched"
                     break
                 }
@@ -67,7 +67,7 @@ function Get-JavlibraryUrl {
             }
         }
 
-        Write-Output $javlibraryUrl
+        Write-Output $javlibraryUrl.Url
     }
 
     end {

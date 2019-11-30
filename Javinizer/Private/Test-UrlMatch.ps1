@@ -10,6 +10,7 @@ function Test-UrlMatch {
     }
 
     process {
+        Write-Debug "Url is: [$Url]"
         if ($JavLibrary.IsPresent) {
             if ($Url -match 'http:\/\/www\.javlibrary\.com\/(.*)\/\?v=(.*)') {
                 $match = $Url

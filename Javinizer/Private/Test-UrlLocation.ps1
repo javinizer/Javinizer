@@ -28,7 +28,7 @@ function Test-UrlLocation {
                     Result = 'dmm'
                 }
             } else {
-                # do nothing
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Url: [$Url] not matched"
             }
         }
 
