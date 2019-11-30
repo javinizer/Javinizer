@@ -9,7 +9,10 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 0)]
         [Alias('p')]
         [system.io.fileinfo]$Path,
-        [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
+        [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 1)]
+        [Alias('d')]
+        [system.io.fileinfo]$DestinationPath,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('u')]
         [string]$Url,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
@@ -25,12 +28,12 @@ function Javinizer {
     begin {
         Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
         Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
+        $urlLocation = @()
+        $urlList = @()
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
-        $urlLocation = @()
-        $urlList = @()
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
 
         if ($PSVersionTable.PSVersion -like '7*') {
@@ -48,11 +51,14 @@ function Javinizer {
             if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
             if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
+            #if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
     }
 
     process {
+        $inputPath = $Settings.Locations.'input-path'
+        $outputPath = $Settings.Locations.'output-path'
+
         Write-Debug "R18 toggle: $r18"
         Write-Debug "Dmm toggle: $dmm"
         Write-Debug "Javlibrary toggle: $javlibrary"
@@ -79,20 +85,19 @@ function Javinizer {
                         }
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Write-Output $dataObject
+                    } else {
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
                     }
-                } else {
-                    $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                    Write-Output $dataObject
-                }
-                # Match a directory/multiple files and perform actions on them
-            } elseif ($getItem.Mode -eq $directoryMode) {
+                    # Match a directory/multiple files and perform actions on them
+                } elseif ($getItem.Mode -eq $directoryMode) {
 
-            } else {
-                throw "$getItem is neither file nor directory"
+                } else {
+                    throw "$getItem is neither file nor directory"
+                }
             }
         }
     }
-
 
     end {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
