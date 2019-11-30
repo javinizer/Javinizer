@@ -11,9 +11,7 @@ function Get-FindDataObject {
 
     begin {
         $urlList = @()
-    }
 
-    process {
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
@@ -24,6 +22,16 @@ function Get-FindDataObject {
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
 
+        if ($PSVersionTable.PSVersion -like '7*') {
+            $directoryMode = 'd----'
+            $itemMode = '-a---'
+        } else {
+            $directoryMode = 'd-----'
+            $itemMode = '-a----'
+        }
+    }
+
+    process {
         if (Test-Path -Path $Find) {
             $getItem = Get-Item $Find
         }
@@ -50,7 +58,7 @@ function Get-FindDataObject {
                     Write-Output $javlibraryData
                 }
             }
-        } elseif ($getItem.Mode -eq '-a----') {
+        } elseif ($getItem.Mode -eq $itemMode) {
             $fileDetails = Convert-JavTitle -Path $Find
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
