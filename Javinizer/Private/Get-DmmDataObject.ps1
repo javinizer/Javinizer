@@ -27,6 +27,7 @@ function Get-DmmDataObject {
 
         if ($null -ne $dmmUrl) {
             try {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$dmmUrl]"
                 $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
             } catch {
                 throw $_

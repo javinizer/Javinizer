@@ -44,16 +44,19 @@ function New-CloudflareSession {
             # Create __cfuid cookie
             $cookie = New-Object System.Net.Cookie($requestObject.CookieName[0], $requestObject.CookieContent[0], '/', 'javlibrary.com')
             $session.Cookies.Add($cookie)
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Cookie __cfuid: [$($session.UserAgent)]"
+
 
             # Create cf_clearance cookie
             $cookie = New-Object System.Net.Cookie($requestObject.CookieName[1], $requestObject.CookieContent[1], '/', 'javlibrary.com')
             $session.Cookies.Add($cookie)
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Cookie cf_clearance: [$($session.UserAgent)]"
 
             # Replace WebRequest session UserAgent with UserAgent created by cfscrape
             # This is needed so that you will not be flagged as a bot by CloudFlare
             $session.UserAgent = $requestObject.UserAgent
         }
-
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] UserAgent: [$($session.UserAgent)]"
         $script:Session = $session
     }
 

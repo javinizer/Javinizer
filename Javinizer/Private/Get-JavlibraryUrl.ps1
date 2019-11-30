@@ -14,6 +14,7 @@ function Get-JavlibraryUrl {
 
     process {
         try {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
@@ -22,6 +23,7 @@ function Get-JavlibraryUrl {
             } catch {
                 throw $_
             }
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
         }
 
@@ -49,6 +51,7 @@ function Get-JavlibraryUrl {
             foreach ($result in $searchResults) {
                 $videoId = ($result -split '=')[1]
                 $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
                 $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"

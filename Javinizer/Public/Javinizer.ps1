@@ -29,14 +29,20 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         $index = 1
-        $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
-        $settings = Import-IniSettings -Path $settingsPath
+
+        try {
+            $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
+            $settings = Import-IniSettings -Path $settingsPath
+        } catch {
+            throw "[$($MyInvocation.MyCommand.Name) Settings file: [$settingsPath] not found; Ensure that the settings file exists]"
+        }
+
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
         if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
 
         if ($PSVersionTable.PSVersion -like '7*') {
             $directoryMode = 'd----'
@@ -81,8 +87,12 @@ function Javinizer {
                     throw $_
                 }
 
-                $fileDetails = Convert-JavTitle -Path $Path
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
+                try {
+                    $fileDetails = Convert-JavTitle -Path $Path
+                } catch {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Specified path: [$Path] does not contain any video files"
+                }
+                #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
                 if (($getPath.Mode -eq $itemMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
@@ -102,7 +112,7 @@ function Javinizer {
                     # Match a directory/multiple files and perform actions on them
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
                     foreach ($video in $fileDetails) {
-                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting $($video.OriginalFileName)"
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting $($video.OriginalFileName)"
                         $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath
                         $index++
@@ -115,7 +125,7 @@ function Javinizer {
     }
 
     end {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Host "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

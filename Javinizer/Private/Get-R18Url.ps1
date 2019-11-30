@@ -14,6 +14,7 @@ function Get-R18Url {
 
     process {
         try {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             throw $_
@@ -32,6 +33,7 @@ function Get-R18Url {
 
             $count = 1
             foreach ($result in $searchResults) {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
                 $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 $resultId = Get-R18Id -WebRequest $webRequest
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
