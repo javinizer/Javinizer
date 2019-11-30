@@ -245,7 +245,9 @@ function Get-JLScreenshotUrl {
             if ($screenshot -ne '') {
                 $screenshot = 'https:' + ($screenshot -split '"')[0]
                 $screenshot = $screenshot -replace '-', 'jp-'
-                $screenshotUrl += $screenshot
+                if ($screenshot -match 'pics.dmm') {
+                    $screenshotUrl += $screenshot
+                }
             }
         }
 
