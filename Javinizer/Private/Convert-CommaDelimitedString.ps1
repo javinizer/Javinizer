@@ -10,6 +10,7 @@ function Convert-CommaDelimitedString {
     }
 
     process {
+        $String = $String -replace '"', ''
         if ($String -match ',') {
             $stringArray = $String -split ','
         } else {

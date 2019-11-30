@@ -13,6 +13,7 @@ function Get-AggregatedDataObject {
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        $genreArray = @()
     }
 
     process {
@@ -167,7 +168,14 @@ function Get-AggregatedDataObject {
         foreach ($priority in $genrePriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Genre) {
-                $aggregatedDataObject.Genre = $var.Value.Genre
+                $ignoredGenres = Convert-CommaDelimitedString -String $Settings.Metadata.'ignored-genres'
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Ignored genres: [$ignoredGenres]"
+                foreach ($genre in $var.Value.Genre) {
+                    if ($ignoredGenres -notcontains $genre) {
+                        $genreArray += $genre
+                    }
+                }
+                $aggregatedDataObject.Genre = $genreArray
             }
         }
 
