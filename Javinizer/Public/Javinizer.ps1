@@ -74,26 +74,25 @@ function Javinizer {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
                             $urlLocation = Test-UrlLocation -Url $urlList
-                            $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                            Write-Output $dataObject
                         } else {
                             $urlLocation = Test-UrlLocation -Url $Url
-                            $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                            Write-Output $dataObject
                         }
-                    } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                        $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Write-Output $dataObject
                     }
-                    # Match a directory/multiple files and perform actions on them
-                } elseif ($getItem.Mode -eq $directoryMode) {
-
                 } else {
-                    throw "$getItem is neither file nor directory"
+                    $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                    Write-Output $dataObject
                 }
+                # Match a directory/multiple files and perform actions on them
+            } elseif ($getItem.Mode -eq $directoryMode) {
+
+            } else {
+                throw "$getItem is neither file nor directory"
             }
         }
     }
+
 
     end {
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
