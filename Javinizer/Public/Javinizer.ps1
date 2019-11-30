@@ -6,7 +6,7 @@ function Javinizer {
         [string]$Find,
         [Parameter(ParameterSetNAme = 'Info', Mandatory = $false)]
         [switch]$Aggregated,
-        [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 0)]
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 0)]
         [Alias('p')]
         [system.io.fileinfo]$Path,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
@@ -17,6 +17,7 @@ function Javinizer {
         [string]$Url,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$PassThru,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('a')]
         [switch]$Apply,
         [switch]$Parallel,
@@ -34,15 +35,15 @@ function Javinizer {
             $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
-            throw "[$($MyInvocation.MyCommand.Name) Settings file: [$settingsPath] not found; Ensure that the settings file exists]"
+            throw "[$($MyInvocation.MyCommand.Name)] Settings file: [$settingsPath] not found; Ensure that the settings file exists]"
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
         if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
+        Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
-        Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
 
         if ($PSVersionTable.PSVersion -like '7*') {
             $directoryMode = 'd----'
@@ -64,7 +65,7 @@ function Javinizer {
     }
 
     process {
-        Write-Verbose "R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
 
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
@@ -73,12 +74,27 @@ function Javinizer {
             }
 
             'Path' {
-                try {
-                    if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
-                        $DestinationPath = $settings.Locations.'input-path'
+                if (-not ($PSBoundParameters.ContainsKey('Path'))) {
+                    if (-not ($Apply.IsPresent)) {
+                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Neither [Path] nor [Apply] parameters are specified; Exiting..."
+                        return
                     }
-                    $getPath = Get-Item $Path
-                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
+                    $Path = ($settings.Locations.'input-path') -replace '"', ''
+                }
+
+                if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
+                    $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
+                }
+
+                try {
+                    $getPath = Get-Item $Path -ErrorAction Stop
+                } catch {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$($Path.FullName)] does not exist; Exiting..."
+                    return
+                }
+
+                try {
+                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction 'SilentlyContinue'
                 } catch [System.Management.Automation.SessionStateException] {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
                     New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
@@ -88,17 +104,22 @@ function Javinizer {
                 }
 
                 try {
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attemping to read file(s) from path: [$($getPath.FullName)]"
                     $fileDetails = Convert-JavTitle -Path $Path
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Specified path: [$Path] does not contain any video files"
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
+                    return
                 }
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
                 if (($getPath.Mode -eq $itemMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
+                    Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
+                    Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
-                        if ($Url -match ',') {
-                            $urlList = $Url -split ','
+                        if ($Url -match ', ') {
+                            $urlList = $Url -split ', '
                             $urlLocation = Test-UrlLocation -Url $urlList
                         } else {
                             $urlLocation = Test-UrlLocation -Url $Url
@@ -111,11 +132,16 @@ function Javinizer {
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     foreach ($video in $fileDetails) {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting $($video.OriginalFileName)"
-                        $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath
-                        $index++
+                        try {
+                            Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath
+                            $index++
+                        } catch {
+                            throw "Error sorting [$($video.OriginalFileName)] with error: [$_]"
+                        }
                     }
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"

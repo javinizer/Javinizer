@@ -17,10 +17,7 @@ function Set-JavMovie {
             $itemMode = '-a----'
         }
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-        #$getPath = Get-Item $Path
-        #if ($getPath.Mode -eq $itemMode) {
-        $Path = (Get-Item $Path).FullName
-        #}
+        $Path = (Get-Item -LiteralPath $Path).FullName
 
         $DestinationPath = (Get-Item $DestinationPath).FullName
         $webClient = New-Object System.Net.WebClient

@@ -20,9 +20,9 @@ function Get-R18DataObject {
             $r18Url = Get-R18Url -Name $Name
         }
 
-        if ($null -ne $R18Url) {
+        if ($null -ne $r18Url) {
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r1uUrl]"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
 
                 $movieDataObject = [pscustomobject]@{
@@ -183,6 +183,11 @@ function Get-R18Label {
     process {
         $label = ((($WebRequest.Content -split '<dt>Label:<\/dt>')[1] -split '<br>')[0] -split '<dd>')[1]
         $label = Convert-HtmlCharacter -String $label
+
+        if ($label -eq '----') {
+            $label = $null
+        }
+
         Write-Output $label
     }
 }

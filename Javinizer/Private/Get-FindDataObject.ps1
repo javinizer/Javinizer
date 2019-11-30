@@ -45,17 +45,17 @@ function Get-FindDataObject {
                 Write-Output $aggregatedDataObject
             } else {
                 if ($urlLocation.Result -eq 'r18') {
-                    $r18Data = Get-R18DataObject -Url $Find
+                    $r18Data = Get-R18DataObject -Url $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $r18Data
                 }
 
                 if ($urlLocation.Result -eq 'dmm') {
-                    $dmmData = Get-DmmDataObject -Url $Find
+                    $dmmData = Get-DmmDataObject -Url $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $dmmData
                 }
 
                 if ($urlLocation.Result -eq 'javlibrary') {
-                    $javlibraryData = Get-JavlibraryDataObject -Url $Find
+                    $javlibraryData = Get-JavlibraryDataObject -Url $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $javlibraryData
                 }
             }
@@ -66,17 +66,17 @@ function Get-FindDataObject {
                 Write-Output $aggregatedDataObject
             } else {
                 if ($r18) {
-                    $r18Data = Get-R18DataObject -Name $fileDetails.Id
+                    $r18Data = Get-R18DataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
                     Write-Output $r18Data
                 }
 
                 if ($dmm) {
-                    $dmmData = Get-DmmDataObject -Name $fileDetails.Id
+                    $dmmData = Get-DmmDataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
                     Write-Output $dmmData
                 }
 
                 if ($javlibrary) {
-                    $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
+                    $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
                     Write-Output $javlibraryData
                 }
             }
@@ -86,17 +86,17 @@ function Get-FindDataObject {
                 Write-Output $aggregatedDataObject
             } else {
                 if ($r18) {
-                    $r18Data = Get-R18DataObject -Name $Find
+                    $r18Data = Get-R18DataObject -Name $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $r18Data
                 }
 
                 if ($dmm) {
-                    $dmmData = Get-DmmDataObject -Name $Find
+                    $dmmData = Get-DmmDataObject -Name $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $dmmData
                 }
 
                 if ($javlibrary) {
-                    $javlibraryData = Get-JavlibraryDataObject -Name $Find
+                    $javlibraryData = Get-JavlibraryDataObject -Name $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $javlibraryData
                 }
             }
