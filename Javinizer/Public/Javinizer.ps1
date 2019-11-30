@@ -9,7 +9,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 0)]
         [Alias('p')]
         [system.io.fileinfo]$Path,
-        [Parameter(ParameterSetName = 'Path', Mandatory = $true, Position = 1)]
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
         [Alias('d')]
         [system.io.fileinfo]$DestinationPath,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
@@ -56,8 +56,6 @@ function Javinizer {
     }
 
     process {
-        $inputPath = $Settings.Locations.'input-path'
-        $outputPath = $Settings.Locations.'output-path'
         Write-Verbose "R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
 
         switch ($PsCmdlet.ParameterSetName) {
@@ -67,12 +65,26 @@ function Javinizer {
             }
 
             'Path' {
-                $getItem = Get-Item $Path
+                try {
+                    if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
+                        $DestinationPath = $settings.Locations.'input-path'
+                    }
+
+                    $getPath = Get-Item $Path
+                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
+                } catch [System.Management.Automation.SessionStateException] {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
+                    New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
+                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
+                } catch {
+                    throw $_
+                }
+
                 $fileDetails = Convert-JavTitle -Path $Path
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
-                if ($getItem.Mode -eq $itemMode) {
+                if (($getPath.Mode -eq $itemMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -87,10 +99,10 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif ($getItem.Mode -eq $directoryMode) {
+                } elseif (($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
 
                 } else {
-                    throw "[$($MyInvocation.MyCommand.Name)] Path parameter only supports single file match"
+                    throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
             }
         }
