@@ -23,6 +23,8 @@ function Javinizer {
     )
 
     begin {
+        Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
+        Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -30,11 +32,15 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
-    }
 
-    process {
-        Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
-        Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
+        if ($PSVersionTable.PSVersion -like '7*') {
+            $directoryMode = 'd----'
+            $itemMode = '-a---'
+        } else {
+            $directoryMode = 'd-----'
+            $itemMode = '-a----'
+        }
+
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
@@ -44,7 +50,9 @@ function Javinizer {
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
+    }
 
+    process {
         Write-Debug "R18 toggle: $r18"
         Write-Debug "Dmm toggle: $dmm"
         Write-Debug "Javlibrary toggle: $javlibrary"
@@ -61,9 +69,7 @@ function Javinizer {
                 Write-Debug "Converted file details: $($fileDetails)"
 
                 # Match a single file and perform actions on it
-                if ($getItem.Mode -eq '-a----') {
-                    Write-Debug "Expected Mode: '-a----'"
-                    Write-Debug "Mode: $($getItem.Mode)"
+                if ($getItem.Mode -eq $itemMode) {
                     if ($Url.IsPresent) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -80,9 +86,8 @@ function Javinizer {
                         Write-Output $dataObject
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif ($getItem.Mode -eq '-d----') {
-                    Write-Debug "Expected Mode: '-d----'"
-                    Write-Debug "Mode: $($getItem.Mode)"
+                } elseif ($getItem.Mode -eq $directoryMode) {
+
                 } else {
                     throw "$getItem is neither file nor directory"
                 }

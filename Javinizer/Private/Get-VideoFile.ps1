@@ -3,13 +3,22 @@ function Get-VideoFile {
     param (
         [Parameter(Position = 0)]
         [string]$Path,
-        [int]$FileSize = 10
+        [int]$FileSize = 10,
+        [switch]$Recurse
     )
 
     process {
-        # Test if Path is a directory
-        if ((Get-Item $Path).Mode -eq 'd-----') {
-            $Files = Get-ChildItem -Path $Path | Where-Object {
+        # Test if Path is a directory or item
+        if ($PSVersionTable.PSVersion -like '7*') {
+            $directoryMode = 'd----'
+            $itemMode = '-a---'
+        } else {
+            $directoryMode = 'd-----'
+            $itemMode = '-a----'
+        }
+
+        if ((Get-Item $Path).Mode -eq $directoryMode) {
+            $files = Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`
                     -or $_.Name -like '*.mkv'`
@@ -19,13 +28,12 @@ function Get-VideoFile {
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
                     -and $_.Name -notlike '*t28*'`
-                    -and $_.Name -notlike '*fc2*'`
-                    -and $_.Name -notlike '*COS☆ぱこ*'#`
+                    -and $_.Name -notlike '*fc2*'
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
             # Test if the path is a file
-        } elseif ((Get-Item $Path).Mode -eq '-a----' ) {
-            $Files = Get-Item -Path $Path | Where-Object {
+        } elseif ((Get-Item $Path).Mode -eq $itemMode) {
+            $files = Get-Item -Path $Path | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`
                     -or $_.Name -like '*.mkv'`
@@ -35,14 +43,13 @@ function Get-VideoFile {
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
                     -and $_.Name -notlike '*t28*'`
-                    -and $_.Name -notlike '*fc2*'`
-                    -and $_.Name -notlike '*COS☆ぱこ*'#`
+                    -and $_.Name -notlike '*fc2*'
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
         } else {
             throw "The path specified is neither directory nor file"
         }
 
-        Write-Output $Files
+        Write-Output $files
     }
 }
