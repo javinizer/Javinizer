@@ -26,7 +26,7 @@ function Get-AggregatedDataObject {
         $titlePriority = Get-MetadataPriority -Settings $Settings -Type 'title'
         $ratingPriority = Get-MetadataPriority -Settings $Settings -Type 'rating'
         $releasedatePriority = Get-MetadataPriority -Settings $Settings -Type 'releasedate'
-        $releaseyearPriority = Get-MetadataPriority -Settings $Settings -Type 'releaseyear'
+        #$releaseyearPriority = Get-MetadataPriority -Settings $Settings -Type 'releaseyear'
         $seriesPriority = Get-MetadataPriority -Settings $Settings -Type 'series'
         $screenshoturlPriority = Get-MetadataPriority -Settings $Settings -Type 'screenshoturl'
 
@@ -89,7 +89,7 @@ function Get-AggregatedDataObject {
             AlternateTitle  = $null
             Description     = $null
             ReleaseDate     = $null
-            ReleaseYear     = $null
+            #ReleaseYear     = $null
             Runtime         = $null
             Director        = $null
             Maker           = $null
@@ -198,6 +198,9 @@ function Get-AggregatedDataObject {
         foreach ($priority in $ratingPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Rating) {
+                if ($aggregatedDataObject.Rating -eq '0') {
+                    $aggregatedDataObject = $null
+                }
                 $aggregatedDataObject.Rating = $var.Value.Rating
             }
         }
@@ -209,12 +212,12 @@ function Get-AggregatedDataObject {
             }
         }
 
-        foreach ($priority in $releaseyearPriority) {
+        <# foreach ($priority in $releaseyearPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.ReleaseYear) {
                 $aggregatedDataObject.ReleaseYear = $var.Value.Year
             }
-        }
+        } #>
 
         foreach ($priority in $seriesPriority) {
             $var = Get-Variable -Name "$($priority)Data"
