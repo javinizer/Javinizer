@@ -3,7 +3,7 @@ function Get-MetadataPriority {
     param(
         [Parameter(Mandatory = $true, Position = 0)]
         [object]$Settings,
-        [ValidateSet('id', 'title', 'releasedate', 'releaseyear', 'runtime', 'description', 'director', 'maker', 'label', 'series', 'rating', 'ratingcount', 'actress', 'trailer', 'actressthumburl', 'genre', 'coverurl', 'screenshoturl', 'alternatetitle')]
+        [ValidateSet('id', 'title', 'releasedate', 'releaseyear', 'runtime', 'description', 'director', 'maker', 'label', 'series', 'rating', 'ratingcount', 'actress', 'trailerurl', 'actressthumburl', 'genre', 'coverurl', 'screenshoturl', 'alternatetitle')]
         [string]$Type
     )
 

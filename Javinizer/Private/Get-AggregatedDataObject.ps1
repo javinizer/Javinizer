@@ -30,7 +30,7 @@ function Get-AggregatedDataObject {
         $seriesPriority = Get-MetadataPriority -Settings $Settings -Type 'series'
         $screenshoturlPriority = Get-MetadataPriority -Settings $Settings -Type 'screenshoturl'
         $titlePriority = Get-MetadataPriority -Settings $Settings -Type 'title'
-        $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailer'
+        $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailerurl'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
@@ -252,7 +252,17 @@ function Get-AggregatedDataObject {
         foreach ($priority in $trailerurlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.TrailerUrl) {
-                $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl
+                if ($var.Value.TrailerUrl.Count -gt 1) {
+                    if ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')) {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')
+                    } elseif ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')) {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')
+                    } elseif (($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_sm_'))) {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_sm_')
+                    }
+                } else {
+                    $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl
+                }
             }
         }
 

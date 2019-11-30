@@ -2,7 +2,8 @@ function Get-MetadataNfo {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true, Position = 0)]
-        [object]$DataObject
+        [object]$DataObject,
+        [object]$Settings
     )
 
     begin {
@@ -15,19 +16,31 @@ function Get-MetadataNfo {
 <movie>
     <title>$($DataObject.DisplayTitle)</title>
     <originaltitle>$($DataObject.AlternateTitle)</originaltitle>
-    <premiered>$($DataObject.ReleaseDate)</premiered>
+    <releasedate>$($DataObject.ReleaseDate)</releasedate>
+    <year>$($DataObject.ReleaseYear)</year>
     <director>$($DataObject.Director)</director>
     <studio>$($DataObject.Maker)</studio>
     <ratings>
         <rating name="javinizer" max="10">
             <value>$($DataObject.Rating)</value>
+            <votes>$($DataObject.RatingCount)</votes>
         </rating>
     </ratings>
     <plot>$($DataObject.Description)</plot>
     <runtime>$($DataObject.Runtime)</runtime>
+    <trailer>$($DataObject.Trailer)</trailer>
+    <mpaa>XXX</mpaa>
     <country>Japan</country>
 
 "@
+
+        if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {
+            $tagNfoString = @"
+    <tag>Series: $($DataObject.Series)</tag>
+
+"@
+            $nfoString = $nfoString + $tagNfoString
+        }
 
         foreach ($genre in $DataObject.Genre) {
             $genreNfoString = @"
