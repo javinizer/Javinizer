@@ -26,8 +26,8 @@ function Javinizer {
     )
 
     begin {
-        Write-Debug "Parameter set: $($PSCmdlet.ParameterSetName)"
-        Write-Debug "Bound parameters: $($PSBoundParameters.Keys)"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
         $urlLocation = @()
         $urlList = @()
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
@@ -58,10 +58,7 @@ function Javinizer {
     process {
         $inputPath = $Settings.Locations.'input-path'
         $outputPath = $Settings.Locations.'output-path'
-
-        Write-Debug "R18 toggle: $r18"
-        Write-Debug "Dmm toggle: $dmm"
-        Write-Debug "Javlibrary toggle: $javlibrary"
+        Write-Verbose "R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
 
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
@@ -72,11 +69,11 @@ function Javinizer {
             'Path' {
                 $getItem = Get-Item $Path
                 $fileDetails = Convert-JavTitle -Path $Path
-                Write-Debug "Converted file details: $($fileDetails)"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
                 if ($getItem.Mode -eq $itemMode) {
-                    if ($Url.IsPresent) {
+                    if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
                             $urlLocation = Test-UrlLocation -Url $urlList
@@ -84,7 +81,7 @@ function Javinizer {
                             $urlLocation = Test-UrlLocation -Url $Url
                         }
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                        Write-Output $dataObject
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
                     } else {
                         $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
@@ -93,7 +90,7 @@ function Javinizer {
                 } elseif ($getItem.Mode -eq $directoryMode) {
 
                 } else {
-                    throw "$getItem is neither file nor directory"
+                    throw "[$($MyInvocation.MyCommand.Name)] Path parameter only supports single file match"
                 }
             }
         }

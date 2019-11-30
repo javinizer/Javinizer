@@ -11,6 +11,10 @@ function Get-AggregatedDataObject {
         [string]$Id
     )
 
+    begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+    }
+
     process {
         $actressPriority = Get-MetadataPriority -Settings $Settings -Type 'actress'
         $actressthumburlPriority = Get-MetadataPriority -Settings $Settings -Type 'actressthumburl'
@@ -43,6 +47,7 @@ function Get-AggregatedDataObject {
         }
 
         if ($UrlLocation) {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] UrlLocation selected"
             $currentSearch = $UrlLocation.Url
             foreach ($url in $UrlLocation) {
                 if ($url.Result -contains 'r18') {
@@ -58,6 +63,7 @@ function Get-AggregatedDataObject {
                 }
             }
         } elseif ($FileDetails) {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] FileDetails selected"
             $currentSearch = $FileDetails.Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $fileDetails.Id
@@ -71,6 +77,7 @@ function Get-AggregatedDataObject {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Id selected"
             $currentSearch = $Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $Id
@@ -273,5 +280,9 @@ function Get-AggregatedDataObject {
         $aggregatedDataObject.Search = $currentSearch
 
         Write-Output $aggregatedDataObject
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
