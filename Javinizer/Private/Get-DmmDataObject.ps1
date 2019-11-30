@@ -27,7 +27,7 @@ function Get-DmmDataObject {
 
         if ($null -ne $dmmUrl) {
             try {
-                $webRequest = Invoke-WebRequest -Uri $dmmUrl
+                $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
             } catch {
                 throw $_
             }

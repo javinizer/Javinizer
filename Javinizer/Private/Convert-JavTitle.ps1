@@ -151,6 +151,7 @@ function Convert-JavTitle {
                 NewFileName      = $finalFileName
                 OriginalFileName = $originalFileName
                 Extension        = $fileExtension
+                OriginalFullName = $files.fullname[$x]
             }
         }
 

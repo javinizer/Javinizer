@@ -22,7 +22,7 @@ function Get-R18DataObject {
 
         if ($null -ne $R18Url) {
             try {
-                $webRequest = Invoke-WebRequest -Uri $r18Url
+                $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
 
                 $movieDataObject = [pscustomobject]@{
                     Url             = $r18Url
@@ -197,7 +197,7 @@ function Get-R18Series {
         $series = Convert-HtmlCharacter -String $series
 
         if ($series -match '&#039...') {
-            $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get
+            $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
             $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split "<div class=`"breadcrumbs`">")[1]) -split "<dl><dt>")[1]) -split "<span class=")[0]
         }
 

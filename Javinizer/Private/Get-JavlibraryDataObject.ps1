@@ -22,7 +22,7 @@ function Get-JavlibraryDataObject {
 
         if ($null -ne $javlibraryUrl) {
             try {
-                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
@@ -31,7 +31,7 @@ function Get-JavlibraryDataObject {
                     throw $_
                 }
 
-                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
+                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             }
 
             $movieDataObject = [pscustomobject]@{

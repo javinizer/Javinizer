@@ -28,10 +28,11 @@ function Javinizer {
     begin {
         $urlLocation = @()
         $urlList = @()
+        $index = 1
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
-        if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference = 'Continue')) { $DebugPreference = 'Continue' } else { $DebugPreference = 'SilentlyContinue' }
+        if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
@@ -70,7 +71,6 @@ function Javinizer {
                     if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
                         $DestinationPath = $settings.Locations.'input-path'
                     }
-
                     $getPath = Get-Item $Path
                     $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
                 } catch [System.Management.Automation.SessionStateException] {
@@ -101,7 +101,12 @@ function Javinizer {
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
-
+                    foreach ($video in $fileDetails) {
+                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting $($video.OriginalFileName)"
+                        $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath
+                        $index++
+                    }
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }

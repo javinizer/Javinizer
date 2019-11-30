@@ -9,8 +9,19 @@ function Set-JavMovie {
     )
 
     begin {
+        if ($PSVersionTable.PSVersion -like '7*') {
+            $directoryMode = 'd----'
+            $itemMode = '-a---'
+        } else {
+            $directoryMode = 'd-----'
+            $itemMode = '-a----'
+        }
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        #$getPath = Get-Item $Path
+        #if ($getPath.Mode -eq $itemMode) {
         $Path = (Get-Item $Path).FullName
+        #}
+
         $DestinationPath = (Get-Item $DestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
         $modulePath = (Get-Item $PSScriptroot).Parent

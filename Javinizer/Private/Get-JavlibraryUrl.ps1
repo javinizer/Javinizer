@@ -14,7 +14,7 @@ function Get-JavlibraryUrl {
 
     process {
         try {
-            $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
             try {
@@ -22,7 +22,7 @@ function Get-JavlibraryUrl {
             } catch {
                 throw $_
             }
-            $webRequest = Invoke-WebRequest $searchUrl -WebSession $Session -UserAgent $Session.UserAgent
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
         }
 
         # Check if the search uniquely matched a video page
@@ -49,7 +49,7 @@ function Get-JavlibraryUrl {
             foreach ($result in $searchResults) {
                 $videoId = ($result -split '=')[1]
                 $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
-                $webRequest = Invoke-WebRequest $directUrl -WebSession $Session -UserAgent $Session.UserAgent
+                $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
                 $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
