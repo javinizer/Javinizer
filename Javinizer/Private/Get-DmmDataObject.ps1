@@ -9,7 +9,7 @@ function Get-DmmDataObject {
     )
 
     begin {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
     }
 
@@ -54,12 +54,12 @@ function Get-DmmDataObject {
             }
         }
 
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        #$movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
     end {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

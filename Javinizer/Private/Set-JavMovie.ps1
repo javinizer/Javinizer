@@ -15,7 +15,6 @@ function Set-JavMovie {
         $webClient = New-Object System.Net.WebClient
         $modulePath = (Get-Item $PSScriptroot).Parent
         $cropPath = Join-Path -Path $modulePath -ChildPath 'crop.py'
-        $dataObject = Test-RequiredMetadata -DataObject $DataObject -Settings $settings
         $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.FileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
@@ -23,14 +22,16 @@ function Set-JavMovie {
         $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
         $newFileName = $dataObject.FileName + $Path.Extension
 
-        Write-Debug "Crop path is [$cropPath]"
-        Write-Debug "Folder path is [$folderPath]"
-        Write-Debug "Nfo path is [$nfoPath]"
-        Write-Debug "Cover path is [$coverPath]"
-        Write-Debug "Poster path is [$posterPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Cover path: [$coverPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Poster path: [$posterPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Screenshot path: [$screenshotPath]"
     }
 
     process {
+        $dataObject = Test-RequiredMetadata -DataObject $DataObject -Settings $settings
         if ($null -ne $dataObject) {
             New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force | Out-Null
             Get-MetadataNfo -DataObject $dataObject -Settings $Settings | Out-File -LiteralPath $nfoPath -Force

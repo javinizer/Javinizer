@@ -6,6 +6,7 @@ function Get-TranslatedString {
     )
 
     begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $modulePath = (Get-Item $PSScriptroot).Parent
         $translatePath = Join-Path -Path $modulePath -ChildPath 'translate.py'
     }
@@ -18,5 +19,9 @@ function Get-TranslatedString {
         }
 
         Write-Output $translatedString
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

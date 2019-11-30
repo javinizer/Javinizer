@@ -47,7 +47,7 @@ function Get-AggregatedDataObject {
         }
 
         if ($UrlLocation) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] UrlLocation selected"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [UrlLocation]"
             $currentSearch = $UrlLocation.Url
             foreach ($url in $UrlLocation) {
                 if ($url.Result -contains 'r18') {
@@ -63,7 +63,7 @@ function Get-AggregatedDataObject {
                 }
             }
         } elseif ($FileDetails) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] FileDetails selected"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [FileDetails]"
             $currentSearch = $FileDetails.Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $fileDetails.Id
@@ -77,7 +77,7 @@ function Get-AggregatedDataObject {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Id selected"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [Id]"
             $currentSearch = $Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $Id
@@ -280,6 +280,7 @@ function Get-AggregatedDataObject {
         $aggregatedDataObject.Search = $currentSearch
 
         Write-Output $aggregatedDataObject
+        $aggregatedDataObject | Out-String | Write-Debug
     }
 
     end {

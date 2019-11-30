@@ -9,7 +9,7 @@ function Get-JavlibraryDataObject {
     )
 
     begin {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
     }
 
@@ -24,7 +24,7 @@ function Get-JavlibraryDataObject {
             try {
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -WebSession $Session -UserAgent $Session.UserAgent
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
                     New-CloudflareSession
                 } catch {
@@ -52,12 +52,12 @@ function Get-JavlibraryDataObject {
             }
         }
 
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        #$movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
     end {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

@@ -58,7 +58,7 @@ function New-CloudflareSession {
     }
 
     end {
-        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Successfully created session with Cloudflare"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Successfully created session with Cloudflare"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

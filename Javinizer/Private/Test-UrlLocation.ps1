@@ -6,6 +6,7 @@ function Test-UrlLocation {
     )
 
     begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $testUrlObject = @()
     }
 
@@ -32,5 +33,9 @@ function Test-UrlLocation {
         }
 
         Write-Output $testUrlObject
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

@@ -7,9 +7,17 @@ function Get-MetadataPriority {
         [string]$Type
     )
 
-    Process {
+    begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+    }
+
+    process {
         $priority = $Settings.Metadata."$Type-priority"
         $priorityArray = $priority -split ','
         Write-Output $priorityArray
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

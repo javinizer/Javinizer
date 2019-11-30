@@ -7,6 +7,9 @@ function Get-VideoFile {
         [switch]$Recurse
     )
 
+    begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+    }
     process {
         # Test if Path is a directory or item
         if ($PSVersionTable.PSVersion -like '7*') {
@@ -51,5 +54,9 @@ function Get-VideoFile {
         }
 
         Write-Output $files
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

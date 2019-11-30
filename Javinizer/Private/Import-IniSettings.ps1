@@ -41,6 +41,10 @@ function Import-IniSettings {
         [string] $commentsKeyPrefix = 'Comment'
     )
 
+    begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+    }
+
     process {
         try {
             $ini = @{ }
@@ -88,7 +92,11 @@ function Import-IniSettings {
             Write-Verbose "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path] loaded"
             Write-Output $ini
         } catch {
-            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded"
+            Write-Warning "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded"
         }
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
     }
 }

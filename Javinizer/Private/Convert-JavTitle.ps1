@@ -12,6 +12,7 @@ function Convert-JavTitle {
     )
 
     begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         # Unwanted strings in files to remove
         $RemoveStrings = @(
             # Prefixes
@@ -154,5 +155,9 @@ function Convert-JavTitle {
         }
 
         Write-Output $dataObject
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

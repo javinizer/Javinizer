@@ -7,6 +7,7 @@ function Get-NewFileDirName {
     )
 
     begin {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
         $settings = Import-IniSettings -Path $settingsPath
         $folderFormat = $settings.General.'rename-folder-string'
@@ -27,6 +28,10 @@ function Get-NewFileDirName {
         }
 
         Write-Output $fileDirObject
+    }
+
+    end {
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
