@@ -17,7 +17,7 @@ function Test-UrlLocation {
                     Url    = $link
                     Result = 'r18'
                 }
-            } elseif ($link -match 'javlibrary.com\/en\/\?v=') {
+            } elseif ($link -match 'javlibrary.com\/en\/') {
                 $testUrlObject += [pscustomobject]@{
                     Url    = $link
                     Result = 'javlibrary'
