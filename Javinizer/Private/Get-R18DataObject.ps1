@@ -193,7 +193,13 @@ function Get-R18Series {
 
     process {
         $series = (((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '<\/a><br>')[0] -split '<dd>')[1] -split '>')[1]
+        $seriesUrl = ((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '">')[0] -split '"')[1]
         $series = Convert-HtmlCharacter -String $series
+
+        if ($series -match '&#039...') {
+            $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get
+            $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split "<div class=`"breadcrumbs`">")[1]) -split "<dl><dt>")[1]) -split "<span class=")[0]
+        }
 
         if ($series -like '</dd*') {
             $series = $null
