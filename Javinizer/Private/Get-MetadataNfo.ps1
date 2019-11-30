@@ -29,8 +29,6 @@ function Get-MetadataNfo {
     <plot>$($DataObject.Description)</plot>
     <runtime>$($DataObject.Runtime)</runtime>
     <trailer>$($DataObject.Trailer)</trailer>
-    <mpaa>XXX</mpaa>
-    <country>Japan</country>
 
 "@
 
