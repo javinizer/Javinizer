@@ -57,7 +57,7 @@ function New-CloudflareSession {
             $session.UserAgent = $requestObject.UserAgent
         }
         Write-Debug "[$($MyInvocation.MyCommand.Name)] UserAgent: [$($session.UserAgent)]"
-        $script:Session = $session
+        $global:Session = $session
     }
 
     end {
