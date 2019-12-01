@@ -27,6 +27,7 @@ function Set-JavMovie {
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.FileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
+        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.FileName + '-trailer.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
         $newFileName = $dataObject.FileName + $Path.Extension
 
@@ -36,6 +37,7 @@ function Set-JavMovie {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Cover path: [$coverPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Poster path: [$posterPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Screenshot path: [$screenshotPath]"
+        Write-Debug "[$($MyInvocation.MyCommand.Name)] Trailer path: [$trailerPath]"
     }
 
     process {
@@ -45,29 +47,45 @@ function Set-JavMovie {
             Get-MetadataNfo -DataObject $dataObject -Settings $Settings | Out-File -LiteralPath $nfoPath -Force
             Rename-Item -Path $Path -NewName $newFileName -PassThru | Move-Item -Destination $folderPath
 
-            if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
-                if ($null -ne $dataObject.CoverUrl) {
-                    $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
-                    if ($Settings.Metadata.'download-poster-img' -eq 'True') {
-                        # Double backslash to conform with Python path standards
-                        $coverPath = $coverPath -replace '\\', '\\'
-                        $posterPath = $posterPath -replace '\\', '\\'
-                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                            python $cropPath $coverPath $posterPath
-                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                            python $cropPath $coverPath $posterPath
+            try {
+                if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
+                    if ($null -ne $dataObject.CoverUrl) {
+                        $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
+                        if ($Settings.Metadata.'download-poster-img' -eq 'True') {
+                            # Double backslash to conform with Python path standards
+                            $coverPath = $coverPath -replace '\\', '\\'
+                            $posterPath = $posterPath -replace '\\', '\\'
+                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                python $cropPath $coverPath $posterPath
+                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                python $cropPath $coverPath $posterPath
+                            }
                         }
                     }
                 }
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover/poster images"
             }
 
-            if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
-                New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force | Out-Null
-                $index = 1
-                foreach ($screenshot in $dataObject.ScreenshotUrl) {
-                    $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
-                    $index++
+            try {
+                if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
+                    New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force | Out-Null
+                    $index = 1
+                    foreach ($screenshot in $dataObject.ScreenshotUrl) {
+                        $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                        $index++
+                    }
                 }
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
+            }
+
+            try {
+                if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
+                    $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                }
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
             }
         }
     }
