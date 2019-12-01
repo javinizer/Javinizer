@@ -117,8 +117,8 @@ function Javinizer {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
-                        if ($Url -match ', ') {
-                            $urlList = $Url -split ', '
+                        if ($Url -match ',') {
+                            $urlList = $Url -split ','
                             $urlLocation = Test-UrlLocation -Url $urlList
                         } else {
                             $urlLocation = Test-UrlLocation -Url $Url
