@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  - R18 series title scrape not working properly
  - Function stopping on first skipped file
+ - Directory match Write-Host under the single match
 
 ## [0.1.1] Beta release 02 - 11-30-2019
 ### Fixed
