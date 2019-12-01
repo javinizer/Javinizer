@@ -16,16 +16,12 @@ function Get-MetadataNfo {
     <year>$($DataObject.ReleaseYear)</year>
     <director>$($DataObject.Director)</director>
     <studio>$($DataObject.Maker)</studio>
-    <ratings>
-        <rating name="javinizer" max="10">
-            <value>$($DataObject.Rating)</value>
-            <votes>$($DataObject.RatingCount)</votes>
-        </rating>
-    </ratings>
+    <rating>$($DataObject.Rating)</rating>
+    <votes>$($DataObject.RatingCount)</votes>
     <plot>$($DataObject.Description)</plot>
     <runtime>$($DataObject.Runtime)</runtime>
     <trailer>$($DataObject.Trailer)</trailer>
-
+    <mpaa>XXX</mpaa>
 "@
 
         if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {

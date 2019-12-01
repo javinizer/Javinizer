@@ -202,10 +202,10 @@ function Get-R18Series {
         $seriesUrl = ((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '">')[0] -split '"')[1]
         $series = Convert-HtmlCharacter -String $series
 
-        if ($series -match '&#039...') {
+        if ($series -like '*...') {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"
             $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
-            $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split "<div class=`"breadcrumbs`">")[1]) -split "<dl><dt>")[1]) -split "<span class=")[0]
+            $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]
         }
 
         if ($series -like '</dd*') {

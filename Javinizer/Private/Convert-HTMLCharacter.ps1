@@ -14,7 +14,8 @@ function Convert-HTMLCharacter {
             -replace '&#039;', "'" `
             -replace '#39;s', "'" `
             -replace '※', '*' `
-            -replace '&#39;', "'"
+            -replace '&#39;', "'" `
+            -replace '&#039', ''
 
         $newString = $String.Trim()
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Begin String: [$String]; End string: [$newString]"
