@@ -19,6 +19,10 @@ function Get-DmmDataObject {
         } else {
             # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
             $r18Url = Get-R18Url -Name $Name
+            if ($null -eq $r18Url) {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+                return
+            }
             $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
             $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
             Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"

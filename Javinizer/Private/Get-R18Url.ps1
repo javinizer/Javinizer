@@ -44,8 +44,8 @@ function Get-R18Url {
                 $count++
             }
         } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
-            break
+            Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+            return
         } else {
             $directUrl = $searchResults
         }

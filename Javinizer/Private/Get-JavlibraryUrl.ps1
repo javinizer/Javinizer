@@ -43,7 +43,7 @@ function Get-JavlibraryUrl {
                     $Tries = 2
                 }
             } elseif ($searchResults -eq 0 -or $null -eq $searchResults) {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched, skipping"
                 break
             }
 
@@ -58,13 +58,13 @@ function Get-JavlibraryUrl {
 
                 if ($resultId -eq $Name) {
                     $javlibraryUrl = Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name matched"
+                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] matched"
                     break
                 }
 
                 if ($count -gt $Tries) {
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Search $Name not matched, skipping..."
-                    break
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+                    return
                 }
                 $count++
             }

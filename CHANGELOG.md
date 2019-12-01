@@ -7,17 +7,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1.2] Beta release 03
 ### Added
- - Added <mpaa>XXX</mpaa> tag in nfo metadata
+ - <mpaa>XXX</mpaa> tag in nfo metadata
+ - Better console output for skipped files
 
 ### Changed
- -Changed <rating> tag in nfo metadata to legacy format
+ - <rating> tag in nfo metadata to legacy format
 
 ### Fixed
- - Fix R18 series title scrape not working properly
+ - R18 series title scrape not working properly
+ - Function stopping on first skipped file
 
 ## [0.1.1] Beta release 02 - 11-30-2019
 ### Fixed
- - Fix on try/catch for directory sort
+ - Try/catch for directory sort
 
 ## [0.1.0] - 11-30-2019
 ### Added

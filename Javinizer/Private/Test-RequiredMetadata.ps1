@@ -17,7 +17,7 @@ function Test-RequiredMetadata {
         if ($null -ne $requiredFields) {
             foreach ($field in $requiredFields) {
                 if ($null -eq $DataObject.($field)) {
-                    Write-Warning "[$($DataObject.Search) Required field [$field] is null"
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Required field: [$field] is null"
                     $errors++
                 }
             }
@@ -26,7 +26,8 @@ function Test-RequiredMetadata {
         if ($errors -eq 0) {
             Write-Output $DataObject
         } else {
-            Write-Warning "[$($DataObject.Search) Skipped"
+            Write-Warning "[$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Skipped with missing fields: [$errors]"
+            return
         }
     }
 
