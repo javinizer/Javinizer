@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
  - `<rating>` tag in nfo metadata to legacy format
  - Cloudflare `$session` scope to `global` instead of `script`
+ - `-Find` parameter better search output
 
 ### Fixed
  - R18 series title scrape not working properly

@@ -42,62 +42,62 @@ function Get-FindDataObject {
             $urlLocation = Test-UrlLocation -Url $urlList
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                Write-Output $aggregatedDataObject
+                Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($urlLocation.Result -eq 'r18') {
                     $r18Data = Get-R18DataObject -Url $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $r18Data
+                    Write-Output $r18Data | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($urlLocation.Result -eq 'dmm') {
                     $dmmData = Get-DmmDataObject -Url $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $dmmData
+                    Write-Output $dmmData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($urlLocation.Result -eq 'javlibrary') {
                     $javlibraryData = Get-JavlibraryDataObject -Url $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData
+                    Write-Output $javlibraryData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
             }
         } elseif ($getItem.Mode -eq $itemMode) {
             $fileDetails = Convert-JavTitle -Path $Find
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                Write-Output $aggregatedDataObject
+                Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($r18) {
                     $r18Data = Get-R18DataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
-                    Write-Output $r18Data
+                    Write-Output $r18Data | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($dmm) {
                     $dmmData = Get-DmmDataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
-                    Write-Output $dmmData
+                    Write-Output $dmmData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($javlibrary) {
                     $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData
+                    Write-Output $javlibraryData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
             }
         } else {
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -Id $Find -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                Write-Output $aggregatedDataObject
+                Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($r18) {
                     $r18Data = Get-R18DataObject -Name $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $r18Data
+                    Write-Output $r18Data | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($dmm) {
                     $dmmData = Get-DmmDataObject -Name $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $dmmData
+                    Write-Output $dmmData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
                 if ($javlibrary) {
                     $javlibraryData = Get-JavlibraryDataObject -Name $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData
+                    Write-Output $javlibraryData | Select-Object Id, Title, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
             }
         }
