@@ -152,15 +152,15 @@ function Convert-JavTitle {
                 #$filePartNumber = $filePartNum.ToString()
             }
             # Match ID-###-01, ID-###-02, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]\d\d$") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]0\d$") {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 5"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
                 $filePartNumber = $filePartNum
             }
-            # Match ID-###-001, ID-###-02, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]\d\d\d$") {
+            # Match ID-###-001, ID-###-002, etc.
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]00\d$") {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 6"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
