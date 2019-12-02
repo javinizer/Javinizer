@@ -97,5 +97,5 @@ PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorte
 ## Todo
 - [x] Trailer scraping - [0.1.2]
 - [x] Multi-part video directory sort support - [0.1.2]
-- [] Parallel/Threaded sort processing
-- [] Allow switching firstname/lastname order
+- [ ] Parallel/Threaded sort processing
+- [ ] Allow switching firstname/lastname order
