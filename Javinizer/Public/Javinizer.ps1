@@ -71,7 +71,7 @@ function Javinizer {
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
-                Write-Output $dataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
+                Write-Output $dataObject
             }
 
             'Path' {
