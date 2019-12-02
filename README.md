@@ -1,8 +1,14 @@
 # JAV Organizer
 
-Tool to organize your local Japanese Adult Video (JAV) collection
+Tool to organize your local Japanese Adult Video (JAV) collection.
 
 ## Overview
+
+**CAUTION:** As this is currently a beta release, please use responsibly and ensure that you use this program in an isolated environment, or that you have backups available for your targeted files/directories.
+Please test it out and provide any feedback or feature requests if possible.
+
+A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
+
 
 [View changelog](./CHANGELOG.md)
 
@@ -10,14 +16,14 @@ Tool to organize your local Japanese Adult Video (JAV) collection
 
 **Dependencies**
 
-- [PowerShell 6, **7**](https://github.com/PowerShell/PowerShell)
+- [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended 7
 - [Python 2.7+](https://www.python.org/downloads/) - If you are a Linux user, make sure to install a compatible Python 2.7 version
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
 
 ```
-# From any compatible Python terminal
+# From any compatible terminal
 > pip install cloudscraper
 > pip install pillow
 > pip install googletrans
@@ -104,10 +110,6 @@ PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorte
 
 ## Todo
 - [x] Trailer scraping - [0.1.2]
-<<<<<<< HEAD
 - [x] Multi-part video directory sort support - [0.1.2]
-=======
-- [] Better video name recognition
->>>>>>> 0864f712dbeb5e5194014c73c8d150d115b721f6
 - [] Parallel/Threaded sort processing
 - [] Allow switching firstname/lastname order
