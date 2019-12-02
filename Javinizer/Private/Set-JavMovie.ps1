@@ -24,12 +24,11 @@ function Set-JavMovie {
         $modulePath = (Get-Item $PSScriptroot).Parent
         $cropPath = Join-Path -Path $modulePath -ChildPath 'crop.py'
         $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
-        $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.Id + '.nfo')
+        $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
-        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.Id + ' - trailer.mp4')
+        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + ' - trailer.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
-
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"

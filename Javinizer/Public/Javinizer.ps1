@@ -23,7 +23,8 @@ function Javinizer {
         [switch]$Parallel,
         [switch]$R18,
         [switch]$Dmm,
-        [switch]$Javlibrary
+        [switch]$Javlibrary,
+        [switch]$Force
     )
 
     begin {
@@ -70,7 +71,7 @@ function Javinizer {
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
-                Write-Output $dataObject
+                Write-Output $dataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             }
 
             'Path' {
@@ -135,8 +136,20 @@ function Javinizer {
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
                     foreach ($video in $fileDetails) {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                        $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath
+                        if ($video.PartNumber -le '1') {
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                            $script:savedDataObject = $dataObject
+                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
+
+                        } else {
+                            $savedDataObject.PartNumber = $video.PartNumber
+                            $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
+                            $savedDataObject.FileName = $fileDirName.FileName
+                            $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
+                            $savedDataObject.FolderName = $fileDirName.FolderName
+                            $savedDataObject.DisplayName = $fileDirName.DisplayName
+                            Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
+                        }
                         $index++
                     }
                 } else {

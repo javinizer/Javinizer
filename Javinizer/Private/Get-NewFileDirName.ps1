@@ -19,17 +19,18 @@ function Get-NewFileDirName {
     process {
         $newFolderName = Convert-FormatString -FormatString $folderFormat
         $newDisplayName = Convert-FormatString -FormatString $displayNameFormat
-        $newFileName = Convert-FormatString -FormatString $fileFormat
+        $originalNewFileName = Convert-FormatString -FormatString $fileFormat
 
         if ($null -ne $DataObject.PartNumber) {
-            $newFileName = $newFileName + " - pt$($dataObject.PartNumber)"
+            $newFileName = $originalNewFileName + " - pt$($dataObject.PartNumber)"
         } else {
-            $newFileName = $newFileName
+            $newFileName = $originalNewFileName
         }
 
         $fileDirObject = [pscustomobject]@{
             FolderName  = $newFolderName
             FileName    = $newFileName
+            OriginalFileName = $originalNewFileName
             DisplayName = $newDisplayName
         }
 

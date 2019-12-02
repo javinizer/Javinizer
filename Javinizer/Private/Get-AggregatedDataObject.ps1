@@ -94,29 +94,30 @@ function Get-AggregatedDataObject {
         }
 
         $aggregatedDataObject = [pscustomobject]@{
-            Search          = $null
-            Id              = $null
-            Title           = $null
-            AlternateTitle  = $null
-            Description     = $null
-            ReleaseDate     = $null
-            ReleaseYear     = $null
-            Runtime         = $null
-            Director        = $null
-            Maker           = $null
-            Label           = $null
-            Series          = $null
-            Rating          = $null
-            Actress         = $null
-            Genre           = $null
-            ActressThumbUrl = $null
-            CoverUrl        = $null
-            ScreenshotUrl   = $null
-            TrailerUrl      = $null
-            DisplayName     = $null
-            FileName        = $null
-            FolderName      = $null
-            PartNumber      = $null
+            Search           = $null
+            Id               = $null
+            Title            = $null
+            AlternateTitle   = $null
+            Description      = $null
+            ReleaseDate      = $null
+            ReleaseYear      = $null
+            Runtime          = $null
+            Director         = $null
+            Maker            = $null
+            Label            = $null
+            Series           = $null
+            Rating           = $null
+            Actress          = $null
+            Genre            = $null
+            ActressThumbUrl  = $null
+            CoverUrl         = $null
+            ScreenshotUrl    = $null
+            TrailerUrl       = $null
+            DisplayName      = $null
+            FolderName       = $null
+            FileName         = $null
+            OriginalFileName = $null
+            PartNumber       = $null
         }
 
         foreach ($priority in $actressPriority) {
@@ -287,6 +288,7 @@ function Get-AggregatedDataObject {
 
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
         $aggregatedDataObject.FileName = $fileDirName.FileName
+        $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName
         $aggregatedDataObject.DisplayName = $fileDirName.DisplayName
         $aggregatedDataObject.Search = $currentSearch
