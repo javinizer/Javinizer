@@ -47,6 +47,18 @@ Import the module
 PS> Import-Module .\Javinizer.psd1
 ```
 
+```
+pip install pillow
+```
+
+https://pypi.org/project/Pillow/2.2.1/
+
+**Usage**
+Import the module
+```
+PS> Import-Module .\Javinizer.psd1
+```
+
 ## Examples
 
 Search JAV data from web using `settings.ini` defined sources
@@ -92,6 +104,10 @@ PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorte
 
 ## Todo
 - [x] Trailer scraping - [0.1.2]
+<<<<<<< HEAD
 - [x] Multi-part video directory sort support - [0.1.2]
+=======
+- [] Better video name recognition
+>>>>>>> 0864f712dbeb5e5194014c73c8d150d115b721f6
 - [] Parallel/Threaded sort processing
 - [] Allow switching firstname/lastname order
