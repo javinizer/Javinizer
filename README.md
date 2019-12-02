@@ -51,24 +51,6 @@ ID-###_\d         - ID-069_1, ID-069_2
 ID-###_0\d        - ID-069_01, ID-069_02
 ```
 
-**Usage**
-Import the module
-```
-PS> Import-Module .\Javinizer.psd1
-```
-
-```
-pip install pillow
-```
-
-https://pypi.org/project/Pillow/2.2.1/
-
-**Usage**
-Import the module
-```
-PS> Import-Module .\Javinizer.psd1
-```
-
 ## Examples
 
 Search JAV data from web using `settings.ini` defined sources
