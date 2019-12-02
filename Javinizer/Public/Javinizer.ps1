@@ -104,7 +104,7 @@ function Javinizer {
                 }
 
                 try {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attemping to read file(s) from path: [$($getPath.FullName)]"
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
                     $fileDetails = Convert-JavTitle -Path $Path
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."

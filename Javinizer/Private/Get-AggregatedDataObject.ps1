@@ -116,6 +116,7 @@ function Get-AggregatedDataObject {
             DisplayName     = $null
             FileName        = $null
             FolderName      = $null
+            PartNumber      = $null
         }
 
         foreach ($priority in $actressPriority) {
@@ -280,6 +281,9 @@ function Get-AggregatedDataObject {
                 }
             }
         }
+
+        # Set part number for video before creating new filename
+        $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
 
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
         $aggregatedDataObject.FileName = $fileDirName.FileName
