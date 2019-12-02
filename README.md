@@ -1,4 +1,8 @@
 # JAV Organizer
+[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat-square)](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary/releases)
+[![Commits since lastest release](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest?style=flat-square)](#)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat-square)](https://github.com/jvlflame/Javinizer/commits/master)
+[![Discord](https://img.shields.io/discord/608449512352120834?style=flat-square)](https://discord.gg/K2Yjevk)
 
 Tool to organize your local Japanese Adult Video (JAV) collection.
 
