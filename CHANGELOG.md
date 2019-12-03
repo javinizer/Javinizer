@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.4]
+## [0.1.4] - 12-3-2019
 ### Changed
  - .NET CultureInfo class conversion to hard coded month values for R18 data scrape
  - Better catch for separation between multi-part and single videos
