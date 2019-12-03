@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.4] - 12-2-2019
+### Changed
+ - .NET CultureInfo class conversion to hard coded month values for R18 data scrape
+ - Better catch for separation between multi-part and single videos
+
+### Fixed
+ - Genre not being output in nfo
+ - Rating vote count not added in aggregated data object and nfo
+
 ## [0.1.3] - 12-2-2019
 ### Changed
  - Setting `add-series-as-tag` set default false
