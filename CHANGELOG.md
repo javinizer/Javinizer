@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.3] - 12-2-2019
+### Changed
+ - Setting `add-series-as-tag` set default false
+ - Remove debug output for `Convert-HTMLCharacter`
+
+### Fixed
+ - Fixed `<trailer>` nfo data not appearing in scraped .nfo file
+ - Fixed javlibrary data object not being output
+ - Fix spacing in nfo between `<mpaa>` and next tags
+
 ## [0.1.2] - 12-1-2019
 ### Added
  - Multi-part video support
