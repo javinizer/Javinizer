@@ -107,16 +107,35 @@ function Get-R18ReleaseDate {
         $month, $day, $year = $releaseDate -split ' '
 
         # Convert full month names to abbreviated values due to non-standard naming conventions on R18 website
-        if ($month -eq 'June') {
-            $month = 'Jun'
+
+        if ($month -eq 'Jan') {
+            $month = 1
+        } elseif ($month -eq 'Feb') {
+            $month = 2
+        } elseif ($month -eq 'Mar') {
+            $month = 3
+        } elseif ($month -eq 'Apr') {
+            $month = 4
+        } elseif ($month -eq 'May') {
+            $month = 5
+        } elseif ($month -eq 'June') {
+            $month = 6
         } elseif ($month -eq 'July') {
-            $month = 'Jul'
+            $month = 7
+        } elseif ($month = eq 'Aug') {
+            $month = 8
         } elseif ($month -eq 'Sept') {
-            $month = 'Sep'
+            $month = 9
+        } elseif ($month = 'Oct') {
+            $month = 10
+        } elseif ($month = 'Nov') {
+            $month = 11
+        } elseif ($month = 'Dec') {
+            $month = 12
         }
 
         # Convert the month name to a numeric value to conform with CMS datetime standards
-        $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
+        # $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
         $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
         Write-Output $releaseDate
     }
