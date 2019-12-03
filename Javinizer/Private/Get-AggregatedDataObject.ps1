@@ -107,6 +107,7 @@ function Get-AggregatedDataObject {
             Label            = $null
             Series           = $null
             Rating           = $null
+            RatingCount      = $null
             Actress          = $null
             Genre            = $null
             ActressThumbUrl  = $null
