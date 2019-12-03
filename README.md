@@ -51,6 +51,11 @@ ID-###_\d         - ID-069_1, ID-069_2
 ID-###_0\d        - ID-069_01, ID-069_02
 ```
 
+**Module settings**
+
+Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
+The fields are preset with my recommended default output.
+
 ## Examples
 
 Search JAV data from web using `settings.ini` defined sources
