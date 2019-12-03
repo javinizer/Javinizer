@@ -56,7 +56,7 @@ function Get-FindDataObject {
 
                 if ($urlLocation.Result -eq 'javlibrary') {
                     $javlibraryData = Get-JavlibraryDataObject -Url $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
         } elseif ($getItem.Mode -eq $itemMode) {
@@ -77,7 +77,7 @@ function Get-FindDataObject {
 
                 if ($javlibrary) {
                     $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
         } else {
@@ -97,7 +97,7 @@ function Get-FindDataObject {
 
                 if ($javlibrary) {
                     $javlibraryData = Get-JavlibraryDataObject -Name $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
         }
