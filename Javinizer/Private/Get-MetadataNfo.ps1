@@ -12,6 +12,7 @@ function Get-MetadataNfo {
 <movie>
     <title>$($DataObject.DisplayName)</title>
     <originaltitle>$($DataObject.AlternateTitle)</originaltitle>
+    <id>$($DataObject.Id)</id>
     <releasedate>$($DataObject.ReleaseDate)</releasedate>
     <year>$($DataObject.ReleaseYear)</year>
     <director>$($DataObject.Director)</director>
@@ -20,10 +21,10 @@ function Get-MetadataNfo {
     <votes>$($DataObject.RatingCount)</votes>
     <plot>$($DataObject.Description)</plot>
     <runtime>$($DataObject.Runtime)</runtime>
-    <trailer>$($DataObject.Trailer)</trailer>
+    <trailer>$($DataObject.TrailerUrl)</trailer>
     <mpaa>XXX</mpaa>
-"@
 
+"@
         if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {
             $tagNfoString = @"
     <tag>Series: $($DataObject.Series)</tag>
