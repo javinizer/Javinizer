@@ -122,15 +122,15 @@ function Get-R18ReleaseDate {
             $month = 6
         } elseif ($month -eq 'July') {
             $month = 7
-        } elseif ($month = eq 'Aug') {
+        } elseif ($month -eq 'Aug') {
             $month = 8
         } elseif ($month -eq 'Sept') {
             $month = 9
-        } elseif ($month = 'Oct') {
+        } elseif ($month -eq 'Oct') {
             $month = 10
-        } elseif ($month = 'Nov') {
+        } elseif ($month -eq 'Nov') {
             $month = 11
-        } elseif ($month = 'Dec') {
+        } elseif ($month -eq 'Dec') {
             $month = 12
         }
 
