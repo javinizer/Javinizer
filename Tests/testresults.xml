@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="13" errors="0" failures="0" not-run="0" inconclusive="0" ignored="1" skipped="0" invalid="0" date="2019-12-02" time="23:44:16">
+  <environment machine-name="JEFF-PC" cwd="Z:\git\Projects\JAV-Organizer\tests" clr-version="Unknown" user="Jeff" platform="Microsoft Windows 10 Pro|C:\Windows|\Device\Harddisk1\Partition1" user-domain="JEFF-PC" os-version="10.0.18362" nunit-version="2.5.8.0" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Ignored" success="True" time="2.5987" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="Z:\git\Projects\JAV-Organizer\tests\Manifest.tests.ps1" executed="True" result="Ignored" success="True" time="0.774" asserts="0" description="Z:\git\Projects\JAV-Organizer\tests\Manifest.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Module manifest" executed="True" result="Ignored" success="True" time="0.6868" asserts="0" description="Module manifest">
+            <results>
+              <test-suite type="TestFixture" name="Validation" executed="True" result="Ignored" success="True" time="0.5801" asserts="0" description="Validation">
+                <results>
+                  <test-case description="has a valid manifest" name="Module manifest.Validation.has a valid manifest" time="0.0671" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid name in the manifest" name="Module manifest.Validation.has a valid name in the manifest" time="0.0538" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid root module" name="Module manifest.Validation.has a valid root module" time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid version in the manifest" name="Module manifest.Validation.has a valid version in the manifest" time="0.0159" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid description" name="Module manifest.Validation.has a valid description" time="0.0131" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid author" name="Module manifest.Validation.has a valid author" time="0.0092" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid guid" name="Module manifest.Validation.has a valid guid" time="0.0336" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid copyright" name="Module manifest.Validation.has a valid copyright" time="0.0127" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="has a valid version in the changelog" name="Module manifest.Validation.has a valid version in the changelog" time="0.0247" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="changelog and manifest versions are the same" name="Module manifest.Validation.changelog and manifest versions are the same" time="0.0174" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="is tagged with a valid version" name="Module manifest.Validation.is tagged with a valid version" time="0" asserts="0" success="True" result="Ignored" executed="False" />
+                  <test-case description="all versions are the same" name="Module manifest.Validation.all versions are the same" time="0.015" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Z:\git\Projects\JAV-Organizer\tests\Meta.tests.ps1" executed="True" result="Success" success="True" time="1.8247" asserts="0" description="Z:\git\Projects\JAV-Organizer\tests\Meta.tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Text files formatting" executed="True" result="Success" success="True" time="1.7757" asserts="0" description="Text files formatting">
+            <results>
+              <test-suite type="TestFixture" name="Files encoding" executed="True" result="Success" success="True" time="0.9072" asserts="0" description="Files encoding">
+                <results>
+                  <test-case description="Doesn't use Unicode encoding" name="Text files formatting.Files encoding.Doesn't use Unicode encoding" time="0.8681" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Indentations" executed="True" result="Success" success="True" time="0.4616" asserts="0" description="Indentations">
+                <results>
+                  <test-case description="Uses spaces for indentation, not tabs" name="Text files formatting.Indentations.Uses spaces for indentation, not tabs" time="0.41" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
