@@ -76,7 +76,7 @@ function Get-JavlibraryUrl {
             }
         }
 
-        Write-Output $javlibraryUrl.Url
+        Write-Output $javlibraryUrl
     }
 
     end {
