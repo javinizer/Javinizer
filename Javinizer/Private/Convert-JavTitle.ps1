@@ -107,6 +107,7 @@ function Convert-JavTitle {
 
         # Clean any trailing text if not removed by $RemoveStrings
         for ($x = 0; $x -lt $fileBaseNameUpper.Length; $x++) {
+            $filePartNumber = $null
             #Match ID-###A, ID###B, etc.
             if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[a-iA-I]") {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 1"
@@ -151,7 +152,6 @@ function Convert-JavTitle {
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ($fileP3 -replace '-', '')[1]
                 $filePartNumber = $filePartNum
-                #$filePartNumber = $filePartNum.ToString()
             }
             # Match ID-###-01, ID-###-02, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]0\d$") {
