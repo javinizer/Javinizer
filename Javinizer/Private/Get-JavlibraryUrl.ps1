@@ -32,21 +32,18 @@ function Get-JavlibraryUrl {
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match 'http:\/\/www\.javlibrary\.com\/en\/\?v=') {
             $javlibraryUrl = $searchResultUrl
-        } elseif ($searchResultUrl -match 'http:\/\/www\.javlibrary\.com\/en\/vl_searchbyid.php?keyword=') {
-            Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-            return
         }
 
         if ($null -eq $javlibraryUrl) {
             $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
             $numResults = $searchResults.count
 
-            if ($searchResults -ge 2) {
+            if ($numResults -ge 2) {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Name]"
                 if ($Tries.IsPresent) {
                     $Tries = $Tries
                 } else {
-                    $Tries = 2
+                    $Tries = 4
                 }
             } elseif ($numResults -eq 0 -or $null -eq $searchResults) {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
