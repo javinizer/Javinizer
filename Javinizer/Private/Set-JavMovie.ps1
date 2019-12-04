@@ -77,35 +77,42 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover/poster images"
+                Write-ErrorMessage $Error[0]
             }
 
             try {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
-                    New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                    $index = 1
-                    foreach ($screenshot in $dataObject.ScreenshotUrl) {
-                        if ($Force.IsPresent) {
-                            $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
-                        } elseif (-not (Test-Path -Path (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
-                            $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                    if ($null -ne $dataObject.ScreenshotUrl) {
+                        New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        $index = 1
+                        foreach ($screenshot in $dataObject.ScreenshotUrl) {
+                            if ($Force.IsPresent) {
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                            } elseif (-not (Test-Path -Path (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                            }
+                            $index++
                         }
-                        $index++
                     }
                 }
             } catch {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
+                Write-ErrorMessage $Error[0]
             }
 
             try {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
-                    if ($Force.IsPresent) {
-                        $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
-                    } elseif (-not (Test-Path -Path $trailerPath)) {
-                        $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                    if ($null -ne $dataObject.TrailerUrl) {
+                        if ($Force.IsPresent) {
+                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                        } elseif (-not (Test-Path -Path $trailerPath)) {
+                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                        }
                     }
                 }
             } catch {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
+                Write-ErrorMessage $Error[0]
             }
         }
     }

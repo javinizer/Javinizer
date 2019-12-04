@@ -23,7 +23,7 @@ function New-CloudflareSession {
                     $cfScrape, $userAgent = python $cfPath $Url
                 }
             } catch {
-                throw $_
+                Write-ErrorMessage $Error[0]
             }
 
             $cfScrapeSplit = ($cfScrape -split ";").Trim()

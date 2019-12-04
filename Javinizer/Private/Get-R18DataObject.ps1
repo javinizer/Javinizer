@@ -46,7 +46,7 @@ function Get-R18DataObject {
                     TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
                 }
             } catch {
-                throw $_
+                Write-ErrorMessage $Error[0]
             }
         }
 
