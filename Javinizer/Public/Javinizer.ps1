@@ -142,7 +142,7 @@ function Javinizer {
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
                     foreach ($video in $fileDetails) {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                        if ($video.PartNumber -eq '1' -or $null -ne $video.PartNumber) {
+                        if ($video.PartNumber -le '1') {
                             # Get data object for part 1 of a multipart video
                             $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
                             $script:savedDataObject = $dataObject
