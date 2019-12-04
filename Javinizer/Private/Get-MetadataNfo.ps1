@@ -41,17 +41,47 @@ function Get-MetadataNfo {
             $nfoString = $nfoString + $genreNfoString
         }
 
-        for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
-            $actressNfoString = @"
+        if ($null -ne $DataObject.ActressThumbUrl) {
+            if ($DataObject.Actress.Count -eq 1) {
+                $actressNfoString = @"
+    <actor>
+        <name>$($DataObject.Actress)</name>
+        <thumb>$($DataObject.ActressThumbUrl)</thumb>
+    </actor>
+
+"@
+            } else {
+                for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                    $actressNfoString = @"
     <actor>
         <name>$($DataObject.Actress[$i])</name>
         <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
     </actor>
 
 "@
-            $nfoString = $nfoString + $actressNfoString
+                }
+            }
+        } else {
+            if ($DataObject.Actress.Count -eq 1) {
+                $actressNfoString = @"
+    <actor>
+        <name>$($DataObject.Actress)</name>
+    </actor>
+
+"@
+            } else {
+                for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                    $actressNfoString = @"
+    <actor>
+        <name>$($DataObject.Actress[$i])</name>
+    </actor>
+
+"@
+                }
+            }
         }
 
+        $nfoString = $nfoString + $actressNfoString
         $endNfoString = @"
 </movie>
 "@
