@@ -30,8 +30,8 @@ function Get-VideoFile {
                     -or $_.Name -like '*.mov'`
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
-                    -and $_.Name -notlike '*t28*'`
-                    -and $_.Name -notlike '*fc2*'
+                    -and $_.Name -notlike '*fc2*'`
+                    -and $_.Name -notlike '*trailer'
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
             # Test if the path is a file
@@ -45,8 +45,8 @@ function Get-VideoFile {
                     -or $_.Name -like '*.mov'`
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
-                    -and $_.Name -notlike '*t28*'`
-                    -and $_.Name -notlike '*fc2*'
+                    -and $_.Name -notlike '*fc2*'`
+                    -and $_.Name -notlike '*trailer'
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
         } else {

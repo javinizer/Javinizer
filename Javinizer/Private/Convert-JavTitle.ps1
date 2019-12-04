@@ -85,22 +85,24 @@ function Convert-JavTitle {
         # Iterate through each file in $files to add hypen(-) between title and ID if not exists
         $Counter = -1
         foreach ($file in $fileBaseNameUpper) {
-            # Iterate through file name length
-            for ($x = 0; $x -lt $file.Length; $x++) {
-                # Match if an alphabetical character index is next to a numerical index
-                if ($file[$x] -match '^[a-z]*$' -and $file[$x + 1] -match '^[0-9]$') {
-                    # Write modified filename to $fileBaseNameHypen, inserting a '-' at the specified
-                    # index between the alphabetical and numerical character, and appending extension
-                    $fileBaseNameHypen = ($file.Insert($x + 1, '-'))
+            if ($file -notmatch 't28' -and $file -notmatch 't-28') {
+                # Iterate through file name length
+                for ($x = 0; $x -lt $file.Length; $x++) {
+                    # Match if an alphabetical character index is next to a numerical index
+                    if ($file[$x] -match '^[a-z]*$' -and $file[$x + 1] -match '^[0-9]$') {
+                        # Write modified filename to $fileBaseNameHypen, inserting a '-' at the specified
+                        # index between the alphabetical and numerical character, and appending extension
+                        $fileBaseNameHypen = ($file.Insert($x + 1, '-'))
+                    }
                 }
+                # Get index if file changed
+                $Counter++
+                # Rename changed files
+                if ($null -ne $fileBaseNameHypen) {
+                    $fileBaseNameUpper[$Counter] = $fileBaseNameHypen
+                }
+                $fileBaseNameHypen = $null
             }
-            # Get index if file changed
-            $Counter++
-            # Rename changed files
-            if ($null -ne $fileBaseNameHypen) {
-                $fileBaseNameUpper[$Counter] = $fileBaseNameHypen
-            }
-            $fileBaseNameHypen = $null
         }
 
         # Clean any trailing text if not removed by $RemoveStrings
