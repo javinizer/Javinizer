@@ -46,38 +46,43 @@ function Set-JavMovie {
             Get-MetadataNfo -DataObject $dataObject -Settings $Settings | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
             Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
 
-            try {
-                if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
+            if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
+                try {
                     if ($null -ne $dataObject.CoverUrl) {
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
                         } elseif ((-not (Test-Path -Path $coverPath))) {
                             $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
                         }
+                    }
+                } catch {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover images"
+                    Write-ErrorMessage $Error[0]
+                }
 
-                        if ($Settings.Metadata.'download-poster-img' -eq 'True') {
-                            # Double backslash to conform with Python path standards
-                            $coverPath = $coverPath -replace '\\', '\\'
-                            $posterPath = $posterPath -replace '\\', '\\'
-                            if ($Force.IsPresent) {
-                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $coverPath $posterPath
-                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python $cropPath $coverPath $posterPath
-                                }
-                            } elseif ((-not (Test-Path -Path $posterPath))) {
-                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $coverPath $posterPath
-                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python $cropPath $coverPath $posterPath
-                                }
+                try {
+                    if ($Settings.Metadata.'download-poster-img' -eq 'True') {
+                        # Double backslash to conform with Python path standards
+                        $coverPath = $coverPath -replace '\\', '\\'
+                        $posterPath = $posterPath -replace '\\', '\\'
+                        if ($Force.IsPresent) {
+                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                python $cropPath $coverPath $posterPath
+                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                python3 $cropPath $coverPath $posterPath
+                            }
+                        } elseif ((-not (Test-Path -Path $posterPath))) {
+                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                python $cropPath $coverPath $posterPath
+                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                python3 $cropPath $coverPath $posterPath
                             }
                         }
                     }
+                } catch {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
+                    Write-ErrorMessage $Error[0]
                 }
-            } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover/poster images"
-                Write-ErrorMessage $Error[0]
             }
 
             try {
