@@ -51,7 +51,7 @@ function Set-JavMovie {
                     if ($null -ne $dataObject.CoverUrl) {
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
-                        } elseif ((-not (Test-Path -Path $coverPath))) {
+                        } elseif ((-not (Test-Path -LiteralPath $coverPath))) {
                             $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
                         }
                     }
@@ -72,7 +72,7 @@ function Set-JavMovie {
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                     python3 $cropPath $coverPath $posterPath
                                 }
-                            } elseif ((-not (Test-Path -Path $posterPath))) {
+                            } elseif ((-not (Test-Path -LiteralPath $posterPath))) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                     python $cropPath $coverPath $posterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
@@ -95,7 +95,7 @@ function Set-JavMovie {
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
                                 $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
-                            } elseif (-not (Test-Path -Path (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
+                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
                                 $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
                             }
                             $index++
@@ -112,7 +112,7 @@ function Set-JavMovie {
                     if ($null -ne $dataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
-                        } elseif (-not (Test-Path -Path $trailerPath)) {
+                        } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
                             $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
                         }
                     }
