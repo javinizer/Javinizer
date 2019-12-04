@@ -12,14 +12,14 @@ function Get-R18DataObject {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
         $replaceHashTable = @{
-            'S********l'       = 'Schoolgirl'
-            'S**t'             = 'Shit'
-            'H*********n'      = 'Humiliation'
-            'G*******g'        = 'Gangbang'
-            'H*******m'        = 'Hypnotism'
-            'S*****t'          = 'Student'
-            'C***d'            = 'Child'
-            'D***k'            = 'Drunk'
+            'S********l'  = 'Schoolgirl'
+            'S**t'        = 'Shit'
+            'H*********n' = 'Humiliation'
+            'G*******g'   = 'Gangbang'
+            'H*******m'   = 'Hypnotism'
+            'S*****t'     = 'Student'
+            'C***d'       = 'Child'
+            'D***k'       = 'Drunk'
         }
     }
 
@@ -56,7 +56,7 @@ function Get-R18DataObject {
                     TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
                 }
             } catch {
-                Write-ErrorMessage $Error[0]
+                throw $_
             }
         }
 

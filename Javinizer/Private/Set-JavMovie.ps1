@@ -57,31 +57,33 @@ function Set-JavMovie {
                     }
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover images"
-                    Write-ErrorMessage $Error[0]
+                    throw $_
                 }
 
                 try {
                     if ($Settings.Metadata.'download-poster-img' -eq 'True') {
                         # Double backslash to conform with Python path standards
-                        $coverPath = $coverPath -replace '\\', '\\'
-                        $posterPath = $posterPath -replace '\\', '\\'
-                        if ($Force.IsPresent) {
-                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                python $cropPath $coverPath $posterPath
-                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                python3 $cropPath $coverPath $posterPath
-                            }
-                        } elseif ((-not (Test-Path -Path $posterPath))) {
-                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                python $cropPath $coverPath $posterPath
-                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                python3 $cropPath $coverPath $posterPath
+                        if ($null -ne $dataObject.CoverUrl) {
+                            $coverPath = $coverPath -replace '\\', '\\'
+                            $posterPath = $posterPath -replace '\\', '\\'
+                            if ($Force.IsPresent) {
+                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                    python $cropPath $coverPath $posterPath
+                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                    python3 $cropPath $coverPath $posterPath
+                                }
+                            } elseif ((-not (Test-Path -Path $posterPath))) {
+                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                    python $cropPath $coverPath $posterPath
+                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                    python3 $cropPath $coverPath $posterPath
+                                }
                             }
                         }
                     }
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
-                    Write-ErrorMessage $Error[0]
+                    throw $_
                 }
             }
 
@@ -102,7 +104,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
-                Write-ErrorMessage $Error[0]
+                throw $_
             }
 
             try {
@@ -117,7 +119,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
-                Write-ErrorMessage $Error[0]
+                throw $_
             }
         }
     }

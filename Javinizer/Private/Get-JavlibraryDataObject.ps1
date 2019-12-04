@@ -29,7 +29,7 @@ function Get-JavlibraryDataObject {
                 try {
                     New-CloudflareSession
                 } catch {
-                    Write-ErrorMessage $Error[0]
+                    throw $_
                 }
 
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"

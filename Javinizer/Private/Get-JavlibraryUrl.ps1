@@ -21,7 +21,7 @@ function Get-JavlibraryUrl {
             try {
                 New-CloudflareSession
             } catch {
-                Write-ErrorMessage $Error[0]
+                throw $_
             }
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
