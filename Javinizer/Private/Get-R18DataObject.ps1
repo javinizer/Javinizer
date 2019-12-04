@@ -11,6 +11,15 @@ function Get-R18DataObject {
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
+        $replaceHashTable = @{
+            'C***dhood Friend' = 'Childhood Friend'
+            'S********l'       = 'Schoolgirl'
+            'D***k Girl'       = 'Drunk Girl'
+            'S**t'             = 'Slut'
+            'H*********n'      = 'Humiliation'
+            'G*******g'        = 'Gangbang'
+            'H*******m'        = 'Hypnotism'
+        }
     }
 
     process {
@@ -92,6 +101,9 @@ function Get-R18Title {
     process {
         $title = (($WebRequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
         $title = Convert-HtmlCharacter -String $title
+        foreach ($string in $replaceHashTable.GetEnumerator()) {
+            $title = $title -replace [regex]::Escape($string.Name), $string.Value
+        }
         Write-Output $Title
     }
 }
@@ -107,7 +119,6 @@ function Get-R18ReleaseDate {
         $month, $day, $year = $releaseDate -split ' '
 
         # Convert full month names to abbreviated values due to non-standard naming conventions on R18 website
-
         if ($month -eq 'Jan') {
             $month = 1
         } elseif ($month -eq 'Feb') {
@@ -262,6 +273,9 @@ function Get-R18Genre {
             $genre = $genre.trim()
             if ($genre -notmatch 'https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)' -and $genre -ne '') {
                 $genre = Convert-HtmlCharacter -String $genre
+                foreach ($string in $replaceHashTable.GetEnumerator()) {
+                    $genre = $genre -replace [regex]::Escape($string.Name), $string.Value
+                }
                 $genreArray += $genre
             }
         }
