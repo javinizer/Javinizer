@@ -107,7 +107,7 @@ function Javinizer {
                     New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
                     $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
                 } catch {
-                    Write-ErrorMessage $Error[0]
+                    throw $_
                 }
 
                 try {
@@ -142,12 +142,13 @@ function Javinizer {
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
                     foreach ($video in $fileDetails) {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                        if ($video.PartNumber -le '1' -or $null -eq $video.PartNumber) {
+                        if ($video.PartNumber -eq '1' -or $null -ne $video.PartNumber) {
+                            # Get data object for part 1 of a multipart video
                             $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
                             $script:savedDataObject = $dataObject
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
-
-                        } else {
+                        } elseif ($video.PartNumber -ge '2') {
+                            # Use the saved data object for the following parts
                             $savedDataObject.PartNumber = $video.PartNumber
                             $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
                             $savedDataObject.FileName = $fileDirName.FileName
