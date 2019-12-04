@@ -15,10 +15,12 @@ function Get-R18DataObject {
             'C***dhood Friend' = 'Childhood Friend'
             'S********l'       = 'Schoolgirl'
             'D***k Girl'       = 'Drunk Girl'
-            'S**t'             = 'Slut'
+            'S**t'             = 'Shit'
             'H*********n'      = 'Humiliation'
             'G*******g'        = 'Gangbang'
             'H*******m'        = 'Hypnotism'
+            'S*****t'          = 'Student'
+            'C***d'            = 'Child'
         }
     }
 
