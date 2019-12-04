@@ -45,6 +45,12 @@ function Javinizer {
         Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
+        $settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.Locations.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
 
         if ($PSVersionTable.PSVersion -like '7*') {
             $directoryMode = 'd----'
@@ -101,7 +107,7 @@ function Javinizer {
                     New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
                     $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
                 } catch {
-                    throw $_
+                    Write-ErrorMessage $Error[0]
                 }
 
                 try {
