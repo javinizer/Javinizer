@@ -21,7 +21,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 **Dependencies**
 
 - [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended 7
-- [Python 2.7+](https://www.python.org/downloads/) - If you are a Linux user, make sure to install a compatible Python 2.7 version
+- [Python 3+](https://www.python.org/downloads/) - Linux calls `python3` rather than `python`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
