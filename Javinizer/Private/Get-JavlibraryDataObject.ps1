@@ -226,7 +226,11 @@ function Get-JLCoverUrl {
 
     process {
         $coverUrl = (($WebRequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
-        $coverUrl = 'https:' + $coverUrl
+        if ($coverUrl -like '*pixhost*') {
+            $coverUrl = 'http:' + $coverUrl
+        } else {
+            $coverUrl = 'https:' + $coverUrl
+        }
         Write-Output $coverUrl
     }
 }
