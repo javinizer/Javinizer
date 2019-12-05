@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.5]
+### Added
+ - Settings being written in debug output
+ - T28/T-28 video recognition support
+ - String replacement for censored words on R18.com
+ - Error throw messages on unsuccessful download of images/trailer
+
+### Changed
+ - Non-creation of `extrafanart` directory if no screenshots are downloaded
+ - More settings defaults to javlibrary
+ - Python dependency to Python3
+ - Unix operating systems will now call `python3` rather than `python`
+ - Removed spaces between ` - ` in  part number and trailer
+
+### Fixed
+ - Genres failing to be written to nfo if first priority setting did not find video
+ - Actresses failing to be written to the nfo if there was only one actress
+ - Description translation failing due to unicode errors from Python 2 versions
+ - Having multipart videos in the sort directory causes non-multipart videos to have part number assigned to it
+ - JAVLibrary url search fail on first non-matched result
+ - Set `Test-Path` to literalpath for Unix compatibility
+ - Titles in directory name failing due to special characters not being removed
+
 ## [0.1.4] - 12-3-2019
 ### Changed
  - .NET CultureInfo class conversion to hard coded month values for R18 data scrape
