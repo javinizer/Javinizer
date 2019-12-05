@@ -22,7 +22,7 @@ function Get-NewFileDirName {
         $originalNewFileName = Convert-FormatString -FormatString $fileFormat
 
         if ($null -ne $DataObject.PartNumber) {
-            $newFileName = $originalNewFileName + " - pt$($dataObject.PartNumber)"
+            $newFileName = $originalNewFileName + "-pt$($dataObject.PartNumber)"
         } else {
             $newFileName = $originalNewFileName
         }

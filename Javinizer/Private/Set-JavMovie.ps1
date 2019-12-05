@@ -27,7 +27,7 @@ function Set-JavMovie {
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
-        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + ' - trailer.mp4')
+        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
@@ -90,6 +90,7 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
                     if ($null -ne $dataObject.ScreenshotUrl) {
+                        New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
