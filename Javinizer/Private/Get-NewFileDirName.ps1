@@ -67,8 +67,13 @@ function Convert-FormatString {
         $studio = $DataObject.Maker
         # Remove invalid Windows filename symbols from title
         foreach ($symbol in $invalidSymbols) {
-            $title = $title -replace [regex]::Escape($symbol), ''
-            $studio = $studio -replace [regex]::Escape($symbol), ''
+            if ([regex]::Escape($symbol) -eq '/') {
+                $title = $title -replace [regex]::Escape($symbol), '-'
+                $studio = $studio -replace [regex]::Escape($symbol), '-'
+            } else {
+                $title = $title -replace [regex]::Escape($symbol), ''
+                $studio = $studio -replace [regex]::Escape($symbol), ''
+            }
         }
 
         $FormatString = $FormatString[1..($FormatString.Length - 2)] -join ''
