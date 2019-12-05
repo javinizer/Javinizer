@@ -24,7 +24,6 @@ function Set-JavMovie {
         $modulePath = (Get-Item $PSScriptroot).Parent
         $cropPath = Join-Path -Path $modulePath -ChildPath 'crop.py'
         $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
-        $folderPath = $folderpath.replace('[', '`[').replace(']', '`]')
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
@@ -92,7 +91,8 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
                     if ($null -ne $dataObject.ScreenshotUrl) {
                         New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                        New-Item -ItemType Directory -Name 'extrafanart' -Path $folderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        $fixFolderPath = $folderpath.replace('[', '`[').replace(']', '`]')
+                        New-Item -ItemType Directory -Name 'extrafanart' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
