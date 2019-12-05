@@ -64,9 +64,11 @@ function Convert-FormatString {
 
     process {
         $title = $DataObject.Title
+        $studio = $DataObject.Maker
         # Remove invalid Windows filename symbols from title
         foreach ($symbol in $invalidSymbols) {
             $title = $title -replace [regex]::Escape($symbol), ''
+            $studio = $studio -replace [regex]::Escape($symbol), ''
         }
 
         $FormatString = $FormatString[1..($FormatString.Length - 2)] -join ''
@@ -75,7 +77,8 @@ function Convert-FormatString {
             -replace '<TITLE>', "$title" `
             -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
             -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
-            -replace '<STUDIO>', "$($DataObject.Maker)"
+            -replace '<STUDIO>', "$studio" `
+            -replace '<RUNTIME>', "$($DataObject.Runtime)"
 
         Write-Output $newName
     }
