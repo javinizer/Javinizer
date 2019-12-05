@@ -24,6 +24,7 @@ function Set-JavMovie {
         $modulePath = (Get-Item $PSScriptroot).Parent
         $cropPath = Join-Path -Path $modulePath -ChildPath 'crop.py'
         $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
+        $folderPath = $folderpath.replace('[', '`[').replace(']', '`]')
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')

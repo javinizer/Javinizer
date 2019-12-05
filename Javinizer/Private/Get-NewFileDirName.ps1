@@ -57,7 +57,8 @@ function Convert-FormatString {
             '"',
             '<',
             '>',
-            '|'
+            '|',
+            "'"
         )
     }
 
