@@ -28,10 +28,10 @@ function Get-NewFileDirName {
         }
 
         $fileDirObject = [pscustomobject]@{
-            FolderName  = $newFolderName
-            FileName    = $newFileName
+            FolderName       = $newFolderName
+            FileName         = $newFileName
             OriginalFileName = $originalNewFileName
-            DisplayName = $newDisplayName
+            DisplayName      = $newDisplayName
         }
 
         Write-Output $fileDirObject
@@ -47,14 +47,35 @@ function Convert-FormatString {
         [string]$FormatString
     )
 
+    begin {
+        $invalidSymbols = @(
+            '\',
+            '/',
+            ':',
+            '*',
+            '?',
+            '"',
+            '<',
+            '>',
+            '|'
+        )
+    }
+
     process {
+        $title = $DataObject.Title
+        # Remove invalid Windows filename symbols from title
+        foreach ($symbol in $invalidSymbols) {
+            $title = $title -replace [regex]::Escape($symbol), ''
+        }
+
         $FormatString = $FormatString[1..($FormatString.Length - 2)] -join ''
         $newName = $FormatString `
             -replace '<ID>', "$($DataObject.Id)" `
-            -replace '<TITLE>', "$($DataObject.Title)" `
+            -replace '<TITLE>', "$title" `
             -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
             -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
             -replace '<STUDIO>', "$($DataObject.Maker)"
+
         Write-Output $newName
     }
 }
