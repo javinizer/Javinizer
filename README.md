@@ -21,7 +21,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 **Dependencies**
 
 - [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended 7
-- [Python 3+](https://www.python.org/downloads/) - Linux calls `python3` rather than `python`
+- [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
@@ -97,6 +97,11 @@ Sort directory defined in console
 ```
 PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorted\'
 ```
+## Troubleshooting
+
+Unicode error when trying to translate plot description
+Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`
+
 
 
 ## Todo
