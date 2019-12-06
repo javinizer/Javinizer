@@ -6,20 +6,31 @@ function Get-MetadataNfo {
         [object]$Settings
     )
 
+    begin {
+        $displayName = $DataObject.DisplayName -replace '&', '&amp;'
+        $alternateTitle = $DataObject.AlternateTitle -replace '&', '&amp;'
+        $director = $DataObject.Director -replace '&', '&amp;'
+        $maker = $DataObject.Maker -replace '&', '&amp;'
+        $description = $DataObject.Description -replace '&', '&amp;'
+        $series = $DataObject.Series -replace '&', '&amp;'
+    }
+
     process {
+
+
         $nfoString = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <movie>
-    <title>$($DataObject.DisplayName)</title>
-    <originaltitle>$($DataObject.AlternateTitle)</originaltitle>
+    <title>$displayName</title>
+    <originaltitle>$alternateTitle</originaltitle>
     <id>$($DataObject.Id)</id>
     <releasedate>$($DataObject.ReleaseDate)</releasedate>
     <year>$($DataObject.ReleaseYear)</year>
-    <director>$($DataObject.Director)</director>
-    <studio>$($DataObject.Maker)</studio>
+    <director>$director</director>
+    <studio>$maker</studio>
     <rating>$($DataObject.Rating)</rating>
     <votes>$($DataObject.RatingCount)</votes>
-    <plot>$($DataObject.Description)</plot>
+    <plot>$description</plot>
     <runtime>$($DataObject.Runtime)</runtime>
     <trailer>$($DataObject.TrailerUrl)</trailer>
     <mpaa>XXX</mpaa>
@@ -27,13 +38,14 @@ function Get-MetadataNfo {
 "@
         if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {
             $tagNfoString = @"
-    <tag>Series: $($DataObject.Series)</tag>
+    <tag>Series: $series</tag>
 
 "@
             $nfoString = $nfoString + $tagNfoString
         }
 
         foreach ($genre in $DataObject.Genre) {
+            $genre = $genre -replace '&', '&amp;'
             $genreNfoString = @"
     <genre>$genre</genre>
 
