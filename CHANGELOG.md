@@ -5,7 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.5]
+## [0.1.6] - 12-6-2019
+### Added
+ - `<RUNTIME>` as filename option
+ - Add setting `max-title-length`
+ -
+
+### Changed
+ - Filename string replacement of `/` to `-`
+ - Keep empty `<thumb></thumb>` tag when actress thumburl is null
+ - Remove alternate actress names surrounded by parentheses in metadata
+
+### Fixed
+ - Brackets `[]` in filename titles erroring
+ - Writing actresses to nfo for videos with more than one actress
+
+## [0.1.5] - 12-4-2019
 ### Added
  - Settings being written in debug output
  - T28/T-28 video recognition support
