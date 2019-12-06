@@ -22,6 +22,7 @@ function Get-R18DataObject {
             'D***k'       = 'Drunk'
             'V*****t'     = 'Violent'
             'M******r'    = 'Molester'
+            'Sch**lgirl'  = 'Schoolgirl'
         }
     }
 
