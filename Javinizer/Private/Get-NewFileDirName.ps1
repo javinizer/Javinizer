@@ -77,11 +77,14 @@ function Convert-FormatString {
         }
 
         if ($title.Length -ge $Settings.General.'max-title-length') {
-            $shortTitle = $title.Substring(0, $Settings.Metadata.'max-title-length')
+            $shortTitle = $title.Substring(0, $Settings.General.'max-title-length')
             $splitTitle = $shortTitle -split ' '
             if ($splitTitle.Count -gt 1) {
                 # Remove the last word of the title just in case it is cut off
-                $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ') + '...'
+                $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
+                if ($title[-1] -match '\W') {
+                    $title = ($title.Substring(0, $title.Length - 2))
+                }
             } else {
                 $title = $shortTitle
             }
