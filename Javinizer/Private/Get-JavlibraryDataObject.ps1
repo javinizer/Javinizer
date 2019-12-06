@@ -37,6 +37,7 @@ function Get-JavlibraryDataObject {
             }
 
             $movieDataObject = [pscustomobject]@{
+                Source        = 'javlibrary'
                 Url           = $javlibraryUrl
                 Id            = Get-JLId -WebRequest $webRequest
                 Title         = Get-JLTitle -WebRequest $webRequest

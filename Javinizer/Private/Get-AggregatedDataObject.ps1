@@ -128,7 +128,33 @@ function Get-AggregatedDataObject {
                 foreach ($actress in $var.Value.Actress) {
                     # Remove secondary actress names
                     $cleanActressName = $actress -replace ' ?\((.*)\) ?', ''
-                    $actressArray += $cleanActressName
+                    if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                        if ($var.Value.Source -eq 'javlibrary') {
+                            $temp = $cleanActressName.split(' ')
+                            if ($temp[1].length -ne 0) {
+                                $lastName, $firstName = $cleanActressName.split(' ')
+                                $actressArray += "$firstName $lastName"
+                            } else {
+                                $actressArray += $cleanActressName.Trim()
+                            }
+                        } elseif ($var.Value.Source -eq 'r18') {
+                            $actressArray += $cleanActressName
+                        } else {
+                            $actressArray += $cleanActressName
+                        }
+                    } else {
+                        if ($var.Value.Source -eq 'javlibrary') {
+                            $actressArray += $cleanActressName
+                        } elseif ($var.Value.Source -eq 'r18') {
+                            $temp = $cleanActressName.split(' ')
+                            if ($temp[1].length -ne 0) {
+                                $firstName, $lastName = $cleanActressName.split(' ')
+                                $actressArray += "$lastName $firstName"
+                            } else {
+                                $actressArray += $actress.Trim()
+                            }
+                        }
+                    }
                 }
                 $aggregatedDataObject.Actress = $actressArray
             }

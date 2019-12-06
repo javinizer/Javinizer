@@ -39,6 +39,7 @@ function Get-R18DataObject {
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
 
                 $movieDataObject = [pscustomobject]@{
+                    Source          = 'r18'
                     Url             = $r18Url
                     ContentId       = Get-R18ContentId -WebRequest $webRequest
                     Id              = Get-R18Id -WebRequest $webRequest
