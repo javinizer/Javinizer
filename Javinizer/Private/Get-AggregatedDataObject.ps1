@@ -122,6 +122,7 @@ function Get-AggregatedDataObject {
             PartNumber       = $null
         }
 
+        # TODO: Confirm compatibility with find command with individual sources specified
         foreach ($priority in $actressPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Actress) {
@@ -133,9 +134,9 @@ function Get-AggregatedDataObject {
                             $temp = $cleanActressName.split(' ')
                             if ($temp[1].length -ne 0) {
                                 $lastName, $firstName = $cleanActressName.split(' ')
-                                $actressArray += "$firstName $lastName"
+                                $actressArray += $firstName + ' ' + $lastName
                             } else {
-                                $actressArray += $cleanActressName.Trim()
+                                $actressArray += $cleanActressName
                             }
                         } elseif ($var.Value.Source -eq 'r18') {
                             $actressArray += $cleanActressName
@@ -149,9 +150,9 @@ function Get-AggregatedDataObject {
                             $temp = $cleanActressName.split(' ')
                             if ($temp[1].length -ne 0) {
                                 $firstName, $lastName = $cleanActressName.split(' ')
-                                $actressArray += "$lastName $firstName"
+                                $actressArray += $lastName + ' ' + $firstName
                             } else {
-                                $actressArray += $actress.Trim()
+                                $actressArray += $cleanActressName
                             }
                         }
                     }
