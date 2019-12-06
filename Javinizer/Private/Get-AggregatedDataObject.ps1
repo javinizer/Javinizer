@@ -13,6 +13,7 @@ function Get-AggregatedDataObject {
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        $actressArray = @()
         $genreArray = @()
     }
 
@@ -124,7 +125,16 @@ function Get-AggregatedDataObject {
         foreach ($priority in $actressPriority) {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Actress) {
-                $aggregatedDataObject.Actress = $var.Value.Actress
+                if ($Settings.Metadata.'remove-secondary-actressname' -eq 'True') {
+                    foreach ($actress in $var.Value.Actress) {
+                        # Remove secondary actress names
+                        $cleanActressName = $actress -replace ' ?\((.*)\) ?', ''
+                        $actressArray += $cleanActressName
+                    }
+                    $aggregatedDataObject.Actress = $actressArray
+                } else {
+                    $aggregatedDataObject.Actress = $var.Value.Actress
+                }
             }
         }
 

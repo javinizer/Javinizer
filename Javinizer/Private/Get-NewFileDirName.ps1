@@ -76,6 +76,17 @@ function Convert-FormatString {
             }
         }
 
+        if ($title.Length -ge $Settings.General.'max-title-length') {
+            $shortTitle = $title.Substring(0, $Settings.Metadata.'max-title-length')
+            $splitTitle = $shortTitle -split ' '
+            if ($splitTitle.Count -gt 1) {
+                # Remove the last word of the title just in case it is cut off
+                $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ') + '...'
+            } else {
+                $title = $shortTitle
+            }
+        }
+
         $FormatString = $FormatString[1..($FormatString.Length - 2)] -join ''
         $newName = $FormatString `
             -replace '<ID>', "$($DataObject.Id)" `
