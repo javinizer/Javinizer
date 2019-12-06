@@ -83,10 +83,12 @@ function Convert-FormatString {
                 # Remove the last word of the title just in case it is cut off
                 $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
                 if ($title[-1] -match '\W') {
-                    $title = ($title.Substring(0, $title.Length - 2))
+                    $title = ($title.Substring(0, $title.Length - 2)) + '...'
+                } else {
+                    $title = $title + '...'
                 }
             } else {
-                $title = $shortTitle
+                $title = $shortTitle + '...'
             }
         }
 
