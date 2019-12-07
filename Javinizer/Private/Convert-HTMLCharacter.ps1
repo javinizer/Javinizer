@@ -13,7 +13,7 @@ function Convert-HTMLCharacter {
             -replace '&gt;', '>' `
             -replace '&#039;', "'" `
             -replace '#39;s', "'" `
-            -replace '※', '*' `
+            -replace '※', '.*.' `
             -replace '&#39;', "'" `
             -replace '&#039', ''
 

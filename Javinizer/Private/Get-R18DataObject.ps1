@@ -238,6 +238,7 @@ function Get-R18Series {
         $series = (((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '<\/a><br>')[0] -split '<dd>')[1] -split '>')[1]
         $seriesUrl = ((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '">')[0] -split '"')[1]
         $series = Convert-HtmlCharacter -String $series
+        $series = $series -replace '\n', ' '
 
         if ($series -like '*...') {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"

@@ -108,12 +108,8 @@ function Get-DmmDescription {
         # This will remove the extra quotation mark at the end of the description
         $description = $description.Substring(0, $description.Length - 2)
         $description = Convert-HtmlCharacter -String $description
-        $description = $description -replace '<span style="color:red">', '' `
-            -replace '</span>', '' `
-            -replace '<span>', '' `
-            -replace '<br>', '' `
-            -replace '</br>', ''
-
+        $description = $description -replace '<([^>]+)>', ''
+        $description = (($description -split '\.\*\.')[0]).Trim()
         Write-Output $description
     }
 }
