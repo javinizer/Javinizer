@@ -125,7 +125,7 @@ function Get-AggregatedDataObject {
         # TODO: Confirm compatibility with find command with individual sources specified
         foreach ($priority in $actressPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.Actress) {
+            if ($null -eq $aggregatedDataObject.Actress -or $null -eq $aggregatedDataObject.Actress[0]) {
                 foreach ($actress in $var.Value.Actress) {
                     # Remove secondary actress names
                     $cleanActressName = $actress -replace ' ?\((.*)\) ?', ''
@@ -163,7 +163,7 @@ function Get-AggregatedDataObject {
 
         foreach ($priority in $actressthumburlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.ActressThumbUrl) {
+            if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
                 $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
             }
         }
@@ -295,14 +295,14 @@ function Get-AggregatedDataObject {
 
         foreach ($priority in $screenshoturlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.ScreenshotUrl) {
+            if ($null -eq $aggregatedDataObject.ScreenshotUrl -or $null -eq $aggregatedDataObject.ScreenshotUrl[0]) {
                 $aggregatedDataObject.ScreenshotUrl = $var.Value.ScreenshotUrl
             }
         }
 
         foreach ($priority in $trailerurlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.TrailerUrl) {
+            if ($null -eq $aggregatedDataObject.TrailerUrl -or $null -eq $aggregatedDataObject.TrailerUrl[0]) {
                 if ($var.Value.TrailerUrl.Count -gt 1) {
                     if ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')) {
                         $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')
