@@ -285,6 +285,10 @@ function Get-R18Genre {
             }
         }
 
+        if ($genreArray.Count -eq 0) {
+            $genreArray = $null
+        }
+
         Write-Output $genreArray
     }
 }

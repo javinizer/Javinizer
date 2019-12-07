@@ -190,6 +190,10 @@ function Get-JLGenre {
             $genre += $genres
         }
 
+        if ($genre.Count -eq 0) {
+            $genre = $null
+        }
+
         Write-Output $genre
     }
 }
