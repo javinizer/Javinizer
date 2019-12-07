@@ -326,6 +326,10 @@ function Get-R18Actress {
             }
         }
 
+        if ($movieActressThumb.Count -eq 0) {
+            $movieActressThumb = $null
+        }
+
         $movieActressObject = [pscustomobject]@{
             Name     = $movieActress
             ThumbUrl = $movieActressThumb

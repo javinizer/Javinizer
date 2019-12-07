@@ -216,6 +216,10 @@ function Get-JLActress {
             }
         }
 
+        if ($actress.Count -eq 0) {
+            $actress = $null
+        }
+
         Write-Output $actress
     }
 }
