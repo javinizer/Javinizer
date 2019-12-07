@@ -16,8 +16,6 @@ function Get-MetadataNfo {
     }
 
     process {
-
-
         $nfoString = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <movie>
@@ -55,26 +53,47 @@ function Get-MetadataNfo {
 
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
-                $actressNfoString = @"
+                if ($null -ne $DataObject.ActressThumbUrl) {
+                    $actressNfoString = @"
     <actor>
         <name>$($DataObject.Actress)</name>
         <thumb>$($DataObject.ActressThumbUrl)</thumb>
     </actor>
 
 "@
+                } else {
+                    $actressNfoString = @"
+    <actor>
+        <name>$($DataObject.Actress)</name>
+        <thumb></thumb>
+    </actor>
+
+"@
+                }
             } else {
-                for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
-                    $actressNfoString += @"
+                if ($null -ne $DataObject.ActressThumbUrl) {
+                    for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                        $actressNfoString += @"
     <actor>
         <name>$($DataObject.Actress[$i])</name>
         <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
     </actor>
 
 "@
+                    }
+                } else {
+                    for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                        $actressNfoString += @"
+    <actor>
+        <name>$($DataObject.Actress[$i])</name>
+        <thumb></thumb>
+    </actor>
+
+"@
+                    }
                 }
             }
         }
-
 
         $nfoString = $nfoString + $actressNfoString
         $endNfoString = @"
