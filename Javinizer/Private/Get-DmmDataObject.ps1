@@ -193,6 +193,11 @@ function Get-DmmLabel {
     process {
         $label = ((($WebRequest.Content -split '<td align="right" valign="top" class="nw">レーベル：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
         $label = Convert-HtmlCharacter -String $label
+
+        if ($label -eq '</tr') {
+            $label = $null
+        }
+
         Write-Output $label
     }
 }
