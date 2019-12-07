@@ -18,7 +18,7 @@ function Get-NewFileDirName {
 
     process {
         $newFolderName = Convert-FormatString -FormatString $folderFormat
-        $newDisplayName = Convert-FormatString -FormatString $displayNameFormat
+        $newDisplayName = Convert-FormatString -FormatString $displayNameFormat -DisplayName
         $originalNewFileName = Convert-FormatString -FormatString $fileFormat
 
         if ($null -ne $DataObject.PartNumber) {
@@ -44,7 +44,8 @@ function Get-NewFileDirName {
 
 function Convert-FormatString {
     param (
-        [string]$FormatString
+        [string]$FormatString,
+        [switch]$DisplayName
     )
 
     begin {
@@ -65,6 +66,7 @@ function Convert-FormatString {
     process {
         $title = $DataObject.Title
         $studio = $DataObject.Maker
+
         # Remove invalid Windows filename symbols from title
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {
@@ -76,19 +78,21 @@ function Convert-FormatString {
             }
         }
 
-        if ($title.Length -ge $Settings.General.'max-title-length') {
-            $shortTitle = $title.Substring(0, $Settings.General.'max-title-length')
-            $splitTitle = $shortTitle -split ' '
-            if ($splitTitle.Count -gt 1) {
-                # Remove the last word of the title just in case it is cut off
-                $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
-                if ($title[-1] -match '\W') {
-                    $title = ($title.Substring(0, $title.Length - 2)) + '...'
+        if ( -not ($DisplayName.IsPresent)) {
+            if ($title.Length -ge $Settings.General.'max-title-length') {
+                $shortTitle = $title.Substring(0, $Settings.General.'max-title-length')
+                $splitTitle = $shortTitle -split ' '
+                if ($splitTitle.Count -gt 1) {
+                    # Remove the last word of the title just in case it is cut off
+                    $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
+                    if ($title[-1] -match '\W') {
+                        $title = ($title.Substring(0, $title.Length - 2)) + '...'
+                    } else {
+                        $title = $title + '...'
+                    }
                 } else {
-                    $title = $title + '...'
+                    $title = $shortTitle + '...'
                 }
-            } else {
-                $title = $shortTitle + '...'
             }
         }
 
