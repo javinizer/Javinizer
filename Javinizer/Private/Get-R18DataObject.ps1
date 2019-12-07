@@ -12,17 +12,19 @@ function Get-R18DataObject {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
         $replaceHashTable = @{
-            'S********l'  = 'Schoolgirl'
-            'S**t'        = 'Shit'
-            'H*********n' = 'Humiliation'
-            'G*******g'   = 'Gangbang'
-            'H*******m'   = 'Hypnotism'
-            'S*****t'     = 'Student'
-            'C***d'       = 'Child'
-            'D***k'       = 'Drunk'
-            'V*****t'     = 'Violent'
-            'M******r'    = 'Molester'
-            'Sch**lgirl'  = 'Schoolgirl'
+            'S********l'                     = 'Schoolgirl'
+            'S**t'                           = 'Shit'
+            'H*********n'                    = 'Humiliation'
+            'G*******g'                      = 'Gangbang'
+            'H*******m'                      = 'Hypnotism'
+            'S*****t'                        = 'Student'
+            'C***d'                          = 'Child'
+            'D***k'                          = 'Drunk'
+            'V*****t'                        = 'Violent'
+            'M******r'                       = 'Molester'
+            'Sch**lgirl'                     = 'Schoolgirl'
+            'Sch**l'                         = 'School'
+            '[Recommended For Smartphones] ' = ''
         }
     }
 
