@@ -6,6 +6,7 @@ function Set-JavMovie {
         [object]$Settings,
         [system.io.fileinfo]$Path,
         [system.io.fileinfo]$DestinationPath,
+        [string]$ScriptRoot,
         [switch]$Force
     )
 
@@ -21,8 +22,7 @@ function Set-JavMovie {
         $Path = (Get-Item -LiteralPath $Path).FullName
         $DestinationPath = (Get-Item $DestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
-        $modulePath = (Get-Item $PSScriptroot).Parent
-        $cropPath = Join-Path -Path $modulePath -ChildPath 'crop.py'
+        $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
         $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
@@ -113,9 +113,9 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $dataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
-                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         }
                     }
                 }

@@ -39,6 +39,7 @@ function Get-R18DataObject {
             try {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
+                Write-Debug "URL IS $r18Url"
 
                 $movieDataObject = [pscustomobject]@{
                     Source          = 'r18'
@@ -84,6 +85,7 @@ function Get-R18ContentId {
     process {
         $contentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
+        Write-Debug "Content ID is $contentId"
         Write-Output $contentId
     }
 }
@@ -96,6 +98,7 @@ function Get-R18Id {
     process {
         $id = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $id = Convert-HtmlCharacter -String $id
+        Write-Debug "Id is $id"
         Write-Output $Id
     }
 }
@@ -111,6 +114,7 @@ function Get-R18Title {
         foreach ($string in $replaceHashTable.GetEnumerator()) {
             $title = $title -replace [regex]::Escape($string.Name), $string.Value
         }
+        Write-Debug "Title is $title"
         Write-Output $Title
     }
 }
@@ -155,6 +159,7 @@ function Get-R18ReleaseDate {
         # Convert the month name to a numeric value to conform with CMS datetime standards
         # $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
         $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
+        Write-Debug "ReleaseDate is $releaseDate"
         Write-Output $releaseDate
     }
 }
@@ -167,6 +172,7 @@ function Get-R18ReleaseYear {
     process {
         $releaseYear = Get-R18ReleaseDate -WebRequest $WebRequest
         $releaseYear = ($releaseYear -split '-')[0]
+        Write-Debug "ReleaseYear is $releaseYear"
         Write-Output $releaseYear
     }
 }
@@ -179,6 +185,7 @@ function Get-R18Runtime {
     process {
         $length = ((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '\.')[0]) -replace 'min', ''
         $length = Convert-HtmlCharacter -String $length
+        Write-Debug "Runtime is $length"
         Write-Output $length
     }
 }
@@ -195,7 +202,7 @@ function Get-R18Director {
         if ($director -eq '----') {
             $director = $null
         }
-
+        Write-Debug "Director is $director"
         Write-Output $director
     }
 }
@@ -208,6 +215,7 @@ function Get-R18Maker {
     process {
         $maker = ((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
         $maker = Convert-HtmlCharacter -String $maker
+        Write-Debug "Maker is $Maker"
         Write-Output $maker
     }
 }
@@ -225,6 +233,7 @@ function Get-R18Label {
             $label = $null
         }
 
+        Write-Debug "Label is $label"
         Write-Output $label
     }
 }
@@ -249,7 +258,7 @@ function Get-R18Series {
         if ($series -like '</dd*') {
             $series = $null
         }
-
+        Write-Debug "Series is $series"
         Write-Output $series
     }
 }
@@ -292,6 +301,7 @@ function Get-R18Genre {
             $genreArray = $null
         }
 
+        Write-Debug "genres are $genreArray"
         Write-Output $genreArray
     }
 }
@@ -302,35 +312,29 @@ function Get-R18Actress {
     )
 
     begin {
+        $movieActressHtml = @()
+        $movieActressExtract = @()
         $movieActress = @()
         $movieActressThumb = @()
     }
 
     process {
-        $movieActressHtml = (($WebRequest.Content -split '<div itemprop="actors" data-type="actress-list" class="pop-list">')[1] -split '<div class="product-categories-list product-box-list">')[0]
-        $movieActressHtml = $movieActressHtml -replace '<a itemprop="url" href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)\/pagesize=(.*)\/price=all\/sort=popular\/type=actress\/page=(.*)\/">', ''
-        $movieActressHtml = $movieActressHtml -replace '<span itemscope itemtype="http:\/\/schema.org\/Person">', ''
-        $movieActressHtml = $movieActressHtml -split '<\/a>'
-
-        foreach ($actress in $movieActressHtml) {
-            if ($actress -match '<span itemprop="name">') {
-                $movieActress += (($actress -split '<span itemprop="name">')[1] -split '<\/span>')[0]
+        #$movieActressHtml = ($WebRequest.Content -split '<p><img')[1]
+        $movieActressHtml = $WebRequest.Content -split '\n'
+        foreach ($line in $movieActressHtml) {
+            if ($line -match '<p><img alt') {
+                $movieActressExtract += ($line).Trim()
             }
         }
+
+        foreach ($actress in $movieActressExtract) {
+            $movieActress += (($actress -split 'alt="')[1] -split '"')[0]
+            $movieActressThumb += (($actress -split 'src="')[1] -split '"')[0]
+        }
+
 
         if ($movieActress -eq '----') {
             $movieActress = $null
-        }
-
-        foreach ($actress in $movieActress) {
-            $movieActressHtml = $WebRequest.Content -split '\n'
-            $movieActressHtml = $movieActressHtml | Select-String -Pattern 'src="https:\/\/pics.r18.com\/mono\/actjpgs\/(.*).jpg"' -AllMatches
-            foreach ($actressThumb in $movieActressHtml) {
-                $actressName = Convert-HtmlCharacter -String ((($actressThumb -split '<img alt="')[1] -split '"')[0])
-                if ($actress -match $actressName) {
-                    $movieActressThumb += (($actressThumb -split 'src="')[1] -split '"')[0]
-                }
-            }
         }
 
         if ($movieActressThumb.Count -eq 0) {
@@ -342,6 +346,7 @@ function Get-R18Actress {
             ThumbUrl = $movieActressThumb
         }
 
+        Write-Debug "Actresses are $movieActressObject"
         Write-Output $movieActressObject
     }
 }
@@ -354,6 +359,7 @@ function Get-R18CoverUrl {
     process {
         $coverUrl = (($WebRequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
         $coverUrl = (($coverUrl -split 'src="')[1] -split '">')[0]
+        Write-Debug "Coverurl is $coverUrl"
         Write-Output $coverUrl
     }
 }
@@ -377,7 +383,7 @@ function Get-R18ScreenshotUrl {
                 $screenshotUrl += $screenshot
             }
         }
-
+        Write-Debug "Screenshoturl is $screenshotUrl"
         Write-Output $screenshotUrl
     }
 }
@@ -392,14 +398,19 @@ function Get-R18TrailerUrl {
     }
 
     process {
-        $trailerHtml = $WebRequest.Content -split '\n'
-        $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
+        # $trailerHtml = $WebRequest.Content -split '\n'
+        $trailerUrl += (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
+        $trailerUrl += (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
+        $trailerUrl += (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
+
+        <# $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
 
         foreach ($trailer in $trailerHtml) {
             $trailer = (($trailer -split '"')[1] -split '"')[0]
             $trailerUrl += $trailer
-        }
+        } #>
 
+        Write-Debug "Trailer Url is $trailerUrl"
         Write-Output $trailerUrl
     }
 }

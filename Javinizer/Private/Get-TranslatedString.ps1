@@ -2,13 +2,13 @@ function Get-TranslatedString {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$String
+        [string]$String,
+        [string]$ScriptRoot
     )
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-        $modulePath = (Get-Item $PSScriptroot).Parent
-        $translatePath = Join-Path -Path $modulePath -ChildPath 'translate.py'
+        $translatePath = Join-Path -Path $ScriptRoot -ChildPath 'translate.py'
     }
 
     process {

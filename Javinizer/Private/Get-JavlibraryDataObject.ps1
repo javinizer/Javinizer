@@ -5,7 +5,8 @@ function Get-JavlibraryDataObject {
         [Parameter(Position = 0)]
         [string]$Name,
         [Parameter(Position = 1)]
-        [string]$Url
+        [string]$Url,
+        [string]$ScriptRoot
     )
 
     begin {
@@ -17,7 +18,7 @@ function Get-JavlibraryDataObject {
         if ($Url) {
             $javlibraryUrl = $Url
         } else {
-            $javlibraryUrl = Get-JavLibraryUrl -Name $Name
+            $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
         }
 
         if ($null -ne $javlibraryUrl) {
@@ -27,7 +28,7 @@ function Get-JavlibraryDataObject {
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
-                    New-CloudflareSession
+                    New-CloudflareSession -ScriptRoot $ScriptRoot
                 } catch {
                     throw $_
                 }

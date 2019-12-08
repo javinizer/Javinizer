@@ -8,7 +8,8 @@ function Get-AggregatedDataObject {
         [switch]$Dmm,
         [switch]$Javlibrary,
         [object]$Settings,
-        [string]$Id
+        [string]$Id,
+        [string]$ScriptRoot
     )
 
     begin {
@@ -61,7 +62,7 @@ function Get-AggregatedDataObject {
                 }
 
                 if ($url.Result -contains 'javlibrary') {
-                    $javlibraryData = Get-JavlibraryDataObject -Url $url.Url
+                    $javlibraryData = Get-JavlibraryDataObject -Url $url.Url -ScriptRoot $ScriptRoot
                 }
             }
         } elseif ($FileDetails) {
@@ -76,7 +77,7 @@ function Get-AggregatedDataObject {
             }
 
             if ($javlibrary.IsPresent) {
-                $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
+                $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [Id]"
@@ -90,7 +91,7 @@ function Get-AggregatedDataObject {
             }
 
             if ($javlibrary.IsPresent) {
-                $javlibraryData = Get-JavlibraryDataObject -Name $Id
+                $javlibraryData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot
             }
         }
 
@@ -163,8 +164,20 @@ function Get-AggregatedDataObject {
 
         foreach ($priority in $actressthumburlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
-                $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+            if ($actressPriority[0] -eq 'javlibrary') {
+                if ($null -ne $javlibraryData.Actress) {
+                    $aggregatedDataObject.ActressThumbUrl = $null
+                } else {
+                    if ($null -ne $r18Data.Actress) {
+                        if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                            $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                        }
+                    }
+                }
+            } else {
+                if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                    $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                }
             }
         }
 
@@ -186,7 +199,7 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Description) {
                 if ($Settings.Metadata.'translate-description' -eq 'true' -and $null -ne $var.Value.Description) {
-                    $translatedDescription = Get-TranslatedString $var.Value.Description
+                    $translatedDescription = Get-TranslatedString $var.Value.Description -ScriptRoot $ScriptRoot
                     $aggregatedDataObject.Description = $translatedDescription
                 } else {
                     $aggregatedDataObject.Description = $var.Value.Description
@@ -304,12 +317,12 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.TrailerUrl -or $null -eq $aggregatedDataObject.TrailerUrl[0]) {
                 if ($var.Value.TrailerUrl.Count -gt 1) {
-                    if ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')
-                    } elseif ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')
-                    } elseif (($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_sm_'))) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_sm_')
+                    if ($var.Value.TrailerUrl -match '_dmb') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_dmb_')
+                    } elseif ($var.Value.TrailerUrl -match '_dm_') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_dm_')
+                    } elseif ($var.Value.TrailerUrl -match '_sm_') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_sm_')
                     }
                 } else {
                     $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl
@@ -320,7 +333,7 @@ function Get-AggregatedDataObject {
         # Set part number for video before creating new filename
         $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
 
-        $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
+        $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
         $aggregatedDataObject.FileName = $fileDirName.FileName
         $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName

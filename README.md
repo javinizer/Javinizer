@@ -20,7 +20,8 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 **Dependencies**
 
-- [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended 7
+- [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended PowerShell 7 (Windows PowerShell is **NOT** supported)
+    - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
@@ -28,6 +29,9 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 ```
 # From any compatible terminal
+# pwsh
+> Install-Module PoshRSJob
+# python
 > pip install cloudscraper
 > pip install pillow
 > pip install googletrans
@@ -93,6 +97,11 @@ Sort directory defined in `settings.ini` at `input-path` and `output-path`
 PS> Javinizer -Apply
 ```
 
+Sort directory defined in `settings.ini` at `input-path` and `output-path` using multiple threads
+```
+PS> Javinizer -Apply -Multi
+```
+
 Sort directory defined in console
 ```
 PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorted\'
@@ -108,4 +117,6 @@ Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for wor
 - [x] Trailer scraping - [0.1.2]
 - [x] Multi-part video directory sort support - [0.1.2]
 - [ ] Parallel/Threaded sort processing
-- [ ] Allow switching firstname/lastname order
+- [x] Allow switching firstname/lastname order - [0.1.7]
+- [ ] Normalize genre names between JAVLibrary and R18
+- [ ] Normalize studio names between JAVLibrary and R18

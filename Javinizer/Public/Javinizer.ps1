@@ -20,23 +20,28 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('a')]
         [switch]$Apply,
-        [switch]$Parallel,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Alias('m')]
+        [switch]$Multi,
         [switch]$R18,
         [switch]$Dmm,
         [switch]$Javlibrary,
-        [switch]$Force
+        [switch]$Force,
+        [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
     begin {
+
         $urlLocation = @()
         $urlList = @()
         $index = 1
 
         try {
-            $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
+            $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
+            Write-Verbose "Settings path: $ScriptRoot"
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
-            throw "[$($MyInvocation.MyCommand.Name)] Settings file: [$settingsPath] not found; Ensure that the settings file exists]"
+            throw "[$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -131,33 +136,40 @@ function Javinizer {
                             $urlLocation = Test-UrlLocation -Url $Url
                         }
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
+                        # TODO: LOOK OVER HERE TO DEBUG R18 NOT WORKING IN JOB
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
-                    foreach ($video in $fileDetails) {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                        if ($video.PartNumber -le '1') {
-                            # Get data object for part 1 of a multipart video
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                            $script:savedDataObject = $dataObject
-                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
-                        } elseif ($video.PartNumber -ge '2') {
-                            # Use the saved data object for the following parts
-                            $savedDataObject.PartNumber = $video.PartNumber
-                            $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
-                            $savedDataObject.FileName = $fileDirName.FileName
-                            $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
-                            $savedDataObject.FolderName = $fileDirName.FolderName
-                            $savedDataObject.DisplayName = $fileDirName.DisplayName
-                            Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
+
+                    if ($Multi.IsPresent) {
+                        $throttleCount = $Settings.General.'multi-sort-throttle-limit'
+                        Start-MultiSort -Path $Path -Throttle $throttleCount -DestinationPath $DestinationPath
+                    } else {
+                        foreach ($video in $fileDetails) {
+                            Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
+                            if ($video.PartNumber -le '1') {
+                                # Get data object for part 1 of a multipart video
+                                $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                                $script:savedDataObject = $dataObject
+                                Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                            } elseif ($video.PartNumber -ge '2') {
+                                # Use the saved data object for the following parts
+                                $savedDataObject.PartNumber = $video.PartNumber
+                                $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
+                                $savedDataObject.FileName = $fileDirName.FileName
+                                $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
+                                $savedDataObject.FolderName = $fileDirName.FolderName
+                                $savedDataObject.DisplayName = $fileDirName.DisplayName
+                                Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                            }
+                            $index++
                         }
-                        $index++
                     }
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
