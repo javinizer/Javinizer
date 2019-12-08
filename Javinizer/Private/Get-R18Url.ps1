@@ -28,7 +28,7 @@ function Get-R18Url {
             if ($Tries.IsPresent) {
                 $Tries = $Tries
             } else {
-                $Tries = 3
+                $Tries = 5
             }
 
             $count = 1

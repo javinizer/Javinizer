@@ -44,7 +44,7 @@ function Get-JavlibraryUrl {
                 if ($Tries.IsPresent) {
                     $Tries = $Tries
                 } else {
-                    $Tries = 4
+                    $Tries = 5
                 }
             } elseif ($numResults -eq 0 -or $null -eq $searchResults) {
                 Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
@@ -61,7 +61,7 @@ function Get-JavlibraryUrl {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
                 if ($resultId -eq $Name) {
-                    $javlibraryUrl = Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
+                    $javlibraryUrl = (Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] matched"
                     break
                 }
