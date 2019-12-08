@@ -17,10 +17,10 @@ function Javinizer {
         [string]$Url,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$PassThru,
-        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Apply', Mandatory = $true)]
         [Alias('a')]
         [switch]$Apply,
-        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(Mandatory = $false)]
         [Alias('m')]
         [switch]$Multi,
         [switch]$R18,
