@@ -9,11 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
  - Muli-threaded sorting functionality with parameter `Multi`
  - Ability to select name order for actress with setting `first-last-name-order`
- - Comment based help `PS> Help Javinizer` or `Javinizer -Help`
+ - Comment based help `PS> Help Javinizer`
 
 ### Changed
  - Default DestinationPath will be set to your `Path` parameter rather than your settings `output-path`
- - Default parameterset for Apply, so that it cannot be run with `Path` or `DestinationPath`
 
 ### Fixed
  - Javlibrary failing to match if the first result is error
