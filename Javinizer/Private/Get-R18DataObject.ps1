@@ -87,6 +87,11 @@ function Get-R18ContentId {
         $contentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
         #Write-Debug "Content ID is $contentId"
+
+        if ($contentId -eq '----')  {
+            $contentId = $null
+        }
+
         Write-Output $contentId
     }
 }
@@ -100,6 +105,11 @@ function Get-R18Id {
         $id = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $id = Convert-HtmlCharacter -String $id
         #Write-Debug "Id is $id"
+
+        if ($id -eq '----') {
+            $id = $null
+        }
+
         Write-Output $Id
     }
 }
