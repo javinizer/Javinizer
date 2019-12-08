@@ -5,7 +5,8 @@ function Get-DmmDataObject {
         [Parameter(Position = 0)]
         [string]$Name,
         [Parameter(Position = 1)]
-        [string]$Url
+        [string]$Url,
+        [string]$AltName
     )
 
     begin {
@@ -18,7 +19,7 @@ function Get-DmmDataObject {
             $dmmUrl = $Url
         } else {
             # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
-            $r18Url = Get-R18Url -Name $Name
+            $r18Url = Get-R18Url -Name $Name -AltName $AltName
             if ($null -eq $r18Url) {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
                 return

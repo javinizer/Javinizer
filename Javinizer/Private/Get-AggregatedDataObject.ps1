@@ -69,11 +69,11 @@ function Get-AggregatedDataObject {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [FileDetails]"
             $currentSearch = $FileDetails.Id
             if ($r18.IsPresent) {
-                $r18Data = Get-R18DataObject -Name $fileDetails.Id
+                $r18Data = Get-R18DataObject -Name $fileDetails.Id -AltName $fileDetails.ContentId
             }
 
             if ($dmm.IsPresent) {
-                $dmmData = Get-DmmDataObject -Name $fileDetails.Id
+                $dmmData = Get-DmmDataObject -Name $fileDetails.Id  -AltName $fileDetails.ContentId
             }
 
             if ($javlibrary.IsPresent) {
