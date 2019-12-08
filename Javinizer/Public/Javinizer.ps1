@@ -137,7 +137,7 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif ((($getPath.Mode -match $itemMode) -and ($getDestinationPath.Mode -match $directoryMode)) -or $Apply.IsPresent) {
+                } elseif ((($getPath.Mode -match $directoryMode) -and ($getDestinationPath.Mode -match $directoryMode)) -or $Apply.IsPresent) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 
