@@ -17,7 +17,7 @@ function Javinizer {
         [string]$Url,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$PassThru,
-        [Parameter(ParameterSetName = 'Apply', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('a')]
         [switch]$Apply,
         [Parameter(Mandatory = $false)]
@@ -31,7 +31,6 @@ function Javinizer {
     )
 
     begin {
-
         $urlLocation = @()
         $urlList = @()
         $index = 1
@@ -87,7 +86,7 @@ function Javinizer {
                     $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
                 }
 
-                if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
+                if (-not ($PSBoundParameters.ContainsKey('DestinationPath')) -and (-not ($Apply.IsPresent))) {
                     $DestinationPath = $Path
                 }
 
@@ -136,7 +135,7 @@ function Javinizer {
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif (((Test-Path -Path $getPath.FullName -PathType Container) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
+                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
