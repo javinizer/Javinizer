@@ -20,15 +20,18 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('a')]
         [switch]$Apply,
-        [switch]$Parallel,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [ValidateRange(1, 5)][Alias('m')]
+        [int]$Multi = 3,
         [switch]$R18,
         [switch]$Dmm,
         [switch]$Javlibrary,
         [switch]$Force,
-        [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
+        [string]$ScriptRoot = $PSScriptRoot
     )
 
     begin {
+        $ScriptRoot = (Get-Item $ScriptRoot).Parent
         $urlLocation = @()
         $urlList = @()
         $index = 1
@@ -143,24 +146,29 @@ function Javinizer {
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
-                    foreach ($video in $fileDetails) {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                        if ($video.PartNumber -le '1') {
-                            # Get data object for part 1 of a multipart video
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
-                            $script:savedDataObject = $dataObject
-                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
-                        } elseif ($video.PartNumber -ge '2') {
-                            # Use the saved data object for the following parts
-                            $savedDataObject.PartNumber = $video.PartNumber
-                            $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
-                            $savedDataObject.FileName = $fileDirName.FileName
-                            $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
-                            $savedDataObject.FolderName = $fileDirName.FolderName
-                            $savedDataObject.DisplayName = $fileDirName.DisplayName
-                            Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+
+                    if ($PSBoundParameters.ContainsKey('Multi')) {
+                        Start-MultiSort -Path $Path -Throttle $Multi -DestinationPath $DestinationPath
+                    } else {
+                        foreach ($video in $fileDetails) {
+                            Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
+                            if ($video.PartNumber -le '1') {
+                                # Get data object for part 1 of a multipart video
+                                $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                                $script:savedDataObject = $dataObject
+                                Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                            } elseif ($video.PartNumber -ge '2') {
+                                # Use the saved data object for the following parts
+                                $savedDataObject.PartNumber = $video.PartNumber
+                                $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
+                                $savedDataObject.FileName = $fileDirName.FileName
+                                $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
+                                $savedDataObject.FolderName = $fileDirName.FolderName
+                                $savedDataObject.DisplayName = $fileDirName.DisplayName
+                                Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                            }
+                            $index++
                         }
-                        $index++
                     }
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
