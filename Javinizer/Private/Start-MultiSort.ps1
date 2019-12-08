@@ -22,9 +22,9 @@ function Start-MultiSort {
     $files | Start-RSJob -VariablesToImport $importVariables -Verbose:$false -ScriptBlock {
         Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
     } -Throttle $Throttle -FunctionFilesToImport (Join-Path $PSScriptRoot -ChildPath 'Get-AggregatedDataObject.ps1'), `
-    (Join-Path -Path (Get-Item $PSScriptRoot).Parent -ChildPath (Join-Path 'Public' -ChildPath 'Javinizer.ps1')), `
+    (Join-Path -Path (Get-Item $PSScriptRoot).Parent -ChildPath (Join-Path 'Public' -ChildPath 'javinizer.ps1')), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-CommaDelimitedString.ps1'), `
-    (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-HTMLCharacter.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-HtmlCharacter.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-JavTitle.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-DmmDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-FindDataObject.ps1'), `
