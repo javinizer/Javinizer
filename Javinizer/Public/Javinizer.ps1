@@ -84,10 +84,11 @@ function Javinizer {
                         return
                     }
                     $Path = ($settings.Locations.'input-path') -replace '"', ''
+                    $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
                 }
 
                 if (-not ($PSBoundParameters.ContainsKey('DestinationPath'))) {
-                    $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
+                    $DestinationPath = $Path
                 }
 
                 try {
