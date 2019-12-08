@@ -93,7 +93,7 @@ function Javinizer {
                 try {
                     $getPath = Get-Item $Path -ErrorAction Stop
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$($Path.FullName)] does not exist; Exiting..."
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
                 }
 
@@ -109,7 +109,7 @@ function Javinizer {
 
                 try {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
-                    $fileDetails = Convert-JavTitle -Path $Path
+                    $fileDetails = Convert-JavTitle -Path $getPath.FullName
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
                     return
@@ -117,7 +117,7 @@ function Javinizer {
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
-                if ((Test-Path -Path $Path -PathType Leaf) -and (Test-Path -Path $DestinationPath -PathType Container)) {
+                if ((Test-Path -Path $getPath.FullName -PathType Leaf) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
@@ -128,19 +128,19 @@ function Javinizer {
                             $urlLocation = Test-UrlLocation -Url $Url
                         }
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     } else {
                         $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif (((Test-Path -Path $Path -PathType Container) -and (Test-Path -Path $DestinationPath -PathType Container)) -or $Apply.IsPresent) {
+                } elseif (((Test-Path -Path $getPath.FullName -PathType Container) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
-                        Start-MultiSort -Path $Path -Throttle $throttleCount -DestinationPath $DestinationPath
+                        Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -DestinationPath $DestinationPath
                     } else {
                         foreach ($video in $fileDetails) {
                             Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
@@ -148,7 +148,7 @@ function Javinizer {
                                 # Get data object for part 1 of a multipart video
                                 $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                                 $script:savedDataObject = $dataObject
-                                Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                                Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             } elseif ($video.PartNumber -ge '2') {
                                 # Use the saved data object for the following parts
                                 $savedDataObject.PartNumber = $video.PartNumber
@@ -157,7 +157,7 @@ function Javinizer {
                                 $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
                                 $savedDataObject.FolderName = $fileDirName.FolderName
                                 $savedDataObject.DisplayName = $fileDirName.DisplayName
-                                Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                                Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             }
                             $index++
                         }
