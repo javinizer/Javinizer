@@ -113,9 +113,9 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $dataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
-                            $webClient.DownloadFile(($dataObject.TrailerUrl).ToString(), $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         }
                     }
                 }

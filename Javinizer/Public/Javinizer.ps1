@@ -147,7 +147,7 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
                         if ($video.PartNumber -le '1') {
                             # Get data object for part 1 of a multipart video
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                             $script:savedDataObject = $dataObject
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
                         } elseif ($video.PartNumber -ge '2') {

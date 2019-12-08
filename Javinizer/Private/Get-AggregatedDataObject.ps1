@@ -305,12 +305,12 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.TrailerUrl -or $null -eq $aggregatedDataObject.TrailerUrl[0]) {
                 if ($var.Value.TrailerUrl.Count -gt 1) {
-                    if ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dmb_')
-                    } elseif ($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_dm_')
-                    } elseif (($null -ne ($var.Value.TrailerUrl | Select-String -Pattern '_sm_'))) {
-                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl | Select-String -Pattern '_sm_')
+                    if ($var.Value.TrailerUrl -match '_dmb') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_dmb_')
+                    } elseif ($var.Value.TrailerUrl -match '_dm_') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_dm_')
+                    } elseif ($var.Value.TrailerUrl -match '_sm_') {
+                        $aggregatedDataObject.TrailerUrl = ($var.Value.TrailerUrl -match '_sm_')
                     }
                 } else {
                     $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl

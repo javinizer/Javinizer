@@ -55,12 +55,12 @@ function Get-R18DataObject {
                     Label           = Get-R18Label -WebRequest $webRequest
                     Series          = Get-R18Series -WebRequest $webRequest
                     Rating          = Get-R18Rating -WebRequest $webRequest
-                    #Actress         = (Get-R18Actress -WebRequest $webRequest).Name
-                    #Genre           = Get-R18Genre -WebRequest $webRequest
-                    #ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
+                    Actress         = (Get-R18Actress -WebRequest $webRequest).Name
+                    Genre           = Get-R18Genre -WebRequest $webRequest
+                    ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
                     CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
                     ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
-                    #TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
+                    TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
                 }
             } catch {
                 throw $_
@@ -404,13 +404,17 @@ function Get-R18TrailerUrl {
     }
 
     process {
-        $trailerHtml = $WebRequest.Content -split '\n'
-        $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
+        # $trailerHtml = $WebRequest.Content -split '\n'
+        $trailerUrl += (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
+        $trailerUrl += (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
+        $trailerUrl += (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
+
+        <# $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
 
         foreach ($trailer in $trailerHtml) {
             $trailer = (($trailer -split '"')[1] -split '"')[0]
             $trailerUrl += $trailer
-        }
+        } #>
 
         Write-Debug "Trailer Url is $trailerUrl"
         Write-Output $trailerUrl
