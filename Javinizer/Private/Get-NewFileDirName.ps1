@@ -16,8 +16,8 @@ function Get-NewFileDirName {
     }
 
     process {
-        $newFolderName = Convert-FormatString -FormatString $folderFormat
-        $newDisplayName = Convert-FormatString -FormatString $displayNameFormat -DisplayName
+        $newFolderName       = Convert-FormatString -FormatString $folderFormat
+        $newDisplayName      = Convert-FormatString -FormatString $displayNameFormat -DisplayName
         $originalNewFileName = Convert-FormatString -FormatString $fileFormat
 
         if ($null -ne $DataObject.PartNumber) {
@@ -77,7 +77,7 @@ function Convert-FormatString {
             }
         }
 
-        if ( -not ($DisplayName.IsPresent)) {
+        if (-not ($DisplayName.IsPresent)) {
             if ($title.Length -ge $Settings.General.'max-title-length') {
                 $shortTitle = $title.Substring(0, $Settings.General.'max-title-length')
                 $splitTitle = $shortTitle -split ' '

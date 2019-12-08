@@ -9,8 +9,7 @@ function Start-MultiSort {
     )
 
     #$files = Get-ChildItem "Z:\git\Projects\JAV-Organizer\dev\dev" | Where-Object { $_.Mode -eq '-a----' -and $_.Extension -eq '.mp4' }
-    $files = Get-VideoFile -Path $Path
-
+    $files      = Get-VideoFile -Path $Path
     $ScriptRoot = $PSScriptRoot
     $ScriptRoot = (Get-Item $ScriptRoot).Parent
 

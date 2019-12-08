@@ -15,29 +15,29 @@ function Get-AggregatedDataObject {
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $actressArray = @()
-        $genreArray = @()
+        $genreArray   = @()
     }
 
     process {
-        $actressPriority = Get-MetadataPriority -Settings $Settings -Type 'actress'
+        $actressPriority         = Get-MetadataPriority -Settings $Settings -Type 'actress'
         $actressthumburlPriority = Get-MetadataPriority -Settings $Settings -Type 'actressthumburl'
-        $alternatetitlePriority = Get-MetadataPriority -Settings $Settings -Type 'alternatetitle'
-        $coverurlPriority = Get-MetadataPriority -Settings $Settings -Type 'coverurl'
-        $descriptionPriority = Get-MetadataPriority -Settings $Settings -Type 'description'
-        $directorPriority = Get-MetadataPriority -Settings $Settings -Type 'director'
-        $genrePriority = Get-MetadataPriority -Settings $Settings -Type 'genre'
-        $idPriority = Get-MetadataPriority -Settings $Settings -Type 'id'
-        $labelPriority = Get-MetadataPriority -Settings $Settings -Type 'label'
-        $runtimePriority = Get-MetadataPriority -Settings $Settings -Type 'runtime'
-        $makerPriority = Get-MetadataPriority -Settings $Settings -Type 'maker'
-        $ratingPriority = Get-MetadataPriority -Settings $Settings -Type 'rating'
-        $ratingcountPriority = Get-MetadataPriority -Settings $Settings -type 'ratingcount'
-        $releasedatePriority = Get-MetadataPriority -Settings $Settings -Type 'releasedate'
-        $releaseyearPriority = Get-MetadataPriority -Settings $Settings -Type 'releaseyear'
-        $seriesPriority = Get-MetadataPriority -Settings $Settings -Type 'series'
-        $screenshoturlPriority = Get-MetadataPriority -Settings $Settings -Type 'screenshoturl'
-        $titlePriority = Get-MetadataPriority -Settings $Settings -Type 'title'
-        $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailerurl'
+        $alternatetitlePriority  = Get-MetadataPriority -Settings $Settings -Type 'alternatetitle'
+        $coverurlPriority        = Get-MetadataPriority -Settings $Settings -Type 'coverurl'
+        $descriptionPriority     = Get-MetadataPriority -Settings $Settings -Type 'description'
+        $directorPriority        = Get-MetadataPriority -Settings $Settings -Type 'director'
+        $genrePriority           = Get-MetadataPriority -Settings $Settings -Type 'genre'
+        $idPriority              = Get-MetadataPriority -Settings $Settings -Type 'id'
+        $labelPriority           = Get-MetadataPriority -Settings $Settings -Type 'label'
+        $runtimePriority         = Get-MetadataPriority -Settings $Settings -Type 'runtime'
+        $makerPriority           = Get-MetadataPriority -Settings $Settings -Type 'maker'
+        $ratingPriority          = Get-MetadataPriority -Settings $Settings -Type 'rating'
+        $ratingcountPriority     = Get-MetadataPriority -Settings $Settings -type 'ratingcount'
+        $releasedatePriority     = Get-MetadataPriority -Settings $Settings -Type 'releasedate'
+        $releaseyearPriority     = Get-MetadataPriority -Settings $Settings -Type 'releaseyear'
+        $seriesPriority          = Get-MetadataPriority -Settings $Settings -Type 'series'
+        $screenshoturlPriority   = Get-MetadataPriority -Settings $Settings -Type 'screenshoturl'
+        $titlePriority           = Get-MetadataPriority -Settings $Settings -Type 'title'
+        $trailerurlPriority      = Get-MetadataPriority -Settings $Settings -Type 'trailerurl'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
@@ -331,14 +331,13 @@ function Get-AggregatedDataObject {
         }
 
         # Set part number for video before creating new filename
-        $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
-
-        $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
-        $aggregatedDataObject.FileName = $fileDirName.FileName
+        $aggregatedDataObject.PartNumber       = $FileDetails.PartNumber
+        $fileDirName                           = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
+        $aggregatedDataObject.FileName         = $fileDirName.FileName
         $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
-        $aggregatedDataObject.FolderName = $fileDirName.FolderName
-        $aggregatedDataObject.DisplayName = $fileDirName.DisplayName
-        $aggregatedDataObject.Search = $currentSearch
+        $aggregatedDataObject.FolderName       = $fileDirName.FolderName
+        $aggregatedDataObject.DisplayName      = $fileDirName.DisplayName
+        $aggregatedDataObject.Search           = $currentSearch
 
         Write-Output $aggregatedDataObject
         $aggregatedDataObject | Out-String | Write-Debug

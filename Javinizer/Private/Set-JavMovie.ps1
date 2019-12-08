@@ -12,16 +12,16 @@ function Set-JavMovie {
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-        $Path = (Get-Item -LiteralPath $Path).FullName
+        $Path            = (Get-Item -LiteralPath $Path).FullName
         $DestinationPath = (Get-Item $DestinationPath).FullName
-        $webClient = New-Object System.Net.WebClient
-        $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
-        $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
-        $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
-        $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
-        $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
-        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
-        $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
+        $webClient       = New-Object System.Net.WebClient
+        $cropPath        = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
+        $folderPath      = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
+        $nfoPath         = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
+        $coverPath       = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
+        $posterPath      = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
+        $trailerPath     = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
+        $screenshotPath  = Join-Path -Path $folderPath -ChildPath 'extrafanart'
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"

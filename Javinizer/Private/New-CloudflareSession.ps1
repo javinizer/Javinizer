@@ -8,10 +8,10 @@ function New-CloudflareSession {
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-        $cookieName = @()
+        $cookieName    = @()
         $cookieContent = @()
         $requestObject = @()
-        $cfPath = Join-Path -Path $ScriptRoot -ChildPath 'cfscraper.py'
+        $cfPath        = Join-Path -Path $ScriptRoot -ChildPath 'cfscraper.py'
     }
 
     process {
@@ -29,7 +29,7 @@ function New-CloudflareSession {
             $cfScrapeSplit = ($cfScrape -split ";").Trim()
 
             foreach ($cookie in $cfScrapeSplit) {
-                $cookieName += ($cookie -split '=')[0]
+                $cookieName    += ($cookie -split '=')[0]
                 $cookieContent += ($cookie -split '=')[1]
             }
 

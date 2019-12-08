@@ -7,12 +7,12 @@ function Get-MetadataNfo {
     )
 
     begin {
-        $displayName = $DataObject.DisplayName -replace '&', '&amp;'
+        $displayName    = $DataObject.DisplayName -replace '&', '&amp;'
         $alternateTitle = $DataObject.AlternateTitle -replace '&', '&amp;'
-        $director = $DataObject.Director -replace '&', '&amp;'
-        $maker = $DataObject.Maker -replace '&', '&amp;'
-        $description = $DataObject.Description -replace '&', '&amp;'
-        $series = $DataObject.Series -replace '&', '&amp;'
+        $director       = $DataObject.Director -replace '&', '&amp;'
+        $maker          = $DataObject.Maker -replace '&', '&amp;'
+        $description    = $DataObject.Description -replace '&', '&amp;'
+        $series         = $DataObject.Series -replace '&', '&amp;'
     }
 
     process {

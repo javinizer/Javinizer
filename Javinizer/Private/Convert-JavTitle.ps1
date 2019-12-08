@@ -2,7 +2,7 @@ function Convert-JavTitle {
     [CmdletBinding()]
     param (
         [ValidateScript( {
-                if ( -Not ($_ | Test-Path) ) {
+                if (-Not ($_ | Test-Path) ) {
                     throw "$_ does not exist"
                 }
                 return $true
@@ -58,11 +58,11 @@ function Convert-JavTitle {
             '_'
         )
 
-        $dataObject = @()
-        $fileBaseNameUpper = @()
+        $dataObject               = @()
+        $fileBaseNameUpper        = @()
         $fileBaseNameUpperCleaned = @()
-        $finalFileName = @()
-        $fileBaseNameHypen = $null
+        $finalFileName            = @()
+        $fileBaseNameHypen        = $null
         $fileP1, $fileP2, $fileP3, $fileP4 = @()
     }
 
@@ -220,16 +220,16 @@ function Convert-JavTitle {
             }
 
             if ($files.Count -eq '1') {
-                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
+                $finalFileName    = $fileBaseNameUpperCleaned[$x] + $files.Extension
                 $originalFileName = $files.Name
                 $originalBaseName = $files.BaseName
-                $fileExtension = $files.Extension
+                $fileExtension    = $files.Extension
             } else {
-                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
+                $finalFileName    = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
                 $originalFileName = $files.Name[$x]
                 $originalBaseName = $files.BaseName[$x]
-                $fileExtension = $files.Extension[$x]
-                $filePartNumber = $filePartNumber
+                $fileExtension    = $files.Extension[$x]
+                $filePartNumber   = $filePartNumber
             }
 
             $dataObject += [pscustomobject]@{
