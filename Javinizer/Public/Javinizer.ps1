@@ -57,19 +57,6 @@ function Javinizer {
         $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
         $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
 
-        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-            if ($PSVersionTable.PSVersion -like '7*') {
-                $script:directoryMode = 'd----'
-                $script:itemMode = '-a---'
-            } else {
-                $script:directoryMode = 'd-----'
-                $script:itemMode = '-a----'
-            }
-        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-            $script:directoryMode = 'd.*'
-            $script:itemMode = '-.*'
-        }
-
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
@@ -130,7 +117,7 @@ function Javinizer {
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
-                if (($getPath.Mode -eq $itemMode) -and ($getDestinationPath.Mode -eq $directoryMode)) {
+                if ((Test-Path -Path $Path -PathType Leaf) -and (Test-Path -Path $DestinationPath -PathType Container)) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
@@ -143,12 +130,11 @@ function Javinizer {
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     } else {
-                        # TODO: LOOK OVER HERE TO DEBUG R18 NOT WORKING IN JOB
                         $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
+                } elseif (((Test-Path -Path $Path -PathType Container) -and (Test-Path -Path $DestinationPath -PathType Container)) -or $Apply.IsPresent) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 

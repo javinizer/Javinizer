@@ -10,22 +10,10 @@ function Get-VideoFile {
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
     }
+
     process {
         # Test if Path is a directory or item
-        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-            if ($PSVersionTable.PSVersion -like '7*') {
-                $script:directoryMode = 'd----'
-                $script:itemMode = '-a---'
-            } else {
-                $script:directoryMode = 'd-----'
-                $script:itemMode = '-a----'
-            }
-        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-            $script:directoryMode = 'd.*'
-            $script:itemMode = '-.*'
-        }
-
-        if ((Get-Item $Path).Mode -eq $directoryMode) {
+        if (Test-Path -Path (Get-Item $Path) -PathType Container) {
             $files = Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`
@@ -40,7 +28,7 @@ function Get-VideoFile {
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
             # Test if the path is a file
-        } elseif ((Get-Item $Path).Mode -eq $itemMode) {
+        } elseif (Test-Path -Path (Get-Item $Path) -PathType Leaf) {
             $files = Get-Item -Path $Path | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`

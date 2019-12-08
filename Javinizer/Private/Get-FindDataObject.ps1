@@ -22,19 +22,6 @@ function Get-FindDataObject {
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
-
-        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-            if ($PSVersionTable.PSVersion -like '7*') {
-                $script:directoryMode = 'd----'
-                $script:itemMode = '-a---'
-            } else {
-                $script:directoryMode = 'd-----'
-                $script:itemMode = '-a----'
-            }
-        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-            $script:directoryMode = 'd.*'
-            $script:itemMode = '-.*'
-        }
     }
 
     process {
@@ -64,7 +51,7 @@ function Get-FindDataObject {
                     Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
-        } elseif ($getItem.Mode -eq $itemMode) {
+        } elseif (Test-Path -Path $getItem -PathType Leaf) {
             $fileDetails = Convert-JavTitle -Path $Find
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
