@@ -13,7 +13,7 @@ function Test-ItemType {
             $script:itemMode = '-.*'
         } else {
             $script:directoryMode = 'd.*'
-            $script:itemMode = '0.*'
+            $script:itemMode = '-.*'
         }
     }
 }
