@@ -57,12 +57,17 @@ function Javinizer {
         $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
         $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
 
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
+        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+            if ($PSVersionTable.PSVersion -like '7*') {
+                $script:directoryMode = 'd----'
+                $script:itemMode = '-a---'
+            } else {
+                $script:directoryMode = 'd-----'
+                $script:itemMode = '-a----'
+            }
+        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+            $script:directoryMode = 'd.*'
+            $script:itemMode = '-.*'
         }
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `

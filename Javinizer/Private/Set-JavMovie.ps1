@@ -11,12 +11,17 @@ function Set-JavMovie {
     )
 
     begin {
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
+        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+            if ($PSVersionTable.PSVersion -like '7*') {
+                $script:directoryMode = 'd----'
+                $script:itemMode = '-a---'
+            } else {
+                $script:directoryMode = 'd-----'
+                $script:itemMode = '-a----'
+            }
+        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+            $script:directoryMode = 'd.*'
+            $script:itemMode = '-.*'
         }
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $Path = (Get-Item -LiteralPath $Path).FullName
