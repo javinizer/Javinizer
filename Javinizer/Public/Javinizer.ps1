@@ -137,11 +137,11 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif ((($getPath.Mode -match $directoryMode) -and ($getDestinationPath.Mode -match $directoryMode)) -or $Apply.IsPresent) {
+                } elseif ((($getPath.Mode -match $directoryMode) -and ($getDestinationPath.Mode -match $directoryMode)) -or $PSBoundParameters.ContainsKey('Apply')) {
                     Write-Verbose "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 
-                    if ($Multi.IsPresent) {
+                    if ($PSBoundParameters.ContainsKey('Multi')) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         Start-MultiSort -Path $Path -Throttle $throttleCount -DestinationPath $DestinationPath
                     } else {
