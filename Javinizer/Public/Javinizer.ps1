@@ -231,7 +231,7 @@ function Javinizer {
                             Write-Warning "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {
                             # Stop all running jobs if script is stopped by user input
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Script was stopped. Stopping all running jobs..."
+                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Sort has completed or has been stopped prematurely; Stopping all running jobs..."
                             Get-RSJob | Stop-RSJob
                         }
                     } else {
