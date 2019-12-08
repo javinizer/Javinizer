@@ -225,7 +225,15 @@ function Javinizer {
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
-                        Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -DestinationPath $DestinationPath
+                        try {
+                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -DestinationPath $DestinationPath
+                        } catch {
+                            Write-Warning "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
+                        } finally {
+                            # Stop all running jobs if script is stopped by user input
+                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Script was stopped. Stopping all running jobs..."
+                            Get-RSJob | Stop-RSJob
+                        }
                     } else {
                         foreach ($video in $fileDetails) {
                             Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
