@@ -27,16 +27,10 @@ function Javinizer {
         [switch]$Dmm,
         [switch]$Javlibrary,
         [switch]$Force,
-        [string]$ScriptRoot = $PSScriptRoot
+        [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
     begin {
-        if ($Multi.IsPresent) {
-            $ScriptRoot = (Get-Item $ScriptRoot).Parent
-        } else {
-            $ScriptRoot = $PSScriptRoot
-            $ScriptRoot = (Get-Item $ScriptRoot).Parent
-        }
 
         $urlLocation = @()
         $urlList = @()
@@ -47,7 +41,7 @@ function Javinizer {
             Write-Verbose "Settings path: $ScriptRoot"
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
-            throw $_
+            throw "[$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -154,7 +148,7 @@ function Javinizer {
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
-                        $throttleCount = $Settings.'multi-sort-throttle-limit'
+                        $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         Start-MultiSort -Path $Path -Throttle $throttleCount -DestinationPath $DestinationPath
                     } else {
                         foreach ($video in $fileDetails) {

@@ -3,12 +3,14 @@ function Start-MultiSort {
     param (
         [system.io.fileinfo]$Path,
         [system.io.fileinfo]$DestinationPath,
+        #[system.io.fileinfo]$ScriptRoot,
         [ValidateRange(1, 5)]
         [int]$Throttle
     )
 
     #$files = Get-ChildItem "Z:\git\Projects\JAV-Organizer\dev\dev" | Where-Object { $_.Mode -eq '-a----' -and $_.Extension -eq '.mp4' }
     $files = Get-VideoFile -Path $Path
+
     $ScriptRoot = $PSScriptRoot
     $ScriptRoot = (Get-Item $ScriptRoot).Parent
 
@@ -20,7 +22,7 @@ function Start-MultiSort {
     $files | Start-RSJob -VariablesToImport $importVariables -Verbose -ScriptBlock {
         $debugPreference = 'continue'
         $verbosePreference = 'continue'
-        Javinizer -Path $_.FullName -DestinationPath $DestinationPath -Verbose
+        Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot -Verbose
     } -Throttle $Throttle -FunctionFilesToImport (Join-Path $PSScriptRoot -ChildPath 'Get-AggregatedDataObject.ps1'), `
     (Join-Path -Path (Get-Item $PSScriptRoot).Parent -ChildPath (Join-Path 'Public' -ChildPath 'javinizer.ps1')), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-CommaDelimitedString.ps1'), `
