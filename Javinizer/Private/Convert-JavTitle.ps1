@@ -208,6 +208,17 @@ function Convert-JavTitle {
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
             }
 
+            if ($fileBaseNameUpper[$x] -match '00\d') {
+                $contentId = $fileBaseNameUpper[$x] -split '-'
+                $contentId = $contentId[0] + '00' + $contentId[1]
+            } elseif ($fileBaseNameUpper[$x] -match '0\d\d') {
+                $contentId = $fileBaseNameUpper[$x] -split '-'
+                $contentId = $contentId[0] + '00' + $contentId[1]
+            } else {
+                $contentId = $fileBaseNameUpper[$x] -split '-'
+                $contentId = $contentId[0] + '00' + $contentId[1]
+            }
+
             if ($files.Count -eq '1') {
                 $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
                 $originalFileName = $files.Name
@@ -223,6 +234,7 @@ function Convert-JavTitle {
 
             $dataObject += [pscustomobject]@{
                 Id               = $fileBaseNameUpperCleaned[$x]
+                ContentId        = $contentId
                 NewFileName      = $finalFileName
                 OriginalFileName = $originalFileName
                 OriginalBaseName = $originalBaseName
