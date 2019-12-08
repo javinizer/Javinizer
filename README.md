@@ -93,6 +93,11 @@ Sort directory defined in `settings.ini` at `input-path` and `output-path`
 PS> Javinizer -Apply
 ```
 
+Sort directory defined in `settings.ini` at `input-path` and `output-path` using multiple threads
+```
+PS> Javinizer -Apply -Multi
+```
+
 Sort directory defined in console
 ```
 PS> Javinizer -Path 'C:\Downloads\JAV\' -DestinationPath 'C:\Downloads\JAV\Sorted\'
@@ -108,4 +113,6 @@ Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for wor
 - [x] Trailer scraping - [0.1.2]
 - [x] Multi-part video directory sort support - [0.1.2]
 - [ ] Parallel/Threaded sort processing
-- [ ] Allow switching firstname/lastname order
+- [x] Allow switching firstname/lastname order - [0.1.7]
+- [ ] Normalize genre names between JAVLibrary and R18
+- [ ] Normalize studio names between JAVLibrary and R18
