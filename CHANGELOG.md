@@ -5,12 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.7]
+## [0.1.7] 12-8-2019
 ### Added
- - Muli-threaded sorting functionality
+ - Muli-threaded sorting functionality with parameter `Multi`
  - Ability to select name order for actress with setting `first-last-name-order`
+ - Comment based help `PS> Help Javinizer` or `Javinizer -Help`
+
+### Changed
+ - Default DestinationPath will be set to your `Path` parameter rather than your settings `output-path`
+ - Default parameterset for Apply, so that it cannot be run with `Path` or `DestinationPath`
 
 ### Fixed
+ - Javlibrary failing to match if the first result is error
+ - R18 failing to match video if ID doesn't return results, but ContentID does
+ - R18 finding `----` as ID set to null
  - Actress thumburls being assigned to wrong actress
  - File displayname being affected by `max-title-length`
  - Invalid label on DMM when label is null
