@@ -312,35 +312,29 @@ function Get-R18Actress {
     )
 
     begin {
+        $movieActressHtml = @()
+        $movieActressExtract = @()
         $movieActress = @()
         $movieActressThumb = @()
     }
 
     process {
-        $movieActressHtml = (($WebRequest.Content -split '<div itemprop="actors" data-type="actress-list" class="pop-list">')[1] -split '<div class="product-categories-list product-box-list">')[0]
-        $movieActressHtml = $movieActressHtml -replace '<a itemprop="url" href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)\/pagesize=(.*)\/price=all\/sort=popular\/type=actress\/page=(.*)\/">', ''
-        $movieActressHtml = $movieActressHtml -replace '<span itemscope itemtype="http:\/\/schema.org\/Person">', ''
-        $movieActressHtml = $movieActressHtml -split '<\/a>'
-
-        foreach ($actress in $movieActressHtml) {
-            if ($actress -match '<span itemprop="name">') {
-                $movieActress += (($actress -split '<span itemprop="name">')[1] -split '<\/span>')[0]
+        #$movieActressHtml = ($WebRequest.Content -split '<p><img')[1]
+        $movieActressHtml = $WebRequest.Content -split '\n'
+        foreach ($line in $movieActressHtml) {
+            if ($line -match '<p><img alt') {
+                $movieActressExtract += ($line).Trim()
             }
         }
+
+        foreach ($actress in $movieActressExtract) {
+            $movieActress += (($actress -split 'alt="')[1] -split '"')[0]
+            $movieActressThumb += (($actress -split 'src="')[1] -split '"')[0]
+        }
+
 
         if ($movieActress -eq '----') {
             $movieActress = $null
-        }
-
-        foreach ($actress in $movieActress) {
-            $movieActressHtml = $WebRequest.Content -split '\n'
-            $movieActressHtml = $movieActressHtml | Select-String -Pattern 'src="https:\/\/pics.r18.com\/mono\/actjpgs\/(.*).jpg"' -AllMatches
-            foreach ($actressThumb in $movieActressHtml) {
-                $actressName = Convert-HtmlCharacter -String ((($actressThumb -split '<img alt="')[1] -split '"')[0])
-                if ($actress -match $actressName) {
-                    $movieActressThumb += (($actressThumb -split 'src="')[1] -split '"')[0]
-                }
-            }
         }
 
         if ($movieActressThumb.Count -eq 0) {

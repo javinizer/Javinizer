@@ -54,6 +54,9 @@ function Get-MetadataNfo {
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
                 if ($null -ne $DataObject.ActressThumbUrl) {
+                    if ($dataObject.ActressThumbUrl -like '*nowprinting*') {
+                        $DataObject.ActressThumbUrl = ''
+                    }
                     $actressNfoString = @"
     <actor>
         <name>$($DataObject.Actress)</name>
@@ -73,6 +76,9 @@ function Get-MetadataNfo {
             } else {
                 if ($null -ne $DataObject.ActressThumbUrl) {
                     for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                        if ($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') {
+                            $DataObject.ActressThumbUrl[$i] = ''
+                        }
                         $actressNfoString += @"
     <actor>
         <name>$($DataObject.Actress[$i])</name>
