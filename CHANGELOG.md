@@ -5,16 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.7]
+### Added
+ - Muli-threaded sorting functionality
+ - Ability to select name order for actress with setting `first-last-name-order`
+
+### Fixed
+ - Actress thumburls being assigned to wrong actress
+ - File displayname being affected by `max-title-length`
+ - Invalid label on DMM when label is null
+ - Metadata values nulled if first priority did not return results
+ - Error message when actress is present but thumburl is null
+
 ## [0.1.6] - 12-6-2019
 ### Added
  - `<RUNTIME>` as filename option
  - Add setting `max-title-length`
- -
 
 ### Changed
  - Filename string replacement of `/` to `-`
  - Keep empty `<thumb></thumb>` tag when actress thumburl is null
- - Remove alternate actress names surrounded by parentheses in metadata
+
+### Removed
+ - Alternate actress names surrounded by parentheses in metadata
 
 ### Fixed
  - Brackets `[]` in filename titles erroring
@@ -32,7 +45,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  - More settings defaults to javlibrary
  - Python dependency to Python3
  - Unix operating systems will now call `python3` rather than `python`
- - Removed spaces between ` - ` in  part number and trailer
+
+ ### Removed
+ - Spaces between ` - ` in  part number and trailer
 
 ### Fixed
  - Genres failing to be written to nfo if first priority setting did not find video

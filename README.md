@@ -20,7 +20,8 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 **Dependencies**
 
-- [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended 7
+- [PowerShell 6, 7](https://github.com/PowerShell/PowerShell) - Recommended PowerShell 7 (Windows PowerShell is **NOT** supported)
+    - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
@@ -28,6 +29,9 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 ```
 # From any compatible terminal
+# pwsh
+> Install-Module PoshRSJob
+# python
 > pip install cloudscraper
 > pip install pillow
 > pip install googletrans
