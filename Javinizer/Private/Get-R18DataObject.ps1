@@ -39,6 +39,7 @@ function Get-R18DataObject {
             try {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
+                Write-Debug "URL IS $r18Url"
 
                 $movieDataObject = [pscustomobject]@{
                     Source          = 'r18'
@@ -84,6 +85,7 @@ function Get-R18ContentId {
     process {
         $contentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
+        Write-Debug "Content ID is $contentId"
         Write-Output $contentId
     }
 }
@@ -96,6 +98,7 @@ function Get-R18Id {
     process {
         $id = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $id = Convert-HtmlCharacter -String $id
+        Write-Debug "Id is $id"
         Write-Output $Id
     }
 }

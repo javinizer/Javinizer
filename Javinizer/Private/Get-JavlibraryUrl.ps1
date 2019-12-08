@@ -4,7 +4,8 @@ function Get-JavlibraryUrl {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Name,
         [ValidateRange(2, 5)]
-        [int]$Tries
+        [int]$Tries,
+        [string]$ScriptRoot
     )
 
     begin {
@@ -19,7 +20,7 @@ function Get-JavlibraryUrl {
         } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
             try {
-                New-CloudflareSession
+                New-CloudflareSession -ScriptRoot $ScriptRoot
             } catch {
                 throw $_
             }

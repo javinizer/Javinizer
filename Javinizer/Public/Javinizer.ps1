@@ -24,7 +24,8 @@ function Javinizer {
         [switch]$R18,
         [switch]$Dmm,
         [switch]$Javlibrary,
-        [switch]$Force
+        [switch]$Force,
+        [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
     begin {
@@ -33,10 +34,11 @@ function Javinizer {
         $index = 1
 
         try {
-            $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
+            $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
+            Write-Verbose "Settings path: $ScriptRoot"
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
-            throw "[$($MyInvocation.MyCommand.Name)] Settings file: [$settingsPath] not found; Ensure that the settings file exists]"
+            throw $_
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -131,10 +133,11 @@ function Javinizer {
                             $urlLocation = Test-UrlLocation -Url $Url
                         }
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
-                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath
+                        # TODO: LOOK OVER HERE TO DEBUG R18 NOT WORKING IN JOB
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
+                        Set-JavMovie -DataObject $dataObject -Settings $settings -Path $Path -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif ((($getPath.Mode -eq $directoryMode) -and ($getDestinationPath.Mode -eq $directoryMode)) -or $Apply.IsPresent) {
@@ -146,7 +149,7 @@ function Javinizer {
                             # Get data object for part 1 of a multipart video
                             $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue'
                             $script:savedDataObject = $dataObject
-                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
+                            Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
                         } elseif ($video.PartNumber -ge '2') {
                             # Use the saved data object for the following parts
                             $savedDataObject.PartNumber = $video.PartNumber
@@ -155,7 +158,7 @@ function Javinizer {
                             $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
                             $savedDataObject.FolderName = $fileDirName.FolderName
                             $savedDataObject.DisplayName = $fileDirName.DisplayName
-                            Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force
+                            Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
                         }
                         $index++
                     }

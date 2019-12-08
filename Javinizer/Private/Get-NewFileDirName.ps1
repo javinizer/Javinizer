@@ -3,13 +3,12 @@ function Get-NewFileDirName {
     [OutputType([pscustomobject])]
     param(
         [Parameter(Mandatory = $true, Position = 0)]
-        [object]$DataObject
+        [object]$DataObject,
+        [object]$Settings
     )
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
-        $settingsPath = Join-Path -Path $MyInvocation.MyCommand.Module.ModuleBase -ChildPath 'settings.ini'
-        $settings = Import-IniSettings -Path $settingsPath
         $folderFormat = $settings.General.'rename-folder-string'
         $fileFormat = $settings.General.'rename-file-string'
         $displayNameFormat = $settings.General.'cms-displayname-string'

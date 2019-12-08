@@ -8,7 +8,8 @@ function Get-AggregatedDataObject {
         [switch]$Dmm,
         [switch]$Javlibrary,
         [object]$Settings,
-        [string]$Id
+        [string]$Id,
+        [string]$ScriptRoot
     )
 
     begin {
@@ -61,7 +62,7 @@ function Get-AggregatedDataObject {
                 }
 
                 if ($url.Result -contains 'javlibrary') {
-                    $javlibraryData = Get-JavlibraryDataObject -Url $url.Url
+                    $javlibraryData = Get-JavlibraryDataObject -Url $url.Url -ScriptRoot $ScriptRoot
                 }
             }
         } elseif ($FileDetails) {
@@ -76,7 +77,7 @@ function Get-AggregatedDataObject {
             }
 
             if ($javlibrary.IsPresent) {
-                $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id
+                $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [Id]"
@@ -90,7 +91,7 @@ function Get-AggregatedDataObject {
             }
 
             if ($javlibrary.IsPresent) {
-                $javlibraryData = Get-JavlibraryDataObject -Name $Id
+                $javlibraryData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot
             }
         }
 
@@ -186,7 +187,7 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Description) {
                 if ($Settings.Metadata.'translate-description' -eq 'true' -and $null -ne $var.Value.Description) {
-                    $translatedDescription = Get-TranslatedString $var.Value.Description
+                    $translatedDescription = Get-TranslatedString $var.Value.Description -ScriptRoot $ScriptRoot
                     $aggregatedDataObject.Description = $translatedDescription
                 } else {
                     $aggregatedDataObject.Description = $var.Value.Description
@@ -320,7 +321,7 @@ function Get-AggregatedDataObject {
         # Set part number for video before creating new filename
         $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
 
-        $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject
+        $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
         $aggregatedDataObject.FileName = $fileDirName.FileName
         $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName

@@ -2,7 +2,8 @@ function New-CloudflareSession {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter(Position = 0)]
-        [string]$Url = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword="
+        [string]$Url = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=",
+        [string]$ScriptRoot
     )
 
     begin {
@@ -10,8 +11,7 @@ function New-CloudflareSession {
         $cookieName = @()
         $cookieContent = @()
         $requestObject = @()
-        $modulePath = (Get-Item $PSScriptroot).Parent
-        $cfPath = Join-Path -Path $modulePath -ChildPath 'cfscraper.py'
+        $cfPath = Join-Path -Path $ScriptRoot -ChildPath 'cfscraper.py'
     }
 
     process {
