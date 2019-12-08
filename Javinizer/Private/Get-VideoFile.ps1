@@ -11,14 +11,7 @@ function Get-VideoFile {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
     }
     process {
-        # Test if Path is a directory or item
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
-        }
+        Test-ItemType
 
         if ((Get-Item $Path).Mode -eq $directoryMode) {
             $files = Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object {

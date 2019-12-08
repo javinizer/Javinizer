@@ -57,13 +57,7 @@ function Javinizer {
         $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
         $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
 
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
-        }
+        Test-ItemType
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `

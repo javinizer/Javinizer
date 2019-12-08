@@ -23,13 +23,7 @@ function Get-FindDataObject {
             if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
 
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
-        }
+        Test-ItemType
     }
 
     process {

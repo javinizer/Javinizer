@@ -11,13 +11,7 @@ function Set-JavMovie {
     )
 
     begin {
-        if ($PSVersionTable.PSVersion -like '7*') {
-            $directoryMode = 'd----'
-            $itemMode = '-a---'
-        } else {
-            $directoryMode = 'd-----'
-            $itemMode = '-a----'
-        }
+        Test-ItemType
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $Path = (Get-Item -LiteralPath $Path).FullName
         $DestinationPath = (Get-Item $DestinationPath).FullName
