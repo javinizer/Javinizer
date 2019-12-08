@@ -156,37 +156,37 @@ function Javinizer {
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.'multi-sort-throttle-limit'
                         Start-MultiSort -Path $Path -Throttle $throttleCount -DestinationPath $DestinationPath
-                    } else {
-                        foreach ($video in $fileDetails) {
-                            Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                            if ($video.PartNumber -le '1') {
-                                # Get data object for part 1 of a multipart video
-                                $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
-                                $script:savedDataObject = $dataObject
-                                Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
-                            } elseif ($video.PartNumber -ge '2') {
-                                # Use the saved data object for the following parts
-                                $savedDataObject.PartNumber = $video.PartNumber
-                                $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
-                                $savedDataObject.FileName = $fileDirName.FileName
-                                $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
-                                $savedDataObject.FolderName = $fileDirName.FolderName
-                                $savedDataObject.DisplayName = $fileDirName.DisplayName
-                                Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                        } else {
+                            foreach ($video in $fileDetails) {
+                                Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
+                                if ($video.PartNumber -le '1') {
+                                    # Get data object for part 1 of a multipart video
+                                    $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                                    $script:savedDataObject = $dataObject
+                                    Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                                } elseif ($video.PartNumber -ge '2') {
+                                    # Use the saved data object for the following parts
+                                    $savedDataObject.PartNumber = $video.PartNumber
+                                    $fileDirName = Get-NewFileDirName -DataObject $savedDataObject
+                                    $savedDataObject.FileName = $fileDirName.FileName
+                                    $savedDataObject.OriginalFileName = $fileDirName.OriginalFileName
+                                    $savedDataObject.FolderName = $fileDirName.FolderName
+                                    $savedDataObject.DisplayName = $fileDirName.DisplayName
+                                    Set-JavMovie -DataObject $savedDataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $DestinationPath -Force:$Force -ScriptRoot $ScriptRoot
+                                }
+                                $index++
                             }
-                            $index++
                         }
+                    } else {
+                        throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                     }
-                } else {
-                    throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
             }
         }
-    }
 
-    end {
-        Write-Host "[$($MyInvocation.MyCommand.Name)] Function ended"
+        end {
+            Write-Host "[$($MyInvocation.MyCommand.Name)] Function ended"
+        }
     }
-}
 
 
