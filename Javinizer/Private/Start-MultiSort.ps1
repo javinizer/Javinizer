@@ -19,10 +19,8 @@ function Start-MultiSort {
         'DestinationPath'
     )
 
-    $files | Start-RSJob -VariablesToImport $importVariables -Verbose -ScriptBlock {
-        $debugPreference = 'continue'
-        $verbosePreference = 'continue'
-        Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot -Verbose
+    $files | Start-RSJob -VariablesToImport $importVariables -Verbose:$false -ScriptBlock {
+        Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
     } -Throttle $Throttle -FunctionFilesToImport (Join-Path $PSScriptRoot -ChildPath 'Get-AggregatedDataObject.ps1'), `
     (Join-Path -Path (Get-Item $PSScriptRoot).Parent -ChildPath (Join-Path 'Public' -ChildPath 'javinizer.ps1')), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-CommaDelimitedString.ps1'), `
@@ -45,6 +43,5 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Set-JavMovie.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-RequiredMetadata.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlLocation.ps1'), `
-    (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlMatch.ps1')
-
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlMatch.ps1') | Wait-RSJob -ShowProgress | Receive-RSJob
 }
