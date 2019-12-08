@@ -114,7 +114,7 @@ function Javinizer {
                     $fileDetails = Convert-JavTitle -Path $Path
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
-                    #return
+                    return
                 }
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
