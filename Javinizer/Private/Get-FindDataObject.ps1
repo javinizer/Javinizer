@@ -53,7 +53,7 @@ function Get-FindDataObject {
                     Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
-        } elseif ($getItem.Mode -eq $itemMode) {
+        } elseif ($getItem.Mode -match $itemMode) {
             $fileDetails = Convert-JavTitle -Path $Find
             if ($Aggregated.IsPresent) {
                 $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
