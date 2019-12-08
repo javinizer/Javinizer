@@ -13,7 +13,7 @@ function Get-VideoFile {
     process {
         Test-ItemType
 
-        if ((Get-Item $Path).Mode -eq $directoryMode) {
+        if ((Get-Item $Path).Mode -match $directoryMode) {
             $files = Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`
@@ -28,7 +28,7 @@ function Get-VideoFile {
                 #-and $_.Length -ge ($FileSize * 1MB)`
             }
             # Test if the path is a file
-        } elseif ((Get-Item $Path).Mode -eq $itemMode) {
+        } elseif ((Get-Item $Path).Mode -match $itemMode) {
             $files = Get-Item -Path $Path | Where-Object {
                 $_.Name -like '*.mp4'`
                     -or $_.Name -like '*.avi'`
