@@ -135,14 +135,14 @@ function Get-AggregatedDataObject {
                             $temp = $cleanActressName.split(' ')
                             if ($temp[1].length -ne 0) {
                                 $lastName, $firstName = $cleanActressName.split(' ')
-                                $actressArray += $firstName + ' ' + $lastName
+                                $actressArray += ($firstName + ' ' + $lastName).Trim()
                             } else {
-                                $actressArray += $cleanActressName
+                                $actressArray += $cleanActressName.Trim()
                             }
                         } elseif ($var.Value.Source -eq 'r18') {
-                            $actressArray += $cleanActressName
+                            $actressArray += $cleanActressName.Trim()
                         } else {
-                            $actressArray += $cleanActressName
+                            $actressArray += $cleanActressName.Trim()
                         }
                     } else {
                         if ($var.Value.Source -eq 'javlibrary') {
@@ -151,9 +151,9 @@ function Get-AggregatedDataObject {
                             $temp = $cleanActressName.split(' ')
                             if ($temp[1].length -ne 0) {
                                 $firstName, $lastName = $cleanActressName.split(' ')
-                                $actressArray += $lastName + ' ' + $firstName
+                                $actressArray += ($lastName + ' ' + $firstName).Trim()
                             } else {
-                                $actressArray += $cleanActressName
+                                $actressArray += $cleanActressName.Trim()
                             }
                         }
                     }

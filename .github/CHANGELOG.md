@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.9]
+### Added
+ - Parameter `OpenSettings` to open your settings file
+ - Parameter `Help` to display comment-based help for Javinizer usage
+
+### Fixed
+ - Single actress sames scraped from R18 with trailing space
+
 ## [0.1.8] 12-8-2019
 ### Changed
  - Various parts for compatibility with PowerShell Gallery releases

@@ -20,12 +20,17 @@ function Get-R18DataObject {
             'H*******m'                      = 'Hypnotism'
             'S*****t'                        = 'Student'
             'C***d'                          = 'Child'
+            'D***king'                       = 'Drinking'
             'D***k'                          = 'Drunk'
             'V*****t'                        = 'Violent'
             'M******r'                       = 'Molester'
             'Sch**lgirl'                     = 'Schoolgirl'
             'Sch**l'                         = 'School'
             '[Recommended For Smartphones] ' = ''
+            'F***'                           = 'Fuck'
+            'U**verse'                       = 'Universe'
+            'V*****ed'                       = 'Violated'
+            'Y********l'                     = 'Young girl'
         }
     }
 
@@ -48,6 +53,7 @@ function Get-R18DataObject {
                     ContentId       = Get-R18ContentId -WebRequest $webRequest
                     Id              = Get-R18Id -WebRequest $webRequest
                     Title           = Get-R18Title -WebRequest $webRequest
+                    Description     = Get-R18Description -WebRequest $webRequest
                     Date            = Get-R18ReleaseDate -WebRequest $webRequest
                     Year            = Get-R18ReleaseYear -WebRequest $webRequest
                     Runtime         = Get-R18Runtime -WebRequest $webRequest
@@ -88,7 +94,7 @@ function Get-R18ContentId {
         $contentId = Convert-HtmlCharacter -String $contentId
         #Write-Debug "Content ID is $contentId"
 
-        if ($contentId -eq '----')  {
+        if ($contentId -eq '----') {
             $contentId = $null
         }
 
@@ -124,9 +130,27 @@ function Get-R18Title {
         $title = Convert-HtmlCharacter -String $title
         foreach ($string in $replaceHashTable.GetEnumerator()) {
             $title = $title -replace [regex]::Escape($string.Name), $string.Value
+            $title = $title -replace '  ', ' '
         }
         #Write-Debug "Title is $title"
         Write-Output $Title
+    }
+}
+
+function Get-R18Description {
+    param (
+        [object]$WebRequest
+    )
+
+    process {
+        if ($WebRequest.Content -match '<h1>Product Description<\/h1>') {
+            $description = ((($WebRequest.Content -split '<h1>Product Description<\/h1>')[1] -split '<p>')[1] -split '<\/p>')[0]
+            $description = Convert-HtmlCharacter -String $description
+        } else {
+            $description = $null
+        }
+
+        Write-Output $description
     }
 }
 
@@ -339,10 +363,9 @@ function Get-R18Actress {
         }
 
         foreach ($actress in $movieActressExtract) {
-            $movieActress += (($actress -split 'alt="')[1] -split '"')[0]
+            $movieActress += ((($actress -split 'alt="')[1] -split '"')[0]).Trim()
             $movieActressThumb += (($actress -split 'src="')[1] -split '"')[0]
         }
-
 
         if ($movieActress -eq '----') {
             $movieActress = $null
