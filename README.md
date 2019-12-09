@@ -1,9 +1,9 @@
 # Javinizer (JAV Organizer)
+[![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 [![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat)](https://github.com/jvlflame/Javinizer/releases)
 [![Commits since lastest release](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest?style=flat)](#)
 [![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat)](https://github.com/jvlflame/Javinizer/commits/master)
 [![Discord](https://img.shields.io/discord/608449512352120834?style=flat)](https://discord.gg/K2Yjevk)
-[![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 
 A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
@@ -21,7 +21,24 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 ## Installation
 
-**Dependencies**
+Choose only ***one*** of the below options.
+
+**Install the module**
+Install the module from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
+```
+PS> Install-Module -Name Javinizer
+```
+
+**Import the module**
+
+[Clone the repository](https://github.com/jvlflame/Javinizer/archive/master.zip) or [download the latest release](https://github.com/jvlflame/Javinizer/releases) and import the module. Using this method, you will need to load the module every time you open a new intance of PowerShell, unless you add the `Import-Module` command to your local [PowerShell Profile](https://www.learnpwsh.com/create-your-powershell-profile/).
+
+```
+PS> Import-Module ./Javinizer.psm1
+```
+
+### Install dependencies
+
 - [PowerShell 6, PowerShell 7](https://github.com/PowerShell/PowerShell) - Windows PowerShell 5 is **NOT** supported
     - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
@@ -33,7 +50,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 # From any compatible terminal
 
 # pwsh
-> Install-Module PoshRSJob
+PS> Install-Module PoshRSJob
 
 # python (Windows)
 > pip install cloudscraper
@@ -45,6 +62,14 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 > pip3 install pillow
 > pip3 install googletrans
 ```
+
+## Usage
+
+**Module settings**
+
+Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
+The fields are preset with my recommended default output.
+
 
 **Multi-part video supported naming schemes**
 
@@ -64,31 +89,7 @@ ID-###_\d         - ID-069_1, ID-069_2
 ID-###_0\d        - ID-069_01, ID-069_02
 ```
 
-**Module settings**
-
-Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
-The fields are preset with my recommended default output.
-
-## Installation
-
-#### Install the module from PowerShell Gallery
-```
-PS> Install-Module -Name Javinizer
-```
-
-**---------- OR ----------**
-
-#### Import the module
-
-[Clone the repository](https://github.com/jvlflame/Javinizer/archive/master.zip) or [download the latest release](https://github.com/jvlflame/Javinizer/releases) and import the module.
-
-```
-PS> Import-Module ./Javinizer.psm1
-```
-
-### Usage
-
-After installing or importing the module:
+**Command-line usage**
 
 ```
 PS> help Javinizer
@@ -214,5 +215,6 @@ Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for wor
 - [x] Multi-part video directory sort support - [0.1.2]
 - [x] Parallel/Threaded sort processing - [0.1.7]
 - [x] Allow switching firstname/lastname order - [0.1.7]
+- [ ] Add R18 actress thumburl scraping for non-r18 actress data source scrapes
 - [ ] Normalize genre names between JAVLibrary and R18
 - [ ] Normalize studio names between JAVLibrary and R18
