@@ -55,6 +55,7 @@ Enter-Build {
     $script:ModuleFiles = Join-Path -Path $script:ModuleSourcePath -ChildPath '*'
 
     $script:ModuleManifestFile = Join-Path -Path $script:ModuleSourcePath -ChildPath "$($script:ModuleName).psd1"
+    $script:ModulePSMFile = Join-Path -Path $script:ModuleSourcePath -ChildPath "$($script:ModuleName).psm1"
 
     $manifestInfo = Import-PowerShellDataFile -Path $script:ModuleManifestFile
     $script:ModuleVersion = $manifestInfo.ModuleVersion
@@ -180,7 +181,7 @@ Add-BuildTask FormattingCheck {
 
 #Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists)
 Add-BuildTask Test {
-    $codeCovPath = "$script:ArtifactsPath\ccReport\"
+    $codeCovPath = "$script:ArchivePath\ccReport\"
     if (-not(Test-Path $codeCovPath)) {
         New-Item -Path $codeCovPath -ItemType Directory | Out-Null
     }
@@ -374,6 +375,7 @@ Add-BuildTask Build {
 
     Write-Build Gray '        Copying manifest file to Artifacts...'
     Copy-Item -Path $script:ModuleManifestFile -Destination $script:ArtifactsPath -Recurse -ErrorAction Stop
+    Copy-Item -Path $script:ModulePSMFile -Destination $script:ArtifactsPath -Recurse -ErrorAction Stop
     #Copy-Item -Path $script:ModuleSourcePath\bin -Destination $script:ArtifactsPath -Recurse -ErrorAction Stop
     Write-Build Gray '        ...manifest copy complete.'
 
