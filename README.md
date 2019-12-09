@@ -95,113 +95,220 @@ ID-###_0\d        - ID-069_01, ID-069_02
 ```
 PS> help Javinizer
 
-    NAME
-        Javinizer
+NAME
+    Javinizer
 
-    SYNOPSIS
-        A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
-
-
-    SYNTAX
-        Javinizer [[-Path] <FileInfo>] [[-DestinationPath] <FileInfo>] [-Url <String>] [-Apply] [-Multi] [-R18] [-Dmm] [-Javlibrary] [-Force] [-ScriptRoot <String>] [<CommonParameters>]
-
-        Javinizer [-Find] <String> [-Aggregated] [-Multi] [-R18] [-Dmm] [-Javlibrary] [-Force] [-ScriptRoot <String>] [<CommonParameters>]
+SYNOPSIS
+    A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
 
 
-    DESCRIPTION
-        Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS (Plex,Emby,Jellyfin) parseable format.
+SYNTAX
+    Javinizer [[-Path] <FileInfo>] [[-DestinationPath] <FileInfo>] [-Url <String>] [-Apply] [-Multi] [-Force] [-R18] [-Dmm] [-Javlibrary]
+    [-ScriptRoot <String>] [<CommonParameters>]
+
+    Javinizer [-Find] <String> [-Aggregated] [[-R18]] [[-Dmm]] [[-Javlibrary]] [-ScriptRoot <String>] [<CommonParameters>]
+
+    Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
+
+    Javinizer [-OpenSettings] [-ScriptRoot <String>] [<CommonParameters>]
 
 
-    PARAMETERS
-        -Find <String> [<Alias> -f]
-            The find parameter will output a list-formatted data output from the data sources specified using a movie ID, file path, or URL.
+DESCRIPTION
+    Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS
+    (Plex,Emby,Jellyfin) parseable format.
 
-        -Aggregated [<SwitchParameter>]
-            The aggregated parameter will create an aggregated list-formatted data output from the data sources specified as well as metadata priorities in your settings.ini file.
 
-        -Path <FileInfo> [<Alias> -p]
-            The path parameter sets the file or directory path that Javinizer will search and sort files in.
+PARAMETERS
+    -Find <String>
+        The find parameter will output a list-formatted data output from the data sources specified using a movie ID, file path, or URL.
+        Required?                    true
+        Position?                    1
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -DestinationPath <FileInfo> [<Alias> -d]
-            The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
+    -Aggregated [<SwitchParameter>]
+        The aggregated parameter will create an aggregated list-formatted data output from the data sources specified as well as metadata             priorities in your settings.ini file.
 
-        -Url <String> [<Alias> -u]
-            The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in comma-separated-format (url1,url2,url3).
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -Apply [<SwitchParameter>] [<Alias> -a]
-            The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
+    -Path <FileInfo>
+        The path parameter sets the file or directory path that Javinizer will search and sort files in.
 
-        -Multi [<SwitchParameter>] [<Alias> -m]
-            The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
+        Required?                    false
+        Position?                    1
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -R18 [<SwitchParameter>]
-            The r18 parameter allows you to set your data source of R18 to true.
+    -DestinationPath <FileInfo>
+        The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
-        -Dmm [<SwitchParameter>]
-            The dmm parameter allows you to set your data source of DMM to true.
+        Required?                    false
+        Position?                    2
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -Javlibrary [<SwitchParameter>]
-            The javlibrary parameter allows you to set your data source of JAVLibrary to true.
+    -Url <String>
+        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in
+        comma-separated-format (url1,url2,url3).
 
-        -Force [<SwitchParameter>]
-            The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
+        Required?                    false
+        Position?                    named
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -ScriptRoot <String>
-            The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
+    -Apply [<SwitchParameter>]
+        The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
 
-        <CommonParameters>
-            This cmdlet supports the common parameters: Verbose, Debug,
-            ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-            OutBuffer, PipelineVariable, and OutVariable. For more information, see
-            about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -------------------------- EXAMPLE 1 --------------------------
+    -Multi [<SwitchParameter>]
+        The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini
+        file.
 
-        PS> Javinizer -Apply -Multi
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        Description
-        -----------
-        Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
+    -Force [<SwitchParameter>]
+        The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
 
-        -------------------------- EXAMPLE 2 --------------------------
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted
+    -Help [<SwitchParameter>]
+        The help parameter will open a help dialogue in your console for Javinizer usage.
 
-        Description
-        -----------
-        Performs a single-threaded sort on your specified Path with other settings specified in your settings.ini file.
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -------------------------- EXAMPLE 3 --------------------------
+    -OpenSettings [<SwitchParameter>]
+        The opensettings parameter will open your settings.ini file for you to edit.
 
-        PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00     620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        Description
-        -----------
-        Performs a single-threaded sort on your specified file using direct URLs to match the file.
+    -R18 [<SwitchParameter>]
+        The r18 parameter allows you to set your data source of R18 to true.
 
-        -------------------------- EXAMPLE 4 --------------------------
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        PS> Javinizer -Find SNIS-420
+    -Dmm [<SwitchParameter>]
+        The dmm parameter allows you to set your data source of DMM to true.
 
-        Description
-        -----------
-        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        -------------------------- EXAMPLE 5 --------------------------
+    -Javlibrary [<SwitchParameter>]
+        The javlibrary parameter allows you to set your data source of JAVLibrary to true.
 
-        PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        Description
-        -----------
-        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
+    -ScriptRoot <String>
+        The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
 
-        -------------------------- EXAMPLE 6 --------------------------
+        Required?                    false
+        Position?                    named
+        Default value                (Get-Item $PSScriptRoot).Parent
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
-        PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
+    <CommonParameters>
+        This cmdlet supports the common parameters: Verbose, Debug,
+        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+        OutBuffer, PipelineVariable, and OutVariable. For more information, see
+        about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
 
-        Description
-        -----------
-        Performs a console search of PRED-200 using a direct url.
+    -------------------------- EXAMPLE 1 --------------------------
+
+    PS>Javinizer -OpenSettings
+
+    Description
+    -----------
+    Opens your Javinizer settings.ini file in the root module directory.
+
+    -------------------------- EXAMPLE 2 --------------------------
+
+    PS>Javinizer -Apply -Multi
+
+    Description
+    -----------
+    Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
+
+    -------------------------- EXAMPLE 3 --------------------------
+
+    PS>Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted
+
+    Description
+    -----------
+    Performs a single-threaded sort on your specified Path with other settings specified in your settings.ini file.
+
+    -------------------------- EXAMPLE 4 --------------------------
+
+    PS>Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javli
+    lljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=
+    /cid=snis00620/?i3_ref=search&i3_ord=4'
+
+    Description
+    -----------
+    Performs a single-threaded sort on your specified file using direct URLs to match the file.
+
+    -------------------------- EXAMPLE 5 --------------------------
+
+    PS>Javinizer -Find SNIS-420
+
+    Description
+    -----------
+    Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
+
+    -------------------------- EXAMPLE 6 --------------------------
+
+    PS>Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
+
+    Description
+    -----------
+    Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
+
+    -------------------------- EXAMPLE 7 --------------------------
+
+    PS>Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
+
+    Description
+    -----------
+    Performs a console search of PRED-200 using a direct url.
 ```
 
 ## Troubleshooting
