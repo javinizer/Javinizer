@@ -12,7 +12,7 @@
     RootModule        = 'Javinizer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.7'
+    ModuleVersion     = '0.1.7-beta'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -101,22 +101,22 @@
             # LicenseUri = ''
 
             # A URL to the main website for this project.
-            # ProjectUri = ''
+            ProjectUri                 = 'https://github.com/jvlflame/Javinizer'
 
             # A URL to an icon representing this module.
             # IconUri = ''
 
             # ReleaseNotes of this module
-            # ReleaseNotes = ''
+            ReleaseNotes               = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
             # Prerelease = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-            RequireLicenseAcceptance = $false
+            RequireLicenseAcceptance   = $false
 
             # External dependent modules of this module
-            # ExternalModuleDependencies = @()
+            ExternalModuleDependencies = @('Python 3', 'Python-CloudScraper', 'Python-Pillow', 'Python-Googletrans', 'PoshRSJob')
 
         } # End of PSData hashtable
 

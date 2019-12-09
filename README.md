@@ -1,10 +1,11 @@
 # Javinizer (JAV Organizer)
-[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat-square)](https://github.com/jvlflame/Javinizer/releases)
-[![Commits since lastest release](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest?style=flat-square)](#)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat-square)](https://github.com/jvlflame/Javinizer/commits/master)
-[![Discord](https://img.shields.io/discord/608449512352120834?style=flat-square)](https://discord.gg/K2Yjevk)
+[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat)](https://github.com/jvlflame/Javinizer/releases)
+[![Commits since lastest release](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest?style=flat)](#)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat)](https://github.com/jvlflame/Javinizer/commits/master)
+[![Discord](https://img.shields.io/discord/608449512352120834?style=flat)](https://discord.gg/K2Yjevk)
+[![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 
-A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
+A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
 ![Demo](media/demo.gif)
 
@@ -21,7 +22,6 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 ## Installation
 
 **Dependencies**
-
 - [PowerShell 6, PowerShell 7](https://github.com/PowerShell/PowerShell) - Windows PowerShell 5 is **NOT** supported
     - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
@@ -69,14 +69,26 @@ ID-###_0\d        - ID-069_01, ID-069_02
 Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
 The fields are preset with my recommended default output.
 
-## Usage
+## Installation
 
-### Import the module
+#### Install the module from PowerShell Gallery
+```
+PS> Install-Module -Name Javinizer
+```
+
+**---------- OR ----------**
+
+#### Import the module
+
+[Clone the repository](https://github.com/jvlflame/Javinizer/archive/master.zip) or [download the latest release](https://github.com/jvlflame/Javinizer/releases) and import the module.
+
 ```
 PS> Import-Module ./Javinizer.psm1
 ```
 
-### Comment-based help
+### Usage
+
+After installing or importing the module:
 
 ```
 PS> help Javinizer

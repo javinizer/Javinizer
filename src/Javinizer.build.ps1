@@ -379,7 +379,7 @@ Add-BuildTask Build {
 
     Write-Build Gray '        Merging Public and Private functions to one module file...'
     #$private = "$script:ModuleSourcePath\Private"
-    $scriptContent = [System.Text.StringBuilder]::new()
+    <# $scriptContent = [System.Text.StringBuilder]::new()
     #$powerShellScripts = Get-ChildItem -Path $script:ModuleSourcePath -Filter '*.ps1' -Recurse
     $powerShellScripts = Get-ChildItem -Path $script:ArtifactsPath -Filter '*.ps1' -Recurse
     foreach ($script in $powerShellScripts) {
@@ -387,17 +387,17 @@ Add-BuildTask Build {
         $null = $scriptContent.AppendLine('')
         $null = $scriptContent.AppendLine('')
     }
-    $scriptContent.ToString() | Out-File -FilePath $script:BuildModuleRootFile -Encoding utf8 -Force
+    $scriptContent.ToString() | Out-File -FilePath $script:BuildModuleRootFile -Encoding utf8 -Force #>
     Write-Build Gray '        ...Module creation complete.'
 
     Write-Build Gray '        Cleaning up leftover artifacts...'
     #cleanup artifacts that are no longer required
-    if (Test-Path "$($script:ArtifactsPath)\Public") {
+    <# if (Test-Path "$($script:ArtifactsPath)\Public") {
         Remove-Item "$($script:ArtifactsPath)\Public" -Recurse -Force -ErrorAction Stop
     }
     if (Test-Path "$($script:ArtifactsPath)\Private") {
         Remove-Item "$($script:ArtifactsPath)\Private" -Recurse -Force -ErrorAction Stop
-    }
+    } #>
 
     # here you could move your docs up to your repos doc level if you wanted
     # Write-Build Gray '        Overwriting docs output...'
