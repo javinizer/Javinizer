@@ -6,7 +6,7 @@
 
 A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
 
-![Demo](demo.gif)
+![Demo](media/demo.gif)
 
 ## Overview
 

@@ -1,24 +1,59 @@
-jobs:
-  - job: build_pwsh_win2016
-    pool:
-      vmImage: vs2017-win2016
-    steps:
-      - pwsh: ./build.ps1 -Task Test -Bootstrap -Verbose
-        displayName: "Build and Test"
-      - task: PublishTestResults@2
-        inputs:
-          testRunner: "NUnit"
-          testResultsFiles: "**/Tests/testresults.xml"
-          testRunTitle: "pwsh_win2016"
-        displayName: "Publish Test Results"
-      - task: CopyFiles@2
-        inputs:
-          contents: "Output/JAV Organizer/**"
-          targetFolder: $(Build.ArtifactStagingDirectory)
-        displayName: "Copy Output Files"
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)
-          artifactName: "JAV OrganizerBuildOutput"
-        displayName: "Publish Build Artifacts"
 
+jobs:
+  # https://docs.microsoft.com/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema
+  # https://docs.microsoft.com/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
+  # https://docs.microsoft.com/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
+
+
+  - job: build_pwsh_WinLatest
+    pool:
+      vmImage: windows-latest
+    steps:
+    - pwsh: |
+        $PSVersionTable
+        .\actions_bootstrap.ps1
+        Invoke-Build -File $(Build.SourcesDirectory)\Javinizer.build.ps1
+      displayName: 'Build and Test - Windows pwsh'
+    - task: PublishTestResults@2
+      inputs:
+        testRunner: 'NUnit'
+        testResultsFiles: '**/out/testResults.xml'
+        testRunTitle: 'pwsh_winLatest'
+      # displayName: 'Publish Test Results'
+
+  - job: build_pwsh_ubuntuLatest
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - script: |
+        sudo dpkg -i powershell_6.2.0-1.ubuntu.16.04_amd64.deb
+        sudo apt-get install -f
+      displayName: 'Install PowerShell Core'
+    - script: |
+        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/Javinizer.build.ps1'
+      displayName: 'Build and Test - Linux'
+    - task: PublishTestResults@2
+      inputs:
+        testRunner: 'NUnit'
+        testResultsFiles: '**/out/testResults.xml'
+        testRunTitle: 'pwsh_ubuntuLatest'
+      # displayName: 'Publish Test Results'
+
+  - job: build_pwsh_macOSLatest
+    pool:
+      vmImage: macOS-latest
+    steps:
+    - script: |
+        brew update
+        brew tap caskroom/cask
+        brew cask install powershell
+      displayName: 'Install PowerShell Core'
+    - script: |
+        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/Javinizer.build.ps1'
+      displayName: 'Build and Test'
+    - task: PublishTestResults@2
+      inputs:
+        testRunner: 'NUnit'
+        testResultsFiles: '**/out/testResults.xml'
+        testRunTitle: 'pwsh_macOSLatest'
+      # displayName: 'Publish Test Results'
