@@ -58,7 +58,7 @@ jobs:
         testRunTitle: 'pwsh_macOSLatest'
       # displayName: 'Publish Test Results'
 
-  - task: PublishPipelineArtifact@0
-    inputs:
-      artifactName: 'Javinizer'
-      targetPath: 'Javinizer'
+#- task: PublishPipelineArtifact@0
+#  inputs:
+#    artifactName: 'Javinizer'
+#    targetPath: 'Javinizer'
