@@ -28,6 +28,12 @@ function Javinizer {
     .PARAMETER Multi
         The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
 
+    .PARAMETER Help
+        The help parameter will open a help dialogue in your console for Javinizer usage.
+
+    .PARAMETER OpenSettings
+        The opensettings parameter will open your settings.ini file for you to edit.
+
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
 
@@ -42,6 +48,14 @@ function Javinizer {
 
     .PARAMETER ScriptRoot
         The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
+
+
+    .EXAMPLE
+        PS> Javinizer -OpenSettings
+
+        Description
+        -----------
+        Opens your Javinizer settings.ini file in the root module directory.
 
     .EXAMPLE
         PS> Javinizer -Apply -Multi
@@ -105,13 +119,25 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('a')]
         [switch]$Apply,
-        [Parameter(Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('m')]
         [switch]$Multi,
-        [switch]$R18,
-        [switch]$Dmm,
-        [switch]$Javlibrary,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
+        [Parameter(ParameterSetName = 'Help')]
+        [Alias('h')]
+        [switch]$Help,
+        [Parameter(ParameterSetName = 'Settings')]
+        [switch]$OpenSettings,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [switch]$R18,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [switch]$Dmm,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [switch]$Javlibrary,
         [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
@@ -154,11 +180,22 @@ function Javinizer {
 
     process {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
-
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
                 Write-Output $dataObject
+            }
+
+            'Settings' {
+                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                    Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                    nano (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                }
+            }
+
+            'Help' {
+                help Javinizer
             }
 
             'Path' {
