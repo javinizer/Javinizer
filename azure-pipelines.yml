@@ -20,6 +20,10 @@ jobs:
         testResultsFiles: '**/out/testResults.xml'
         testRunTitle: 'pwsh_winLatest'
       # displayName: 'Publish Test Results'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        path: $(Build.SourcesDirectory)\src\Artifacts
+        artifact: Javinizer
 
   - job: build_pwsh_ubuntuLatest
     pool:
