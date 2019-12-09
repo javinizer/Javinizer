@@ -24,7 +24,8 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 Choose only ***one*** of the below options.
 
 **Install the module**
-Install the module from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
+
+Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
 ```
 PS> Install-Module -Name Javinizer
 ```
