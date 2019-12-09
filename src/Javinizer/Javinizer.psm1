@@ -13,8 +13,7 @@ $itemSplat = @{
 try {
     $public = @(Get-ChildItem -Path "$PSScriptRoot\Public" @itemSplat)
     $private = @(Get-ChildItem -Path "$PSScriptRoot\Private" @itemSplat)
-}
-catch {
+} catch {
     Write-Error $_
     throw "Unable to get get file information from Public & Private src."
 }
@@ -23,8 +22,7 @@ catch {
 foreach ($file in @($public + $private)) {
     try {
         . $file.FullName
-    }
-    catch {
+    } catch {
         throw "Unable to dot source [$($file.FullName)]"
 
     }
