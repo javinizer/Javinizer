@@ -62,6 +62,7 @@ jobs:
     dependsOn: build_pwsh_WinLatest, build_pwsh_ubuntuLatest, build_pwsh_macOSLatest
     condition: succeeded()
     steps:
-    - task: PublishPipelineArtifact@0
-      artifactName: 'Javinizer'
-      targetPath: '$(Build.SourcesDirectory)/src/Artifacts'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/src/Artifacts
+        artifact: Javinizer
