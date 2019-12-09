@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.8] 12-8-2019
+### Changed
+ - Various parts for compatibility with PowerShell Gallery releases
+
 ## [0.1.7] 12-8-2019
 ### Added
  - Muli-threaded sorting functionality with parameter `Multi`

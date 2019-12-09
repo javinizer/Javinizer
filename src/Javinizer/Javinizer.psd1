@@ -12,7 +12,7 @@
     RootModule        = 'Javinizer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.7'
+    ModuleVersion     = '0.1.8'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -69,7 +69,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = '*'
+    FunctionsToExport = @('Javinizer')
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = '*'
@@ -101,22 +101,22 @@
             # LicenseUri = ''
 
             # A URL to the main website for this project.
-            ProjectUri                 = 'https://github.com/jvlflame/Javinizer'
+            ProjectUri               = 'https://github.com/jvlflame/Javinizer'
 
             # A URL to an icon representing this module.
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes               = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
+            ReleaseNotes             = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
-            Prerelease                 = 'beta'
+            # Prerelease               = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
-            RequireLicenseAcceptance   = $false
+            RequireLicenseAcceptance = $false
 
             # External dependent modules of this module
-            ExternalModuleDependencies = @('Python 3', 'Python-CloudScraper', 'Python-Pillow', 'Python-Googletrans', 'PoshRSJob')
+            # ExternalModuleDependencies = @('Python 3', 'Python-CloudScraper', 'Python-Pillow', 'Python-Googletrans', 'PoshRSJob')
 
         } # End of PSData hashtable
 
