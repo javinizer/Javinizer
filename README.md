@@ -16,7 +16,7 @@ Please test it out and provide any feedback or feature requests if possible.
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
 
 
-[View changelog](./CHANGELOG.md)
+[View changelog](.github/CHANGELOG.md)
 
 ## Installation
 

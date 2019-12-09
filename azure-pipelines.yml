@@ -12,7 +12,7 @@ jobs:
     - pwsh: |
         $PSVersionTable
         .\actions_bootstrap.ps1
-        Invoke-Build -File $(Build.SourcesDirectory)\Javinizer.build.ps1
+        Invoke-Build -File $(Build.SourcesDirectory)\src\Javinizer.build.ps1
       displayName: 'Build and Test - Windows pwsh'
     - task: PublishTestResults@2
       inputs:
@@ -30,7 +30,7 @@ jobs:
         sudo apt-get install -f
       displayName: 'Install PowerShell Core'
     - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/Javinizer.build.ps1'
+        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
       displayName: 'Build and Test - Linux'
     - task: PublishTestResults@2
       inputs:
@@ -49,7 +49,7 @@ jobs:
         brew cask install powershell
       displayName: 'Install PowerShell Core'
     - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/Javinizer.build.ps1'
+        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
       displayName: 'Build and Test'
     - task: PublishTestResults@2
       inputs:
