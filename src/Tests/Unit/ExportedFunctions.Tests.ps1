@@ -14,7 +14,7 @@ Describe -Name $ModuleName -Fixture {
 
     $manifestContent = Test-ModuleManifest -Path $PathToManifest
 
-    Context -Name 'Exported Commands' -Fixture {
+    <# Context -Name 'Exported Commands' -Fixture {
         $manifestExported = ($manifestContent.ExportedFunctions).Keys
         $moduleExported = Get-Command -Module $ModuleName | Select-Object -ExpandProperty Name
 
@@ -31,7 +31,7 @@ Describe -Name $ModuleName -Fixture {
                 }
             }
         }
-    }
+    } #>
 
     Context -Name 'Command Help' -Fixture {
         foreach ($command in $moduleExported) {
