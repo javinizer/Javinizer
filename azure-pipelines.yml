@@ -20,52 +20,7 @@ jobs:
         testResultsFiles: '**/out/testResults.xml'
         testRunTitle: 'pwsh_winLatest'
       # displayName: 'Publish Test Results'
-
-  - job: build_pwsh_ubuntuLatest
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - script: |
-        sudo dpkg -i powershell_6.2.0-1.ubuntu.16.04_amd64.deb
-        sudo apt-get install -f
-      displayName: 'Install PowerShell Core'
-    - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
-      displayName: 'Build and Test - Linux'
-    - task: PublishTestResults@2
-      inputs:
-        testRunner: 'NUnit'
-        testResultsFiles: '**/out/testResults.xml'
-        testRunTitle: 'pwsh_ubuntuLatest'
-      # displayName: 'Publish Test Results'
-
-  - job: build_pwsh_macOSLatest
-    pool:
-      vmImage: macOS-latest
-    steps:
-    - script: |
-        brew update
-        brew tap caskroom/cask
-        brew cask install powershell
-      displayName: 'Install PowerShell Core'
-    - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
-      displayName: 'Build and Test'
-    - task: PublishTestResults@2
-      inputs:
-        testRunner: 'NUnit'
-        testResultsFiles: '**/out/testResults.xml'
-        testRunTitle: 'pwsh_macOSLatest'
-      # displayName: 'Publish Test Results'
-
-  - job: publish_build_artifact
-    dependsOn:
-      - build_pwsh_WinLatest
-      - build_pwsh_ubuntuLatest
-      - build_pwsh_macOSLatest
-    condition: succeeded()
-    steps:
     - task: PublishPipelineArtifact@1
       inputs:
-        path: $(System.DefaultWorkingDirectory)/src/Artifacts
+        path: $(Build.SourcesDirectory)\src\Artifacts
         artifact: Javinizer
