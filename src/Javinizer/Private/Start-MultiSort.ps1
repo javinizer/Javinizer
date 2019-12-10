@@ -3,7 +3,6 @@ function Start-MultiSort {
     param (
         [system.io.fileinfo]$Path,
         [system.io.fileinfo]$DestinationPath,
-        #[system.io.fileinfo]$ScriptRoot,
         [ValidateRange(1, 5)]
         [int]$Throttle
     )
@@ -16,6 +15,7 @@ function Start-MultiSort {
     $importVariables = @(
         'ScriptRoot',
         'DestinationPath'
+        'Session'
     )
 
     $files | Start-RSJob -VariablesToImport $importVariables -Verbose:$false -ScriptBlock {
