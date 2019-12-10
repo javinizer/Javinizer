@@ -230,7 +230,7 @@ function Javinizer {
                 }
 
                 try {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
+                    #Write-Verbose "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
                     $fileDetails = Convert-JavTitle -Path $getPath.FullName
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
@@ -263,6 +263,9 @@ function Javinizer {
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         try {
+                            if ($Javlibrary) {
+                                New-CloudflareSession -ScriptRoot $ScriptRoot
+                            }
                             Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -DestinationPath $DestinationPath
                         } catch {
                             Write-Warning "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"

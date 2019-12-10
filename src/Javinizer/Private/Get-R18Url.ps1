@@ -15,7 +15,7 @@ function Get-R18Url {
 
     process {
         try {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
+            Write-Debug "[$($MyInvocation.MyCommand.Name)/Get-DMMUrl] Performing [GET] on Uri [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             throw $_
