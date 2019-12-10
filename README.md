@@ -56,8 +56,7 @@ Choose one of the methods below:
 PS> Install-Module -Name Javinizer
 ```
 
-
-- [Clone the repository](https://github.com/jvlflame/Javinizer/archive/master.zip) or [download the latest release](https://github.com/jvlflame/Javinizer/releases)
+- Clone the repository or [download the latest release](https://github.com/jvlflame/Javinizer/releases)
 
 ```
 # Import the module (you will need to run this every time you open a new shell)
@@ -65,8 +64,6 @@ PS> Import-Module ./Javinizer.psm1
 
 # Or add the module files to your appropriate PowerShell version module path
 PS> $env:PSModulePath
-C:\Users\UserName\Documents\PowerShell\Modules;C:\Program Files\PowerShell\Modules;c:\program files\powershell\7-preview\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
-
 ```
 
 ## Usage
@@ -119,8 +116,7 @@ SYNTAX
 
 
 DESCRIPTION
-    Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS
-    (Plex,Emby,Jellyfin) parseable format.
+    Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS (Plex, Emby, Jellyfin) parseable format.
 
 
 PARAMETERS
@@ -235,6 +231,7 @@ PARAMETERS
     Description
     -----------
     Performs a console search of PRED-200 using a direct url.
+
 ```
 
 ## Troubleshooting
