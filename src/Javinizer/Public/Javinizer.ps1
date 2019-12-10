@@ -32,7 +32,13 @@ function Javinizer {
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
     .PARAMETER OpenSettings
-        The opensettings parameter will open your settings.ini file for you to edit.
+        The opensettings parameter will open your settings.ini file for you to view and edit.
+
+    .PARAMETER UpdateThumbs
+        The updatethumbs parameter will update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
+
+    .PARAMETER OpenThumbs
+        The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
 
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
@@ -136,6 +142,10 @@ function Javinizer {
         [switch]$Help,
         [Parameter(ParameterSetName = 'Settings')]
         [switch]$OpenSettings,
+        [Parameter(ParameterSetName = 'UpdateThumbs')]
+        [switch]$UpdateThumbs,
+        [Parameter(ParameterSetName = 'UpdateThumbs')]
+        [switch]$OpenThumbs,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
         [switch]$R18,
@@ -194,15 +204,45 @@ function Javinizer {
             }
 
             'Settings' {
-                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                    Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'settings.ini')
-                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                    nano (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                if ($OpenSettings.IsPresent) {
+                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                        try {
+                            Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                        } catch {
+                            throw $_
+                        }
+                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                        try {
+                            nano (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                        } catch {
+                            throw $_
+                        }
+                    }
                 }
             }
 
             'Help' {
                 help Javinizer
+            }
+
+            'UpdateThumbs' {
+                if ($UpdateThumbs.IsPresent) {
+                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Force:$Force
+                } elseif ($OpenThumbs.IsPresent) {
+                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                        try {
+                            Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
+                        } catch {
+                            throw $_
+                        }
+                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                        try {
+                            nano (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
+                        } catch {
+                            throw $_
+                        }
+                    }
+                }
             }
 
             'Path' {
