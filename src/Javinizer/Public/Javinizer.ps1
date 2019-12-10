@@ -147,13 +147,13 @@ function Javinizer {
         [Parameter(ParameterSetName = 'UpdateThumbs')]
         [switch]$OpenThumbs,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
-        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$R18,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
-        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$Dmm,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
-        [Parameter(ParameterSetName = 'Info', Mandatory = $false, Position = 0)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$Javlibrary,
         [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
