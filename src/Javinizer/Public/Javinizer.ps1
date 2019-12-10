@@ -20,7 +20,7 @@ function Javinizer {
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
     .PARAMETER Url
-        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in comma-separated-format (url1,url2,url3).
+        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs comma-separated-format (url1,url2,url3).
 
     .PARAMETER Apply
         The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
@@ -56,6 +56,13 @@ function Javinizer {
         Description
         -----------
         Opens your Javinizer settings.ini file in the root module directory.
+
+    .EXAMPLE
+        PS> Javinizer -Path C:\Downloads\Unsorted -Multi
+
+        Description
+        -----------
+        Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Apply -Multi
