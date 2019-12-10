@@ -22,6 +22,7 @@ function Set-JavMovie {
         $posterPath      = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
         $trailerPath     = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
         $screenshotPath  = Join-Path -Path $folderPath -ChildPath 'extrafanart'
+        $actorPath       = Join-Path -Path $folderPath -ChildPath '.actors'
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"
@@ -84,14 +85,14 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
                     if ($null -ne $dataObject.ScreenshotUrl) {
                         New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                        $fixFolderPath = $folderpath.replace('[', '`[').replace(']', '`]')
+                        $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
                         New-Item -ItemType Directory -Name 'extrafanart' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                                $webClient.DownloadFileAsync($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
                             } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                                $webClient.DownloadFileAsync($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
                             }
                             $index++
                         }
@@ -103,12 +104,39 @@ function Set-JavMovie {
             }
 
             try {
+                if ($Settings.Metadata.'download-actress-img' -eq 'True') {
+                    if ($null -ne $dataObject.ActressThumbUrl) {
+                        $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
+                        New-Item -ItemType Directory -Name '.actors' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        for ($i = 0; $i -lt $dataObject.ActressThumbUrl.Count; $i++) {
+                            if ($dataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
+                                $first, $second = $dataObject.Actress[$i] -split ' '
+                                if ($null -ne $second -or $second -ne '') {
+                                    $actressFileName = $first + '_' + $second + '.jpg'
+                                } else {
+                                    $actressFileName = $first + '.jpg'
+                                }
+                                if ($Force.IsPresent) {
+                                    $webClient.DownloadFileAsync($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
+                                    $webClient.DownloadFileAsync($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading actress images"
+                throw $_
+            }
+
+            try {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $dataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFileAsync($dataObject.TrailerUrl, $trailerPath)
                         } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
-                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFileAsync($dataObject.TrailerUrl, $trailerPath)
                         }
                     }
                 }
