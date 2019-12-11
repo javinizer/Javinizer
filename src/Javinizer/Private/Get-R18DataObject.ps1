@@ -31,6 +31,7 @@ function Get-R18DataObject {
             'U**verse'                       = 'Universe'
             'V*****ed'                       = 'Violated'
             'Y********l'                     = 'Young girl'
+            'I****t'                         = 'Incest'
         }
     }
 
