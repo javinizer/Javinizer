@@ -71,7 +71,11 @@ PS> $env:PSModulePath
 **Module settings**
 
 Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
-The fields are preset with my recommended default output.
+
+```
+# Opens your settings.ini file
+PS> Javinizer -OpenSettings
+```
 
 
 **Multi-part video supported naming schemes**
@@ -238,8 +242,6 @@ PARAMETERS
 
 Unicode error when trying to translate plot description
 Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`
-
-
 
 ## Todo
 - [x] Trailer scraping - [0.1.2]
