@@ -142,9 +142,11 @@ function Javinizer {
         [switch]$Help,
         [Parameter(ParameterSetName = 'Settings')]
         [switch]$OpenSettings,
-        [Parameter(ParameterSetName = 'UpdateThumbs')]
-        [switch]$UpdateThumbs,
-        [Parameter(ParameterSetName = 'UpdateThumbs')]
+        [Parameter(ParameterSetName = 'Thumbs')]
+        [switch]$GetThumbs,
+        [Parameter(ParameterSetName = 'Thumbs')]
+        [int]$UpdateThumbs,
+        [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$OpenThumbs,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
@@ -225,8 +227,8 @@ function Javinizer {
                 help Javinizer
             }
 
-            'UpdateThumbs' {
-                if ($UpdateThumbs.IsPresent) {
+            'Thumbs' {
+                if ($GetThumbs.IsPresent) {
                     Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Force:$Force
                 } elseif ($OpenThumbs.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
@@ -242,8 +244,11 @@ function Javinizer {
                             throw $_
                         }
                     }
+                } elseif ($PSBoundParameters.ContainsKey('UpdateThumbs')) {
+                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -NewPages $UpdateThumbs -Force:$Force
                 }
             }
+
 
             'Path' {
                 if (-not ($PSBoundParameters.ContainsKey('Path'))) {
