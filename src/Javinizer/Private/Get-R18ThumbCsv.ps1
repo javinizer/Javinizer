@@ -108,10 +108,10 @@ function Get-R18ThumbCsv {
                 if ($originalCsv.FullName -like $actress.FullName) {
                     # Skip actress if 'FullName' already exists in existing csv
                 } else {
-                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($actress.FullName)] written to [$csvPath]"
                     if ($actressCheck.FullName -like $actress.FullName) {
                         # Skip actress if actress with identical 'FullName' already written in current session
                     } else {
+                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($actress.FullName)] written to [$csvPath]"
                         $actress | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv') -Append -Force:$Force
                         $actressCheck += $actress
                     }
