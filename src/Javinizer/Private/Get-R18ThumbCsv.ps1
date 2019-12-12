@@ -118,7 +118,7 @@ function Get-R18ThumbCsv {
                 }
             }
 
-        } ca tch {
+        } catch {
             Write-Warning "[$($MyInvocation.MyCommand.Name)] Ran into errors while scraping r18 actresses"
             throw $_
         } finally {
