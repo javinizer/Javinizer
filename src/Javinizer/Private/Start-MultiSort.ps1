@@ -33,7 +33,7 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-MetadataPriority.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-NewFileDirName.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-R18DataObject.ps1'), `
-    (Join-Path -Path $PSScriptRoot -ChildPath 'Get-R18ThumbUrl.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Get-R18ThumbCsv.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-R18Url.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-TranslatedString.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-VideoFile.ps1'), `

@@ -90,9 +90,9 @@ function Set-JavMovie {
                         $index = 1
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
-                                $webClient.DownloadFileAsync($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
                             } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
-                                $webClient.DownloadFileAsync($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
                             }
                             $index++
                         }
@@ -117,9 +117,9 @@ function Set-JavMovie {
                                     $actressFileName = $first + '.jpg'
                                 }
                                 if ($Force.IsPresent) {
-                                    $webClient.DownloadFileAsync($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
                                 } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
-                                    $webClient.DownloadFileAsync($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
                                 }
                             }
                         }
@@ -134,9 +134,9 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $dataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFileAsync($dataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
-                            $webClient.DownloadFileAsync($dataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFile($dataObject.TrailerUrl, $trailerPath)
                         }
                     }
                 }
