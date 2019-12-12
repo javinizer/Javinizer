@@ -34,8 +34,11 @@ function Javinizer {
     .PARAMETER OpenSettings
         The opensettings parameter will open your settings.ini file for you to view and edit.
 
+    .PARAMETER GetThumbs
+        The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
+
     .PARAMETER UpdateThumbs
-        The updatethumbs parameter will update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
+        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages to scrape which will attempt to write unknown actress thumburls on sort.
 
     .PARAMETER OpenThumbs
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.

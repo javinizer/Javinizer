@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.2.0]
 ### Added
  - Setting `download-actress-img` to download actress images to video's local `.actors` folder
- - Parameter `UpdateThumbs` to update r18 actress and thumburl csv file
+ - Parameter `GetThumbs`, `UpdateThumbs`, and `OpenThumbs` to update r18 actress and thumburl csv file
 
 ### Changed
  - Script to start cloudflare session before multi-sort begins
