@@ -17,7 +17,7 @@ function Display-ConfirmMessage {
             } elseif ($selection -eq 'n' -or $selection -eq 'no') {
                 $selection = 'n'
             } else {
-                Write-Warning "Your selection [$selection] is invalid. Please enter a valid selection."
+                Write-Warning "Your selection [$selection] is invalid."
                 $selection = Read-Host "[Y] Yes  [N] No  (Default is ""$Default"")"
             }
         } until ($selection -eq 'y' -or $selection -eq 'n')
