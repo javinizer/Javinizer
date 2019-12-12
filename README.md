@@ -109,68 +109,189 @@ SYNOPSIS
 
 
 SYNTAX
-    Javinizer [[-Path] <FileInfo>] [[-DestinationPath] <FileInfo>] [-Url <String>] [-Apply] [-Multi] [-Force] [-R18] [-Dmm] [-Javlibrary]
-    [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [[-Path] <FileInfo>] [[-DestinationPath] <FileInfo>] [-Url <String>] [-Apply] [-Multi] [-Force] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-Find] <String> [-Aggregated] [[-R18]] [[-Dmm]] [[-Javlibrary]] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-Find] <String> [-Aggregated] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-OpenSettings] [-ScriptRoot <String>] [<CommonParameters>]
 
+    Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-ScriptRoot <String>] [<CommonParameters>]
+
 
 DESCRIPTION
-    Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS (Plex, Emby, Jellyfin) parseable format.
+    Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS (Plex,Emby,Jellyfin)                                                              parseable format.
 
 
 PARAMETERS
     -Find <String>
         The find parameter will output a list-formatted data output from the data sources specified using a movie ID, file path, or URL.
 
+        Required?                    true
+        Position?                    1
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -Aggregated [<SwitchParameter>]
-        The aggregated parameter will create an aggregated list-formatted data output from the data sources specified as well as metadata priorities in your settings.ini file.
+        The aggregated parameter will create an aggregated list-formatted data output from the data sources specified as well as metadata
+        priorities in your settings.ini file.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     -Path <FileInfo>
         The path parameter sets the file or directory path that Javinizer will search and sort files in.
 
+        Required?                    false
+        Position?                    1
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -DestinationPath <FileInfo>
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
+        Required?                    false
+        Position?                    2
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -Url <String>
-        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from direct URLs in comma-separated-format (url1,url2,url3).
+        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs
+        comma-separated-format (url1,url2,url3).
+
+        Required?                    false
+        Position?                    named
+        Default value
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     -Apply [<SwitchParameter>]
         The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
 
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -Multi [<SwitchParameter>]
-        The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
+        The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini
+        file.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     -Force [<SwitchParameter>]
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
 
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -Help [<SwitchParameter>]
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -OpenSettings [<SwitchParameter>]
-        The opensettings parameter will open your settings.ini file for you to edit.
+        The opensettings parameter will open your settings.ini file for you to view and edit.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -GetThumbs [<SwitchParameter>]
+        The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress
+        thumburls on sort.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -UpdateThumbs <Int32>
+        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com
+        pages to scrape which will attempt to write unknown actress thumburls on sort.
+
+        Required?                    false
+        Position?                    named
+        Default value                0
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
+    -OpenThumbs [<SwitchParameter>]
+        The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     -R18 [<SwitchParameter>]
         The r18 parameter allows you to set your data source of R18 to true.
 
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -Dmm [<SwitchParameter>]
         The dmm parameter allows you to set your data source of DMM to true.
+
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     -Javlibrary [<SwitchParameter>]
         The javlibrary parameter allows you to set your data source of JAVLibrary to true.
 
+        Required?                    false
+        Position?                    named
+        Default value                False
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
+
     -ScriptRoot <String>
         The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
+
+        Required?                    false
+        Position?                    named
+        Default value                (Get-Item $PSScriptRoot).Parent
+        Accept pipeline input?       false
+        Accept wildcard characters?  false
 
     <CommonParameters>
         This cmdlet supports the common parameters: Verbose, Debug,
         ErrorAction, ErrorVariable, WarningAction, WarningVariable,
         OutBuffer, PipelineVariable, and OutVariable. For more information, see
         about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
+
+INPUTS
+
+OUTPUTS
 
     -------------------------- EXAMPLE 1 --------------------------
 
@@ -206,7 +327,7 @@ PARAMETERS
 
     -------------------------- EXAMPLE 5 --------------------------
 
-    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
+    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail=/cid=snis00620/?i3_ref=search&i3_ord=4'
 
     Description
     -----------
@@ -230,7 +351,7 @@ PARAMETERS
 
     -------------------------- EXAMPLE 8 --------------------------
 
-    PS>  Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
+    PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
 
     Description
     -----------
@@ -248,6 +369,6 @@ Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for wor
 - [x] Multi-part video directory sort support - [0.1.2]
 - [x] Parallel/Threaded sort processing - [0.1.7]
 - [x] Allow switching firstname/lastname order - [0.1.7]
-- [ ] Add R18 actress thumburl scraping for non-r18 actress data source scrapes
+- [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [0.2.0]
 - [ ] Normalize genre names between JAVLibrary and R18
 - [ ] Normalize studio names between JAVLibrary and R18
