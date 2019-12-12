@@ -24,7 +24,8 @@
         'PSUseBOMForUnicodeEncodedFile',
         'PSAvoidUsingWriteHost',
         'PSAvoidGlobalVars',
-        'PSUseShouldProcessForStateChangingFunctions'
+        'PSUseShouldProcessForStateChangingFunctions',
+        'PSUseConsistentIndentation'
     )
     #________________________________________
     #Rules
