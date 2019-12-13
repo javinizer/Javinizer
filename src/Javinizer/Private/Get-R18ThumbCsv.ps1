@@ -24,11 +24,14 @@ function Get-R18ThumbCsv {
 
             Write-Host "[$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
 
-            try {
-                $originalCsv = Import-Csv -LiteralPath $csvPath -ErrorAction SilentlyContinue
-            } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Csv [r18-thumbs.csv] does not exist in your module root [$ScriptRoot]; Creating..."
-                New-Item -Path $csvPath -Force:$Force | Out-Null
+            if (Test-Path -LiteralPath $csvPath) {
+                $selection = Display-ConfirmMessage -Message "R18 actress thumbnail database [$csvPath] already exists`nAre you sure you want to do a full scrape?" -Default 'N'
+            } else {
+                $selection = 'y'
+            }
+
+            if ($selection -ne 'y') {
+                return
             }
 
             $importVariables = @(
@@ -66,41 +69,41 @@ function Get-R18ThumbCsv {
                     Write-Output $actressObject
                 } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
             } else {
-                if (Test-Path -LiteralPath $csvPath) {
-                    $selection = Display-ConfirmMessage -Message "R18 actress thumbnail database [$csvPath] already exists`nAre you sure you want to do a full scrape?" -Default 'N'
-                }
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -ScriptBlock {
+                    $actressBlock = @()
+                    $actressObject = @()
 
-                if ($selection -eq 'y') {
+                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
+                    $actressHtml = $webRequest.Content -split '<p><img '
+                    $actressHtml = $actressHtml | Where-Object { $_ -like 'src=*' }
 
-                    1..$NewPages | Start-RSJob -VariablesToImport $importVariables -ScriptBlock {
-                        $actressBlock = @()
-                        $actressObject = @()
+                    foreach ($actress in $actressHtml) {
+                        $actressBlock = ($actress -split '<\/a>')[0]
+                        $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
+                        $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
+                        $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
+                        $actressFullName = $actressFirstName + ' ' + $actressLastName
+                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
 
-                        $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
-                        $actressHtml = $webRequest.Content -split '<p><img '
-                        $actressHtml = $actressHtml | Where-Object { $_ -like 'src=*' }
-
-                        foreach ($actress in $actressHtml) {
-                            $actressBlock = ($actress -split '<\/a>')[0]
-                            $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
-                            $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                            $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                            $actressFullName = $ActressFirstName + ' ' + $actressLastName
-
-                            if (-not ($originalCsv -match $actressFullName)) {
-                                $actressObject += [pscustomobject]@{
-                                    FirstName = $actressFirstName.Trim()
-                                    LastName  = $actressLastName.Trim()
-                                    FullName  = $actressFullName.Trim()
-                                    ThumbUrl  = $actressThumbUrl
-                                }
+                        if (-not ($originalCsv -match $actressFullName)) {
+                            $actressObject += [pscustomobject]@{
+                                FirstName        = $actressFirstName.Trim()
+                                LastName         = $actressLastName.Trim()
+                                FullName         = $actressFullName.Trim()
+                                FullNameReversed = $actressFullNameReversed.Trim()
+                                ThumbUrl         = $actressThumbUrl
                             }
                         }
-                        Write-Output $actressObject
-                    } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append -Force:$Force
-                } else {
-                    return
-                }
+                    }
+                    Write-Output $actressObject
+                } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append -Force:$Force
+            }
+
+            try {
+                $originalCsv = Import-Csv -LiteralPath $csvPath -ErrorAction SilentlyContinue
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Csv [r18-thumbs.csv] does not exist in your module root [$ScriptRoot]; Creating..."
+                New-Item -Path $csvPath -Force:$Force | Out-Null
             }
 
             $scrapedActresses = Import-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv')
