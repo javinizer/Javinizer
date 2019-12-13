@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  - Setting `download-actress-img` to download actress images to video's local `.actors` folder
  - Parameter `GetThumbs`, `UpdateThumbs`, and `OpenThumbs` to update r18 actress and thumburl csv file
  - Feature to attempt to match actresses with missing thumburl to r18-thumbs.csv file
+ - Add `m4v` and `rmvb` video match support
 
 ### Changed
  - Script to start cloudflare session before multi-sort begins

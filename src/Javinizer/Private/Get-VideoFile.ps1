@@ -21,6 +21,8 @@ function Get-VideoFile {
                     -or $_.Name -like '*.wmv'`
                     -or $_.Name -like '*.flv'`
                     -or $_.Name -like '*.mov'`
+                    -or $_.Name -like '*.m4v'`
+                    -or $_.Name -like '*.rmvb'`
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
                     -and $_.Name -notlike '*fc2*'`
@@ -36,6 +38,8 @@ function Get-VideoFile {
                     -or $_.Name -like '*.wmv'`
                     -or $_.Name -like '*.flv'`
                     -or $_.Name -like '*.mov'`
+                    -or $_.Name -like '*.m4v'`
+                    -or $_.Name -like '*.rmvb'`
                     -and $_.Name -notlike '*1pon*'`
                     -and $_.Name -notlike '*carib*' `
                     -and $_.Name -notlike '*fc2*'`
