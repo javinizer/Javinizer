@@ -3,16 +3,22 @@ function Get-MetadataNfo {
     param(
         [Parameter(Mandatory = $true, Position = 0)]
         [object]$DataObject,
-        [object]$Settings
+        [object]$Settings,
+        [object]$R18ThumbCsv
     )
 
     begin {
-        $displayName    = $DataObject.DisplayName -replace '&', '&amp;'
+        $displayName = $DataObject.DisplayName -replace '&', '&amp;'
         $alternateTitle = $DataObject.AlternateTitle -replace '&', '&amp;'
-        $director       = $DataObject.Director -replace '&', '&amp;'
-        $maker          = $DataObject.Maker -replace '&', '&amp;'
-        $description    = $DataObject.Description -replace '&', '&amp;'
-        $series         = $DataObject.Series -replace '&', '&amp;'
+        $director = $DataObject.Director -replace '&', '&amp;'
+        $maker = $DataObject.Maker -replace '&', '&amp;'
+        $description = $DataObject.Description -replace '&', '&amp;'
+        $series = $DataObject.Series -replace '&', '&amp;'
+        if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+            $csvFullName = $R18ThumbCsv.FullName
+        } else {
+            $csvFullName = $R18ThumbCsv.FullNameReversed
+        }
     }
 
     process {
@@ -53,51 +59,49 @@ function Get-MetadataNfo {
 
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
-                if ($null -ne $DataObject.ActressThumbUrl) {
-                    if ($dataObject.ActressThumbUrl -like '*nowprinting*') {
+                if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
+                    if ($csvFullName -like $DataObject.Actress) {
+                        $index = $csvFullname.IndexOf("$($DataObject.Actress)")
+                        $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
+                    } else {
                         $DataObject.ActressThumbUrl = ''
                     }
-                    $actressNfoString = @"
+                }
+
+                $actressNfoString = @"
     <actor>
         <name>$($DataObject.Actress)</name>
         <thumb>$($DataObject.ActressThumbUrl)</thumb>
     </actor>
 
 "@
-                } else {
-                    $actressNfoString = @"
-    <actor>
-        <name>$($DataObject.Actress)</name>
-        <thumb></thumb>
-    </actor>
-
-"@
-                }
             } else {
-                if ($null -ne $DataObject.ActressThumbUrl) {
-                    for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
-                        if ($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') {
+                for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                    if ($null -eq $DataObject.ActressThumbUrl) {
+                        # Create empty array amounting to number of actresses found if scraped from javlibrary
+                        # This will allow matching actresses from r18 thumb csv
+                        $DataObject.ActressThumbUrl = @()
+                        foreach ($actress in $DataObject.Actress) {
+                            $DataObject.ActressThumbUrl += ''
+                        }
+                    }
+                    if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
+                        if ($csvFullName -like $DataObject.Actress[$i]) {
+                            $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                            $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
+                        } else {
                             $DataObject.ActressThumbUrl[$i] = ''
                         }
-                        $actressNfoString += @"
+                    }
+                    $actressNfoString += @"
     <actor>
         <name>$($DataObject.Actress[$i])</name>
         <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
     </actor>
 
 "@
-                    }
-                } else {
-                    for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
-                        $actressNfoString += @"
-    <actor>
-        <name>$($DataObject.Actress[$i])</name>
-        <thumb></thumb>
-    </actor>
-
-"@
-                    }
                 }
+
             }
         }
 
