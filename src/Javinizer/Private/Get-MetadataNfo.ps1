@@ -8,12 +8,12 @@ function Get-MetadataNfo {
     )
 
     begin {
-        $displayName = (($DataObject.DisplayName -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
-        $alternateTitle = (($DataObject.AlternateTitle -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
-        $director = (($DataObject.Director -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
-        $maker = (($DataObject.Maker -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
-        $description = (($DataObject.Description -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
-        $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '') -replace, '>', ''
+        $displayName = (($DataObject.DisplayName -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
+        $alternateTitle = (($DataObject.AlternateTitle -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
+        $director = (($DataObject.Director -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
+        $maker = (($DataObject.Maker -replace '&', '&amp;') -replace '<', '(') -replace , '>', ''
+        $description = (($DataObject.Description -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
+        $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
             $csvFullName = $R18ThumbCsv.FullName
         } else {
