@@ -16,8 +16,10 @@ function Get-MetadataNfo {
         $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
             $csvFullName = $R18ThumbCsv.FullName
+            $csvFullNameAlias = $R18ThumbCsv.Alias
         } else {
             $csvFullName = $R18ThumbCsv.FullNameReversed
+            $csvFullNameAlias = $R18ThumbCsv.Alias
         }
     }
 
@@ -60,8 +62,11 @@ function Get-MetadataNfo {
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
                 if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
-                    if ($csvFullName -like $DataObject.Actress) {
+                    if (($csvFullName -like $DataObject.Actress) -or ($csvFullNameAlias -like $DataObject.Actress)) {
                         $index = $csvFullname.IndexOf("$($DataObject.Actress)")
+                        if ($index -eq -1) {
+                            $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
+                        }
                         $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                     } else {
                         $DataObject.ActressThumbUrl = ''
@@ -86,8 +91,11 @@ function Get-MetadataNfo {
                         }
                     }
                     if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
-                        if ($csvFullName -like $DataObject.Actress[$i]) {
+                        if (($csvFullName -like $DataObject.Actress[$i]) -or ($csvFullNameAlias -like $DataObject.Actress[$i])) {
                             $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                            if ($index -eq -1) {
+                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
+                            }
                             $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
                         } else {
                             $DataObject.ActressThumbUrl[$i] = ''
