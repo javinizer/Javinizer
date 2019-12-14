@@ -17,10 +17,10 @@ function Get-FindDataObject {
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
                     (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
+            if ($Settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
+            if ($Settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
+            if ($Settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
+            if ($Settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
         }
     }
 
@@ -33,7 +33,7 @@ function Get-FindDataObject {
             $urlList = Convert-CommaDelimitedString -String $Find
             $urlLocation = Test-UrlLocation -Url $urlList
             if ($Aggregated.IsPresent) {
-                $aggregatedDataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                $aggregatedDataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $Settings -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                 Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($urlLocation.Result -eq 'r18') {
@@ -53,9 +53,9 @@ function Get-FindDataObject {
             }
         } elseif ($null -ne $getItem) {
             if (Test-Path -Path $getItem -PathType Leaf) {
-                $fileDetails = Convert-JavTitle -Path $Find
+                $fileDetails = Convert-JavTitle -Path $Find -Recurse:$Recurse -Settings $Settings
                 if ($Aggregated.IsPresent) {
-                    $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                    $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $ettings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                     Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
                 } else {
                     if ($r18) {
@@ -76,7 +76,7 @@ function Get-FindDataObject {
             }
         } else {
             if ($Aggregated.IsPresent) {
-                $aggregatedDataObject = Get-AggregatedDataObject -Id $Find -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                $aggregatedDataObject = Get-AggregatedDataObject -Id $Find -Settings $Settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                 Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($r18) {

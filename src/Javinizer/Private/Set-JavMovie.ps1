@@ -17,7 +17,13 @@ function Set-JavMovie {
         $DestinationPath = (Get-Item $DestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
         $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
-        $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
+
+        if ($Settings.General.'move-to-folder' -eq 'True') {
+            $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
+        } else {
+            $folderPath = $DestinationPath
+        }
+
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
@@ -37,9 +43,14 @@ function Set-JavMovie {
         $newFileName = $dataObject.FileName + $Path.Extension
         $dataObject = Test-RequiredMetadata -DataObject $DataObject -Settings $settings
         if ($null -ne $dataObject) {
-            New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-            Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
-            Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
+            if ($Settings.General.'move-to-folder' -eq 'True') {
+                New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
+                Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
+            } else {
+                Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Out-Null
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
+            }
 
             if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
                 try {

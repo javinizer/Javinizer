@@ -8,7 +8,9 @@ function Convert-JavTitle {
                 return $true
             })]
         [Parameter(Mandatory = $true, Position = 0)]
-        [system.io.fileinfo]$Path
+        [system.io.fileinfo]$Path,
+        [object]$Settings,
+        [switch]$Recurse
     )
 
     begin {
@@ -67,7 +69,7 @@ function Convert-JavTitle {
     }
 
     process {
-        $files = Get-VideoFile -Path $Path
+        $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
         $FileBaseNameOriginal = @($files.BaseName)
         # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
         foreach ($string in $RemoveStrings) {
