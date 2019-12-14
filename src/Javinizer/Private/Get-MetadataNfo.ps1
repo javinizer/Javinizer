@@ -90,6 +90,13 @@ function Get-MetadataNfo {
                         if ($index -eq -1) {
                             $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
                         }
+                        if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                            if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                $DataObject.Actress = $R18ThumbCsv.FullName[$index]
+                            } else {
+                                $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
+                            }
+                        }
                         $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                     } else {
                         $DataObject.ActressThumbUrl = ''
@@ -119,6 +126,13 @@ function Get-MetadataNfo {
                             if ($index -eq -1) {
                                 $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
                             }
+                            if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                                if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullName[$index]
+                                } else {
+                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullNameReversed[$index]
+                                }
+                            }
                             $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
                         } else {
                             $DataObject.ActressThumbUrl[$i] = ''
@@ -132,6 +146,7 @@ function Get-MetadataNfo {
 
 "@
                 }
+
 
             }
         }
