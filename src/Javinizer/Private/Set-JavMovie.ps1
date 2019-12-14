@@ -4,8 +4,8 @@ function Set-JavMovie {
         [Parameter(Mandatory = $true, Position = 0)]
         [object]$DataObject,
         [object]$Settings,
-        [system.io.fileinfo]$Path,
-        [system.io.fileinfo]$DestinationPath,
+        [string]$Path,
+        [string]$DestinationPath,
         [string]$ScriptRoot,
         [switch]$Force
     )
@@ -13,15 +13,18 @@ function Set-JavMovie {
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
         $r18ThumbCsv = Import-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
-        $Path = (Get-Item -LiteralPath $Path).FullName
-        $DestinationPath = (Get-Item $DestinationPath).FullName
+        $fixedPath = ($Path).replace('`[', '[').replace('`]', ']')
+        $Path = (Get-Item -LiteralPath $fixedPath).FullName
+        $fileExtension = (Get-Item -LiteralPath $fixedPath).Extension
+        $fixedDestinationPath = ($DestinationPath).replace('`[', '[').replace('`]', ']')
+        $DestinationPath = (Get-Item -LiteralPath $fixedDestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
         $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
 
         if ($Settings.General.'move-to-folder' -eq 'True') {
-            $folderPath = Join-Path $DestinationPath -ChildPath $dataObject.FolderName
+            $folderPath = Join-Path -Path $fixedDestinationPath -ChildPath $dataObject.FolderName
         } else {
-            $folderPath = $DestinationPath
+            $folderPath = $fixedDestinationPath
         }
 
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
@@ -30,6 +33,12 @@ function Set-JavMovie {
         $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
         $actorPath = Join-Path -Path $folderPath -ChildPath '.actors'
+        $fixedNfoPath = ($nfoPath).replace('`[', '[').replace('`]', ']')
+        $fixedCoverPath = ($coverPath).replace('`[', '[').replace('`]', ']')
+        $fixedPosterPath = ($posterPath).replace('`[', '[').replace('`]', ']')
+        $fixedTrailerPath = ($trailerPath).replace('`[', '[').replace('`]', ']')
+        $fixedScreenshotPath = ($screenshotPath).replace('`[', '[').replace('`]', ']')
+        $fixedActorPath = ($actorPath).replace('`[', '[').replace('`]', ']')
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"
@@ -40,25 +49,26 @@ function Set-JavMovie {
     }
 
     process {
-        $newFileName = $dataObject.FileName + $Path.Extension
+        $newFileName = $dataObject.FileName + $fileExtension
         $dataObject = Test-RequiredMetadata -DataObject $DataObject -Settings $settings
         if ($null -ne $dataObject) {
             if ($Settings.General.'move-to-folder' -eq 'True') {
-                New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
-                Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
+                $fixedDestinationPath = $DestinationPath.replace('[', '`[').replace(']', '`]')
+                New-Item -ItemType Directory -Name $dataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction 'SilentlyContinue' | Out-Null
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction Stop
+                Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
             } else {
-                Rename-Item -Path $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $nfoPath -Force:$Force -ErrorAction SilentlyContinue
+                Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Out-Null
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction Stop
             }
 
             if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
                 try {
                     if ($null -ne $dataObject.CoverUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
-                        } elseif ((-not (Test-Path -LiteralPath $coverPath))) {
-                            $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $coverPath)
+                            $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $fixedCoverPath)
+                        } elseif ((-not (Test-Path -LiteralPath $fixedCoverPath))) {
+                            $webClient.DownloadFile(($dataObject.CoverUrl).ToString(), $fixedCoverPath)
                         }
                     }
                 } catch {
@@ -70,19 +80,19 @@ function Set-JavMovie {
                     if ($Settings.Metadata.'download-poster-img' -eq 'True') {
                         # Double backslash to conform with Python path standards
                         if ($null -ne $dataObject.CoverUrl) {
-                            $coverPath = $coverPath -replace '\\', '\\'
+                            $coverPath = $fixedCoverPath -replace '\\', '\\'
                             $posterPath = $posterPath -replace '\\', '\\'
                             if ($Force.IsPresent) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $coverPath $posterPath
+                                    python $cropPath $fixedCoverPath $posterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python3 $cropPath $coverPath $posterPath
+                                    python3 $cropPath $fixedCoverPath $posterPath
                                 }
                             } elseif ((-not (Test-Path -LiteralPath $posterPath))) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $coverPath $posterPath
+                                    python $cropPath $fixedCoverPath $posterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python3 $cropPath $coverPath $posterPath
+                                    python3 $cropPath $fixedCoverPath $posterPath
                                 }
                             }
                         }

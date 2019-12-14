@@ -125,10 +125,10 @@ function Javinizer {
         [switch]$Aggregated,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 0)]
         [Alias('p')]
-        [system.io.fileinfo]$Path,
+        [string]$Path,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
         [Alias('d')]
-        [system.io.fileinfo]$DestinationPath,
+        [string]$DestinationPath,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('u')]
         [string]$Url,
@@ -270,32 +270,34 @@ function Javinizer {
                 }
 
                 try {
-                    $getPath = Get-Item -LiteralPath $Path -ErrorAction Stop
+                    $getPath = Get-Item -LiteralPath ($Path).replace('`[', '[').replace('`]', ']') -ErrorAction Stop
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
                 }
 
                 try {
-                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction 'SilentlyContinue'
+                    $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction 'SilentlyContinue'
                 } catch [System.Management.Automation.SessionStateException] {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
-                    New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
-                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
+                    New-Item -ItemType Directory -LiteralPath $DestinationPath -Confirm | Out-Null
+                    $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction Stop
                 } catch {
                     throw $_
                 }
 
                 try {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
-                    $fileDetails = Convert-JavTitle -Path ($getPath.FullName).replace('[', '`[').replace(']', '`]') -Recurse:$Recurse -Settings $settings
+                    $fixedPath = ($getPath.FullName).replace('[', '`[').replace(']', '`]')
+                    $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
+                    return
                 }
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
-                if ((Test-Path -Path $getPath.FullName -PathType Leaf) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) {
+                if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
@@ -312,7 +314,7 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif (((Test-Path -Path $getPath.FullName -PathType Container) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
+                } elseif (((Test-Path -LiteralPath $getPath.FullName -PathType Container) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Sort path set to: [$($getPath.FullName)]"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] Destination path set to: [$($getDestinationPath.FullName)]"
