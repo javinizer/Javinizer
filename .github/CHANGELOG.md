@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  - Script to start cloudflare session before multi-sort begins
  - All file downloads to run asynchronously except cover image
 
+### Fixed
+ - Calling a relative destination path errored when running using `-Multi`
+
 ## [0.1.9] 12-8-2019
 ### Added
  - Parameter `OpenSettings` to open your settings file
