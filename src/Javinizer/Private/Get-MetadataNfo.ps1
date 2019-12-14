@@ -8,6 +8,21 @@ function Get-MetadataNfo {
     )
 
     begin {
+        $javlibraryGenres = @()
+        $r18Genres = @()
+
+        if ($Settings.Metadata.'normalize-genres' -eq 'True') {
+            try {
+                $genreCsvPath = Join-Path -Path $ScriptRoot -ChildPath 'genres.csv'
+                $normalizedGenres = Import-Csv -Path $genreCsvPath
+                $javlibraryGenres = $normalizedGenres.javlibrary
+                $r18Genres = $normalizedGenres.r18
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error loading genres csv [$genreCsvPath]"
+                throw $_
+            }
+        }
+
         $displayName = (($DataObject.DisplayName -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $alternateTitle = (($DataObject.AlternateTitle -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $director = (($DataObject.Director -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
@@ -52,6 +67,14 @@ function Get-MetadataNfo {
 
         foreach ($genre in $DataObject.Genre) {
             $genre = $genre -replace '&', '&amp;'
+            if ($Settings.Metadata.'normalize-genres' -eq 'True') {
+                if ($javlibraryGenres -like $genre) {
+                    $index = $javlibraryGenres.IndexOf($genre)
+                    if ($index -ne -1) {
+                        $genre = $r18Genres[$index]
+                    }
+                }
+            }
             $genreNfoString = @"
     <genre>$genre</genre>
 
