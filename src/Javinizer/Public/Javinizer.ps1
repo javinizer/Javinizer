@@ -28,6 +28,9 @@ function Javinizer {
     .PARAMETER Multi
         The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
 
+    .PARAMETER Recurse
+        The recurse parameter will perform your sort recursively within your specified sort directory.
+
     .PARAMETER Help
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
@@ -81,11 +84,11 @@ function Javinizer {
         Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
 
     .EXAMPLE
-        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted
+        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
 
         Description
         -----------
-        Performs a single-threaded sort on your specified Path with other settings specified in your settings.ini file.
+        Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
@@ -265,15 +268,19 @@ function Javinizer {
                     $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
                 }
 
-                if (-not ($PSBoundParameters.ContainsKey('DestinationPath')) -and (-not ($Apply.IsPresent))) {
-                    $DestinationPath = $Path
-                }
-
                 try {
                     $getPath = Get-Item -LiteralPath ($Path).replace('`[', '[').replace('`]', ']') -ErrorAction Stop
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
+                }
+
+                if (-not ($PSBoundParameters.ContainsKey('DestinationPath')) -and (-not ($Apply.IsPresent))) {
+                    if (Test-Path -LiteralPath $getPath.FullName -PathType Leaf) {
+                        $DestinationPath = $getPath.DirectoryName
+                    } else {
+                        $DestinationPath = $Path
+                    }
                 }
 
                 try {
@@ -300,6 +307,7 @@ function Javinizer {
                 if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
+                    # Write-Verbose "[$($MyInvocation.MyCommand.Name)] Starting sort on [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -357,6 +365,7 @@ function Javinizer {
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
             }
         }
     }

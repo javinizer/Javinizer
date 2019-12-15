@@ -87,136 +87,163 @@ function Get-MetadataNfo {
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
                 if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress)) {
+                    <<<<<<< HEAD
                     if (($DataObject.ActressThumbUrl -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl)) {
-                        $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
-                        $actressFullName = $actressFirstName + ' ' + $actressLastName
-                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
-                        $actressThumbUrl = ($DataObject.ActressThumbUrl).ToString()
-                        $actressObject += [pscustomobject]@{
-                            FirstName        = $actressFirstName.Trim()
-                            LastName         = $actressLastName.Trim()
-                            FullName         = $actressFullName.Trim()
-                            FullNameReversed = $actressFullNameReversed.Trim()
-                            ThumbUrl         = (@($DataObject.ActressThumbUrl) | Out-String).Trim()
-                            Alias            = ''
-                        }
-
-                        try {
-                            $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
-                        } catch {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
-                            Start-Sleep -Seconds 2
-                            try {
-                                $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append
-                            } catch {
-                                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
-                            }
-                        }
-                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
-                    }
-                }
-
-                if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
-                    if (($csvFullName -like $DataObject.Actress) -or ($csvFullNameAlias -like $DataObject.Actress)) {
-                        $index = $csvFullname.IndexOf("$($DataObject.Actress)")
-                        if ($index -eq -1) {
-                            $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
-                        }
-                        if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
-                            if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
-                                $DataObject.Actress = $R18ThumbCsv.FullName[$index]
-                            } else {
-                                $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
-                            }
-                        }
-                        $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
-                    } else {
-                        $DataObject.ActressThumbUrl = ''
-                    }
-                }
-
-                $actressNfoString = @"
-    <actor>
-        <name>$($DataObject.Actress)</name>
-        <thumb>$($DataObject.ActressThumbUrl)</thumb>
-    </actor>
-
-"@
-            } else {
-                for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
-                    if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
-                        if (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i])) {
-                            $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                        =======
+                        if (-not (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl))) {
+                            >>>>>>> hotfix/1.0.2-jltitle
+                            $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
                             $actressFullName = $actressFirstName + ' ' + $actressLastName
                             $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
-
-                            $actressObject = [pscustomobject]@{
+                            $actressThumbUrl = ($DataObject.ActressThumbUrl).ToString()
+                            $actressObject += [pscustomobject]@{
                                 FirstName        = $actressFirstName.Trim()
                                 LastName         = $actressLastName.Trim()
                                 FullName         = $actressFullName.Trim()
                                 FullNameReversed = $actressFullNameReversed.Trim()
-                                ThumbUrl         = $DataObject.ActressThumbUrl[$i]
+                                ThumbUrl         = (@($DataObject.ActressThumbUrl) | Out-String).Trim()
                                 Alias            = ''
                             }
 
-                            $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
-                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                            try {
+                                $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                            } catch {
+                                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
+                                Start-Sleep -Seconds 2
+                                try {
+                                    $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append
+                                } catch {
+                                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
+                                }
+                            }
+                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
                         }
                     }
 
-                    if ($null -eq $DataObject.ActressThumbUrl) {
-                        # Create empty array amounting to number of actresses found if scraped from javlibrary
-                        # This will allow matching actresses from r18 thumb csv
-                        $DataObject.ActressThumbUrl = @()
-                        foreach ($actress in $DataObject.Actress) {
-                            $DataObject.ActressThumbUrl += ''
-                        }
-                    }
-                    if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
-                        if (($csvFullName -like $DataObject.Actress[$i]) -or ($csvFullNameAlias -like $DataObject.Actress[$i])) {
-                            $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                    if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
+                        if (($csvFullName -like $DataObject.Actress) -or ($csvFullNameAlias -like $DataObject.Actress)) {
+                            $index = $csvFullname.IndexOf("$($DataObject.Actress)")
                             if ($index -eq -1) {
-                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
+                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
                             }
                             if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
                                 if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
-                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullName[$index]
+                                    $DataObject.Actress = $R18ThumbCsv.FullName[$index]
                                 } else {
-                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullNameReversed[$index]
+                                    $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
                                 }
                             }
-                            $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
+                            $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                         } else {
-                            $DataObject.ActressThumbUrl[$i] = ''
+                            $DataObject.ActressThumbUrl = ''
                         }
                     }
-                    $actressNfoString += @"
+
+                    $actressNfoString = @"
     <actor>
-        <name>$($DataObject.Actress[$i])</name>
-        <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
+        <name>$($DataObject.Actress)</name>
+        <thumb>$($DataObject.ActressThumbUrl)</thumb>
+        <role>Actress</role>
     </actor>
 
 "@
+                } else {
+                    for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                        if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
+                            if (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i])) {
+                                $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                                $actressFullName = $actressFirstName + ' ' + $actressLastName
+                                $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+
+                                $actressObject = [pscustomobject]@{
+                                    FirstName        = $actressFirstName.Trim()
+                                    LastName         = $actressLastName.Trim()
+                                    FullName         = $actressFullName.Trim()
+                                    FullNameReversed = $actressFullNameReversed.Trim()
+                                    ThumbUrl         = $DataObject.ActressThumbUrl[$i]
+                                    Alias            = ''
+                                }
+
+                                $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                            }
+                        }
+
+                        if ($null -eq $DataObject.ActressThumbUrl) {
+                            # Create empty array amounting to number of actresses found if scraped from javlibrary
+                            # This will allow matching actresses from r18 thumb csv
+                            $DataObject.ActressThumbUrl = @()
+                            foreach ($actress in $DataObject.Actress) {
+                                $DataObject.ActressThumbUrl += ''
+                            }
+                        } else {
+                            if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
+                                if (-not (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i]))) {
+                                    $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                                    $actressFullName = $actressFirstName + ' ' + $actressLastName
+                                    $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+
+                                    $actressObject = [pscustomobject]@{
+                                        FirstName        = $actressFirstName.Trim()
+                                        LastName         = $actressLastName.Trim()
+                                        FullName         = $actressFullName.Trim()
+                                        FullNameReversed = $actressFullNameReversed.Trim()
+                                        ThumbUrl         = $DataObject.ActressThumbUrl[$i]
+                                        Alias            = ''
+                                    }
+
+                                    $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                                    Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                                }
+                            }
+                        }
+
+                        if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
+                            if (($csvFullName -like $DataObject.Actress[$i]) -or ($csvFullNameAlias -like $DataObject.Actress[$i])) {
+                                $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                                if ($index -eq -1) {
+                                    $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
+                                }
+                                if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                                    if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                        $DataObject.Actress[$i] = $R18ThumbCsv.FullName[$index]
+                                    } else {
+                                        $DataObject.Actress[$i] = $R18ThumbCsv.FullNameReversed[$index]
+                                    }
+                                }
+                                $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
+                            } else {
+                                $DataObject.ActressThumbUrl[$i] = ''
+                            }
+                        }
+                        $actressNfoString += @"
+    <actor>
+        <name>$($DataObject.Actress[$i])</name>
+        <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
+        <role>Actress</role>
+    </actor>
+
+"@
+                    }
+
+
                 }
-
-
             }
-        }
 
-        $nfoString = $nfoString + $actressNfoString
-        $endNfoString = @"
+            $nfoString = $nfoString + $actressNfoString
+            $endNfoString = @"
 </movie>
 "@
-        $nfoString = $nfoString + $endNfoString
+            $nfoString = $nfoString + $endNfoString
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] NFO String: `
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] NFO String: `
         $nfoString"
-        Write-Output $nfoString
+            Write-Output $nfoString
+        }
     }
-}
 
 
-<#
+    <#
 
 if match actress + ActressThumbUrl
 check r18 csv
