@@ -8,7 +8,9 @@ function Convert-JavTitle {
                 return $true
             })]
         [Parameter(Mandatory = $true, Position = 0)]
-        [system.io.fileinfo]$Path
+        [string]$Path,
+        [object]$Settings,
+        [switch]$Recurse
     )
 
     begin {
@@ -58,16 +60,16 @@ function Convert-JavTitle {
             '_'
         )
 
-        $dataObject               = @()
-        $fileBaseNameUpper        = @()
+        $dataObject = @()
+        $fileBaseNameUpper = @()
         $fileBaseNameUpperCleaned = @()
-        $finalFileName            = @()
-        $fileBaseNameHypen        = $null
+        $finalFileName = @()
+        $fileBaseNameHypen = $null
         $fileP1, $fileP2, $fileP3, $fileP4 = @()
     }
 
     process {
-        $files = Get-VideoFile -Path $Path
+        $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
         $FileBaseNameOriginal = @($files.BaseName)
         # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
         foreach ($string in $RemoveStrings) {
@@ -220,16 +222,16 @@ function Convert-JavTitle {
             }
 
             if ($files.Count -eq '1') {
-                $finalFileName    = $fileBaseNameUpperCleaned[$x] + $files.Extension
+                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
                 $originalFileName = $files.Name
                 $originalBaseName = $files.BaseName
-                $fileExtension    = $files.Extension
+                $fileExtension = $files.Extension
             } else {
-                $finalFileName    = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
+                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
                 $originalFileName = $files.Name[$x]
                 $originalBaseName = $files.BaseName[$x]
-                $fileExtension    = $files.Extension[$x]
-                $filePartNumber   = $filePartNumber
+                $fileExtension = $files.Extension[$x]
+                $filePartNumber = $filePartNumber
             }
 
             $dataObject += [pscustomobject]@{

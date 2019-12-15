@@ -28,6 +28,9 @@ function Javinizer {
     .PARAMETER Multi
         The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
 
+    .PARAMETER Recurse
+        The recurse parameter will perform your sort recursively within your specified sort directory.
+
     .PARAMETER Help
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
@@ -81,11 +84,11 @@ function Javinizer {
         Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
 
     .EXAMPLE
-        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted
+        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
 
         Description
         -----------
-        Performs a single-threaded sort on your specified Path with other settings specified in your settings.ini file.
+        Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
@@ -125,10 +128,10 @@ function Javinizer {
         [switch]$Aggregated,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 0)]
         [Alias('p')]
-        [system.io.fileinfo]$Path,
+        [string]$Path,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false, Position = 1)]
         [Alias('d')]
-        [system.io.fileinfo]$DestinationPath,
+        [string]$DestinationPath,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('u')]
         [string]$Url,
@@ -138,6 +141,8 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Alias('m')]
         [switch]$Multi,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [switch]$Recurse,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
         [Parameter(ParameterSetName = 'Help')]
@@ -268,25 +273,26 @@ function Javinizer {
                 }
 
                 try {
-                    $getPath = Get-Item $Path -ErrorAction Stop
+                    $getPath = Get-Item -LiteralPath ($Path).replace('`[', '[').replace('`]', ']') -ErrorAction Stop
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
                 }
 
                 try {
-                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction 'SilentlyContinue'
+                    $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction 'SilentlyContinue'
                 } catch [System.Management.Automation.SessionStateException] {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
-                    New-Item -ItemType Directory -Path $DestinationPath -Confirm | Out-Null
-                    $getDestinationPath = Get-Item $DestinationPath -ErrorAction Stop
+                    New-Item -ItemType Directory -LiteralPath $DestinationPath -Confirm | Out-Null
+                    $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction Stop
                 } catch {
                     throw $_
                 }
 
                 try {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
-                    $fileDetails = Convert-JavTitle -Path $getPath.FullName
+                    $fixedPath = ($getPath.FullName).replace('[', '`[').replace(']', '`]')
+                    $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
                     return
@@ -294,7 +300,7 @@ function Javinizer {
                 #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
-                if ((Test-Path -Path $getPath.FullName -PathType Leaf) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) {
+                if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
@@ -311,9 +317,10 @@ function Javinizer {
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
-                } elseif (((Test-Path -Path $getPath.FullName -PathType Container) -and (Test-Path -Path $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
+                } elseif (((Test-Path -LiteralPath $getPath.FullName -PathType Container) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] Performing directory sort on: [$($getDestinationPath.FullName)]"
+                    Write-Host "[$($MyInvocation.MyCommand.Name)] Sort path set to: [$($getPath.FullName)]"
+                    Write-Host "[$($MyInvocation.MyCommand.Name)] Destination path set to: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
@@ -321,7 +328,7 @@ function Javinizer {
                             if ($Javlibrary) {
                                 New-CloudflareSession -ScriptRoot $ScriptRoot
                             }
-                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -DestinationPath $DestinationPath
+                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Settings $settings
                         } catch {
                             Write-Warning "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {

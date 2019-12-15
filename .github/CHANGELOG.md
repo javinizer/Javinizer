@@ -9,12 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
  - Setting `download-actress-img` to download actress images to video's local `.actors` folder
  - Parameter `GetThumbs`, `UpdateThumbs`, and `OpenThumbs` to update r18 actress and thumburl csv file
+ - Parameter `Recurse` to find all video files recursively from sort path
  - Feature to attempt to match actresses with missing thumburl to r18-thumbs.csv file
- - Add `m4v` and `rmvb` video match support
+- Feature to automatically add scraped R18 actresses/thumburls to `r18-thumbs.csv file`
+ - Feature to normalize JAVLibrary genres to their R18 counterparts with setting `normalize-genres`
+ - `move-to-folder` functionality to allow user to not move file to new folder when sorting
+ - `minimum-filesize-to-sort` functionality to set minimum filesize video to sort
+ - `m4v` and `rmvb` video match support
 
 ### Changed
  - Script to start cloudflare session before multi-sort begins
  - All file downloads to run asynchronously except cover image
+
+### Fixed
+ - Calling a relative destination path errored when running using `-Multi`
+ - Actress thumburl being ignored for single actress videos if actress priority set as `r18,javlibrary`
 
 ## [0.1.9] 12-8-2019
 ### Added

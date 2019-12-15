@@ -24,16 +24,6 @@ function Get-R18ThumbCsv {
 
             Write-Host "[$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
 
-            if (Test-Path -LiteralPath $csvPath) {
-                $selection = Display-ConfirmMessage -Message "R18 actress thumbnail database [$csvPath] already exists`nAre you sure you want to do a full scrape?" -Default 'N'
-            } else {
-                $selection = 'y'
-            }
-
-            if ($selection -ne 'y') {
-                return
-            }
-
             $importVariables = @(
                 'originalCsv',
                 'csvPath',
@@ -63,12 +53,23 @@ function Get-R18ThumbCsv {
                                 LastName  = $actressLastName.Trim()
                                 FullName  = $actressFullName.Trim()
                                 ThumbUrl  = $actressThumbUrl
+                                Alias     = ''
                             }
                         }
                     }
                     Write-Output $actressObject
                 } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
             } else {
+                if (Test-Path -LiteralPath $csvPath) {
+                    $selection = Display-ConfirmMessage -Message "R18 actress thumbnail database [$csvPath] already exists`nAre you sure you want to do a full scrape?" -Default 'N'
+                } else {
+                    $selection = 'y'
+                }
+
+                if ($selection -ne 'y') {
+                    return
+                }
+
                 1..$NewPages | Start-RSJob -VariablesToImport $importVariables -ScriptBlock {
                     $actressBlock = @()
                     $actressObject = @()
@@ -92,6 +93,7 @@ function Get-R18ThumbCsv {
                                 FullName         = $actressFullName.Trim()
                                 FullNameReversed = $actressFullNameReversed.Trim()
                                 ThumbUrl         = $actressThumbUrl
+                                Alias            = ''
                             }
                         }
                     }

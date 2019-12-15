@@ -8,6 +8,23 @@ function Get-MetadataNfo {
     )
 
     begin {
+        $javlibraryGenres = @()
+        $r18Genres = @()
+        $actressObject = @()
+        $r18CsvPath = Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv'
+
+        if ($Settings.Metadata.'normalize-genres' -eq 'True') {
+            try {
+                $genreCsvPath = Join-Path -Path $ScriptRoot -ChildPath 'genres.csv'
+                $normalizedGenres = Import-Csv -Path $genreCsvPath
+                $javlibraryGenres = $normalizedGenres.javlibrary
+                $r18Genres = $normalizedGenres.r18
+            } catch {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error loading genres csv [$genreCsvPath]"
+                throw $_
+            }
+        }
+
         $displayName = (($DataObject.DisplayName -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $alternateTitle = (($DataObject.AlternateTitle -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $director = (($DataObject.Director -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
@@ -16,8 +33,10 @@ function Get-MetadataNfo {
         $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
             $csvFullName = $R18ThumbCsv.FullName
+            $csvFullNameAlias = $R18ThumbCsv.Alias
         } else {
             $csvFullName = $R18ThumbCsv.FullNameReversed
+            $csvFullNameAlias = $R18ThumbCsv.Alias
         }
     }
 
@@ -50,6 +69,14 @@ function Get-MetadataNfo {
 
         foreach ($genre in $DataObject.Genre) {
             $genre = $genre -replace '&', '&amp;'
+            if ($Settings.Metadata.'normalize-genres' -eq 'True') {
+                if ($javlibraryGenres -like $genre) {
+                    $index = $javlibraryGenres.IndexOf($genre)
+                    if ($index -ne -1) {
+                        $genre = $r18Genres[$index]
+                    }
+                }
+            }
             $genreNfoString = @"
     <genre>$genre</genre>
 
@@ -59,9 +86,49 @@ function Get-MetadataNfo {
 
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
+                if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress)) {
+                    if (($DataObject.ActressThumbUrl -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl)) {
+                        $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
+                        $actressFullName = $actressFirstName + ' ' + $actressLastName
+                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+                        $actressThumbUrl = ($DataObject.ActressThumbUrl).ToString()
+                        $actressObject += [pscustomobject]@{
+                            FirstName        = $actressFirstName.Trim()
+                            LastName         = $actressLastName.Trim()
+                            FullName         = $actressFullName.Trim()
+                            FullNameReversed = $actressFullNameReversed.Trim()
+                            ThumbUrl         = (@($DataObject.ActressThumbUrl) | Out-String).Trim()
+                            Alias            = ''
+                        }
+
+                        try {
+                            $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                        } catch {
+                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
+                            Start-Sleep -Seconds 2
+                            try {
+                                $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append
+                            } catch {
+                                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
+                            }
+                        }
+                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
+                    }
+                }
+
                 if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
-                    if ($csvFullName -like $DataObject.Actress) {
+                    if (($csvFullName -like $DataObject.Actress) -or ($csvFullNameAlias -like $DataObject.Actress)) {
                         $index = $csvFullname.IndexOf("$($DataObject.Actress)")
+                        if ($index -eq -1) {
+                            $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
+                        }
+                        if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                            if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                $DataObject.Actress = $R18ThumbCsv.FullName[$index]
+                            } else {
+                                $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
+                            }
+                        }
                         $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                     } else {
                         $DataObject.ActressThumbUrl = ''
@@ -77,6 +144,26 @@ function Get-MetadataNfo {
 "@
             } else {
                 for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                    if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
+                        if (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i])) {
+                            $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                            $actressFullName = $actressFirstName + ' ' + $actressLastName
+                            $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+
+                            $actressObject = [pscustomobject]@{
+                                FirstName        = $actressFirstName.Trim()
+                                LastName         = $actressLastName.Trim()
+                                FullName         = $actressFullName.Trim()
+                                FullNameReversed = $actressFullNameReversed.Trim()
+                                ThumbUrl         = $DataObject.ActressThumbUrl[$i]
+                                Alias            = ''
+                            }
+
+                            $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                        }
+                    }
+
                     if ($null -eq $DataObject.ActressThumbUrl) {
                         # Create empty array amounting to number of actresses found if scraped from javlibrary
                         # This will allow matching actresses from r18 thumb csv
@@ -86,8 +173,18 @@ function Get-MetadataNfo {
                         }
                     }
                     if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
-                        if ($csvFullName -like $DataObject.Actress[$i]) {
+                        if (($csvFullName -like $DataObject.Actress[$i]) -or ($csvFullNameAlias -like $DataObject.Actress[$i])) {
                             $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                            if ($index -eq -1) {
+                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
+                            }
+                            if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                                if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullName[$index]
+                                } else {
+                                    $DataObject.Actress[$i] = $R18ThumbCsv.FullNameReversed[$index]
+                                }
+                            }
                             $DataObject.ActressThumbUrl[$i] = $R18ThumbCsv.ThumbUrl[$index]
                         } else {
                             $DataObject.ActressThumbUrl[$i] = ''
@@ -101,6 +198,7 @@ function Get-MetadataNfo {
 
 "@
                 }
+
 
             }
         }
@@ -116,3 +214,16 @@ function Get-MetadataNfo {
         Write-Output $nfoString
     }
 }
+
+
+<#
+
+if match actress + ActressThumbUrl
+check r18 csv
+    if not in r18 csv
+        add row
+    else
+        don't do anything
+
+
+#>
