@@ -11,12 +11,10 @@ A command-line based tool to scrape and sort your local Japanese Adult Video (JA
 
 ## Overview
 
-**CAUTION:** As this is currently a beta release, please use responsibly and ensure that you use this program in an isolated environment, or that you have backups available for your targeted files/directories.
-Please test it out and provide any feedback or feature requests if possible.
+Build a local JAV media library in a content management system (CMS) like Plex, Jellyfin, or Emby.
+
 
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
-
-
 [View changelog](.github/CHANGELOG.md)
 
 ## Installation
@@ -245,6 +243,14 @@ PARAMETERS
     PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
 
 ```
+
+### Content Management System (CMS) Setup
+
+#### Plex
+Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).
+
+#### Jellyfin/Plex
+Set-up a `Movie` library with all metadata/image downloaders disabled.
 
 ## Troubleshooting
 
