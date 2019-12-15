@@ -246,7 +246,7 @@ PARAMETERS
 
 ## Content Management System (CMS) Setup
 
-| CMS | How to use |
+| Content Management System | How to use |
 | ------------- | ------------- |
 | Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
 | Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. |
@@ -268,3 +268,6 @@ PARAMETERS
 - [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [0.2.0]
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [ ] Normalize studio names between JAVLibrary and R18
+- [ ] Add additional scraper sources for uncensored JAV
+- [ ] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv`
+
