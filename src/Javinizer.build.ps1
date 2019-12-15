@@ -188,7 +188,7 @@ Add-BuildTask Test {
     if (Test-Path -Path $script:UnitTestsPath) {
         $invokePesterParams = @{
             Path                   = 'Tests\Unit'
-            Strict                 = $true
+            Strict                 = $false
             PassThru               = $true
             Verbose                = $false
             EnableExit             = $false
