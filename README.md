@@ -30,7 +30,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
 
-```
+```powershell
 # From any compatible terminal
 
 # pwsh
@@ -52,13 +52,13 @@ PS> Install-Module PoshRSJob
 Choose one of the methods below:
 
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
-```
+```powershell
 PS> Install-Module -Name Javinizer
 ```
 
 - Clone the repository or [download the latest release](https://github.com/jvlflame/Javinizer/releases)
 
-```
+```powershell
 # Import the module (you will need to run this every time you open a new shell)
 PS> Import-Module ./Javinizer.psm1
 
@@ -68,17 +68,17 @@ PS> $env:PSModulePath
 
 ## Usage
 
-**Module settings**
+### Module settings
 
 Please look over the `settings.ini` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
 
-```
+```powershell
 # Opens your settings.ini file
 PS> Javinizer -OpenSettings
 ```
 
 
-**Multi-part video supported naming schemes**
+### Supported multi-part-video naming schemes
 
 ```
 # Naming schemes  - Example filename
@@ -96,7 +96,7 @@ ID-###_\d         - ID-069_1, ID-069_2
 ID-###_0\d        - ID-069_01, ID-069_02
 ```
 
-**Command-line usage**
+### Command-line switches
 
 ```
 PS> help Javinizer
@@ -185,69 +185,50 @@ PARAMETERS
         OutBuffer, PipelineVariable, and OutVariable. For more information, see
         about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
 
+```
+
+### Examples
+
+```powershell
     -------------------------- EXAMPLE 1 --------------------------
 
+    # Opens your Javinizer settings.ini file in the root module directory.
     PS> Javinizer -OpenSettings
-
-    Description
-    -----------
-    Opens your Javinizer settings.ini file in the root module directory.
 
     -------------------------- EXAMPLE 2 --------------------------
 
+    # Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
     PS> Javinizer -Path C:\Downloads\Unsorted -Multi
-
-    Description
-    -----------
-    Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 3 --------------------------
 
+    # Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
     PS> Javinizer -Apply -Multi
-
-    Description
-    -----------
-    Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 4 --------------------------
 
+    # Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
     PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
-
-    Description
-    -----------
-    Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 5 --------------------------
 
-    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=sni     s00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
-
-    Description
-    -----------
-    Performs a single-threaded sort on your specified file using direct URLs to match the file.
+    # Performs a single-threaded sort on your specified file using direct URLs to match the file.
+    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\ -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digitalvideoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
 
     -------------------------- EXAMPLE 6 --------------------------
 
+    # Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
     PS> Javinizer -Find SNIS-420
-
-    Description
-    -----------
-    Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
 
     -------------------------- EXAMPLE 7 --------------------------
 
+    # Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
     PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
-
-    Description
-    -----------
-    Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
 
     -------------------------- EXAMPLE 8 --------------------------
 
+    # Performs a console search of PRED-200 using a direct url.
     PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
-
-    Description
-    -----------
-    Performs a console search of PRED-200 using a direct url.
 
 ```
 
