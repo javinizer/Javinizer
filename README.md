@@ -246,7 +246,7 @@ PARAMETERS
 
 ## Content Management System (CMS) Setup
 
-| Content Management System | How to use |
+| CMS | How to use |
 | ------------- | ------------- |
 | Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
 | Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. |
