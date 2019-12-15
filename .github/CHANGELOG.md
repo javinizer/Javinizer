@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.2.0]
+## [1.0.0] - 12-14-2019 **Production-ready release**
 ### Added
  - Setting `download-actress-img` to download actress images to video's local `.actors` folder
  - Parameter `GetThumbs`, `UpdateThumbs`, and `OpenThumbs` to update r18 actress and thumburl csv file
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  - Calling a relative destination path errored when running using `-Multi`
  - Actress thumburl being ignored for single actress videos if actress priority set as `r18,javlibrary`
 
-## [0.1.9] 12-8-2019
+## [0.1.9] - 12-8-2019
 ### Added
  - Parameter `OpenSettings` to open your settings file
  - Parameter `Help` to display comment-based help for Javinizer usage
@@ -33,11 +33,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  - Single actress sames scraped from R18 with trailing space
 
-## [0.1.8] 12-8-2019
+## [0.1.8] - 12-8-2019
 ### Changed
  - Various parts for compatibility with PowerShell Gallery releases
 
-## [0.1.7] 12-8-2019
+## [0.1.7] - 12-8-2019
 ### Added
  - Muli-threaded sorting functionality with parameter `Multi`
  - Ability to select name order for actress with setting `first-last-name-order`
