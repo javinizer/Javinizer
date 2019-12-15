@@ -164,19 +164,37 @@ function Get-AggregatedDataObject {
 
         foreach ($priority in $actressthumburlPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if (($actressPriority[0] -eq 'javlibrary') -or ($actressPriority -eq 'javlibrary')) {
-                if ($null -ne $javlibraryData.Actress) {
-                    $aggregatedDataObject.ActressThumbUrl = $null
-                } else {
-                    if ($null -ne $r18Data.Actress) {
-                        if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
-                            $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+            if ($actressPriority.Count -gt 1) {
+                if ($actressPriority[0] -eq 'javlibrary') {
+                    if ($null -ne $javlibraryData.Actress) {
+                        $aggregatedDataObject.ActressThumbUrl = $null
+                    } else {
+                        if ($null -ne $r18Data.Actress) {
+                            if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                                $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                            }
                         }
+                    }
+                } else {
+                    if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                        $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
                     }
                 }
             } else {
-                if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
-                    $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                if ($actressPriority -eq 'javlibrary') {
+                    if ($null -ne $javlibraryData.Actress) {
+                        $aggregatedDataObject.ActressThumbUrl = $null
+                    } else {
+                        if ($null -ne $r18Data.Actress) {
+                            if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                                $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                            }
+                        }
+                    }
+                } else {
+                    if ($null -eq $aggregatedDataObject.ActressThumbUrl -or $null -eq $aggregatedDataObject.ActressThumbUrl[0]) {
+                        $aggregatedDataObject.ActressThumbUrl = $var.Value.ActressThumbUrl
+                    }
                 }
             }
         }
