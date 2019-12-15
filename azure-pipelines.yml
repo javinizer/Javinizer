@@ -1,4 +1,3 @@
-trigger: none
 jobs:
   # https://docs.microsoft.com/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema
   # https://docs.microsoft.com/azure/devops/pipelines/agents/hosted?view=azure-devops#use-a-microsoft-hosted-agent
