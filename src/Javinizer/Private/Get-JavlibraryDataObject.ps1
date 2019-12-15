@@ -83,8 +83,9 @@ function Get-JLTitle {
         [object]$WebRequest
     )
     process {
-        $fullTitle = ((($WebRequest.Content -split '<title>')[1] -split ' - JAVLibrary<\/title>')[0] -split '[a-zA-Z]{1,8}-[0-9]{1,8}')[1]
-        $title = Convert-HtmlCharacter -String $fullTitle
+        $fullTitle = ((($WebRequest.Content -split '<title>')[1] -split ' - JAVLibrary<\/title>')[0] -split ' ')
+        $joinedTitle = $fullTitle[1..$fullTitle.length] -join ' '
+        $title = Convert-HtmlCharacter -String $joinedTitle
         Write-Output $title
     }
 }
