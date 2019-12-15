@@ -5,13 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.1] - 12-14-2019
+## Added
+ - Verbose messages for start/end of each file sort to more easily diagnose where issues arise during `multi` sort
+
+### Fixed
+ - Null/invalid actresses being added to `r18-thumbs.csv` when found missing actress
+ - Direct file specified in `Path` parameter erroring due to DestinationPath being set to the file rather than its directory
+
 ## [1.0.0] - 12-14-2019 **Production-ready release**
 ### Added
  - Setting `download-actress-img` to download actress images to video's local `.actors` folder
  - Parameter `GetThumbs`, `UpdateThumbs`, and `OpenThumbs` to update r18 actress and thumburl csv file
  - Parameter `Recurse` to find all video files recursively from sort path
  - Feature to attempt to match actresses with missing thumburl to r18-thumbs.csv file
-- Feature to automatically add scraped R18 actresses/thumburls to `r18-thumbs.csv file`
+ - Feature to automatically add scraped R18 actresses/thumburls to `r18-thumbs.csv file`
  - Feature to normalize JAVLibrary genres to their R18 counterparts with setting `normalize-genres`
  - `move-to-folder` functionality to allow user to not move file to new folder when sorting
  - `minimum-filesize-to-sort` functionality to set minimum filesize video to sort

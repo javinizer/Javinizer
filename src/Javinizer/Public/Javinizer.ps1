@@ -268,15 +268,19 @@ function Javinizer {
                     $DestinationPath = ($settings.Locations.'output-path') -replace '"', ''
                 }
 
-                if (-not ($PSBoundParameters.ContainsKey('DestinationPath')) -and (-not ($Apply.IsPresent))) {
-                    $DestinationPath = $Path
-                }
-
                 try {
                     $getPath = Get-Item -LiteralPath ($Path).replace('`[', '[').replace('`]', ']') -ErrorAction Stop
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
+                }
+
+                if (-not ($PSBoundParameters.ContainsKey('DestinationPath')) -and (-not ($Apply.IsPresent))) {
+                    if (Test-Path -LiteralPath $getPath.FullName -PathType Leaf) {
+                        $DestinationPath = $getPath.DirectoryName
+                    } else {
+                        $DestinationPath = $Path
+                    }
                 }
 
                 try {
@@ -303,6 +307,7 @@ function Javinizer {
                 if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
                     Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
+                    # Write-Verbose "[$($MyInvocation.MyCommand.Name)] Starting sort on [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -360,6 +365,7 @@ function Javinizer {
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
+                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
             }
         }
     }
