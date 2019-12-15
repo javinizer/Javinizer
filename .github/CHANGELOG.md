@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.2]
+### Changed
+ - Actor role tag `Actress` for each actress
+
+### Fixed
+ - JAVLibrary metadata title null when scraping non-standard title such as T28-*
+
 ## [1.0.1] - 12-14-2019
 ## Added
  - Verbose messages for start/end of each file sort to more easily diagnose where issues arise during `multi` sort
