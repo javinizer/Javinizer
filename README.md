@@ -31,8 +31,6 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
     - [Googletrans](https://pypi.org/project/googletrans/)
 
 ```powershell
-# From any compatible terminal
-
 # pwsh
 PS> Install-Module PoshRSJob
 
@@ -53,7 +51,11 @@ Choose one of the methods below:
 
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
 ```powershell
-PS> Install-Module -Name Javinizer
+# Install the module from PowerShell gallery
+PS> Install-Module Javinizer
+
+# Update the module to the newest version from PowerShell gallery
+PS> Update-Module Javinizer
 ```
 
 - Clone the repository or [download the latest release](https://github.com/jvlflame/Javinizer/releases)
@@ -75,6 +77,12 @@ Please look over the `settings.ini` file located in the root `Javinizer` module 
 ```powershell
 # Opens your settings.ini file
 PS> Javinizer -OpenSettings
+
+# Backup your settings.ini and r18-thumbs.csv file to an archive, use if you want to persist your settings between module upgrades
+PS> Javinizer -BackupSettings 'C:\Users\UserName\Documents\JavinizerSettings.zip'
+
+# Restore your backup settings archive to the module folder
+PS> Javinizer -RestoreSettings 'C:\Users\UserName\Documents\JavinizerSettings.zip'
 ```
 
 
@@ -115,7 +123,7 @@ SYNTAX
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-OpenSettings] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-OpenSettings] [-BackupSettings] [-RestoreSettings] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -158,11 +166,17 @@ PARAMETERS
     -OpenSettings [<SwitchParameter>]
         The opensettings parameter will open your settings.ini file for you to view and edit.
 
+    -BackupSettings <String>
+        The backupsettings parameter will backup your settings.ini and r18-thumbs.csv file to an archive.
+
+    -RestoreSettings <String>
+        The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
+
     -GetThumbs [<SwitchParameter>]
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
     -UpdateThumbs <Int32>
-        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages to scrape which will attempt to write unknown actress thumburls on sort.
+        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages.
 
     -OpenThumbs [<SwitchParameter>]
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
