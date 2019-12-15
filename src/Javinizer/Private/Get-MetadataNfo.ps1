@@ -139,6 +139,7 @@ function Get-MetadataNfo {
     <actor>
         <name>$($DataObject.Actress)</name>
         <thumb>$($DataObject.ActressThumbUrl)</thumb>
+        <role>Actress</role>
     </actor>
 
 "@
@@ -195,6 +196,7 @@ function Get-MetadataNfo {
     <actor>
         <name>$($DataObject.Actress[$i])</name>
         <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
+        <role>Actress</role>
     </actor>
 
 "@
