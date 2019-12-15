@@ -244,18 +244,21 @@ PARAMETERS
 
 ```
 
-### Content Management System (CMS) Setup
+## Content Management System (CMS) Setup
 
-#### Plex
-Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).
-
-#### Jellyfin/Plex
-Set-up a `Movie` library with all metadata/image downloaders disabled.
+| CMS | How to use |
+| ------------- | ------------- |
+| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. |
 
 ## Troubleshooting
 
-Unicode error when trying to translate plot description
-Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`
+| Issue | Resolution |
+| ------------- | ------------- |
+| Unicode error when trying to translate plot description  | Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`. |
+| `crop.py` error when sorting multi-part videos using `-Multi` parameter | Ignore this error as it should not effect the end-result. |
+
 
 ## Todo
 - [x] Trailer scraping - [0.1.2]
@@ -263,5 +266,5 @@ Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for wor
 - [x] Parallel/Threaded sort processing - [0.1.7]
 - [x] Allow switching firstname/lastname order - [0.1.7]
 - [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [0.2.0]
-- [ ] Normalize genre names between JAVLibrary and R18
+- [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [ ] Normalize studio names between JAVLibrary and R18
