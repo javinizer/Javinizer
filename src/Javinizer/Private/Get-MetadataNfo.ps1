@@ -60,10 +60,17 @@ function Get-MetadataNfo {
 
 "@
         if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {
-            $tagNfoString = @"
-    <tag>Series: $series</tag>
+            if ($null -ne $series -or $series -eq '') {
+                $tagNfoString = @"
+    <tag>$series</tag>
 
 "@
+            } else {
+                $tagNfoString = @"
+    <tag></tag>
+
+"@
+            }
             $nfoString = $nfoString + $tagNfoString
         }
 

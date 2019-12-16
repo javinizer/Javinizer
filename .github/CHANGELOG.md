@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1.2] - 12-15-2019
 ### Fixed
 - Additional issues to writing missing actresses to `r18-thumbs.csv`
+- Null series being added as a tag with `add-series-as-tag` true
+- R18 series string not uncensoring censored words
+- Additional R18 censored words
+
+### Changed
+- Tag from `Series: <tag>` to `<tag>`
 
 ## [1.1.1] - 12-15-2019
 ### Fixed
