@@ -11,11 +11,9 @@ A command-line based tool to scrape and sort your local Japanese Adult Video (JA
 
 ## Overview
 
-**CAUTION:** As this is currently a beta release, please use responsibly and ensure that you use this program in an isolated environment, or that you have backups available for your targeted files/directories.
-Please test it out and provide any feedback or feature requests if possible.
+Build a local JAV media library in a content management system (CMS) like Plex, Jellyfin, or Emby.
 
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
-
 
 [View changelog](.github/CHANGELOG.md)
 
@@ -31,8 +29,6 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
     - [Googletrans](https://pypi.org/project/googletrans/)
 
 ```powershell
-# From any compatible terminal
-
 # pwsh
 PS> Install-Module PoshRSJob
 
@@ -53,7 +49,11 @@ Choose one of the methods below:
 
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
 ```powershell
-PS> Install-Module -Name Javinizer
+# Install the module from PowerShell gallery
+PS> Install-Module Javinizer
+
+# Update the module to the newest version from PowerShell gallery
+PS> Update-Module Javinizer
 ```
 
 - Clone the repository or [download the latest release](https://github.com/jvlflame/Javinizer/releases)
@@ -75,6 +75,12 @@ Please look over the `settings.ini` file located in the root `Javinizer` module 
 ```powershell
 # Opens your settings.ini file
 PS> Javinizer -OpenSettings
+
+# Backup your settings.ini and r18-thumbs.csv file to an archive, use if you want to persist your settings between module upgrades
+PS> Javinizer -BackupSettings 'C:\Users\UserName\Documents\JavinizerSettings.zip'
+
+# Restore your backup settings archive to the module folder
+PS> Javinizer -RestoreSettings 'C:\Users\UserName\Documents\JavinizerSettings.zip'
 ```
 
 
@@ -115,7 +121,7 @@ SYNTAX
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-OpenSettings] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-OpenSettings] [-BackupSettings] [-RestoreSettings] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -158,11 +164,17 @@ PARAMETERS
     -OpenSettings [<SwitchParameter>]
         The opensettings parameter will open your settings.ini file for you to view and edit.
 
+    -BackupSettings <String>
+        The backupsettings parameter will backup your settings.ini and r18-thumbs.csv file to an archive.
+
+    -RestoreSettings <String>
+        The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
+
     -GetThumbs [<SwitchParameter>]
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
     -UpdateThumbs <Int32>
-        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages to scrape which will attempt to write unknown actress thumburls on sort.
+        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages.
 
     -OpenThumbs [<SwitchParameter>]
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
@@ -230,18 +242,37 @@ PARAMETERS
     # Performs a console search of PRED-200 using a direct url.
     PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
 
+    -------------------------- EXAMPLE 9 --------------------------
+
+    # Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
+    PS> Javinizer -SetEmbyActorThumbs
+
 ```
+
+## Content Management System (CMS) Setup
+
+| CMS | How to use |
+| ------------- | ------------- |
+| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. |
 
 ## Troubleshooting
 
-Unicode error when trying to translate plot description
-Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`
+| Issue | Resolution |
+| ------------- | ------------- |
+| Unicode error when trying to translate plot description  | Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`. |
+| `crop.py` error when sorting multi-part videos using `-Multi` parameter | Ignore this error as it should not effect the end-result. |
+
 
 ## Todo
 - [x] Trailer scraping - [0.1.2]
 - [x] Multi-part video directory sort support - [0.1.2]
 - [x] Parallel/Threaded sort processing - [0.1.7]
 - [x] Allow switching firstname/lastname order - [0.1.7]
-- [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [0.2.0]
-- [ ] Normalize genre names between JAVLibrary and R18
+- [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [1.0.0]
+- [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [ ] Normalize studio names between JAVLibrary and R18
+- [ ] Add additional scraper sources for uncensored JAV
+- [ ] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv`
+
