@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.1]
+
+## [1.1.2] - 12-15-2019
+### Fixed
+- Additional issues to writing missing actresses to `r18-thumbs.csv`
+
+## [1.1.1] - 12-15-2019
 ### Fixed
 - Videos with 2+ actresses not writing to `r18-thumbs.csv` if missing
 
