@@ -13,8 +13,8 @@ A command-line based tool to scrape and sort your local Japanese Adult Video (JA
 
 Build a local JAV media library in a content management system (CMS) like Plex, Jellyfin, or Emby.
 
-
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
+
 [View changelog](.github/CHANGELOG.md)
 
 ## Installation
@@ -242,6 +242,11 @@ PARAMETERS
     # Performs a console search of PRED-200 using a direct url.
     PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
 
+    -------------------------- EXAMPLE 9 --------------------------
+
+    # Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
+    PS> Javinizer -SetEmbyActorThumbs
+
 ```
 
 ## Content Management System (CMS) Setup
@@ -265,7 +270,7 @@ PARAMETERS
 - [x] Multi-part video directory sort support - [0.1.2]
 - [x] Parallel/Threaded sort processing - [0.1.7]
 - [x] Allow switching firstname/lastname order - [0.1.7]
-- [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [0.2.0]
+- [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [1.0.0]
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [ ] Normalize studio names between JAVLibrary and R18
 - [ ] Add additional scraper sources for uncensored JAV

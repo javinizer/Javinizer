@@ -52,6 +52,9 @@ function Javinizer {
     .PARAMETER OpenThumbs
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
 
+    .PARAMETER SetEmbyActorThumbs
+        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance
+
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
 
@@ -108,14 +111,14 @@ function Javinizer {
 
         Description
         -----------
-        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
+        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
 
         Description
         -----------
-        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
+        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
@@ -123,6 +126,14 @@ function Javinizer {
         Description
         -----------
         Performs a console search of PRED-200 using a direct url.
+
+    .EXAMPLE
+        PS> Javinizer -SetEmbyActorThumbs
+
+        Description
+        -----------
+        Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
+
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -166,6 +177,8 @@ function Javinizer {
         [int]$UpdateThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$OpenThumbs,
+        [Parameter(ParameterSetName = 'Thumbs')]
+        [switch]$SetEmbyActorThumbs,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$R18,
@@ -294,6 +307,8 @@ function Javinizer {
                     }
                 } elseif ($PSBoundParameters.ContainsKey('UpdateThumbs')) {
                     Get-R18ThumbCsv -ScriptRoot $ScriptRoot -NewPages $UpdateThumbs -Force:$Force
+                } elseif ($SetEmbyActorThumbs.IsPresent) {
+                    Set-EmbyActors -Settings $settings -ScriptRoot $ScriptRoot
                 }
             }
 

@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.0]
 ### Added
+- Add `SetEmbyActorThumbs` parameter to push actor thumbnails to your Emby/Jellyfin instance
 - Add `BackupSettings` parameter to backup configuration files to an archive
 - Add `RestoreSettings` parameter to restore configuration files from an archive to module root
 
