@@ -146,7 +146,7 @@ function Get-MetadataNfo {
             } else {
                 for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
                     if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
-                        if (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i])) {
+                        if (-not (($DataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl[$i]))) {
                             $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
                             $actressFullName = $actressFirstName + ' ' + $actressLastName
                             $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
@@ -174,7 +174,7 @@ function Get-MetadataNfo {
                         }
                     } else {
                         if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
-                            if (-not (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i]))) {
+                            if (-not (($DataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl[$i]))) {
                                 $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
                                 $actressFullName = $actressFirstName + ' ' + $actressLastName
                                 $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
