@@ -139,11 +139,32 @@ function Get-MetadataNfo {
     <actor>
         <name>$($DataObject.Actress)</name>
         <thumb>$($DataObject.ActressThumbUrl)</thumb>
+        <role>Actress</role>
     </actor>
 
 "@
             } else {
                 for ($i = 0; $i -lt $DataObject.Actress.Count; $i++) {
+                    if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
+                        if (($DataObject.ActressThumbUrl[$i] -notlike '*nowprinting*') -or ($null -ne $DataObject.ActressThumbUrl[$i])) {
+                            $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                            $actressFullName = $actressFirstName + ' ' + $actressLastName
+                            $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+
+                            $actressObject = [pscustomobject]@{
+                                FirstName        = $actressFirstName.Trim()
+                                LastName         = $actressLastName.Trim()
+                                FullName         = $actressFullName.Trim()
+                                FullNameReversed = $actressFullNameReversed.Trim()
+                                ThumbUrl         = $DataObject.ActressThumbUrl[$i]
+                                Alias            = ''
+                            }
+
+                            $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                        }
+                    }
+
                     if ($null -eq $DataObject.ActressThumbUrl) {
                         # Create empty array amounting to number of actresses found if scraped from javlibrary
                         # This will allow matching actresses from r18 thumb csv
@@ -195,6 +216,7 @@ function Get-MetadataNfo {
     <actor>
         <name>$($DataObject.Actress[$i])</name>
         <thumb>$($DataObject.ActressThumbUrl[$i])</thumb>
+        <role>Actress</role>
     </actor>
 
 "@
@@ -215,6 +237,7 @@ function Get-MetadataNfo {
         Write-Output $nfoString
     }
 }
+
 
 
 <#

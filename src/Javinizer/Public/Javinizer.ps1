@@ -37,14 +37,23 @@ function Javinizer {
     .PARAMETER OpenSettings
         The opensettings parameter will open your settings.ini file for you to view and edit.
 
+    .PARAMETER BackupSettings
+        The backupsettings parameter will backup your settings.ini and r18-thumbs.csv file to an archive.
+
+    .PARAMETER RestoreSettings
+        The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
+
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
     .PARAMETER UpdateThumbs
-        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages to scrape which will attempt to write unknown actress thumburls on sort.
+        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages.
 
     .PARAMETER OpenThumbs
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
+
+    .PARAMETER SetEmbyActorThumbs
+        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance
 
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
@@ -102,14 +111,14 @@ function Javinizer {
 
         Description
         -----------
-        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
+        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
 
         Description
         -----------
-        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
+        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.ini file.
 
     .EXAMPLE
         PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
@@ -117,6 +126,14 @@ function Javinizer {
         Description
         -----------
         Performs a console search of PRED-200 using a direct url.
+
+    .EXAMPLE
+        PS> Javinizer -SetEmbyActorThumbs
+
+        Description
+        -----------
+        Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
+
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -150,12 +167,18 @@ function Javinizer {
         [switch]$Help,
         [Parameter(ParameterSetName = 'Settings')]
         [switch]$OpenSettings,
+        [Parameter(ParameterSetName = 'Settings')]
+        [string]$BackupSettings,
+        [Parameter(ParameterSetName = 'Settings')]
+        [string]$RestoreSettings,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
         [int]$UpdateThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$OpenThumbs,
+        [Parameter(ParameterSetName = 'Thumbs')]
+        [switch]$SetEmbyActorThumbs,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$R18,
@@ -187,12 +210,12 @@ function Javinizer {
         Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
-        $settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
-        $settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
-        $settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
-        $settings.Locations.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
-        $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
-        $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug
+        $settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        $settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        $settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        $settings.Locations.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
@@ -217,16 +240,46 @@ function Javinizer {
                 if ($OpenSettings.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                         try {
-                            Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                            Write-Host "[$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
+                            Invoke-Item -Path $settingsPath
                         } catch {
+                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
                             throw $_
                         }
                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                         try {
-                            nano (Join-Path $ScriptRoot -ChildPath 'settings.ini')
+                            Write-Host "[$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
+                            nano $settingsPath
                         } catch {
+                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
                             throw $_
                         }
+                    }
+                } elseif ($PSBoundParameters.ContainsKey('BackupSettings')) {
+                    $backupSettingsParams = @{
+                        LiteralPath      = (Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'), (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
+                        CompressionLevel = 'Fastest'
+                        DestinationPath  = $BackupSettings
+                    }
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] Writing settings backup archive to [$BackupSettings]"
+                        Compress-Archive @backupSettingsParams
+                    } catch {
+                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Error writing settings backup archive to [$BackupSettings]"
+                        throw $_
+                    }
+                } elseif ($PSBoundParameters.ContainsKey('RestoreSettings')) {
+                    $restoreSettingsParams = @{
+                        LiteralPath     = $RestoreSettings
+                        DestinationPath = $ScriptRoot
+                        Force           = $true
+                    }
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] Restoring settings backup archive from [$RestoreSettings] to [$ScriptRoot]"
+                        Expand-Archive @restoreSettingsParams
+                    } catch {
+                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Error restoring settings backup archive to [$ScriptRoot] from [$RestoreSettings]"
+                        throw $_
                     }
                 }
             }
@@ -254,6 +307,8 @@ function Javinizer {
                     }
                 } elseif ($PSBoundParameters.ContainsKey('UpdateThumbs')) {
                     Get-R18ThumbCsv -ScriptRoot $ScriptRoot -NewPages $UpdateThumbs -Force:$Force
+                } elseif ($SetEmbyActorThumbs.IsPresent) {
+                    Set-EmbyActors -Settings $settings -ScriptRoot $ScriptRoot
                 }
             }
 
