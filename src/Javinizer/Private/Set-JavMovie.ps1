@@ -55,11 +55,11 @@ function Set-JavMovie {
             if ($Settings.General.'move-to-folder' -eq 'True') {
                 $fixedDestinationPath = $DestinationPath.replace('[', '`[').replace(']', '`]')
                 New-Item -ItemType Directory -Name $dataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction 'SilentlyContinue' | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction Stop
-                Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction Stop
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'Ignore'
+                Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
             } else {
                 Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction Stop
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'Ignore'
             }
 
             if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
@@ -80,19 +80,19 @@ function Set-JavMovie {
                     if ($Settings.Metadata.'download-poster-img' -eq 'True') {
                         # Double backslash to conform with Python path standards
                         if ($null -ne $dataObject.CoverUrl) {
-                            $coverPath = $fixedCoverPath -replace '\\', '\\'
-                            $posterPath = $posterPath -replace '\\', '\\'
+                            $pythonCoverPath = $fixedCoverPath -replace '\\', '\\'
+                            $pythonPosterPath = $posterPath -replace '\\', '\\'
                             if ($Force.IsPresent) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $fixedCoverPath $posterPath
+                                    python $cropPath $pythonCoverPath $pythonPosterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python3 $cropPath $fixedCoverPath $posterPath
+                                    python3 $cropPath $pythonCoverPath $pythonPosterPath
                                 }
                             } elseif ((-not (Test-Path -LiteralPath $posterPath))) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    python $cropPath $fixedCoverPath $posterPath
+                                    python $cropPath $pythonCoverPath $pythonPosterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    python3 $cropPath $fixedCoverPath $posterPath
+                                    python3 $cropPath $pythonCoverPath $pythonPosterPath
                                 }
                             }
                         }
