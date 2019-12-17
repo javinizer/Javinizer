@@ -14,9 +14,10 @@ function Get-R18DataObject {
         $movieDataObject = @()
         $replaceHashTable = @{
             'S********l'                     = 'Schoolgirl'
+            'S*********l'                    = 'School girl'
             'S**t'                           = 'Shit'
             'H*********n'                    = 'Humiliation'
-            'G*******g'                      = 'Gangbang'
+            'G*******g'                      = 'Gang bang'
             'G******g'                       = 'Gangbang'
             'H*******m'                      = 'Hypnotism'
             'S*****t'                        = 'Student'
@@ -46,6 +47,7 @@ function Get-R18DataObject {
             'D**gged'                        = 'Drugged'
             'D**g'                           = 'Drug'
             'SK**ls'                         = 'Skills'
+            'B***d'                          = 'Blood'
         }
     }
 
