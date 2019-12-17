@@ -179,6 +179,9 @@ PARAMETERS
     -OpenThumbs [<SwitchParameter>]
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
 
+    -SetEmbyActorThumbs [<SwitchParameter>]
+        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance.
+
     -R18 [<SwitchParameter>]
         The r18 parameter allows you to set your data source of R18 to true.
 
@@ -254,8 +257,8 @@ PARAMETERS
 | CMS | How to use |
 | ------------- | ------------- |
 | Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
-| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. |
-| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails. |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails. |
 
 ## Troubleshooting
 

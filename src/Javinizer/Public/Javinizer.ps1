@@ -53,7 +53,7 @@ function Javinizer {
         The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
 
     .PARAMETER SetEmbyActorThumbs
-        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance
+        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance.
 
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
