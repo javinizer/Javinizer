@@ -11,5 +11,8 @@ top = 0
 right = width
 bottom = height
 
-cropped_cover = original_cover.crop((left, top, right, bottom))
-cropped_cover.save(cover_cropped_path)
+try:
+    cropped_cover = original_cover.crop((left, top, right, bottom))
+    cropped_cover.save(cover_cropped_path)
+except:
+    pass
