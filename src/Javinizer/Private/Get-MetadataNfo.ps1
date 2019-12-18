@@ -62,13 +62,13 @@ function Get-MetadataNfo {
 
         if ($null -ne $series -or $series -eq '') {
             $tagNfoString = @"
-        <set>$series</set>
+    <set>$series</set>
 
 "@
             $nfoString = $nfoString + $tagNfoString
         } else {
             $tagNfoString = @"
-        <set></set>
+    <set></set>
 
 "@
             $nfoString = $nfoString + $tagNfoString
