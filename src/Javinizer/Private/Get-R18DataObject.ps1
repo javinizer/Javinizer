@@ -460,6 +460,10 @@ function Get-R18TrailerUrl {
         $trailerUrl += (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
         $trailerUrl += (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
 
+        if ($trailerUrl[0] -eq '') {
+            $trailerUrl = $null
+        }
+
         <# $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
 
         foreach ($trailer in $trailerHtml) {
