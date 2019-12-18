@@ -55,11 +55,11 @@ function Set-JavMovie {
             if ($Settings.General.'move-to-folder' -eq 'True') {
                 $fixedDestinationPath = $DestinationPath.replace('[', '`[').replace(']', '`]')
                 New-Item -ItemType Directory -Name $dataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction 'SilentlyContinue' | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'Ignore'
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue' | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
                 Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
             } else {
                 Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Out-Null
-                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'Ignore'
+                Get-MetadataNfo -DataObject $dataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue' | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
             }
 
             if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
