@@ -59,6 +59,21 @@ function Get-MetadataNfo {
     <mpaa>XXX</mpaa>
 
 "@
+
+        if ($null -ne $series -or $series -eq '') {
+            $tagNfoString = @"
+        <set>$series</set>
+
+"@
+            $nfoString = $nfoString + $tagNfoString
+        } else {
+            $tagNfoString = @"
+        <set></set>
+
+"@
+            $nfoString = $nfoString + $tagNfoString
+        }
+
         if ($Settings.Metadata.'add-series-as-tag' -eq 'True') {
             if ($null -ne $series -or $series -eq '') {
                 $tagNfoString = @"
