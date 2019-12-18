@@ -5,7 +5,7 @@ function Start-MultiSort {
         [system.io.fileinfo]$DestinationPath,
         [switch]$Recurse,
         [object]$Settings,
-        [ValidateRange(1, 5)]
+        [ValidateRange(1, 15)]
         [int]$Throttle
     )
 
