@@ -48,6 +48,11 @@ function Get-R18DataObject {
             'D**g'                           = 'Drug'
             'SK**ls'                         = 'Skills'
             'B***d'                          = 'Blood'
+            'S******g'                       = 'Sleeping'
+            'S***p'                          = 'Sleep'
+            'P****hment'                     = 'Punishment'
+            'P****h'                         = 'Punish'
+            'StepB****************r'         = 'StepBrother'
         }
     }
 
