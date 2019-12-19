@@ -5,14 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.4]
+### Changed
+- Throttle limit from 5 --> 15
+- `<set>` nfo metadata added by default, `<tag>` still optional
+
+### Fixed
+- Most redundant error messages when running multisort with multi-part videos
+- Invalid trailer in aggregated object if R18 trailers not found
+
 ## [1.1.3] - 12-16-2019
+### Changed
+- Tag from `Series: <tag>` to `<tag>`
+
 ### Fixed
 - Null series being added as a tag with `add-series-as-tag` true
 - R18 series string not uncensoring censored words
 - Additional R18 censored words
-
-### Changed
-- Tag from `Series: <tag>` to `<tag>`
 
 ## [1.1.2] - 12-15-2019
 ### Fixed
