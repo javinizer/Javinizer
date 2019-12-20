@@ -17,6 +17,7 @@ function Set-JavMovie {
         $Path = (Get-Item -LiteralPath $fixedPath).FullName
         $fileExtension = (Get-Item -LiteralPath $fixedPath).Extension
         $fixedDestinationPath = ($DestinationPath).replace('`[', '[').replace('`]', ']')
+        #$fixedOriginalPath = ($dataObject.OriginalDirectory).replace('`[', '[').replace('`]', ']')
         $DestinationPath = (Get-Item -LiteralPath $fixedDestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
         $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
@@ -24,7 +25,7 @@ function Set-JavMovie {
         if ($Settings.General.'move-to-folder' -eq 'True') {
             $folderPath = Join-Path -Path $fixedDestinationPath -ChildPath $dataObject.FolderName
         } else {
-            $folderPath = $fixedDestinationPath
+            $folderPath = $DataObject.OriginalDirectory
         }
 
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
