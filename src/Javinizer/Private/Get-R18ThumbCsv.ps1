@@ -46,14 +46,16 @@ function Get-R18ThumbCsv {
                         $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressFullName = $ActressFirstName + ' ' + $actressLastName
+                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
 
                         if (-not ($originalCsv -match $actressFullName)) {
                             $actressObject += [pscustomobject]@{
-                                FirstName = $actressFirstName.Trim()
-                                LastName  = $actressLastName.Trim()
-                                FullName  = $actressFullName.Trim()
-                                ThumbUrl  = $actressThumbUrl
-                                Alias     = ''
+                                FirstName        = $actressFirstName.Trim()
+                                LastName         = $actressLastName.Trim()
+                                FullName         = $actressFullName.Trim()
+                                FullNameReversed = $actressFullNameReversed.Trim()
+                                ThumbUrl         = $actressThumbUrl
+                                Alias            = ''
                             }
                         }
                     }

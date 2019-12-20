@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.6] 12-19-2019
+### Fixed
+- `-UpdateThumbs` parameter erroring out on actress written due to missing ReversedFullName
+
 ## [1.1.5] 12-19-2019
 ### Fixed
 - Running Javinizer without `-Multi` parameter fails to sort any files
