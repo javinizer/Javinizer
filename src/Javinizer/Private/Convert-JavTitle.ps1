@@ -233,24 +233,27 @@ function Convert-JavTitle {
                 $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
                 $originalFileName = $files.Name
                 $originalBaseName = $files.BaseName
+                $originalDirectory = $files.Directory
                 $fileExtension = $files.Extension
             } else {
                 $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
                 $originalFileName = $files.Name[$x]
                 $originalBaseName = $files.BaseName[$x]
+                $originalDirectory = $files.Directory[$x]
                 $fileExtension = $files.Extension[$x]
                 $filePartNumber = $filePartNumber
             }
 
             $dataObject += [pscustomobject]@{
-                Id               = $fileBaseNameUpperCleaned[$x]
-                ContentId        = $contentId
-                NewFileName      = $finalFileName
-                OriginalFileName = $originalFileName
-                OriginalBaseName = $originalBaseName
-                Extension        = $fileExtension
-                OriginalFullName = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
-                PartNumber       = $filePartNumber
+                Id                = $fileBaseNameUpperCleaned[$x]
+                ContentId         = $contentId
+                NewFileName       = $finalFileName
+                OriginalFileName  = $originalFileName
+                OriginalBaseName  = $originalBaseName
+                OriginalDirectory = $originalDirectory
+                Extension         = $fileExtension
+                OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
+                PartNumber        = $filePartNumber
             }
         }
 

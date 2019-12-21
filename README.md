@@ -47,7 +47,7 @@ PS> Install-Module PoshRSJob
 
 Choose one of the methods below:
 
-- Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/0.1.7).
+- Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/).
 ```powershell
 # Install the module from PowerShell gallery
 PS> Install-Module Javinizer
@@ -123,7 +123,7 @@ SYNTAX
 
     Javinizer [-OpenSettings] [-BackupSettings] [-RestoreSettings] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-SetEmbyActorThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
 
 DESCRIPTION
@@ -277,5 +277,5 @@ PARAMETERS
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [ ] Normalize studio names between JAVLibrary and R18
 - [ ] Add additional scraper sources for uncensored JAV
-- [ ] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv`
+- [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
 
