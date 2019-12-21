@@ -203,6 +203,14 @@ function Convert-JavTitle {
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
                 $filePartNumber = $filePartNum
             }
+            # Match ID-###-cd1, ID-###-cd2, etc.
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]cd") {
+                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
+                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
+                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'cd', '')[1]
+                $filePartNumber = $filePartNum
+            }
+
             # Match everything else
             else {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 11"
