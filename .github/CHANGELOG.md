@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.7] 12-23-2019
+### Changed
+- Behavior when description translation fails to let original DMM description be written to nfo metadata
+
+### Fixed
+- Description metadata being set to null when `translate-description` is set to False
+- JAVLibrary maker being set in director field when there is no director
+- Additional R18 censors
+
 ## [1.1.6] 12-19-2019
 ### Fixed
 - `-UpdateThumbs` parameter erroring out on actress written due to missing ReversedFullName
