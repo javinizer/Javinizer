@@ -41,6 +41,7 @@ function Get-R18DataObject {
             'T*****e'                        = 'Torture'
             'R**e'                           = 'Rape'
             'R**ed'                          = 'Raped'
+            'R****g'                         = 'Raping'
             'M****t'                         = 'Molest'
             'A*****ted'                      = 'Assaulted'
             'A*****t'                        = 'Assault'
@@ -53,6 +54,10 @@ function Get-R18DataObject {
             'P****hment'                     = 'Punishment'
             'P****h'                         = 'Punish'
             'StepB****************r'         = 'StepBrother'
+            'K****p'                         = 'Kidnap'
+            'S********n'                     = 'Subjugation'
+            'K**ler'                         = 'Killer'
+            'K**l'                           = 'Kill'
         }
     }
 
