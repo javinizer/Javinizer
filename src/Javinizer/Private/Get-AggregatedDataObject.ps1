@@ -216,12 +216,18 @@ function Get-AggregatedDataObject {
 
         foreach ($priority in $descriptionPriority) {
             $var = Get-Variable -Name "$($priority)Data"
-            if ($null -eq $aggregatedDataObject.Description) {
+            if ($null -eq $aggregatedDataObject.Description -or $null -eq $aggregatedDataObject.Description[0]) {
+                $description = ($var.Value.Description -replace '♪', '') -replace '●', '' -replace '…', ''
                 if ($Settings.Metadata.'translate-description' -eq 'true' -and $null -ne $var.Value.Description) {
-                    $translatedDescription = Get-TranslatedString $var.Value.Description -ScriptRoot $ScriptRoot
+                    $translatedDescription = Get-TranslatedString $description -ScriptRoot $ScriptRoot
                     $aggregatedDataObject.Description = $translatedDescription
                 } else {
-                    $aggregatedDataObject.Description = $var.Value.Description
+                    $aggregatedDataObject.Description = $description
+                }
+
+                # Fall back to default description if translation fails
+                if ($null -eq $aggregatedDataObject.Description) {
+                    $aggregatedDataObject.Description = $description
                 }
             }
         }
