@@ -130,7 +130,12 @@ function Get-JLDirector {
     )
 
     process {
-        $director = (((($WebRequest.Content -split '<td class="header">Director:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $director = (((($WebRequest.Content -split '<td class="header">Director:</td>')[1]) -split '<\/td>')[0])
+        if ($director -match '<\/a>') {
+            $director = (($director -split 'rel="tag">')[1] -split '<\/a')[0]
+        } else {
+            $director = $null
+        }
         $director = Convert-HtmlCharacter -String $director
         Write-Output $director
     }
