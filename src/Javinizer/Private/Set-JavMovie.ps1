@@ -132,7 +132,7 @@ function Set-JavMovie {
                         $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
                         New-Item -ItemType Directory -Name '.actors' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         if ($dataObject.ActressThumbUrl.Count -eq 1) {
-                            if ($dataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
+                            if ($dataObject.ActressThumbUrl -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
                                 $first, $second = $dataObject.Actress -split ' '
                                 if ($null -eq $second -or $second -eq '') {
                                     $actressFileName = $first + '.jpg'

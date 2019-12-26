@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.9]
+### Fixed
+- Additional error with downloading actress images with single actress video
+
 ## [1.1.8]
 ### Fixed
 - Fixed single-word actresses appending underscore `_` to filename when downloading actress images
