@@ -131,18 +131,34 @@ function Set-JavMovie {
                     if ($null -ne $dataObject.ActressThumbUrl) {
                         $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
                         New-Item -ItemType Directory -Name '.actors' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                        for ($i = 0; $i -lt $dataObject.ActressThumbUrl.Count; $i++) {
+                        if ($dataObject.ActressThumbUrl.Count -eq 1) {
                             if ($dataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
-                                $first, $second = $dataObject.Actress[$i] -split ' '
-                                if ($null -ne $second -or $second -ne '') {
-                                    $actressFileName = $first + '_' + $second + '.jpg'
-                                } else {
+                                $first, $second = $dataObject.Actress -split ' '
+                                if ($null -eq $second -or $second -eq '') {
                                     $actressFileName = $first + '.jpg'
+                                } else {
+                                    $actressFileName = $first + '_' + $second + '.jpg'
                                 }
                                 if ($Force.IsPresent) {
-                                    $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($dataObject.ActressThumbUrl, (Join-Path -Path $actorPath -ChildPath $actressFileName))
                                 } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
-                                    $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($dataObject.ActressThumbUrl, (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                }
+                            }
+                        } else {
+                            for ($i = 0; $i -lt $dataObject.ActressThumbUrl.Count; $i++) {
+                                if ($dataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
+                                    $first, $second = $dataObject.Actress[$i] -split ' '
+                                    if ($null -eq $second -or $second -eq '') {
+                                        $actressFileName = $first + '.jpg'
+                                    } else {
+                                        $actressFileName = $first + '_' + $second + '.jpg'
+                                    }
+                                    if ($Force.IsPresent) {
+                                        $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
+                                        $webClient.DownloadFile($dataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    }
                                 }
                             }
                         }

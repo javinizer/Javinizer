@@ -27,7 +27,7 @@ function Get-MetadataNfo {
 
         $displayName = (($DataObject.DisplayName -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $alternateTitle = (($DataObject.AlternateTitle -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
-        $director = (($DataObject.Director -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
+        $director = ((($DataObject.Director -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')') -replace '/', '-'
         $maker = (($DataObject.Maker -replace '&', '&amp;') -replace '<', '(') -replace , '>', ''
         $description = (($DataObject.Description -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
@@ -90,7 +90,7 @@ function Get-MetadataNfo {
         }
 
         foreach ($genre in $DataObject.Genre) {
-            $genre = $genre -replace '&', '&amp;'
+            $genre = ($genre -replace '&', '&amp;') -replace '/', '-'
             if ($Settings.Metadata.'normalize-genres' -eq 'True') {
                 if ($javlibraryGenres -like $genre) {
                     $index = $javlibraryGenres.IndexOf($genre)
