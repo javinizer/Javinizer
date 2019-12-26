@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.8]
 ### Fixed
-- Fixed single-word actresses appending underscore (_) to filename when downloading actress images
+- Fixed single-word actresses appending underscore `_` to filename when downloading actress images
+- Director and Genre metadata fields being cut off by slash `/` in Plex, replaced text with `-`
 
 ## [1.1.7] 12-23-2019
 ### Changed
