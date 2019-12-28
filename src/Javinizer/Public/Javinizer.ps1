@@ -161,6 +161,8 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Recurse,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [switch]$Strict,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
         [Parameter(ParameterSetName = 'Help')]
         [Alias('h')]
@@ -351,7 +353,7 @@ function Javinizer {
                 try {
                     Write-Debug "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
                     $fixedPath = ($getPath.FullName).replace('[', '`[').replace(']', '`]')
-                    $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings
+                    $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings -Strict:$Strict
                 } catch {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
                     return

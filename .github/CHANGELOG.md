@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.9]
+### Added
+- `-Strict` parameter to not clean filenames when scraping
+
 ## [1.1.8]
 ### Fixed
 - Fixed single-word actresses appending underscore `_` to filename when downloading actress images

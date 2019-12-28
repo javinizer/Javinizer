@@ -10,7 +10,8 @@ function Convert-JavTitle {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Path,
         [object]$Settings,
-        [switch]$Recurse
+        [switch]$Recurse,
+        [switch]$Strict
     )
 
     begin {
@@ -70,13 +71,13 @@ function Convert-JavTitle {
 
     process {
         $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
-        $FileBaseNameOriginal = @($files.BaseName)
+        $fileBaseNameOriginal = @($files.BaseName)
         # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
         foreach ($string in $RemoveStrings) {
             if ($string -eq '_') {
-                $FileBaseNameOriginal = $FileBaseNameOriginal -replace $string, '-'
+                $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, '-'
             } else {
-                $FileBaseNameOriginal = $FileBaseNameOriginal -replace $string, ''
+                $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, ''
             }
         }
 
@@ -244,16 +245,30 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNumber
             }
 
-            $dataObject += [pscustomobject]@{
-                Id                = $fileBaseNameUpperCleaned[$x]
-                ContentId         = $contentId
-                NewFileName       = $finalFileName
-                OriginalFileName  = $originalFileName
-                OriginalBaseName  = $originalBaseName
-                OriginalDirectory = $originalDirectory
-                Extension         = $fileExtension
-                OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
-                PartNumber        = $filePartNumber
+            if ($Strict.IsPresent) {
+                $dataObject += [pscustomobject]@{
+                    Id                = $originalBaseName
+                    ContentId         = $contentId
+                    NewFileName       = $finalFileName
+                    OriginalFileName  = $originalFileName
+                    OriginalBaseName  = $originalBaseName
+                    OriginalDirectory = $originalDirectory
+                    Extension         = $fileExtension
+                    OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
+                    PartNumber        = $filePartNumber
+                }
+            } else {
+                $dataObject += [pscustomobject]@{
+                    Id                = $fileBaseNameUpperCleaned[$x]
+                    ContentId         = $contentId
+                    NewFileName       = $finalFileName
+                    OriginalFileName  = $originalFileName
+                    OriginalBaseName  = $originalBaseName
+                    OriginalDirectory = $originalDirectory
+                    Extension         = $fileExtension
+                    OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
+                    PartNumber        = $filePartNumber
+                }
             }
         }
 
