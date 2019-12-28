@@ -116,7 +116,7 @@ function Get-R18Url {
     }
 }
 
-function Get-R18ContentId {
+<# function Get-R18ContentId {
     [CmdletBinding()]
     param (
         [string]$Url
@@ -130,3 +130,4 @@ function Get-R18ContentId {
 
     Write-Output $contentId
 }
+ #>

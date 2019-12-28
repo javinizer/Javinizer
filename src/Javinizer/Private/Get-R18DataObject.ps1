@@ -72,7 +72,6 @@ function Get-R18DataObject {
             try {
                 Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
-                Write-Debug "URL IS $r18Url"
 
                 $movieDataObject = [pscustomobject]@{
                     Source          = 'r18'
