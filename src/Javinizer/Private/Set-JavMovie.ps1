@@ -134,11 +134,11 @@ function Set-JavMovie {
 
             try {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
-                    if ($null -ne $dataObject.ActressThumbUrl) {
+                    if ($null -ne $dataObject.ActressThumbUrl -or $dataObject.ActressThumbUrl[0] -ne '') {
                         $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
                         New-Item -ItemType Directory -Name '.actors' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         if ($dataObject.ActressThumbUrl.Count -eq 1) {
-                            if ($dataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
+                            if ($dataObject.ActressThumbUrl -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
                                 $first, $second = $dataObject.Actress -split ' '
                                 if ($null -eq $second -or $second -eq '') {
                                     $actressFileName = $first + '.jpg'
