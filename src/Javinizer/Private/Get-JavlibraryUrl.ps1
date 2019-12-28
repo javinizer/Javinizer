@@ -3,7 +3,6 @@ function Get-JavlibraryUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Name,
-        [ValidateRange(2, 5)]
         [int]$Tries,
         [string]$ScriptRoot
     )
@@ -32,49 +31,59 @@ function Get-JavlibraryUrl {
         # If not, we will check the search results and check a few for if they are a match
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match 'http:\/\/www\.javlibrary\.com\/en\/\?v=') {
-            $javlibraryUrl = $searchResultUrl
+            try {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+            } catch {
+                throw $_
+            }
+
+            $resultId = Get-JLId -WebRequest $webRequest
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
+            if ($resultId -eq $Name) {
+                $javlibraryUrl = $searchResultUrl
+            }
         }
 
         if ($null -eq $javlibraryUrl) {
+            $Tries = 5
             $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
             $numResults = $searchResults.count
 
-            if ($numResults -ge 2) {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Name]"
-                if ($Tries.IsPresent) {
-                    $Tries = $Tries
-                } else {
-                    $Tries = 5
-                }
-            } elseif ($numResults -eq 0 -or $null -eq $searchResults) {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-                return
+            if ($Tries -gt $numResults) {
+                $Tries = $numResults
             }
 
-            $count = 1
-            foreach ($result in $searchResults) {
-                $videoId = ($result -split '=')[1]
-                $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-                $resultId = (($webRequest.Content -split '<title>')[1] -split ' ')[0]
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+            if ($numResults -ge 1) {
+                $count = 1
+                foreach ($result in $searchResults) {
+                    $videoId = ($result -split '=')[1]
+                    $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
+                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                    $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+                    $resultId = Get-JLId -WebRequest $webRequest
+                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
-                if ($resultId -eq $Name) {
-                    $javlibraryUrl = (Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] matched"
-                    break
-                }
+                    if ($resultId -eq $Name) {
+                        $javlibraryUrl = (Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
+                        break
+                    }
 
-                if ($count -gt $Tries) {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-                    return
+                    if ($count -eq $Tries) {
+                        break
+                    }
+
+                    $count++
                 }
-                $count++
             }
         }
 
-        Write-Output $javlibraryUrl
+        if ($null -eq $javlibraryUrl) {
+            Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on JAVLibrary"
+            return
+        } else {
+            Write-Output $javlibraryUrl
+        }
     }
 
     end {
