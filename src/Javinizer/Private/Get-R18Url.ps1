@@ -4,16 +4,18 @@ function Get-R18Url {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Name,
         [string]$AltName,
-        [ValidateRange(2, 5)]
         [int]$Tries
     )
 
     begin {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        $searchResults = @()
+        $altSearchResults = @()
         $searchUrl = "https://www.r18.com/common/search/searchword=$Name/"
     }
 
     process {
+        # Try matching the video with Video ID
         try {
             Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
@@ -21,16 +23,16 @@ function Get-R18Url {
             throw $_
         }
 
+        $Tries = 5
         $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/movies/detail/-/id=*" }).href)
         $numResults = $searchResults.count
-        if ($searchResults.count -ge 2) {
-            if ($Tries.IsPresent) {
-                $Tries = $Tries
-            } else {
-                $Tries = 5
-            }
 
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
+        if ($Tries -gt $numResults) {
+            $Tries = $numResults
+        }
+
+        if ($numResults -ge 1) {
+            Write-Debug "[$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Name]"
 
             $count = 1
             foreach ($result in $searchResults) {
@@ -42,9 +44,17 @@ function Get-R18Url {
                     $directUrl = $result
                     break
                 }
+
+                if ($count -eq $Tries) {
+                    break
+                }
+
                 $count++
             }
-        } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
+        }
+
+        # If not matched by Video ID, try matching the video with Content ID
+        if ($null -eq $directUrl) {
             if ($AltName -eq '' -or $null -eq $AltName) {
                 $splitAltName = $Name -split '-'
                 $AltName = $splitAltName[0] + '00' + $splitAltName[1]
@@ -59,75 +69,62 @@ function Get-R18Url {
                 throw $_
             }
 
-            $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/movies/detail/-/id=*" }).href)
-            $numResults = $searchResults.count
+            $Tries = 5
+            $altSearchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/movies/detail/-/id=*" }).href)
+            $numResults = $altSearchResults.count
 
-            if ($searchResults.count -ge 2) {
-                if ($Tries.IsPresent) {
-                    $Tries = $Tries
-                } else {
-                    $Tries = 5
-                }
-
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Unique video match not found, trying to search [$Tries] of [$numResults] results for [$Id]"
-
-                $count = 1
-                foreach ($result in $searchResults) {
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
-                    $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
-                    $resultId = Get-R18Id -WebRequest $webRequest
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                    if ($resultId -eq $Name) {
-                        $directUrl = $result
-                        break
-                    }
-                    $count++
-                }
-            } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-                $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$AltName/"
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
-                $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
-                $resultId = Get-R18Id -WebRequest $webRequest
-                if ($resultId -eq $Name) {
-                    $directUrl = $testUrl
-                } else {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-                    return
-                }
-            } else {
-                $webRequest = Invoke-WebRequest -Uri $searchResults -Method Get -Verbose:$false
-                $resultId = Get-R18Id -WebRequest $webRequest
-                if ($resultId -eq $Name) {
-                    $directUrl = $searchResults
-                }
+            if ($Tries -gt $numResults) {
+                $Tries = $numResults
             }
-        } else {
-            $webRequest = Invoke-WebRequest -Uri $searchResults -Method Get -Verbose:$false
-            $resultId = Get-R18Id -WebRequest $webRequest
-            if ($resultId -eq $Name) {
-                $directUrl = $searchResults
+
+            $count = 1
+            foreach ($result in $altSearchResults) {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
+                $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
+                $resultId = Get-R18Id -WebRequest $webRequest
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                if ($resultId -eq $Name) {
+                    $directUrl = $result
+                    break
+                }
+
+                if ($count -eq $Tries) {
+                    break
+                }
+
+                $count++
             }
         }
-        Write-Output $directUrl
+
+        # If not matched by Video ID or Content ID, try matching the video with generic R18 URL
+        if ($null -eq $directUrl) {
+            $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$AltName/"
+
+            try {
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
+                $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
+            } catch {
+                $webRequest = $null
+            }
+
+            if ($null -ne $webRequest) {
+                $resultId = Get-R18Id -WebRequest $webRequest
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
+                if ($resultId -eq $Name) {
+                    $directUrl = $testUrl
+                }
+            }
+        }
+
+        if ($null -eq $directUrl) {
+            Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
+            return
+        } else {
+            Write-Output $directUrl
+        }
     }
 
     end {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
-
-<# function Get-R18ContentId {
-    [CmdletBinding()]
-    param (
-        [string]$Url
-    )
-
-    $contentId = (($Url -split 'id=')[1] -split '\/')[0]
-
-    if ($contentId -match '^\d{1,}') {
-        $contentId = ($contentId -split '^\d{1,}')[1]
-    }
-
-    Write-Output $contentId
-}
- #>
