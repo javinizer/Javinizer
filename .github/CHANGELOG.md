@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `-Strict` parameter to not clean filenames when scraping
 - `rename-file` setting
 
+### Fixed
+- Matching for r18 videos with only 1 returned search result or 0 matched search results
+
 ## [1.1.8]
 ### Fixed
 - Fixed single-word actresses appending underscore `_` to filename when downloading actress images

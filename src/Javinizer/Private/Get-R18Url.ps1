@@ -45,9 +45,9 @@ function Get-R18Url {
                 $count++
             }
         } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-            if ($AltName -eq '') {
-                $AltName = $Name -split '-'
-                $AltName = $AltName[0] + '00' + $AltName[1]
+            if ($AltName -eq '' -or $null -eq $AltName) {
+                $splitAltName = $Name -split '-'
+                $AltName = $splitAltName[0] + '00' + $splitAltName[1]
             }
 
             $searchUrl = "https://www.r18.com/common/search/searchword=$AltName/"
@@ -84,19 +84,49 @@ function Get-R18Url {
                     $count++
                 }
             } elseif ($searchResults.count -eq 0 -or $null -eq $searchResults.count) {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-                return
+                $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$AltName/"
+                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
+                $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
+                $resultId = Get-R18Id -WebRequest $webRequest
+                if ($resultId -eq $Name) {
+                    $directUrl = $testUrl
+                } else {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+                    return
+                }
             } else {
-                $directUrl = $searchResults
+                $webRequest = Invoke-WebRequest -Uri $searchResults -Method Get -Verbose:$false
+                $resultId = Get-R18Id -WebRequest $webRequest
+                if ($resultId -eq $Name) {
+                    $directUrl = $searchResults
+                }
             }
         } else {
-            $directUrl = $searchResults
+            $webRequest = Invoke-WebRequest -Uri $searchResults -Method Get -Verbose:$false
+            $resultId = Get-R18Id -WebRequest $webRequest
+            if ($resultId -eq $Name) {
+                $directUrl = $searchResults
+            }
         }
-
         Write-Output $directUrl
     }
 
     end {
         Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
     }
+}
+
+function Get-R18ContentId {
+    [CmdletBinding()]
+    param (
+        [string]$Url
+    )
+
+    $contentId = (($Url -split 'id=')[1] -split '\/')[0]
+
+    if ($contentId -match '^\d{1,}') {
+        $contentId = ($contentId -split '^\d{1,}')[1]
+    }
+
+    Write-Output $contentId
 }
