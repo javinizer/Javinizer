@@ -31,6 +31,9 @@ function Javinizer {
     .PARAMETER Recurse
         The recurse parameter will perform your sort recursively within your specified sort directory.
 
+    .PARAMETER Strict
+        The strict parameter will perform your sort without automatically cleaning your filenames. It will read the exact filename.
+
     .PARAMETER Help
         The help parameter will open a help dialogue in your console for Javinizer usage.
 

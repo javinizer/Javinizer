@@ -115,7 +115,7 @@ SYNOPSIS
 
 
 SYNTAX
-    Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Url <String>] [-Apply] [-Multi] [-Recurse] [-Force] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Url <String>] [-Apply] [-Multi] [-Recurse] [-Strict] [-Force] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-Find] <String> [-Aggregated] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -154,6 +154,9 @@ PARAMETERS
 
     -Recurse [<SwitchParameter>]
         The recurse parameter will perform your sort recursively within your specified sort directory.
+
+    -Strict [<SwitchParameter>]
+        The strict parameter will perform your sort without automatically cleaning your filenames. It will read the exact filename.
 
     -Force [<SwitchParameter>]
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
