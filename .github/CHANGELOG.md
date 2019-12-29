@@ -5,20 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.9]
+## [1.1.10] 12-29-2019
 ### Added
 - `-Strict` parameter to not clean filenames when scraping
-- `rename-file` setting
+- `rename-file` setting functionality
+
+### Changed
+- R18/DMM matching function to be more accurate and resilient
+- JAVLibrary matching function to be more accurate and resilient
 
 ### Fixed
 - Matching for r18 videos with only 1 returned search result or 0 matched search results
 
-## [1.1.8]
+## [1.1.9] - 12-26-2019
+### Fixed
+- Additional error with downloading actress images with single actress video
+
+## [1.1.8] - 12-26-2019
 ### Fixed
 - Fixed single-word actresses appending underscore `_` to filename when downloading actress images
 - Director and Genre metadata fields being cut off by slash `/` in Plex, replaced text with `-`
 
-## [1.1.7] 12-23-2019
+## [1.1.7] - 12-23-2019
 ### Changed
 - Behavior when description translation fails to let original DMM description be written to nfo metadata
 
@@ -27,16 +35,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - JAVLibrary maker being set in director field when there is no director
 - Additional R18 censors
 
-## [1.1.6] 12-19-2019
+## [1.1.6] - 12-19-2019
 ### Fixed
 - `-UpdateThumbs` parameter erroring out on actress written due to missing ReversedFullName
 
-## [1.1.5] 12-19-2019
+## [1.1.5] - 12-19-2019
 ### Fixed
 - Running Javinizer without `-Multi` parameter fails to sort any files
 - Having setting `move-to-folder=False` writing non-video files to the root `-Path` directory
 
-## [1.1.4] 12-18-2019
+## [1.1.4] - 12-18-2019
 ### Changed
 - Throttle limit from 5 --> 15
 - `<set>` nfo metadata added by default, `<tag>` still optional
