@@ -1,7 +1,7 @@
 # Javinizer (JAV Organizer)
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
-[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Latest%20Release)](https://github.com/jvlflame/Javinizer/releases)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Latest%20Commit)](https://github.com/jvlflame/Javinizer/commits/master)
+[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Release)](https://github.com/jvlflame/Javinizer/releases)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Last%20Commit)](https://github.com/jvlflame/Javinizer/commits/master)
 [![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/1.1.10)
 [![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
 [![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
@@ -22,7 +22,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 ### Install module dependencies
 
-- [PowerShell 6, PowerShell 7](https://github.com/PowerShell/PowerShell) - Windows PowerShell 5 is **NOT** supported
+- [PowerShell 6 or PowerShell 7](https://github.com/PowerShell/PowerShell) - Windows PowerShell 5 is **NOT** supported
     - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
