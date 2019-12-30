@@ -1,7 +1,7 @@
 # Javinizer (JAV Organizer)
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
-[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat)](https://github.com/jvlflame/Javinizer/releases)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue)](https://github.com/jvlflame/Javinizer/commits/master)
+[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Latest%20Release)](https://github.com/jvlflame/Javinizer/releases)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Latest%20Commit)](https://github.com/jvlflame/Javinizer/commits/master)
 [![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/1.1.10)
 [![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
 [![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
@@ -86,6 +86,8 @@ PS> Javinizer -RestoreSettings 'C:\Users\UserName\Documents\JavinizerSettings.zi
 
 
 ### Supported multi-part-video naming schemes
+
+The supported filenames for multi-part-videos are as follows. When sorted, all multi-part-videos will be renamed to `ID-###-pt#`.
 
 ```
 # Naming schemes  - Example filename
