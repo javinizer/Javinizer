@@ -1,9 +1,10 @@
 # Javinizer (JAV Organizer)
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 [![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat)](https://github.com/jvlflame/Javinizer/releases)
-[![Commits since lastest release](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest?style=flat)](#)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat)](https://github.com/jvlflame/Javinizer/commits/master)
-[![Discord](https://img.shields.io/discord/608449512352120834?style=flat)](https://discord.gg/K2Yjevk)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue)](https://github.com/jvlflame/Javinizer/commits/master)
+[![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/1.1.10)
+[![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
+[![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
 
 A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
@@ -49,7 +50,7 @@ Choose one of the methods below:
 
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/).
 ```powershell
-# Install the module from PowerShell gallery
+# Install the module from PowerShell gallery (This will install the latest version by default)
 PS> Install-Module Javinizer
 
 # Update the module to the newest version from PowerShell gallery
@@ -100,6 +101,7 @@ ID-###-part\d     - ID-069-part1, ID-069-part2
 ID-### - part\d   - ID-069 - part1, ID-069 - part2
 ID-###_\d         - ID-069_1, ID-069_2
 ID-###_0\d        - ID-069_01, ID-069_02
+ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 ```
 
 ### Command-line switches
@@ -259,16 +261,64 @@ PARAMETERS
 
 | CMS | How to use |
 | ------------- | ------------- |
-| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle).  |
-| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails. |
-| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails. |
+| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating Collections from tags` and `Use plot instead of outline`   |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
+
+## Settings Information
+
+Setting | Accepted Values | Details
+--- | --- | ---
+scrape-r18 | True/False | Turns on the scraper for r18.com
+scrape-dmm | True/False | Turns on the scraper for dmm.co.jp
+scrape-javlibrary | True/False | Turns on the scraper for javlibrary.com
+multi-sort-throttle-limit | Integer value (1-15) | Sets the amount of threads to run the sort in parallel
+move-to-folder | True/False | Moves the sorted video to a new directory if found by scrapers
+rename-file | True/False | Renames the sorted video if found by scrapers
+rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the file to your designated string value if `rename-file` is True
+rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the folder to your designated string value if `move-to-folder` is True
+cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
+max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your`rename-file-string` or `rename-folder-string`
+minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
+download-thumb-img | True/False | Downloads the movie full-size cover image
+download-poster-img | True/False | Crops the movie full-size cover image to poster size
+download-trailer-vid | True/False | Downloads the movie trailer to your movie directory
+download-actress-img | True/False | Downloads the actress images to the `.actors` directory in your movie directory
+translate-description | True/False | Translates the Japanese movie description from dmm.co.jp to English
+add-series-as-tag | True/False | Adds the \<tag> metadata line to your movie nfo to work with Emby tags; \<set> is added by default
+first-last-name-order | True/False | Sets the first/last name order for the actresses in your nfo metadata; True = `FirstName LastName` / False = `LastName FirstName`
+convert-alias-to-originalname | True/False | Converts actresses scraped from other sources (JAVLibrary) to their respective names on R18 if added to the `Alias` column in your `r18-thumbs.csv` file
+normalize-genres | True/False | Converts genres scraped from JAVLibrary to their respective names on R18 using your `genres.csv` file
+ignored-genres | String value | Sets genres to ignore from adding to your nfo metadata in comma separated format (no spaces)
+required-metadata-fields | actress, actressthumburl, alternatetitle, coverurl, description, director, genre, id, label, maker, rating, ratingcount, releasedate, releaseyear, runtime, series, screenshoturl, title, trailerurl | Sets the required metadata fields that are required to be scraped to successfully sort the video in comma separated format (no spaces)
+\<metadata>-priority | r18, javlibrary, dmm | Sets the order in which each metadata field is scraped in comma separated format (no spaces). Some sources may not contain the specific metadata field, so play around with the `-Find` parameter to see which source contains which fields
+input-path | String value (Path) | The path to your unsorted JAV files
+output-path | String value (Path) | The path to where you want your unsorted JAV files to be sent to when sorted successfully
+server-url | String value (URL) | The address to your Emby/Jellyfin server
+server-api-key | String value | The API key for your Emby/Jellyfin server instance
+verbose-shell-output | True/False | Displays verbose output to your shell
+debug-shell-output | True/False | Displays debug output to your shell
+
+## Other notes
+- If you are scraping large amounts of videos (1000+) with `translate-description=True`, do note that you may get IP banned from the Google Translate API for an indeterminate amount of time (up to 24 hours?)
+    - You may want to scrape your library in batches, or set `translate-description=False` to avoid this altogether
+- If you want to update/refresh your existing metadata scraped from Javinizer, you can run a `Javinizer -Path <Path> -Recurse` sort on your sorted folder with `rename-file=False` and `move-to-folder=False`. **Test this in a controlled environment before using it on your existing directories.**
+    - By default, image/trailer files will not be overwritten on a sort, but nfo metadata will be
+        - If you use the `-Force` parameter, Javinizer will also overwrite your image/trailer files
+- Actress metadata scraped from JAVLibrary will match actresses with their thumbnails from your `r18-thumbs.csv` file
+- Actress metadata scraped from JAVLibrary will replace the JAVLibrary names with their R18 names if added to the Alias column in your `r18-thumbs.csv` file
+- If you want to primarily have R18/Dmm metadata, you can set `normalize-genres=True` to have the JAVLibrary genre names converted to their R18 counterparts to have a cleaner/consistent library
+    - If you want to primarily use JAVLibrary metadata, set `normalize-genres=False`
+
 
 ## Troubleshooting
 
 | Issue | Resolution |
-| ------------- | ------------- |
+| --- | --- |
 | Unicode error when trying to translate plot description  | Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`. |
+| Descriptions still in Japanese even with `translate-description=True` | You may have been IP banned from the Google Translate API for scraping too much in a short amount of time. Wait a few hours and try again.
 | `crop.py` error when sorting multi-part videos using `-Multi` parameter | Ignore this error as it should not effect the end-result. |
+| Unable to sort videos with letters following the numeric ID (e.g. LE-01D, IBW-500z) | Sort using direct URLs with the `-Url` parameter, or rename the file to exactly how the ID appears on R18/JAVLibrary, and use the `-Strict` parameter when calling Javinizer. This may cause the filename to be appended with `-pt#` depending on which letter is used, but you can also set the setting `rename-file=False` or just rename it manually after.  |
 
 
 ## Todo
@@ -278,7 +328,7 @@ PARAMETERS
 - [x] Allow switching firstname/lastname order - [0.1.7]
 - [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [1.0.0]
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
+- [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
+- [ ] Add support for additional language metadata
 - [ ] Normalize studio names between JAVLibrary and R18
 - [ ] Add additional scraper sources for uncensored JAV
-- [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
-
