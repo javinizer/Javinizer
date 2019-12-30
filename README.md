@@ -280,7 +280,7 @@ rename-file | True/False | Renames the sorted video if found by scrapers
 rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the file to your designated string value if `rename-file` is True
 rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the folder to your designated string value if `move-to-folder` is True
 cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
-max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your`rename-file-string` or `rename-folder-string`
+max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your `rename-file-string` or `rename-folder-string`
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
 download-thumb-img | True/False | Downloads the movie full-size cover image
 download-poster-img | True/False | Crops the movie full-size cover image to poster size
