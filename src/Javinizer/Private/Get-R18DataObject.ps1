@@ -58,6 +58,7 @@ function Get-R18DataObject {
             'S********n'                     = 'Subjugation'
             'K**ler'                         = 'Killer'
             'K**l'                           = 'Kill'
+            'A***e'                          = 'Abuse'
         }
     }
 
