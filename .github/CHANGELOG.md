@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.11] 02-08-2020
+### Fixed
+- Error on creating cloudflare session with Javlibrary.com
+- Script failing when certain criteria are met when downloading actress thumbnails
+
 ## [1.1.10] 12-29-2019
 ### Added
 - `-Strict` parameter to not clean filenames when scraping
