@@ -12,13 +12,27 @@ function Get-NewFileDirName {
         $folderFormat = $settings.General.'rename-folder-string'
         $fileFormat = $settings.General.'rename-file-string'
         $displayNameFormat = $settings.General.'cms-displayname-string'
+        $posterNameFormat = $settings.General.'poster-file-string'
+        $thumbnailNameFormat = $settings.General.'thumbnail-file-string'
+        $trailerNameFormat = $settings.General.'trailer-file-string'
+        $nfoNameFormat = $settings.General.'nfo-file-string'
+        $screenshotFolderNameFormat = $settings.General.'screenshot-folder-string'
+        $screenshotImgNameFormat = $settings.General.'screenshot-img-string'
+        $actorImgFolderNameFormat = $settings.General.'actorimg-folder-string'
         $fileDirObject = @()
     }
 
     process {
-        $newFolderName       = Convert-FormatString -FormatString $folderFormat
-        $newDisplayName      = Convert-FormatString -FormatString $displayNameFormat -DisplayName
+        $newFolderName = Convert-FormatString -FormatString $folderFormat
+        $newDisplayName = Convert-FormatString -FormatString $displayNameFormat
         $originalNewFileName = Convert-FormatString -FormatString $fileFormat
+        $posterName = Convert-FormatString -FormatString $posterNameFormat
+        $thumbnailName = Convert-FormatString -FormatString $thumbnailNameFormat
+        $trailerName = Convert-FormatString -FormatString $trailerNameFormat
+        $nfoName = Convert-FormatString -FormatString $nfoNameFormat
+        $screenshotFolderName = Convert-FormatString -FormatString $screenshotFolderNameFormat
+        $screenshotImgName = Convert-FormatString -FormatString $screenshotImgNameFormat
+        $actorImgFolderName = Convert-FormatString -FormatString $actorImgFolderNameFormat
 
         if ($null -ne $DataObject.PartNumber) {
             $newFileName = $originalNewFileName + "-pt$($dataObject.PartNumber)"
@@ -27,10 +41,17 @@ function Get-NewFileDirName {
         }
 
         $fileDirObject = [pscustomobject]@{
-            FolderName       = $newFolderName
-            FileName         = $newFileName
-            OriginalFileName = $originalNewFileName
-            DisplayName      = $newDisplayName
+            FolderName           = $newFolderName
+            FileName             = $newFileName
+            OriginalFileName     = $originalNewFileName
+            DisplayName          = $newDisplayName
+            PosterName           = $posterName
+            ThumbnailName        = $thumbnailName
+            TrailerName          = $trailerName
+            NfoName              = $nfoName
+            ScreenshotFolderName = $screenshotfolderName
+            ScreenshotImgName    = $screenshotImgName
+            ActorImgFolderName   = $actorImgFolderName
         }
 
         Write-Output $fileDirObject

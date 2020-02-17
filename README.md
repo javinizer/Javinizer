@@ -280,6 +280,13 @@ rename-file | True/False | Renames the sorted video if found by scrapers
 rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the file to your designated string value if `rename-file` is True
 rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the folder to your designated string value if `move-to-folder` is True
 cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
+poster-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the poster image to your designated string value
+thumbnail-filestring | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the thumbnail image to your designated string value
+trailer-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the trailer video to your designated string value
+nfo-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo metadata file to your designated string value
+screenshot-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the movie screenshot folder to your designated string value
+screenshot-img-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the movie screenshot image to your designated string value with an appended increasing numeric value
+actorimg-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the actor image folder to your designated string value
 max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your `rename-file-string` or `rename-folder-string`
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
 download-thumb-img | True/False | Downloads the movie full-size cover image
@@ -331,6 +338,4 @@ debug-shell-output | True/False | Displays debug output to your shell
 - [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [1.0.0]
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
-- [ ] Add support for additional language metadata
-- [ ] Normalize studio names between JAVLibrary and R18
 - [ ] Add additional scraper sources for uncensored JAV

@@ -17,7 +17,6 @@ function Set-JavMovie {
         $Path = (Get-Item -LiteralPath $fixedPath).FullName
         $fileExtension = (Get-Item -LiteralPath $fixedPath).Extension
         $fixedDestinationPath = ($DestinationPath).replace('`[', '[').replace('`]', ']')
-        #$fixedOriginalPath = ($dataObject.OriginalDirectory).replace('`[', '[').replace('`]', ']')
         $DestinationPath = (Get-Item -LiteralPath $fixedDestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
         $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
@@ -28,12 +27,12 @@ function Set-JavMovie {
             $folderPath = $DataObject.OriginalDirectory
         }
 
-        $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '.nfo')
-        $coverPath = Join-Path -Path $folderPath -ChildPath ('fanart.jpg')
-        $posterPath = Join-Path -Path $folderPath -ChildPath ('poster.jpg')
-        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.OriginalFileName + '-trailer.mp4')
-        $screenshotPath = Join-Path -Path $folderPath -ChildPath 'extrafanart'
-        $actorPath = Join-Path -Path $folderPath -ChildPath '.actors'
+        $nfoPath = Join-Path -Path $folderPath -ChildPath ($dataObject.NfoName + '.nfo')
+        $coverPath = Join-Path -Path $folderPath -ChildPath ($dataObject.ThumbnailName + '.jpg')
+        $posterPath = Join-Path -Path $folderPath -ChildPath ($dataObject.PosterName + '.jpg')
+        $trailerPath = Join-Path -Path $folderPath -ChildPath ($dataObject.TrailerName + '.mp4')
+        $screenshotPath = Join-Path -Path $folderPath -ChildPath $dataObject.ScreenshotFolderName
+        $actorPath = Join-Path -Path $folderPath -ChildPath $dataObject.ActorImgFolderName
         $fixedNfoPath = ($nfoPath).replace('`[', '[').replace('`]', ']')
         $fixedCoverPath = ($coverPath).replace('`[', '[').replace('`]', ']')
         $fixedPosterPath = ($posterPath).replace('`[', '[').replace('`]', ']')
@@ -50,6 +49,7 @@ function Set-JavMovie {
     }
 
     process {
+        $screenshotImgName = $DataObject.ScreenshotImgName
         $newFileName = $dataObject.FileName + $fileExtension
         $dataObject = Test-RequiredMetadata -DataObject $DataObject -Settings $settings
         if ($null -ne $dataObject) {
@@ -113,15 +113,14 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
                     if ($null -ne $dataObject.ScreenshotUrl) {
-                        New-Item -ItemType Directory -Name $dataObject.FolderName -Path $DestinationPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
-                        New-Item -ItemType Directory -Name 'extrafanart' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        New-Item -ItemType Directory -Name $DataObject.ScreenshotFolderName -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $dataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
-                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath "fanart$index.jpg"))
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
+                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
                             }
                             $index++
                         }
@@ -136,7 +135,7 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
                     if ($null -ne $dataObject.ActressThumbUrl) {
                         $fixFolderPath = $folderPath.replace('[', '`[').replace(']', '`]')
-                        New-Item -ItemType Directory -Name '.actors' -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        New-Item -ItemType Directory -Name $dataObject.ActorImgFolderName -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         if ($dataObject.ActressThumbUrl.Count -eq 1) {
                             if ($dataObject.ActressThumbUrl -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
                                 $first, $second = $dataObject.Actress -split ' '

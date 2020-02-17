@@ -96,32 +96,39 @@ function Get-AggregatedDataObject {
         }
 
         $aggregatedDataObject = [pscustomobject]@{
-            Search            = $null
-            Id                = $null
-            Title             = $null
-            AlternateTitle    = $null
-            Description       = $null
-            ReleaseDate       = $null
-            ReleaseYear       = $null
-            Runtime           = $null
-            Director          = $null
-            Maker             = $null
-            Label             = $null
-            Series            = $null
-            Rating            = $null
-            RatingCount       = $null
-            Actress           = $null
-            Genre             = $null
-            ActressThumbUrl   = $null
-            CoverUrl          = $null
-            ScreenshotUrl     = $null
-            TrailerUrl        = $null
-            DisplayName       = $null
-            FolderName        = $null
-            FileName          = $null
-            OriginalFileName  = $null
-            OriginalDirectory = $null
-            PartNumber        = $null
+            Search               = $null
+            Id                   = $null
+            Title                = $null
+            AlternateTitle       = $null
+            Description          = $null
+            ReleaseDate          = $null
+            ReleaseYear          = $null
+            Runtime              = $null
+            Director             = $null
+            Maker                = $null
+            Label                = $null
+            Series               = $null
+            Rating               = $null
+            RatingCount          = $null
+            Actress              = $null
+            Genre                = $null
+            ActressThumbUrl      = $null
+            CoverUrl             = $null
+            ScreenshotUrl        = $null
+            TrailerUrl           = $null
+            DisplayName          = $null
+            FolderName           = $null
+            ScreenshotFolderName = $null
+            ScreenshotImgName    = $null
+            ActorImgFolderName   = $null
+            FileName             = $null
+            PosterName           = $null
+            ThumbnailName        = $null
+            TrailerName          = $null
+            NfoName              = $null
+            OriginalFileName     = $null
+            OriginalDirectory    = $null
+            PartNumber           = $null
         }
 
         # TODO: Confirm compatibility with find command with individual sources specified
@@ -358,11 +365,19 @@ function Get-AggregatedDataObject {
         # Set part number for video before creating new filename
         $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
         $aggregatedDataObject.OriginalDirectory = $FileDetails.OriginalDirectory
+
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
         $aggregatedDataObject.FileName = $fileDirName.FileName
         $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName
+        $aggregatedDataObject.ScreenshotFolderName = $fileDirName.ScreenshotFolderName
+        $aggregatedDataObject.ScreenshotImgName = $fileDirName.ScreenshotImgName
+        $aggregatedDataObject.ActorImgFolderName = $fileDirName.ActorImgFolderName
         $aggregatedDataObject.DisplayName = $fileDirName.DisplayName
+        $aggregatedDataObject.PosterName = $fileDirName.PosterName
+        $aggregatedDataObject.ThumbnailName = $fileDirName.ThumbnailName
+        $aggregatedDataObject.TrailerName = $fileDirName.TrailerName
+        $aggregatedDataObject.NfoName = $fileDirName.NfoName
         $aggregatedDataObject.Search = $currentSearch
 
         Write-Output $aggregatedDataObject
