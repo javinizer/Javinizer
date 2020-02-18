@@ -382,7 +382,8 @@ function Javinizer {
                     # Match a directory/multiple files and perform actions on them
                 } elseif (((Test-Path -LiteralPath $getPath.FullName -PathType Container) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
-                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort path set to: [$($getPath.FullName)] | Destination path set to: [$($getDestinationPath.FullName)]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort path: [$($getPath.FullName)]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Destination path: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
