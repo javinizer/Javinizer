@@ -205,7 +205,7 @@ function Javinizer {
             $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
-            throw "[$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
+            throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -407,7 +407,7 @@ function Javinizer {
                         }
                     }
                 } else {
-                    throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
+                    throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
                 Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
             }
