@@ -18,7 +18,7 @@ function Convert-HTMLCharacter {
             -replace '&#039', ''
 
         $newString = $String.Trim()
-        # Write-Debug "[$($MyInvocation.MyCommand.Name)] Begin String: [$String]; End string: [$newString]"
+        # Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Begin String: [$String]; End string: [$newString]"
         Write-Output $newString
 
     }

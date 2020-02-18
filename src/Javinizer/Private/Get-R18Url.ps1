@@ -8,7 +8,7 @@ function Get-R18Url {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $searchResults = @()
         $altSearchResults = @()
         $searchUrl = "https://www.r18.com/common/search/searchword=$Name/"
@@ -17,7 +17,7 @@ function Get-R18Url {
     process {
         # Try matching the video with Video ID
         try {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             throw $_
@@ -32,14 +32,14 @@ function Get-R18Url {
         }
 
         if ($numResults -ge 1) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Name]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Name]"
 
             $count = 1
             foreach ($result in $searchResults) {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
                 $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 if ($resultId -eq $Name) {
                     $directUrl = $result
                     break
@@ -63,7 +63,7 @@ function Get-R18Url {
             $searchUrl = "https://www.r18.com/common/search/searchword=$AltName/"
 
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
                 throw $_
@@ -79,10 +79,10 @@ function Get-R18Url {
 
             $count = 1
             foreach ($result in $altSearchResults) {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
                 $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 if ($resultId -eq $Name) {
                     $directUrl = $result
                     break
@@ -101,7 +101,7 @@ function Get-R18Url {
             $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$AltName/"
 
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
                 $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
             } catch {
                 $webRequest = $null
@@ -109,7 +109,7 @@ function Get-R18Url {
 
             if ($null -ne $webRequest) {
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
                 if ($resultId -eq $Name) {
                     $directUrl = $testUrl
                 }
@@ -117,7 +117,7 @@ function Get-R18Url {
         }
 
         if ($null -eq $directUrl) {
-            Write-Warning "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
+            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
             return
         } else {
             Write-Output $directUrl
@@ -125,6 +125,6 @@ function Get-R18Url {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

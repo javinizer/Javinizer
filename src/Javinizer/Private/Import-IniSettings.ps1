@@ -85,7 +85,7 @@ function Import-IniSettings {
                 }
             }
 
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path] loaded"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Settings file at [$Path] loaded"
             Write-Output $ini
         } catch {
             throw "[$($MyInvocation.MyCommand.Name)] Settings file at [$Path)] NOT loaded; Check that the path is correct and that the file exists"

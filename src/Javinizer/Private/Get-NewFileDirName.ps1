@@ -8,7 +8,7 @@ function Get-NewFileDirName {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $folderFormat = $settings.General.'rename-folder-string'
         $fileFormat = $settings.General.'rename-file-string'
         $displayNameFormat = $settings.General.'cms-displayname-string'
@@ -58,7 +58,7 @@ function Get-NewFileDirName {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

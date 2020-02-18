@@ -10,7 +10,7 @@ function Get-R18DataObject {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
         $replaceHashTable = @{
             'S********l'                     = 'Schoolgirl'
@@ -71,7 +71,7 @@ function Get-R18DataObject {
 
         if ($null -ne $r18Url) {
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
                 $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
 
                 $movieDataObject = [pscustomobject]@{
@@ -101,13 +101,13 @@ function Get-R18DataObject {
             }
         }
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 data object:"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 data object:"
         $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
@@ -119,7 +119,6 @@ function Get-R18ContentId {
     process {
         $contentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
-        #Write-Debug "Content ID is $contentId"
 
         if ($contentId -eq '----') {
             $contentId = $null
@@ -137,7 +136,6 @@ function Get-R18Id {
     process {
         $id = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $id = Convert-HtmlCharacter -String $id
-        #Write-Debug "Id is $id"
 
         if ($id -eq '----') {
             $id = $null
@@ -159,7 +157,6 @@ function Get-R18Title {
             $title = $title -replace [regex]::Escape($string.Name), $string.Value
             $title = $title -replace '  ', ' '
         }
-        #Write-Debug "Title is $title"
         Write-Output $Title
     }
 }
@@ -221,7 +218,6 @@ function Get-R18ReleaseDate {
         # Convert the month name to a numeric value to conform with CMS datetime standards
         # $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
         $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
-        #Write-Debug "ReleaseDate is $releaseDate"
         Write-Output $releaseDate
     }
 }
@@ -234,7 +230,6 @@ function Get-R18ReleaseYear {
     process {
         $releaseYear = Get-R18ReleaseDate -WebRequest $WebRequest
         $releaseYear = ($releaseYear -split '-')[0]
-        #Write-Debug "ReleaseYear is $releaseYear"
         Write-Output $releaseYear
     }
 }
@@ -247,7 +242,6 @@ function Get-R18Runtime {
     process {
         $length = ((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '\.')[0]) -replace 'min', ''
         $length = Convert-HtmlCharacter -String $length
-        #Write-Debug "Runtime is $length"
         Write-Output $length
     }
 }
@@ -264,7 +258,6 @@ function Get-R18Director {
         if ($director -eq '----') {
             $director = $null
         }
-        #Write-Debug "Director is $director"
         Write-Output $director
     }
 }
@@ -277,7 +270,6 @@ function Get-R18Maker {
     process {
         $maker = ((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
         $maker = Convert-HtmlCharacter -String $maker
-        #Write-Debug "Maker is $Maker"
         Write-Output $maker
     }
 }
@@ -295,7 +287,6 @@ function Get-R18Label {
             $label = $null
         }
 
-        #Write-Debug "Label is $label"
         Write-Output $label
     }
 }
@@ -315,7 +306,7 @@ function Get-R18Series {
         }
 
         if ($series -like '*...') {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"
             $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
             $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]
             foreach ($string in $replaceHashTable.GetEnumerator()) {
@@ -326,7 +317,6 @@ function Get-R18Series {
         if ($series -like '</dd*') {
             $series = $null
         }
-        #Write-Debug "Series is $series"
         Write-Output $series
     }
 }
@@ -369,7 +359,6 @@ function Get-R18Genre {
             $genreArray = $null
         }
 
-        #Write-Debug "genres are $genreArray"
         Write-Output $genreArray
     }
 }
@@ -413,7 +402,6 @@ function Get-R18Actress {
             ThumbUrl = $movieActressThumb
         }
 
-        #Write-Debug "Actresses are $movieActressObject"
         Write-Output $movieActressObject
     }
 }
@@ -426,7 +414,6 @@ function Get-R18CoverUrl {
     process {
         $coverUrl = (($WebRequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
         $coverUrl = (($coverUrl -split 'src="')[1] -split '">')[0]
-        #Write-Debug "Coverurl is $coverUrl"
         Write-Output $coverUrl
     }
 }
@@ -450,7 +437,6 @@ function Get-R18ScreenshotUrl {
                 $screenshotUrl += $screenshot
             }
         }
-        #Write-Debug "Screenshoturl is $screenshotUrl"
         Write-Output $screenshotUrl
     }
 }

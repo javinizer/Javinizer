@@ -11,7 +11,7 @@ function Set-JavMovie {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $r18ThumbCsv = Import-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
         $fixedPath = ($Path).replace('`[', '[').replace('`]', ']')
         $Path = (Get-Item -LiteralPath $fixedPath).FullName
@@ -39,13 +39,13 @@ function Set-JavMovie {
         $fixedTrailerPath = ($trailerPath).replace('`[', '[').replace('`]', ']')
         $fixedScreenshotPath = ($screenshotPath).replace('`[', '[').replace('`]', ']')
         $fixedActorPath = ($actorPath).replace('`[', '[').replace('`]', ']')
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Cover path: [$coverPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Poster path: [$posterPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Screenshot path: [$screenshotPath]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Trailer path: [$trailerPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Crop path: [$cropPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Folder path: [$folderPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Nfo path: [$nfoPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Cover path: [$coverPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Poster path: [$posterPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Screenshot path: [$screenshotPath]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Trailer path: [$trailerPath]"
     }
 
     process {
@@ -79,7 +79,7 @@ function Set-JavMovie {
                         }
                     }
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading cover images"
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading cover images"
                     throw $_
                 }
 
@@ -105,7 +105,7 @@ function Set-JavMovie {
                         }
                     }
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
                     throw $_
                 }
             }
@@ -127,7 +127,7 @@ function Set-JavMovie {
                     }
                 }
             } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
                 throw $_
             }
 
@@ -170,7 +170,7 @@ function Set-JavMovie {
                     }
                 }
             } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading actress images"
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading actress images"
                 throw $_
             }
 
@@ -185,13 +185,13 @@ function Set-JavMovie {
                     }
                 }
             } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
                 throw $_
             }
         }
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

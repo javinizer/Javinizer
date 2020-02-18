@@ -9,7 +9,7 @@ function Get-VideoFile {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $FileSize = $Settings.General.'minimum-filesize-to-sort'
     }
 
@@ -32,6 +32,6 @@ function Get-VideoFile {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

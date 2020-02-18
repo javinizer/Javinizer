@@ -20,7 +20,7 @@ function Get-MetadataNfo {
                 $javlibraryGenres = $normalizedGenres.javlibrary
                 $r18Genres = $normalizedGenres.r18
             } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error loading genres csv [$genreCsvPath]"
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error loading genres csv [$genreCsvPath]"
                 throw $_
             }
         }
@@ -126,15 +126,15 @@ function Get-MetadataNfo {
                         try {
                             $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
                         } catch {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
                             Start-Sleep -Seconds 2
                             try {
                                 $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append
                             } catch {
-                                Write-Warning "[$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
+                                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
                             }
                         }
-                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
+                        Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
                     }
                 }
 
@@ -190,7 +190,7 @@ function Get-MetadataNfo {
                                 }
 
                                 $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
-                                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
+                                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
                             }
                         }
                     }
@@ -231,7 +231,7 @@ function Get-MetadataNfo {
 "@
         $nfoString = $nfoString + $endNfoString
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] NFO String: `
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] NFO String: `
         $nfoString"
         Write-Output $nfoString
     }

@@ -11,7 +11,7 @@ function Get-R18ThumbCsv {
         $csvPath = Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv'
         $actressCheck = @()
         $actressObject = @()
-        Write-Host "[$($MyInvocation.MyCommand.Name)] Updating R18 thumbnail csv located at [$csvPath]"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Updating R18 thumbnail csv located at [$csvPath]"
     }
 
     process {
@@ -22,7 +22,7 @@ function Get-R18ThumbCsv {
                 $NewPages = $EndPage
             }
 
-            Write-Host "[$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
+            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
 
             $importVariables = @(
                 'originalCsv',
@@ -62,17 +62,7 @@ function Get-R18ThumbCsv {
                     Write-Output $actressObject
                 } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
             } else {
-                if (Test-Path -LiteralPath $csvPath) {
-                    $selection = Display-ConfirmMessage -Message "R18 actress thumbnail database [$csvPath] already exists`nAre you sure you want to do a full scrape?" -Default 'N'
-                } else {
-                    $selection = 'y'
-                }
-
-                if ($selection -ne 'y') {
-                    return
-                }
-
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -ScriptBlock {
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 15 -ScriptBlock {
                     $actressBlock = @()
                     $actressObject = @()
 
@@ -106,7 +96,7 @@ function Get-R18ThumbCsv {
             try {
                 $originalCsv = Import-Csv -LiteralPath $csvPath -ErrorAction SilentlyContinue
             } catch {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Csv [r18-thumbs.csv] does not exist in your module root [$ScriptRoot]; Creating..."
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Csv [r18-thumbs.csv] does not exist in your module root [$ScriptRoot]; Creating..."
                 New-Item -Path $csvPath -Force:$Force | Out-Null
             }
 
@@ -118,7 +108,7 @@ function Get-R18ThumbCsv {
                     if ($actressCheck.FullName -like $actress.FullName) {
                         # Skip actress if actress with identical 'FullName' already written in current session
                     } else {
-                        Write-Verbose "[$($MyInvocation.MyCommand.Name)] Actress [$($actress.FullName)] written to [$csvPath]"
+                        Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Actress [$($actress.FullName)] written to [$csvPath]"
                         $actress | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs.csv') -Append -Force:$Force
                         $actressCheck += $actress
                     }
@@ -126,7 +116,7 @@ function Get-R18ThumbCsv {
             }
 
         } catch {
-            Write-Warning "[$($MyInvocation.MyCommand.Name)] Ran into errors while scraping r18 actresses"
+            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ran into errors while scraping r18 actresses"
             throw $_
         } finally {
             Remove-Item -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -ErrorAction SilentlyContinue

@@ -203,7 +203,6 @@ function Javinizer {
 
         try {
             $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
-            Write-Verbose "Settings path: $ScriptRoot"
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
             throw "[$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
@@ -212,9 +211,9 @@ function Javinizer {
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
         if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
-        Write-Host "[$($MyInvocation.MyCommand.Name)] Function started"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
         $settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
         $settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
         $settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
@@ -234,7 +233,7 @@ function Javinizer {
     }
 
     process {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
@@ -245,18 +244,18 @@ function Javinizer {
                 if ($OpenSettings.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                         try {
-                            Write-Host "[$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
                             Invoke-Item -Path $settingsPath
                         } catch {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
                             throw $_
                         }
                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                         try {
-                            Write-Host "[$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening settings.ini file from [$settingsPath]"
                             nano $settingsPath
                         } catch {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening settings.ini file from [$settingsPath]"
                             throw $_
                         }
                     }
@@ -267,10 +266,10 @@ function Javinizer {
                         DestinationPath  = $BackupSettings
                     }
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] Writing settings backup archive to [$BackupSettings]"
+                        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Writing settings backup archive to [$BackupSettings]"
                         Compress-Archive @backupSettingsParams
                     } catch {
-                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Error writing settings backup archive to [$BackupSettings]"
+                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error writing settings backup archive to [$BackupSettings]"
                         throw $_
                     }
                 } elseif ($PSBoundParameters.ContainsKey('RestoreSettings')) {
@@ -280,10 +279,10 @@ function Javinizer {
                         Force           = $true
                     }
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] Restoring settings backup archive from [$RestoreSettings] to [$ScriptRoot]"
+                        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Restoring settings backup archive from [$RestoreSettings] to [$ScriptRoot]"
                         Expand-Archive @restoreSettingsParams
                     } catch {
-                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Error restoring settings backup archive to [$ScriptRoot] from [$RestoreSettings]"
+                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error restoring settings backup archive to [$ScriptRoot] from [$RestoreSettings]"
                         throw $_
                     }
                 }
@@ -321,7 +320,7 @@ function Javinizer {
             'Path' {
                 if (-not ($PSBoundParameters.ContainsKey('Path'))) {
                     if (-not ($Apply.IsPresent)) {
-                        Write-Warning "[$($MyInvocation.MyCommand.Name)] Neither [Path] nor [Apply] parameters are specified; Exiting..."
+                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Neither [Path] nor [Apply] parameters are specified; Exiting..."
                         return
                     }
                     $Path = ($settings.Locations.'input-path') -replace '"', ''
@@ -331,7 +330,7 @@ function Javinizer {
                 try {
                     $getPath = Get-Item -LiteralPath ($Path).replace('`[', '[').replace('`]', ']') -ErrorAction Stop
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Path: [$Path] does not exist; Exiting..."
                     return
                 }
 
@@ -346,7 +345,7 @@ function Javinizer {
                 try {
                     $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction 'SilentlyContinue'
                 } catch [System.Management.Automation.SessionStateException] {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Destination Path: [$DestinationPath] does not exist; Attempting to create the directory..."
                     New-Item -ItemType Directory -LiteralPath $DestinationPath -Confirm | Out-Null
                     $getDestinationPath = Get-Item -LiteralPath $DestinationPath -ErrorAction Stop
                 } catch {
@@ -354,20 +353,19 @@ function Javinizer {
                 }
 
                 try {
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
+                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Attempting to read file(s) from path: [$($getPath.FullName)]"
                     $fixedPath = ($getPath.FullName).replace('[', '`[').replace(']', '`]')
                     $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings -Strict:$Strict
                 } catch {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
                     return
                 }
-                #Write-Debug "[$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
+                #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
                 if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
-                    # Write-Verbose "[$($MyInvocation.MyCommand.Name)] Starting sort on [$($fileDetails.OriginalFileName)]"
+                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -383,9 +381,8 @@ function Javinizer {
                     }
                     # Match a directory/multiple files and perform actions on them
                 } elseif (((Test-Path -LiteralPath $getPath.FullName -PathType Container) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) -or $Apply.IsPresent) {
-                    Write-Debug "[$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] Sort path set to: [$($getPath.FullName)]"
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] Destination path set to: [$($getDestinationPath.FullName)]"
+                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort path set to: [$($getPath.FullName)] | Destination path set to: [$($getDestinationPath.FullName)]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
@@ -395,15 +392,15 @@ function Javinizer {
                             }
                             Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -Settings $settings
                         } catch {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {
                             # Stop all running jobs if script is stopped by user input
-                            Write-Verbose "[$($MyInvocation.MyCommand.Name)] Sort has completed or has been stopped prematurely; Stopping all running jobs..."
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort has completed or has been stopped prematurely; Stopping all running jobs..."
                             Get-RSJob | Stop-RSJob
                         }
                     } else {
                         foreach ($video in $fileDetails) {
-                            Write-Host "[$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
                             $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             $index++
@@ -412,13 +409,13 @@ function Javinizer {
                 } else {
                     throw "[$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
-                Write-Verbose "[$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
+                Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
             }
         }
     }
 
     end {
-        Write-Host "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

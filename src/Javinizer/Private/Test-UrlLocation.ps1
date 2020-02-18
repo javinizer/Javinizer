@@ -6,7 +6,7 @@ function Test-UrlLocation {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $testUrlObject = @()
     }
 
@@ -28,7 +28,7 @@ function Test-UrlLocation {
                     Result = 'dmm'
                 }
             } else {
-                Write-Warning "[$($MyInvocation.MyCommand.Name)] Url: [$Url] not matched"
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Url: [$Url] not matched"
             }
         }
 
@@ -36,6 +36,6 @@ function Test-UrlLocation {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

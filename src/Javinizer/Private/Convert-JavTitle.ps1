@@ -15,7 +15,7 @@ function Convert-JavTitle {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         # Unwanted strings in files to remove
         $RemoveStrings = @(
             # Prefixes
@@ -113,7 +113,7 @@ function Convert-JavTitle {
             $filePartNumber = $null
             #Match ID-###A, ID###B, etc.
             if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[a-iA-I]") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 1"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 1"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 if ($fileP3 -eq 'A') { $filePartNumber = '1' }
@@ -128,7 +128,7 @@ function Convert-JavTitle {
             }
             # Match ID-###-A, ID-###-B, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 2"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 2"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $fileP3 = $fileP3 -replace '-', ''
@@ -144,13 +144,13 @@ function Convert-JavTitle {
             }
             #Match ID-###-A, ID-###-B, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]$") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 3"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 3"
                 $fileP1, $fileP2, $fileP3, $fileP4 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})[-]([a-zA-Z])"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2 + $fileP3
             }
             # Match ID-###-1, ID-###-2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]\d$") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 4"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 4"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ($fileP3 -replace '-', '')[1]
@@ -158,7 +158,7 @@ function Convert-JavTitle {
             }
             # Match ID-###-01, ID-###-02, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]0\d$") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 5"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 5"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
@@ -166,7 +166,7 @@ function Convert-JavTitle {
             }
             # Match ID-###-001, ID-###-002, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]00\d$") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 6"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 6"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
@@ -174,7 +174,7 @@ function Convert-JavTitle {
             }
             # Match ID-### - pt1, ID-### - pt2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] pt") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 7"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 7"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -182,7 +182,7 @@ function Convert-JavTitle {
             }
             # Match ID-### - part1, ID ### - part2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] part") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 8"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 8"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -190,7 +190,7 @@ function Convert-JavTitle {
             }
             # Match ID-###-pt1, ID-###-pt2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]pt") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 9"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 9"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -198,7 +198,7 @@ function Convert-JavTitle {
             }
             # Match ID-###-part1, ID-###-part2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]part") {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 10"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 10"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -214,7 +214,7 @@ function Convert-JavTitle {
 
             # Match everything else
             else {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Match 11"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 11"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
             }
@@ -276,7 +276,7 @@ function Convert-JavTitle {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

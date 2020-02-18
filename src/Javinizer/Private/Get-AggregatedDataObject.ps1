@@ -13,7 +13,7 @@ function Get-AggregatedDataObject {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $actressArray = @()
         $genreArray = @()
     }
@@ -50,7 +50,7 @@ function Get-AggregatedDataObject {
         }
 
         if ($UrlLocation) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [UrlLocation]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Type: [UrlLocation]"
             $currentSearch = $UrlLocation.Url
             foreach ($url in $UrlLocation) {
                 if ($url.Result -contains 'r18') {
@@ -66,7 +66,7 @@ function Get-AggregatedDataObject {
                 }
             }
         } elseif ($FileDetails) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [FileDetails]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Type: [FileDetails]"
             $currentSearch = $FileDetails.Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $fileDetails.Id -AltName $fileDetails.ContentId
@@ -80,7 +80,7 @@ function Get-AggregatedDataObject {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] Type: [Id]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Type: [Id]"
             $currentSearch = $Id
             if ($r18.IsPresent) {
                 $r18Data = Get-R18DataObject -Name $Id
@@ -166,6 +166,9 @@ function Get-AggregatedDataObject {
                         }
                     }
                 }
+                if ($actressArray.Count = 0) {
+                    $actressArray = $null
+                }
                 $aggregatedDataObject.Actress = $actressArray
             }
         }
@@ -250,12 +253,17 @@ function Get-AggregatedDataObject {
             $var = Get-Variable -Name "$($priority)Data"
             if ($null -eq $aggregatedDataObject.Genre -or $null -eq $aggregatedDataObject.Genre[0]) {
                 $ignoredGenres = Convert-CommaDelimitedString -String $Settings.Metadata.'ignored-genres'
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Ignored genres: [$ignoredGenres]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ignored genres: [$ignoredGenres]"
                 foreach ($genre in $var.Value.Genre) {
                     if ($ignoredGenres -notcontains $genre) {
                         $genreArray += $genre
                     }
                 }
+
+                if ($genreArray.Count -eq 0) {
+                    $genreArray = $null
+                }
+
                 $aggregatedDataObject.Genre = $genreArray
             }
         }
@@ -385,6 +393,6 @@ function Get-AggregatedDataObject {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

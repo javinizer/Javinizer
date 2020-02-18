@@ -10,7 +10,7 @@ function Get-JavlibraryDataObject {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
     }
 
@@ -23,17 +23,17 @@ function Get-JavlibraryDataObject {
 
         if ($null -ne $javlibraryUrl) {
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
                     New-CloudflareSession -ScriptRoot $ScriptRoot
                 } catch {
                     throw $_
                 }
 
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             }
 
@@ -56,13 +56,13 @@ function Get-JavlibraryDataObject {
             }
         }
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] JAVLibrary data object:"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] JAVLibrary data object:"
         $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

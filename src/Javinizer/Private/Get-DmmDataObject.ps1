@@ -10,7 +10,7 @@ function Get-DmmDataObject {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $movieDataObject = @()
     }
 
@@ -21,18 +21,18 @@ function Get-DmmDataObject {
             # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
             $r18Url = Get-R18Url -Name $Name -AltName $AltName
             if ($null -eq $r18Url) {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
                 return
             }
             $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
             $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
-            Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
         }
 
         if ($null -ne $dmmUrl) {
             try {
-                Write-Debug "[$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$dmmUrl]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$dmmUrl]"
                 $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
             } catch {
                 throw $_
@@ -61,13 +61,13 @@ function Get-DmmDataObject {
             }
         }
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] DMM data object:"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] DMM data object:"
         $movieDataObject | Format-List | Out-String | Write-Debug
         Write-Output $movieDataObject
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

@@ -17,7 +17,7 @@ function Convert-CommaDelimitedString {
             $stringArray = $String
         }
 
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Begin string: [$String], End string [$stringArray]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Begin string: [$String], End string [$stringArray]"
         Write-Output $stringArray
     }
 }

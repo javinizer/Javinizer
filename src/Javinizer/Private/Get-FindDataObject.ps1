@@ -10,7 +10,7 @@ function Get-FindDataObject {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $urlList = @()
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
@@ -98,6 +98,6 @@ function Get-FindDataObject {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

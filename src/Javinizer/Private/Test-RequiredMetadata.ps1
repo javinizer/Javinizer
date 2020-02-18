@@ -8,7 +8,8 @@ function Test-RequiredMetadata {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        $nullFields = @()
         $errors = 0
     }
 
@@ -16,23 +17,24 @@ function Test-RequiredMetadata {
         $requiredFields = Convert-CommaDelimitedString -String $Settings.Metadata.'required-metadata-fields'
         if ($null -ne $requiredFields) {
             foreach ($field in $requiredFields) {
-                if ($null -eq $DataObject.($field)) {
-                    Write-Warning "[$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Required field: [$field] is null"
+                if ($null -eq $DataObject.($field) -or $DataObject.($field) -eq '') {
+                    $nullFields += $field
                     $errors++
                 }
             }
+            $nullFields = $nullFields -join ', '
         }
 
         if ($errors -eq 0) {
             Write-Output $DataObject
         } else {
-            Write-Warning "[$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Skipped with missing fields: [$errors]"
+            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Skipped sort with [$errors] missing required fields: [$nullFields]"
             return
         }
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 

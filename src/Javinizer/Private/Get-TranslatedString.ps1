@@ -7,7 +7,7 @@ function Get-TranslatedString {
     )
 
     begin {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         $translatePath = Join-Path -Path $ScriptRoot -ChildPath 'translate.py'
     }
 
@@ -22,6 +22,6 @@ function Get-TranslatedString {
     }
 
     end {
-        Write-Debug "[$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
