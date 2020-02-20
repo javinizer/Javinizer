@@ -22,6 +22,7 @@ function Get-DmmDataObject {
             $r18Url = Get-R18Url -Name $Name -AltName $AltName
             if ($null -eq $r18Url) {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
+                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on Dmm"
                 return
             }
             $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]

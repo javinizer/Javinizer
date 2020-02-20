@@ -99,7 +99,11 @@ function Get-R18DataObject {
             } catch {
                 throw $_
             }
+        } else {
+            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18"
+            return
         }
+
 
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 data object:"
         $movieDataObject | Format-List | Out-String | Write-Debug
