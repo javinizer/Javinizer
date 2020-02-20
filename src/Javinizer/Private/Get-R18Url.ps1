@@ -117,7 +117,7 @@ function Get-R18Url {
         }
 
         if ($null -eq $directUrl) {
-            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
+            # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
             return
         } else {
             Write-Output $directUrl
