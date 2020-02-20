@@ -12,7 +12,7 @@
     RootModule        = 'Javinizer.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '1.1.11'
+    ModuleVersion     = '1.1.12'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()

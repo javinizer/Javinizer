@@ -28,7 +28,7 @@ function Test-RequiredMetadata {
         if ($errors -eq 0) {
             Write-Output $DataObject
         } else {
-            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Skipped sort with [$errors] missing required fields: [$nullFields]"
+            Write-Warning "[$(Get-TimeStamp)][WARNING][$($MyInvocation.MyCommand.Name)] [$($DataObject.Search)] Skipped: [$errors][$nullFields]"
             return
         }
     }

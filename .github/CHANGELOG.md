@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.12] 02-19-2020
+### Added
+- More flexible metadata file naming in settings
+    - poster-file-string="poster"
+    - thumbnail-file-string="fanart"
+    - trailer-file-string="\<ID>-trailer"
+    - nfo-file-string="\<ID>"
+    - screenshot-folder-string="extrafanart"
+    - screenshot-img-string="fanart"
+    - actorimg-folder-string=".actors"
+
+### Changed
+- Console output now includes timestamps
+- Condensed warning output on files failed to sort
+
+### Fixed
+- Files not failing to sort when genres are null
+
 ## [1.1.11] 02-08-2020
 ### Fixed
 - Error on creating cloudflare session with Javlibrary.com
