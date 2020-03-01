@@ -166,7 +166,7 @@ function Get-AggregatedDataObject {
                         }
                     }
                 }
-                if ($actressArray.Count = 0) {
+                if ($actressArray.Count -eq 0) {
                     $actressArray = $null
                 }
                 $aggregatedDataObject.Actress = $actressArray
