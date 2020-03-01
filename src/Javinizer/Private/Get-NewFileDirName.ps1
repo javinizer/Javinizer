@@ -86,6 +86,8 @@ function Convert-FormatString {
     process {
         $title = $DataObject.Title
         $studio = $DataObject.Maker
+        $delimiter = $($Settings.General.'actors-name-delimiter') -replace "`"", ''
+        $actresses = $DataObject.Actress -join "$delimiter"
 
         # Remove invalid Windows filename symbols from title
         foreach ($symbol in $invalidSymbols) {
@@ -123,7 +125,11 @@ function Convert-FormatString {
             -replace '<RELEASEDATE>', "$($DataObject.ReleaseDate)" `
             -replace '<YEAR>', "$($DataObject.ReleaseYear)" `
             -replace '<STUDIO>', "$studio" `
-            -replace '<RUNTIME>', "$($DataObject.Runtime)"
+            -replace '<RUNTIME>', "$($DataObject.Runtime)" `
+            -replace '<ACTORS>', "$actresses" `
+            -replace '<SET>', "$($DataObject.Series)" `
+            -replace '<LABEL>', "$($DataObject.Label)" `
+            -replace '<ORIGINALTITLE>', "$($DataObject.AlternateTitle)"
 
         Write-Output $newName
     }

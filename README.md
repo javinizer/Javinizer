@@ -277,16 +277,16 @@ scrape-javlibrary | True/False | Turns on the scraper for javlibrary.com
 multi-sort-throttle-limit | Integer value (1-15) | Sets the amount of threads to run the sort in parallel
 move-to-folder | True/False | Moves the sorted video to a new directory if found by scrapers
 rename-file | True/False | Renames the sorted video if found by scrapers
-rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the file to your designated string value if `rename-file` is True
-rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the folder to your designated string value if `move-to-folder` is True
-cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
-poster-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the poster image to your designated string value
-thumbnail-filestring | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the thumbnail image to your designated string value
-trailer-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the trailer video to your designated string value
-nfo-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the nfo metadata file to your designated string value
-screenshot-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the movie screenshot folder to your designated string value
-screenshot-img-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the movie screenshot image to your designated string value with an appended increasing numeric value
-actorimg-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> | Renames the actor image folder to your designated string value
+rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the file to your designated string value if `rename-file` is True
+rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the folder to your designated string value if `move-to-folder` is True
+cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
+poster-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the poster image to your designated string value
+thumbnail-filestring | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the thumbnail image to your designated string value
+trailer-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the trailer video to your designated string value
+nfo-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the nfo metadata file to your designated string value
+screenshot-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the movie screenshot folder to your designated string value
+screenshot-img-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the movie screenshot image to your designated string value with an appended increasing numeric value
+actorimg-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the actor image folder to your designated string value
 max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your `rename-file-string` or `rename-folder-string`
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
 download-thumb-img | True/False | Downloads the movie full-size cover image
