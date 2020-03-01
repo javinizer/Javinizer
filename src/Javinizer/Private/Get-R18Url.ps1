@@ -24,7 +24,7 @@ function Get-R18Url {
         }
 
         $Tries = 5
-        $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/movies/detail/-/id=*" }).href)
+        $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/*/detail/-/id=*" }).href)
         $numResults = $searchResults.count
 
         if ($Tries -gt $numResults) {
