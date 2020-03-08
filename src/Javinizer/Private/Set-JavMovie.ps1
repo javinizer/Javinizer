@@ -24,7 +24,7 @@ function Set-JavMovie {
         if ($Settings.General.'move-to-folder' -eq 'True') {
             $folderPath = Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName
         } else {
-            $folderPath = $DataObject.OriginalDirectory
+            $folderPath = (Get-Item -Path $DataObject.OriginalDirectory).FullName
         }
 
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.NfoName + '.nfo')
@@ -33,6 +33,7 @@ function Set-JavMovie {
         $trailerPath = Join-Path -Path $folderPath -ChildPath ($DataObject.TrailerName + '.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath $DataObject.ScreenshotFolderName
         $actorPath = Join-Path -Path $folderPath -ChildPath $DataObject.ActorImgFolderName
+        $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
         $fixedNfoPath = ($nfoPath).replace('`[', '[').replace('`]', ']')
         $fixedCoverPath = ($coverPath).replace('`[', '[').replace('`]', ']')
         $fixedPosterPath = ($posterPath).replace('`[', '[').replace('`]', ']')
@@ -126,8 +127,7 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-screenshot-img' -eq 'True') {
                     if ($null -ne $DataObject.ScreenshotUrl) {
-                        $fixFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
-                        New-Item -ItemType Directory -Name $DataObject.ScreenshotFolderName -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        New-Item -ItemType Directory -Name $DataObject.ScreenshotFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $DataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
@@ -147,8 +147,7 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
                     if ($null -ne $DataObject.ActressThumbUrl) {
-                        $fixFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
-                        New-Item -ItemType Directory -Name $DataObject.ActorImgFolderName -Path $fixFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        New-Item -ItemType Directory -Name $DataObject.ActorImgFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         if ($DataObject.ActressThumbUrl.Count -eq 1) {
                             if ($DataObject.ActressThumbUrl -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
                                 $first, $second = $DataObject.Actress -split ' '
