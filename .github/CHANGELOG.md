@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Genres failing to write to metadata properly when falling back to secondary or greater priority
+- Actors/screenshots metadata failing to download when setting `move-to-folder=false`
 
 ## [1.1.12] 02-19-2020
 ### Added
