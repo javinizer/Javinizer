@@ -12,17 +12,17 @@ function Test-UrlLocation {
 
     process {
         foreach ($link in $Url) {
-            if ($link -match 'r18.com\/videos\/vod\/movies\/') {
+            if ($link -match 'r18.com') {
                 $testUrlObject += [pscustomobject]@{
                     Url    = $link
                     Result = 'r18'
                 }
-            } elseif ($link -match 'javlibrary.com\/en\/') {
+            } elseif ($link -match 'javlibrary.com') {
                 $testUrlObject += [pscustomobject]@{
                     Url    = $link
                     Result = 'javlibrary'
                 }
-            } elseif ($link -match 'dmm.co.jp\/digital\/videoa\/-\/detail\/=\/cid=') {
+            } elseif ($link -match 'dmm.co.jp') {
                 $testUrlObject = [pscustomobject]@{
                     Url    = $link
                     Result = 'dmm'
