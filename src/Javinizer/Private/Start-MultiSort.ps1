@@ -56,5 +56,6 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Set-JavMovie.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-RequiredMetadata.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlLocation.ps1'), `
-    (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlMatch.ps1') | Wait-RSJob -ShowProgress | Receive-RSJob
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlMatch.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Write-Log.ps1') | Wait-RSJob -ShowProgress | Receive-RSJob
 }

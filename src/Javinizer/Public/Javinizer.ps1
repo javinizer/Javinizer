@@ -46,6 +46,9 @@ function Javinizer {
     .PARAMETER RestoreSettings
         The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
 
+    .PARAMETER OpenLog
+        The openlog parameter will open your Javinizer.log file located in your module path.
+
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
@@ -176,6 +179,8 @@ function Javinizer {
         [string]$BackupSettings,
         [Parameter(ParameterSetName = 'Settings')]
         [string]$RestoreSettings,
+        [Parameter(ParameterSetName = 'Log')]
+        [switch]$OpenLog,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -200,6 +205,7 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         $index = 1
+        $global:logPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
 
         try {
             $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
@@ -238,6 +244,28 @@ function Javinizer {
             'Info' {
                 $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
                 Write-Output $dataObject
+            }
+
+            'Log' {
+                if ($OpenLog.IsPresent) {
+                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                        try {
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$logPath]"
+                            Invoke-Item -Path $logPath
+                        } catch {
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$logPath]"
+                            throw $_
+                        }
+                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                        try {
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$logPath]"
+                            nano $logPath
+                        } catch {
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$logPath]"
+                            throw $_
+                        }
+                    }
+                }
             }
 
             'Settings' {
@@ -411,6 +439,7 @@ function Javinizer {
                     throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
                 Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
+                Write-Log -Log $logPath -Level INFO -Text "Ended sort on [$($fileDetails.OriginalFileName)]" -UseMutex
             }
         }
     }

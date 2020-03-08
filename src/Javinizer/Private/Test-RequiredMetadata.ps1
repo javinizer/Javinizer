@@ -28,7 +28,8 @@ function Test-RequiredMetadata {
         if ($errors -eq 0) {
             Write-Output $DataObject
         } else {
-            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped:[$($DataObject.Search)] [$errors missing fields: $nullFields]"
+            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.Search)] $errors missing fields: [$nullFields]"
+            Write-Log -Log $logPath -Level WARN -Text "Skipped: [$($DataObject.Search)] $errors missing fields: [$nullFields]" -UseMutex
             return
         }
     }
