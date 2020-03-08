@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.13] 03-07-2020
+### Added
+- Basic logging functionality for sorted and skipped files
+    - Logs will be written by default, and cannot be turned off
+    - View using `Javinizer -OpenLog`
+- Additional file renaming strings
+    - \<ACTORS>
+    - \<SET>
+    - \<LABEL>
+    - \<ORIGINALTITLE>
+- Setting option
+    - `actors-name-delimiter=", "`
+
+### Changed
+- Cap of 215 max path length for created directories
+
+### Fixed
+- Genres failing to write to metadata properly when falling back to secondary or greater priority
+
 ## [1.1.12] 02-19-2020
 ### Added
 - More flexible metadata file naming in settings

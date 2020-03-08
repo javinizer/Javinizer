@@ -177,6 +177,9 @@ PARAMETERS
     -RestoreSettings <String>
         The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
 
+    -OpenLog [<SwitchParameter>]
+        The openlog parameter will open the Javinizer.log file located in your module path.
+
     -GetThumbs [<SwitchParameter>]
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
@@ -280,6 +283,7 @@ rename-file | True/False | Renames the sorted video if found by scrapers
 rename-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the file to your designated string value if `rename-file` is True
 rename-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the folder to your designated string value if `move-to-folder` is True
 cms-displayname-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the nfo title to your designated string value which is displayed in Plex/Emby/Jellyfin
+actors-name-delimiter | String value | Sets the delimiter between actor names in your rename strings
 poster-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the poster image to your designated string value
 thumbnail-filestring | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the thumbnail image to your designated string value
 trailer-file-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the trailer video to your designated string value
