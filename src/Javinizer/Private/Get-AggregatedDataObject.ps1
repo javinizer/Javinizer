@@ -259,12 +259,11 @@ function Get-AggregatedDataObject {
                         $genreArray += $genre
                     }
                 }
-
-                if ($genreArray.Count -eq 0) {
-                    $genreArray = $null
-                }
-
                 $aggregatedDataObject.Genre = $genreArray
+            }
+
+            if ($aggregatedDataObject.Genre.Count -eq 0) {
+                $aggregatedDataObject.Genre = $null
             }
         }
 
