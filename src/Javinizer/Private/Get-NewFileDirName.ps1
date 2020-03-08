@@ -87,7 +87,8 @@ function Convert-FormatString {
         $title = $DataObject.Title
         $studio = $DataObject.Maker
         $delimiter = $($Settings.General.'actors-name-delimiter') -replace "`"", ''
-        $actresses = $DataObject.Actress -join "$delimiter"
+        $sortedActresses = $DataObject.Actress | Sort-Object
+        $actresses = $sortedActresses -join "$delimiter"
 
         # Remove invalid Windows filename symbols from title
         foreach ($symbol in $invalidSymbols) {
