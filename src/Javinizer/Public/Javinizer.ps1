@@ -438,8 +438,6 @@ function Javinizer {
                 } else {
                     throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Specified Path: [$Path] and/or DestinationPath: [$DestinationPath] did not match allowed types"
                 }
-                Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Ended sort on [$($fileDetails.OriginalFileName)]"
-                Write-Log -Log $logPath -Level INFO -Text "Ended sort on [$($fileDetails.OriginalFileName)]" -UseMutex
             }
         }
     }
