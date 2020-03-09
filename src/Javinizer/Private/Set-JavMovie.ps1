@@ -24,16 +24,16 @@ function Set-JavMovie {
         if ($Settings.General.'move-to-folder' -eq 'True') {
             $folderPath = Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName
         } else {
-            $folderPath = (Get-Item -Path $DataObject.OriginalDirectory).FullName
+            $folderPath = (Get-Item -LiteralPath $DataObject.OriginalDirectory).FullName
         }
 
+        $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
         $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.NfoName + '.nfo')
         $coverPath = Join-Path -Path $folderPath -ChildPath ($DataObject.ThumbnailName + '.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ($DataObject.PosterName + '.jpg')
         $trailerPath = Join-Path -Path $folderPath -ChildPath ($DataObject.TrailerName + '.mp4')
         $screenshotPath = Join-Path -Path $folderPath -ChildPath $DataObject.ScreenshotFolderName
         $actorPath = Join-Path -Path $folderPath -ChildPath $DataObject.ActorImgFolderName
-        $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
         $fixedNfoPath = ($nfoPath).replace('`[', '[').replace('`]', ']')
         $fixedCoverPath = ($coverPath).replace('`[', '[').replace('`]', ']')
         $fixedPosterPath = ($posterPath).replace('`[', '[').replace('`]', ']')
@@ -74,7 +74,7 @@ function Set-JavMovie {
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
                 } else {
-                    Move-Item -LiteralPath $Path -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
+                    Move-Item -LiteralPath $Path -Destination $fixedFolderPath -Force:$Force -ErrorAction 'Stop'
                 }
             } else {
                 Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue' | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
@@ -131,9 +131,9 @@ function Set-JavMovie {
                         $index = 1
                         foreach ($screenshot in $DataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
-                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
-                                $webClient.DownloadFile($screenshot, (Join-Path -Path $screenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
+                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
+                                $webClient.DownloadFile($screenshot, (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
                             }
                             $index++
                         }
@@ -157,9 +157,9 @@ function Set-JavMovie {
                                     $actressFileName = $first + '_' + $second + '.jpg'
                                 }
                                 if ($Force.IsPresent) {
-                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $actorPath -ChildPath $actressFileName))
-                                } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
-                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
+                                } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
+                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
                                 }
                             }
                         } else {
@@ -172,9 +172,9 @@ function Set-JavMovie {
                                         $actressFileName = $first + '_' + $second + '.jpg'
                                     }
                                     if ($Force.IsPresent) {
-                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
-                                    } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $actorPath -ChildPath $actressFileName))) {
-                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $actorPath -ChildPath $actressFileName))
+                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
+                                    } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
+                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
                                     }
                                 }
                             }
@@ -190,9 +190,9 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $DataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
-                            $webClient.DownloadFile($DataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFile($DataObject.TrailerUrl, $fixedTrailerPath)
                         } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
-                            $webClient.DownloadFile($DataObject.TrailerUrl, $trailerPath)
+                            $webClient.DownloadFile($DataObject.TrailerUrl, $fixedTrailerPath)
                         }
                     }
                 }
@@ -204,7 +204,7 @@ function Set-JavMovie {
     }
 
     end {
-        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
+        Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
         Write-Log -Log $logPath -Level INFO -Text "Success: [$($DataObject.OriginalFileName)]" -UseMutex
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
