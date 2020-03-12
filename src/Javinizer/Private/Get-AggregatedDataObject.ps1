@@ -166,9 +166,9 @@ function Get-AggregatedDataObject {
                         }
                     }
                 }
-                if ($actressArray.Count -eq 0) {
-                    $actressArray = $null
-                }
+                #if ($actressArray.Count -eq 0) {
+                #    $actressArray = $null
+                #}
                 $aggregatedDataObject.Actress = $actressArray
             }
         }
