@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.15] 03-08-2020
+### Fixed
+- Hotfix for 1.1.13 - Actresses failing to write to metadata properly when falling back to secondary or greater priority
+
 ## [1.1.14] 03-08-2020
 ### Fixed
 - Hotfix for 1.1.13 - Actors/screenshots metadata failing to download when setting `move-to-folder=false`
