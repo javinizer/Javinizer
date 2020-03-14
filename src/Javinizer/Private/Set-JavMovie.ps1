@@ -70,14 +70,20 @@ function Set-JavMovie {
                     New-Item -ItemType Directory -Name $DataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction Stop | Out-Null
                 }
 
-                Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue' | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                $nfoContents | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
                 } else {
                     Move-Item -LiteralPath $Path -Destination $fixedFolderPath -Force:$Force -ErrorAction 'Stop'
                 }
             } else {
-                Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue' | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                $nfoContents | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction 'Stop' | Out-Null
                 }
@@ -148,34 +154,19 @@ function Set-JavMovie {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
                     if ($null -ne $DataObject.ActressThumbUrl) {
                         New-Item -ItemType Directory -Name $DataObject.ActorImgFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
-                        if ($DataObject.ActressThumbUrl.Count -eq 1) {
-                            if ($DataObject.ActressThumbUrl -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
-                                $first, $second = $DataObject.Actress -split ' '
-                                if ($null -eq $second -or $second -eq '') {
+                        $nfoActress = $nfoXml.movie.actor
+                        foreach ($actress in $nfoActress) {
+                            if ($actress.thumb -ne '') {
+                                $firstName, $lastName = $actress.name -split ' '
+                                if ($null -eq $lastName -or $lastName -eq '') {
                                     $actressFileName = $first + '.jpg'
                                 } else {
-                                    $actressFileName = $first + '_' + $second + '.jpg'
+                                    $actressFileName = $firstName + '_' + $lastName + '.jpg'
                                 }
                                 if ($Force.IsPresent) {
-                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
+                                    $webClient.DownloadFile($actress.thumb, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
                                 } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
-                                    $webClient.DownloadFile($DataObject.ActressThumbUrl, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
-                                }
-                            }
-                        } else {
-                            for ($i = 0; $i -lt $DataObject.ActressThumbUrl.Count; $i++) {
-                                if ($DataObject.ActressThumbUrl[$i] -match 'https:\/\/pics\.r18\.com\/mono\/actjpgs\/.*\.jpg') {
-                                    $first, $second = $DataObject.Actress[$i] -split ' '
-                                    if ($null -eq $second -or $second -eq '') {
-                                        $actressFileName = $first + '.jpg'
-                                    } else {
-                                        $actressFileName = $first + '_' + $second + '.jpg'
-                                    }
-                                    if ($Force.IsPresent) {
-                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
-                                    } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
-                                        $webClient.DownloadFile($DataObject.ActressThumbUrl[$i], (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
-                                    }
+                                    $webClient.DownloadFile($actress.thumb, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
                                 }
                             }
                         }
@@ -204,7 +195,7 @@ function Set-JavMovie {
     }
 
     end {
-        Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
+        # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
         Write-Log -Log $logPath -Level INFO -Text "Success: [$($DataObject.OriginalFileName)]" -UseMutex
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }

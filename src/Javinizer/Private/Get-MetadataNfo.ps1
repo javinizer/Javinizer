@@ -32,11 +32,11 @@ function Get-MetadataNfo {
         $description = (($DataObject.Description -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         $series = (($DataObject.Series -replace '&', '&amp;') -replace '<', '(') -replace , '>', ')'
         if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
-            $csvFullName = $R18ThumbCsv.FullName
-            $csvFullNameAlias = $R18ThumbCsv.Alias
+            $csvFullName = $R18ThumbCsv.FullName.ToLower()
+            $csvFullNameAlias = $R18ThumbCsv.Alias.ToLower()
         } else {
-            $csvFullName = $R18ThumbCsv.FullNameReversed
-            $csvFullNameAlias = $R18ThumbCsv.Alias
+            $csvFullName = $R18ThumbCsv.FullNameReversed.ToLower()
+            $csvFullNameAlias = $R18ThumbCsv.Alias.ToLower()
         }
     }
 
@@ -140,18 +140,21 @@ function Get-MetadataNfo {
 
                 if (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl)) {
                     if (($csvFullName -like $DataObject.Actress) -or ($csvFullNameAlias -like $DataObject.Actress)) {
-                        $index = $csvFullname.IndexOf("$($DataObject.Actress)")
+                        $index = $csvFullname.IndexOf("$($DataObject.Actress.ToLower())")
                         if ($index -eq -1) {
-                            $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress)")
+                            $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress.ToLower())")
                         }
-                        if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
-                            if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
-                                $DataObject.Actress = $R18ThumbCsv.FullName[$index]
-                            } else {
-                                $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
+
+                        if ($index -ne -1) {
+                            if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
+                                if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                    $DataObject.Actress = $R18ThumbCsv.FullName[$index]
+                                } else {
+                                    $DataObject.Actress = $R18ThumbCsv.FullNameReversed[$index]
+                                }
                             }
+                            $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                         }
-                        $DataObject.ActressThumbUrl = $R18ThumbCsv.ThumbUrl[$index]
                     } else {
                         $DataObject.ActressThumbUrl = ''
                     }
@@ -190,16 +193,15 @@ function Get-MetadataNfo {
                                 }
 
                                 $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
-                                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress[$i])] written to [$r18CsvPath]"
                             }
                         }
                     }
 
                     if (($dataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($DataObject.ActressThumbUrl[$i] -eq '')) {
                         if (($csvFullName -like $DataObject.Actress[$i]) -or ($csvFullNameAlias -like $DataObject.Actress[$i])) {
-                            $index = $csvFullname.IndexOf("$($DataObject.Actress[$i])")
+                            $index = $csvFullname.IndexOf("$($DataObject.Actress[$i].ToLower())")
                             if ($index -eq -1) {
-                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i])")
+                                $index = $csvFullnameAlias.IndexOf("$($DataObject.Actress[$i].ToLower())")
                             }
                             if ($Settings.Metadata.'convert-alias-to-originalname' -eq 'True') {
                                 if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
