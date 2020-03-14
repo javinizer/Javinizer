@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0]
+### Added
+- Functionality to download actress images that are pulled from r18-thumbs.csv
+- Functionality to check for Javinizer module updates on startup
+    - Setting `check-updates=<True/False>`
+
+### Fixed
+- Issue where actresses scraped from JAVLibrary found in the r18-thumbs.csv file but not matching the correct casing (upper/lowercase) would erroneously be replaced with the last entry in r18-thumbs.csv
+
 ## [1.1.15] 03-08-2020
 ### Fixed
 - Hotfix for 1.1.13 - Actresses failing to write to metadata properly when falling back to secondary or greater priority
