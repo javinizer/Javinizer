@@ -159,7 +159,7 @@ function Set-JavMovie {
                             if ($actress.thumb -ne '') {
                                 $firstName, $lastName = $actress.name -split ' '
                                 if ($null -eq $lastName -or $lastName -eq '') {
-                                    $actressFileName = $first + '.jpg'
+                                    $actressFileName = $firstName + '.jpg'
                                 } else {
                                     $actressFileName = $firstName + '_' + $lastName + '.jpg'
                                 }
