@@ -214,18 +214,24 @@ function Javinizer {
             throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
+        if ($settings.Other.'check-updates' -eq 'True') {
+            Update-Javinizer
+        }
+
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
         if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
-        $settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
-        $settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
-        $settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
-        $settings.Locations.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
-        $settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
-        $settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
+        #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
+        #$settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #$settings.General.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #$settings.Metadata.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #$settings.Locations.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #$settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+        #$settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
+
+
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
@@ -446,5 +452,3 @@ function Javinizer {
         Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
-
-
