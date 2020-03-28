@@ -163,6 +163,8 @@ function Get-AggregatedDataObject {
                             } else {
                                 $actressArray += $cleanActressName.Trim()
                             }
+                        } else {
+                            $actressArray += $cleanActressName.Trim()
                         }
                     }
                 }
