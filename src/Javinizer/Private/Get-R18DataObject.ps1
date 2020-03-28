@@ -121,7 +121,7 @@ function Get-R18ContentId {
     )
 
     process {
-        $contentId = (((($WebRequest.Content -split '<dt>Content ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
+        $contentId = (((($WebRequest.Content -split 'ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
 
         if ($contentId -eq '----') {
@@ -221,7 +221,7 @@ function Get-R18ReleaseDate {
 
         # Convert the month name to a numeric value to conform with CMS datetime standards
         # $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
-        $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
+        #$releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
         Write-Output $releaseDate
     }
 }
@@ -244,8 +244,8 @@ function Get-R18Runtime {
     )
 
     process {
-        $length = ((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '\.')[0]) -replace 'min', ''
-        $length = Convert-HtmlCharacter -String $length
+        $length = (((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '<br>')[0] -split 'min')[0] -split '分鐘')[0]
+        $length = $length.Trim()
         Write-Output $length
     }
 }
@@ -274,6 +274,11 @@ function Get-R18Maker {
     process {
         $maker = ((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
         $maker = Convert-HtmlCharacter -String $maker
+
+        if ($maker -eq '----') {
+            $maker = $null
+        }
+
         Write-Output $maker
     }
 }
@@ -284,7 +289,7 @@ function Get-R18Label {
     )
 
     process {
-        $label = ((($WebRequest.Content -split '<dt>Label:<\/dt>')[1] -split '<br>')[0] -split '<dd>')[1]
+        $label = (((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/dl>')[0] -split '<dd>')[1] -split '<br>')[0]
         $label = Convert-HtmlCharacter -String $label
 
         if ($label -eq '----') {
@@ -301,26 +306,27 @@ function Get-R18Series {
     )
 
     process {
-        $series = (((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '<\/a><br>')[0] -split '<dd>')[1] -split '>')[1]
-        $seriesUrl = ((($WebRequest.Content -split '<dt>Series:</dt>')[1] -split '">')[0] -split '"')[1]
+        $series = ((($WebRequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
         $series = Convert-HtmlCharacter -String $series
         $series = $series -replace '\n', ' '
-        foreach ($string in $replaceHashTable.GetEnumerator()) {
-            $series = $series -replace [regex]::Escape($string.Name), $string.Value
-        }
+
+        $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
+        $seriesUrl = ($WebRequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
         if ($series -like '*...') {
             Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"
             $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
             $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]
-            foreach ($string in $replaceHashTable.GetEnumerator()) {
-                $series = $series -replace [regex]::Escape($string.Name), $string.Value
-            }
+        }
+
+        foreach ($string in $replaceHashTable.GetEnumerator()) {
+            $series = $series -replace [regex]::Escape($string.Name), $string.Value
         }
 
         if ($series -like '</dd*') {
             $series = $null
         }
+
         Write-Output $series
     }
 }
