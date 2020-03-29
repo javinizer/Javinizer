@@ -137,7 +137,7 @@ function Get-AggregatedDataObject {
             if ($null -eq $aggregatedDataObject.Actress -or $null -eq $aggregatedDataObject.Actress[0]) {
                 foreach ($actress in $var.Value.Actress) {
                     # Remove secondary actress names
-                    $cleanActressName = $actress -replace ' ?\((.*)\) ?', ''
+                    $cleanActressName = ($actress -replace ' ?\((.*)\) ?', '') -replace '  ?\（(.*)）\ ?', ''
                     if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
                         if ($var.Value.Source -eq 'javlibrary') {
                             $temp = $cleanActressName.split(' ')

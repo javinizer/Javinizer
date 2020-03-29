@@ -32,21 +32,27 @@ function Get-R18ThumbCsv {
             )
 
             if ($PSBoundParameters.ContainsKey('NewPages')) {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -ScriptBlock {
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 1 -ScriptBlock {
                     $actressBlock = @()
+                    $actressHtmlArray = @()
                     $actressObject = @()
 
                     $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_" -Verbose:$false
                     $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtml = $actressHtml | Where-Object { $_ -like 'src=*' }
+                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
 
-                    foreach ($actress in $actressHtml) {
+                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_/?lg=zh" -Verbose:$false
+                    $actressHtml = $webRequest.Content -split '<p><img '
+                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+
+                    foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
                         $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressFullName = $ActressFirstName + ' ' + $actressLastName
-                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+                        $actressFullName = (($ActressFirstName + ' ' + $actressLastName) -split '（')[0]
+                        $actressFullNameReversed = (($actressLastName + ' ' + $actressFirstName) -split '（')[0]
+                        $actressAliases = ((($actressFirstName -split '（')[1] -split '）')[0] -split '、') -join ','
 
                         if (-not ($originalCsv -match $actressFullName)) {
                             $actressObject += [pscustomobject]@{
@@ -62,21 +68,27 @@ function Get-R18ThumbCsv {
                     Write-Output $actressObject
                 } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
             } else {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 15 -ScriptBlock {
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 1 -ScriptBlock {
                     $actressBlock = @()
+                    $actressHtmlArray = @()
                     $actressObject = @()
 
                     $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
                     $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtml = $actressHtml | Where-Object { $_ -like 'src=*' }
+                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
 
-                    foreach ($actress in $actressHtml) {
+                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_/?lg=zh" -Verbose:$false
+                    $actressHtml = $webRequest.Content -split '<p><img '
+                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+
+                    foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
                         $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
                         $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressFullName = $actressFirstName + ' ' + $actressLastName
-                        $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
+                        $actressFullName = (($ActressFirstName + ' ' + $actressLastName) -split '（')[0]
+                        $actressFullNameReversed = (($actressLastName + ' ' + $actressFirstName) -split '（')[0]
+                        $actressAliases = ((($actressFirstName -split '（')[1] -split '）')[0] -split '、') -join ','
 
                         if (-not ($originalCsv -match $actressFullName)) {
                             $actressObject += [pscustomobject]@{
