@@ -6,7 +6,10 @@ function Get-FindDataObject {
         [switch]$Aggregated,
         [switch]$Dmm,
         [switch]$Javlibrary,
-        [switch]$R18
+        [switch]$JavlibraryZh,
+        [switch]$JavlibraryJa,
+        [switch]$R18,
+        [switch]$R18Zh
     )
 
     begin {
@@ -16,11 +19,15 @@ function Get-FindDataObject {
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($Settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
-            if ($Settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
-            if ($Settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($Settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
+                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+                            -not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                            -not ($PSBoundParameters.ContainsKey('r18zh')))))) {
+            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
+            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
+            if ($settings.Main.'scrape-javlibrary-zh' -eq 'true') { $JavlibraryZh = $true }
+            if ($settings.Main.'scrape-javlibrary-ja' -eq 'true') { $JavlibraryJa = $true }
+            if ($settings.Main.'scrape-r18-zh' -eq 'true') { $R18Zh = $true }
         }
     }
 
@@ -41,6 +48,11 @@ function Get-FindDataObject {
                     Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
+                if ($urlLocation.Result -eq 'r18zh') {
+                    $r18Data = Get-R18DataObject -Url $Find -Zh -ErrorAction 'SilentlyContinue'
+                    Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
+                }
+
                 if ($urlLocation.Result -eq 'dmm') {
                     $dmmData = Get-DmmDataObject -Url $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
@@ -48,6 +60,16 @@ function Get-FindDataObject {
 
                 if ($urlLocation.Result -eq 'javlibrary') {
                     $javlibraryData = Get-JavlibraryDataObject -Url $Find -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
+
+                if ($urlLocation.Result -eq 'javlibraryzh') {
+                    $javlibraryData = Get-JavLibraryDataObject -Url $Find -ScriptRoot $ScriptRoot -Zh -ErrorAction 'SilentlyContinue'
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
+
+                if ($urlLocation.Result -eq 'javlibraryja') {
+                    $javlibraryData = Get-JavLibraryDataObject -Url $Find -ScriptRoot $ScriptRoot -Ja -ErrorAction 'SilentlyContinue'
                     Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
@@ -63,6 +85,11 @@ function Get-FindDataObject {
                         Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                     }
 
+                    if ($r18zh) {
+                        $r18Data = Get-R18DataObject -Name $fileDetails.Id  -AltName $fileDetails.ContentId -Zh -ErrorAction 'SilentlyContinue'
+                        Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
+                    }
+
                     if ($dmm) {
                         $dmmData = Get-DmmDataObject -Name $fileDetails.Id  -AltName $fileDetails.ContentId -ErrorAction 'SilentlyContinue'
                         Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
@@ -70,6 +97,16 @@ function Get-FindDataObject {
 
                     if ($javlibrary) {
                         $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                        Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    }
+
+                    if ($javlibraryzh) {
+                        $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -Zh -ErrorAction 'SilentlyContinue'
+                        Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    }
+
+                    if ($javlibraryja) {
+                        $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -Ja -ErrorAction 'SilentlyContinue'
                         Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                     }
                 }
@@ -84,6 +121,11 @@ function Get-FindDataObject {
                     Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
                 }
 
+                if ($r18zh) {
+                    $r18Data = Get-R18DataObject -Name $Find -Zh -ErrorAction 'SilentlyContinue'
+                    Write-Output $r18Data | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl
+                }
+
                 if ($dmm) {
                     $dmmData = Get-DmmDataObject -Name $Find -ErrorAction 'SilentlyContinue'
                     Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
@@ -91,6 +133,16 @@ function Get-FindDataObject {
 
                 if ($javlibrary) {
                     $javlibraryData = Get-JavlibraryDataObject -Name $Find -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
+
+                if ($javlibraryzh) {
+                    $javlibraryData = Get-JavlibraryDataObject -Name $Find -ScriptRoot $ScriptRoot -Zh -ErrorAction 'SilentlyContinue'
+                    Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
+
+                if ($javlibraryja) {
+                    $javlibraryData = Get-JavlibraryDataObject -Name $Find -ScriptRoot $ScriptRoot -Ja -ErrorAction 'SilentlyContinue'
                     Write-Output $javlibraryData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }

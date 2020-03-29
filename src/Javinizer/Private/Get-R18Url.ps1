@@ -4,7 +4,8 @@ function Get-R18Url {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Name,
         [string]$AltName,
-        [int]$Tries
+        [int]$Tries,
+        [switch]$Zh
     )
 
     begin {
@@ -120,6 +121,9 @@ function Get-R18Url {
             # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18/Dmm"
             return
         } else {
+            if ($Zh.IsPresent) {
+                $directUrl = $directUrl + '&lg=zh'
+            }
             Write-Output $directUrl
         }
     }

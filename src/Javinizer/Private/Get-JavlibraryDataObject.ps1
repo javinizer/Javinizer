@@ -6,7 +6,9 @@ function Get-JavlibraryDataObject {
         [string]$Name,
         [Parameter(Position = 1)]
         [string]$Url,
-        [string]$ScriptRoot
+        [string]$ScriptRoot,
+        [switch]$Zh,
+        [switch]$Ja
     )
 
     begin {
@@ -18,7 +20,13 @@ function Get-JavlibraryDataObject {
         if ($Url) {
             $javlibraryUrl = $Url
         } else {
-            $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
+            if ($Zh.IsPresent) {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Zh
+            } elseif ($Ja.IsPresent) {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Ja
+            } else {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
+            }
         }
 
         if ($null -ne $javlibraryUrl) {

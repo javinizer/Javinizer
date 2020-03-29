@@ -6,7 +6,8 @@ function Get-R18DataObject {
         [string]$Name,
         [Parameter(Position = 1)]
         [string]$Url,
-        [string]$AltName
+        [string]$AltName,
+        [switch]$Zh
     )
 
     begin {
@@ -66,7 +67,11 @@ function Get-R18DataObject {
         if ($Url) {
             $r18Url = $Url
         } else {
-            $r18Url = Get-R18Url -Name $Name -AltName $AltName
+            if ($Zh.IsPresent) {
+                $r18Url = Get-R18Url -Name $Name -AltName $AltName -Zh
+            } else {
+                $r18Url = Get-R18Url -Name $Name -AltName $AltName
+            }
         }
 
         if ($null -ne $r18Url) {

@@ -198,6 +198,15 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$Javlibrary,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$JavlibraryZh,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$JavlibraryJa,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$R18Zh,
         [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
@@ -231,24 +240,26 @@ function Javinizer {
         #$settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
         #$settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
 
-
-
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
+                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+                            -not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                            -not ($PSBoundParameters.ContainsKey('r18zh')))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
             if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            #if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
+            if ($settings.Main.'scrape-javlibrary-zh' -eq 'true') { $JavlibraryZh = $true }
+            if ($settings.Main.'scrape-javlibrary-ja' -eq 'true') { $JavlibraryJa = $true }
+            if ($settings.Main.'scrape-r18-zh' -eq 'true') { $R18Zh = $true }
         }
     }
 
     process {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
-                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
+                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa
                 Write-Output $dataObject
             }
 
@@ -436,7 +447,7 @@ function Javinizer {
                     } else {
                         foreach ($video in $fileDetails) {
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             $index++
                         }

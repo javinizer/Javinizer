@@ -5,8 +5,11 @@ function Get-AggregatedDataObject {
         [object]$FileDetails,
         [object]$UrlLocation,
         [switch]$R18,
+        [switch]$R18Zh,
         [switch]$Dmm,
         [switch]$Javlibrary,
+        [switch]$JavlibraryZh,
+        [switch]$JavlibraryJa,
         [object]$Settings,
         [string]$Id,
         [string]$ScriptRoot
