@@ -16,8 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Parameter `-ImportSettings` to specify an external settings file
     - Example: `Javinizer -Path C:\Downloads\JAV-Unsorted -ImportSettings C:\settings-template1.ini -Multi`
     - This is for those of you running Javinizer in automation or want to just specify different presets when sorting
-- Parameter `-MoveToFolder` and `-RenameFile` to set true/false value for `move-to-folder` in the commandline
-    - Example: `Javinizer -Path C:\Downloads\JAV-Sorted -Recurse -MoveToFolder:$false -RenameFile:$false
+- Parameter `-MoveToFolder` and `-RenameFile` to set true/false value for `move-to-folder` and `rename-file` in the commandline
+    - Example: `Javinizer -Path C:\Downloads\JAV-Sorted -Recurse -MoveToFolder:$false -RenameFile:$false`
     - This is for when you want to refresh metadata for already sorted videos but don't want to manually adjust your settings file
 
 ### Changed
