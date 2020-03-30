@@ -32,7 +32,7 @@ function Get-R18ThumbCsv {
             )
 
             if ($PSBoundParameters.ContainsKey('NewPages')) {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 1 -ScriptBlock {
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 5 -ScriptBlock {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
@@ -68,7 +68,7 @@ function Get-R18ThumbCsv {
                     Write-Output $actressObject
                 } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
             } else {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 1 -ScriptBlock {
+                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 5 -ScriptBlock {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
