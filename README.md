@@ -374,7 +374,7 @@ convert-alias-to-originalname | True/False | Converts actresses scraped from oth
 normalize-genres | True/False | Converts genres scraped from JAVLibrary to their respective names on R18 using your `genres.csv` file
 ignored-genres | String value | Sets genres to ignore from adding to your nfo metadata in comma separated format (no spaces)
 required-metadata-fields | actress, actressthumburl, alternatetitle, coverurl, description, director, genre, id, label, maker, rating, ratingcount, releasedate, releaseyear, runtime, series, screenshoturl, title, trailerurl | Sets the required metadata fields that are required to be scraped to successfully sort the video in comma separated format (no spaces)
-\<metadata>-priority | r18, javlibrary, dmm | Sets the order in which each metadata field is scraped in comma separated format (no spaces). Some sources may not contain the specific metadata field, so play around with the `-Find` parameter to see which source contains which fields
+\<metadata>-priority | r18, r18zh, javlibrary, javlibraryja, javlibraryzh, dmm | Sets the order in which each metadata field is scraped in comma separated format (no spaces). Some sources may not contain the specific metadata field, so play around with the `-Find` parameter to see which source contains which fields
 input-path | String value (Path) | The path to your unsorted JAV files
 output-path | String value (Path) | The path to where you want your unsorted JAV files to be sent to when sorted successfully
 server-url | String value (URL) | The address to your Emby/Jellyfin server
