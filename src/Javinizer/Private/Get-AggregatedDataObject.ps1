@@ -75,12 +75,24 @@ function Get-AggregatedDataObject {
                 $r18Data = Get-R18DataObject -Name $fileDetails.Id -AltName $fileDetails.ContentId
             }
 
+            if ($R18Zh.IsPresent) {
+                $r18ZhData = Get-R18DataObject -Name $fileDetails.Id -AltName $fileDetails.ContentId -Zh
+            }
+
             if ($dmm.IsPresent) {
                 $dmmData = Get-DmmDataObject -Name $fileDetails.Id  -AltName $fileDetails.ContentId
             }
 
             if ($javlibrary.IsPresent) {
                 $javlibraryData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot
+            }
+
+            if ($JavlibraryZh.IsPresent) {
+                $javlibraryZhData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -Zh
+            }
+
+            if ($JavlibraryJa.IsPresent) {
+                $javlibraryJaData = Get-JavlibraryDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -Ja
             }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
             Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Type: [Id]"
@@ -89,12 +101,24 @@ function Get-AggregatedDataObject {
                 $r18Data = Get-R18DataObject -Name $Id
             }
 
+            if ($R18Zh.IsPresent) {
+                $r18ZhData = Get-R18DataObject -Name $Id -AltName $fileDetails.ContentId -Zh
+            }
+
             if ($dmm.IsPresent) {
                 $dmmData = Get-DmmDataObject -Name $Id
             }
 
             if ($javlibrary.IsPresent) {
                 $javlibraryData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot
+            }
+
+            if ($JavlibraryZh.IsPresent) {
+                $javlibraryZhData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot -Zh
+            }
+
+            if ($JavlibraryJa.IsPresent) {
+                $javlibraryJaData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot -Ja
             }
         }
 
@@ -234,7 +258,7 @@ function Get-AggregatedDataObject {
             if ($null -eq $aggregatedDataObject.Description -or $null -eq $aggregatedDataObject.Description[0]) {
                 $description = ((((($var.Value.Description -replace '♪', '') -replace '●', '') -replace '…', '') -replace '』', '') -replace '『', '') -replace '・', ''
                 if ($Settings.Metadata.'translate-description' -eq 'true' -and $null -ne $var.Value.Description) {
-                    $translatedDescription = Get-TranslatedString $description -ScriptRoot $ScriptRoot
+                    $translatedDescription = Get-TranslatedString $description -ScriptRoot $ScriptRoot -Language $Settings.Metadata.'translate-description-language'
                     $aggregatedDataObject.Description = $translatedDescription
                 } else {
                     $aggregatedDataObject.Description = $description

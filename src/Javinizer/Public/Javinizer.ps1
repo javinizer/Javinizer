@@ -224,7 +224,10 @@ function Javinizer {
         }
 
         if ($settings.Other.'check-updates' -eq 'True') {
-            Update-Javinizer
+            $global:JavinizerUpdateCheck = $true
+            if (-not ($JavinizerUpdateCheck)) {
+                Update-Javinizer
+            }
         }
 
         if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
@@ -249,9 +252,9 @@ function Javinizer {
             if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
             if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($settings.Main.'scrape-javlibrary-zh' -eq 'true') { $JavlibraryZh = $true }
-            if ($settings.Main.'scrape-javlibrary-ja' -eq 'true') { $JavlibraryJa = $true }
-            if ($settings.Main.'scrape-r18-zh' -eq 'true') { $R18Zh = $true }
+            if ($settings.Main.'scrape-javlibraryzh' -eq 'true') { $JavlibraryZh = $true }
+            if ($settings.Main.'scrape-javlibraryja' -eq 'true') { $JavlibraryJa = $true }
+            if ($settings.Main.'scrape-r18zh' -eq 'true') { $R18Zh = $true }
         }
     }
 
@@ -421,7 +424,7 @@ function Javinizer {
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them

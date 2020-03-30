@@ -3,7 +3,8 @@ function Get-TranslatedString {
     param(
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$String,
-        [string]$ScriptRoot
+        [string]$ScriptRoot,
+        [string]$Language
     )
 
     begin {
@@ -13,9 +14,9 @@ function Get-TranslatedString {
 
     process {
         if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-            $translatedString = python $translatePath $String
+            $translatedString = python $translatePath $String $Language
         } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-            $translatedString = python3 $translatePath $String
+            $translatedString = python3 $translatePath $String $Language
         }
 
         Write-Output $translatedString

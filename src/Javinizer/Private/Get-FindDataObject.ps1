@@ -25,9 +25,9 @@ function Get-FindDataObject {
             if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
             if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
             if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($settings.Main.'scrape-javlibrary-zh' -eq 'true') { $JavlibraryZh = $true }
-            if ($settings.Main.'scrape-javlibrary-ja' -eq 'true') { $JavlibraryJa = $true }
-            if ($settings.Main.'scrape-r18-zh' -eq 'true') { $R18Zh = $true }
+            if ($settings.Main.'scrape-javlibraryzh' -eq 'true') { $JavlibraryZh = $true }
+            if ($settings.Main.'scrape-javlibraryja' -eq 'true') { $JavlibraryJa = $true }
+            if ($settings.Main.'scrape-r18zh' -eq 'true') { $R18Zh = $true }
         }
     }
 
