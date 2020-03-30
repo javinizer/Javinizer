@@ -110,10 +110,14 @@ function Get-MetadataNfo {
             if ($DataObject.Actress.Count -eq 1) {
                 if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress)) {
                     if (-not (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl))) {
-                        $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
+                        if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                            $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
+                        } else {
+                            $actressLastName, $actressFirstName = $DataObject.Actress -split ' '
+                        }
+
                         $actressFullName = $actressFirstName + ' ' + $actressLastName
                         $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
-                        $actressThumbUrl = ($DataObject.ActressThumbUrl).ToString()
                         $actressObject += [pscustomobject]@{
                             FirstName        = $actressFirstName.Trim()
                             LastName         = $actressLastName.Trim()
@@ -180,7 +184,12 @@ function Get-MetadataNfo {
                     } else {
                         if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
                             if (-not (($DataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl[$i]) -or ($DataObject.ActressThumbUrl[$i] -eq ''))) {
-                                $actressFirstName, $actressLastName = $DataObject.Actress[$i] -split ' '
+                                if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
+                                    $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
+                                } else {
+                                    $actressLastName, $actressFirstName = $DataObject.Actress -split ' '
+                                }
+
                                 $actressFullName = $actressFirstName + ' ' + $actressLastName
                                 $actressFullNameReversed = $actressLastName + ' ' + $actressFirstName
                                 $actressObject = [pscustomobject]@{

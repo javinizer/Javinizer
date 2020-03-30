@@ -29,7 +29,7 @@ function Test-RequiredMetadata {
             Write-Output $DataObject
         } else {
             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.Search)] $errors null fields: [$nullFields]"
-            Write-Log -Log $logPath -Level WARN -Text "Skipped: [$($DataObject.Search)] $errors null fields: [$nullFields]" -UseMutex
+            Write-Log -Log $javinizerLogPath -Level WARN -Text "Skipped: [$($DataObject.Search)] $errors null fields: [$nullFields]" -UseMutex
             continue
         }
     }

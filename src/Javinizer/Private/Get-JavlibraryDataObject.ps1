@@ -6,7 +6,9 @@ function Get-JavlibraryDataObject {
         [string]$Name,
         [Parameter(Position = 1)]
         [string]$Url,
-        [string]$ScriptRoot
+        [string]$ScriptRoot,
+        [switch]$Zh,
+        [switch]$Ja
     )
 
     begin {
@@ -18,7 +20,13 @@ function Get-JavlibraryDataObject {
         if ($Url) {
             $javlibraryUrl = $Url
         } else {
-            $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
+            if ($Zh.IsPresent) {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Zh
+            } elseif ($Ja.IsPresent) {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Ja
+            } else {
+                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
+            }
         }
 
         if ($null -ne $javlibraryUrl) {
@@ -72,7 +80,7 @@ function Get-JLId {
     )
 
     process {
-        $id = ((($WebRequest.Content -split '<td class="header">ID:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
+        $id = ((($WebRequest.Content -split '<div id="video_id" class="item">')[1] -split '<\/td>')[1] -split '>')[1]
         Write-Output $id
     }
 }
@@ -96,7 +104,7 @@ function Get-JLReleaseDate {
     )
 
     process {
-        $releaseDate = ((($WebRequest.Content -split '<td class="header">Release Date:<\/td>')[1] -split '<\/td>')[0] -split '>')[1]
+        $releaseDate = ((($WebRequest.Content -split '<div id="video_date" class="item">')[1] -split '<\/td>')[1] -split '>')[1]
         Write-Output $releaseDate
     }
 }
@@ -119,7 +127,7 @@ function Get-JLRuntime {
     )
 
     process {
-        $length = ((($WebRequest.Content -split '<td class="header">Length:<\/td>')[1] -split '<\/span>')[0] -split '"text">')[1]
+        $length = ((($WebRequest.Content -split '<div id="video_length" class="item">')[1] -split '<\/span>')[0] -split '"text">')[1]
         Write-Output $length
     }
 }
@@ -130,7 +138,7 @@ function Get-JLDirector {
     )
 
     process {
-        $director = (((($WebRequest.Content -split '<td class="header">Director:</td>')[1]) -split '<\/td>')[0])
+        $director = ((($WebRequest.Content -split '<div id="video_director" class="item">')[1]) -split '<\/td>')[1]
         if ($director -match '<\/a>') {
             $director = (($director -split 'rel="tag">')[1] -split '<\/a')[0]
         } else {
@@ -147,7 +155,7 @@ function Get-JLMaker {
     )
 
     process {
-        $maker = (((($WebRequest.Content -split '<td class="header">Maker:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $maker = (((($WebRequest.Content -split '<div id="video_maker" class="item">')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
         $maker = Convert-HtmlCharacter -String $maker
         Write-Output $maker
     }
@@ -159,7 +167,7 @@ function Get-JLLabel {
     )
 
     process {
-        $label = (((($WebRequest.Content -split '<td class="header">Label:</td>')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
+        $label = (((($WebRequest.Content -split '<div id="video_label" class="item">')[1]) -split '<\/a>')[0] -split 'rel="tag">')[1]
         $label = Convert-HtmlCharacter -String $label
         Write-Output $label
     }
@@ -171,7 +179,7 @@ function Get-JLRating {
     )
 
     process {
-        $rating = (((($WebRequest.Content -split '<td class="header">User Rating:</td>')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
+        $rating = (((($WebRequest.Content -split '<div id="video_review" class="item">')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
         $rating = ($rating -replace '\(', '') -replace '\)', ''
         Write-Output $rating
     }
@@ -187,8 +195,8 @@ function Get-JLGenre {
     }
 
     process {
-        $genreHtml = ($WebRequest.Content -split '<td class="header">Genre\(s\):<\/td>')[1]
-        $genreHtml = ($genreHtml -split '<\/td>')[0]
+        $genreHtml = ($WebRequest.Content -split '<div id="video_genres" class="item">')[1]
+        $genreHtml = ($genreHtml -split '<\/td>')[1]
         $genreHtml = $genreHtml -split 'rel="category tag">'
 
         foreach ($genres in $genreHtml[1..($genreHtml.Length - 1)]) {

@@ -25,6 +25,7 @@ function Convert-JavTitle {
             'ShareSex.net',
             'jav365.com_',
             '069-3XPLANET-',
+            'fun2048.com@',
             'javl.in_',
             'Watch18plus-',
             '\[(.*?)\]',

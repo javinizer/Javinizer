@@ -4,7 +4,10 @@ function Get-JavlibraryUrl {
         [Parameter(Mandatory = $true, Position = 0)]
         [string]$Name,
         [int]$Tries,
-        [string]$ScriptRoot
+        [string]$ScriptRoot,
+        [string]$Language,
+        [switch]$Zh,
+        [switch]$Ja
     )
 
     begin {
@@ -59,6 +62,7 @@ function Get-JavlibraryUrl {
                 foreach ($result in $searchResults) {
                     $videoId = ($result -split '=')[1]
                     $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
+
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                     $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
                     $resultId = Get-JLId -WebRequest $webRequest
@@ -82,6 +86,12 @@ function Get-JavlibraryUrl {
             Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on JAVLibrary"
             return
         } else {
+            if ($Ja.IsPresent) {
+                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/ja/'
+            } elseif ($Zh.IsPresent) {
+                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/cn/'
+            }
+
             Write-Output $javlibraryUrl
         }
     }

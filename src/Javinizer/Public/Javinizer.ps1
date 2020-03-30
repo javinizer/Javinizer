@@ -19,17 +19,26 @@ function Javinizer {
     .PARAMETER DestinationPath
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
+    .PARAMETER ImportSettings
+            The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
+
     .PARAMETER Url
         The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs comma-separated-format (url1,url2,url3).
 
     .PARAMETER Apply
         The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
 
+    .PARAMETER MoveToFolder
+        The movetofolder parameter will allow you to set a true/false value for the setting move-to-folder from the commandline.
+
     .PARAMETER Multi
         The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
 
     .PARAMETER Recurse
         The recurse parameter will perform your sort recursively within your specified sort directory.
+
+    .PARAMETER RenameFile
+        The renamefile parameter will allow you to set a true/false v alue for the setting rename-file from the commandline.
 
     .PARAMETER Strict
         The strict parameter will perform your sort without automatically cleaning your filenames. It will read the exact filename.
@@ -64,11 +73,20 @@ function Javinizer {
     .PARAMETER R18
         The r18 parameter allows you to set your data source of R18 to true.
 
+    .PARAMETER R18Zh
+        The r18zh parameter allows you to set your data source of R18Zh to true.
+
     .PARAMETER Dmm
         The dmm parameter allows you to set your data source of DMM to true.
 
     .PARAMETER Javlibrary
         The javlibrary parameter allows you to set your data source of JAVLibrary to true.
+
+    .PARAMETER JavlibraryZh
+        The javlibraryzh parameter allows you to set your data source of JAVLibraryZh to true.
+
+    .Parameter JavlibraryJa
+        The javlibraryja parameter allows you to set your data source of JAVLibraryJa to true.
 
     .PARAMETER Force
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
@@ -97,6 +115,20 @@ function Javinizer {
         Description
         -----------
         Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
+
+    .EXAMPLE
+        PS> Javinizer -Path C:\Downloads\Jav\Sorted -Recurse -MoveToFolder:$false -RenameFile:$false -Multi
+
+        Description
+        -----------
+        Performs a multi-threaded recursive sort on your directories while setting move-to-folder and rename-file false to refresh metadata within those directories.
+
+    .EXAMPLE
+        PS> Javinizer -Path C:\Downloads -ImportSettings C:\Downloads\settings-template1.ini -Multi
+
+        Description
+        -----------
+        Performs a multi-threaded sort on your directories while importing an external settings file.
 
     .EXAMPLE
         PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
@@ -170,6 +202,12 @@ function Javinizer {
         [switch]$Strict,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [string]$ImportSettings,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [bool]$MoveToFolder,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [bool]$RenameFile,
         [Parameter(ParameterSetName = 'Help')]
         [Alias('h')]
         [switch]$Help,
@@ -194,10 +232,19 @@ function Javinizer {
         [switch]$R18,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$R18Zh,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$Dmm,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$Javlibrary,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$JavlibraryZh,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$JavlibraryJa,
         [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
@@ -205,23 +252,59 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         $index = 1
-        $global:logPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
+        $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
 
         try {
-            $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
+            # Load the settings file from either commandline path or default
+            if ($PSBoundParameters.ContainsKey('ImportSettings')) {
+                $settingsPath = Get-Item -LiteralPath $ImportSettings
+            } else {
+                $settingsPath = Join-Path -Path $ScriptRoot -ChildPath 'settings.ini'
+            }
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
             throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
         if ($settings.Other.'check-updates' -eq 'True') {
-            Update-Javinizer
+            $global:javinizerUpdateCheck = $true
+            if (-not ($javinizerUpdateCheck)) {
+                Update-Javinizer
+            }
         }
 
-        if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) { $VerbosePreference = 'Continue' } else { $VerbosePreference = 'SilentlyContinue' }
-        if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) { $DebugPreference = 'Continue' } elseif ($settings.Other.'debug-shell-output' -eq 'False') { $DebugPreference = 'SilentlyContinue' } else { $DebugPreference = 'SilentlyContinue' }
+        if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
+            if ($MoveToFolder -eq $true) {
+                $Settings.General.'move-to-folder' = 'True'
+            } elseif ($MoveToFolder -eq $false) {
+                $Settings.General.'move-to-folder' = 'False'
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('RenameFile')) {
+            if ($RenameFile -eq $true) {
+                $Settings.General.'rename-file' = 'True'
+            } elseif ($RenameFile -eq $false) {
+                $Settings.General.'rename-file' = 'False'
+            }
+        }
+
+        if (($settings.Other.'verbose-shell-output' -eq 'True') -or ($PSBoundParameters.ContainsKey('Verbose'))) {
+            $VerbosePreference = 'Continue'
+        } else {
+            $VerbosePreference = 'SilentlyContinue'
+        }
+
+        if ($settings.Other.'debug-shell-output' -eq 'True' -or ($DebugPreference -eq 'Continue')) {
+            $DebugPreference = 'Continue'
+        } elseif ($settings.Other.'debug-shell-output' -eq 'False') {
+            $DebugPreference = 'SilentlyContinue'
+        } else {
+            $DebugPreference = 'SilentlyContinue'
+        }
+
         $ProgressPreference = 'SilentlyContinue'
-        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+
         #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
         #$settings.Main.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
@@ -231,24 +314,39 @@ function Javinizer {
         #$settings.'Emby/Jellyfin'.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
         #$settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
 
-
-
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('7mmtv')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            #if ($settings.Main.'scrape-7mmtv' -eq 'true') { $7mmtv = $true }
+                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                                -not ($PSBoundParameters.ContainsKey('r18zh'))))))) {
+            if ($settings.Main.'scrape-r18' -eq 'true') {
+                $R18 = $true
+            }
+            if ($settings.Main.'scrape-dmm' -eq 'true') {
+                $Dmm = $true
+            }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') {
+                $Javlibrary = $true
+            }
+            if ($settings.Main.'scrape-javlibraryzh' -eq 'true') {
+                $JavlibraryZh = $true
+            }
+            if ($settings.Main.'scrape-javlibraryja' -eq 'true') {
+                $JavlibraryJa = $true
+            }
+            if ($settings.Main.'scrape-r18zh' -eq 'true') {
+                $R18Zh = $true
+            }
         }
     }
 
     process {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 toggle: [$R18]; Dmm toggle: [$Dmm]; Javlibrary toggle: [$javlibrary]"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
-                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -Javlibrary:$Javlibrary
+                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa
                 Write-Output $dataObject
             }
 
@@ -256,18 +354,18 @@ function Javinizer {
                 if ($OpenLog.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                         try {
-                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$logPath]"
-                            Invoke-Item -Path $logPath
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$javinizerLogPath]"
+                            Invoke-Item -Path $javinizerLogPath
                         } catch {
-                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$logPath]"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$javinizerLogPath]"
                             throw $_
                         }
                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                         try {
-                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$logPath]"
-                            nano $logPath
+                            Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Opening javinizer.log file from [$javinizerLogPath]"
+                            nano $javinizerLogPath
                         } catch {
-                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$logPath]"
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$javinizerLogPath]"
                             throw $_
                         }
                     }
@@ -410,7 +508,7 @@ function Javinizer {
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
@@ -436,7 +534,7 @@ function Javinizer {
                     } else {
                         foreach ($video in $fileDetails) {
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             $index++
                         }

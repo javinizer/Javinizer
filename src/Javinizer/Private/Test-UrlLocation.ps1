@@ -13,14 +13,38 @@ function Test-UrlLocation {
     process {
         foreach ($link in $Url) {
             if ($link -match 'r18.com') {
-                $testUrlObject += [pscustomobject]@{
-                    Url    = $link
-                    Result = 'r18'
+                if ($link -match 'lg=zh') {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'r18zh'
+                    }
+                } else {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'r18'
+                    }
                 }
             } elseif ($link -match 'javlibrary.com') {
-                $testUrlObject += [pscustomobject]@{
-                    Url    = $link
-                    Result = 'javlibrary'
+                if ($link -match '/ja/') {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'javlibraryja'
+                    }
+                } elseif ($link -match '/cn/') {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'javlibraryzh'
+                    }
+                } elseif ($link -match '/tw/') {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'javlibraryzh'
+                    }
+                } else {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Result = 'javlibrary'
+                    }
                 }
             } elseif ($link -match 'dmm.co.jp') {
                 $testUrlObject = [pscustomobject]@{
