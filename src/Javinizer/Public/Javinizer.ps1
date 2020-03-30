@@ -19,6 +19,9 @@ function Javinizer {
     .PARAMETER DestinationPath
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
+    .PARAMETER ImportSettings
+            The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
+
     .PARAMETER Url
         The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs comma-separated-format (url1,url2,url3).
 
@@ -36,9 +39,6 @@ function Javinizer {
 
     .PARAMETER RenameFile
         The renamefile parameter will allow you to set a true/false v alue for the setting rename-file from the commandline.
-
-    .PARAMETER SettingsPath
-        The settingspath parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
 
     .PARAMETER Strict
         The strict parameter will perform your sort without automatically cleaning your filenames. It will read the exact filename.
@@ -128,7 +128,7 @@ function Javinizer {
 
         Description
         -----------
-        Perofmrs a multi-threaded sort on your directories while importing an external settings file.
+        Performs a multi-threaded sort on your directories while importing an external settings file.
 
     .EXAMPLE
         PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse

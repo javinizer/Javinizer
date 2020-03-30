@@ -2,7 +2,7 @@
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 [![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Release)](https://github.com/jvlflame/Javinizer/releases)
 [![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Last%20Commit)](https://github.com/jvlflame/Javinizer/commits/master)
-[![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/1.1.10)
+[![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/)
 [![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
 [![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
 
@@ -119,13 +119,16 @@ SYNOPSIS
 
 
 SYNTAX
-    Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Url <String>] [-Apply] [-Multi] [-Recurse] [-Strict] [-Force] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Url <String>] [-Apply] [-Multi] [-Recurse] [-Strict][-Force] [-ImportSettings <String>]
+    [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-Find] <String> [-Aggregated] [-R18] [-Dmm] [-Javlibrary] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-Find] <String> [-Aggregated] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-OpenSettings] [-BackupSettings] [-RestoreSettings] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-OpenSettings] [-BackupSettings <String>] [-RestoreSettings <String>] [-ScriptRoot <String>] [<CommonParameters>]
+
+    Javinizer [-OpenLog] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-SetEmbyActorThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -165,6 +168,15 @@ PARAMETERS
     -Force [<SwitchParameter>]
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
 
+    -ImportSettings <String>
+        The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
+
+    -MoveToFolder <Boolean>
+        The movetofolder parameter will allow you to set a true/false value for the setting move-to-folder from the commandline.
+
+    -RenameFile <Boolean>
+        The renamefile parameter will allow you to set a true/false v alue for the setting rename-file from the commandline.
+
     -Help [<SwitchParameter>]
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
@@ -178,10 +190,11 @@ PARAMETERS
         The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
 
     -OpenLog [<SwitchParameter>]
-        The openlog parameter will open the Javinizer.log file located in your module path.
+        The openlog parameter will open your Javinizer.log file located in your module path.
 
     -GetThumbs [<SwitchParameter>]
-        The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
+        The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write
+        unknown actress thumburls on sort.
 
     -UpdateThumbs <Int32>
         The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages.
@@ -195,11 +208,20 @@ PARAMETERS
     -R18 [<SwitchParameter>]
         The r18 parameter allows you to set your data source of R18 to true.
 
+    -R18Zh [<SwitchParameter>]
+        The r18zh parameter allows you to set your data source of R18Zh to true.
+
     -Dmm [<SwitchParameter>]
         The dmm parameter allows you to set your data source of DMM to true.
 
     -Javlibrary [<SwitchParameter>]
         The javlibrary parameter allows you to set your data source of JAVLibrary to true.
+
+    -JavlibraryZh [<SwitchParameter>]
+        The javlibraryzh parameter allows you to set your data source of JAVLibraryZh to true.
+
+    -JavlibraryJa [<SwitchParameter>]
+        The javlibraryja parameter allows you to set your data source of JAVLibraryJa to true.
 
     -ScriptRoot <String>
         The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
@@ -215,50 +237,94 @@ PARAMETERS
 ### Examples
 
 ```powershell
+
     -------------------------- EXAMPLE 1 --------------------------
 
-    # Opens your Javinizer settings.ini file in the root module directory.
-    PS> Javinizer -OpenSettings
+    PS>Javinizer -OpenSettings
+
+    Description
+    -----------
+    Opens your Javinizer settings.ini file in the root module directory.
 
     -------------------------- EXAMPLE 2 --------------------------
 
-    # Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
-    PS> Javinizer -Path C:\Downloads\Unsorted -Multi
+    PS>Javinizer -Path C:\Downloads\Unsorted -Multi
+
+    Description
+    -----------
+    Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 3 --------------------------
 
-    # Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
-    PS> Javinizer -Apply -Multi
+    PS>Javinizer -Apply -Multi
+
+    Description
+    -----------
+    Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 4 --------------------------
 
-    # Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
-    PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
+    PS>Javinizer -Path C:\Downloads\Jav\Sorted -Recurse -MoveToFolder:$false -RenameFile:$false -Multi
+
+    Description
+    -----------
+    Performs a multi-threaded recursive sort on your directories while setting move-to-folder and rename-file false to refresh metadata within those directories.
 
     -------------------------- EXAMPLE 5 --------------------------
 
-    # Performs a single-threaded sort on your specified file using direct URLs to match the file.
-    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\ -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digitalvideoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
+    PS>Javinizer -Path C:\Downloads -ImportSettings C:\Downloads\settings-template1.ini -Multi
+
+    Description
+    -----------
+    Performs a multi-threaded sort on your directories while importing an external settings file.
 
     -------------------------- EXAMPLE 6 --------------------------
 
-    # Performs a console search of SNIS-420 for all data sources specified in your settings.ini file
-    PS> Javinizer -Find SNIS-420
+    PS>Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
+
+    Description
+    -----------
+    Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
 
     -------------------------- EXAMPLE 7 --------------------------
 
-    # Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.inifile.
-    PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
+    PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\ -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digitalvideoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
+
+    Description
+    -----------
+    Performs a single-threaded sort on your specified file using direct URLs to match the file.
 
     -------------------------- EXAMPLE 8 --------------------------
 
-    # Performs a console search of PRED-200 using a direct url.
-    PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
+    PS>Javinizer -Find SNIS-420
+
+    Description
+    -----------
+    Performs a console search of SNIS-420 for all data sources specified in your settings.ini file.
 
     -------------------------- EXAMPLE 9 --------------------------
 
-    # Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
-    PS> Javinizer -SetEmbyActorThumbs
+    PS>Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
+
+    Description
+    -----------
+    Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.ini file.
+
+    -------------------------- EXAMPLE 10 --------------------------
+
+    PS>Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
+
+    Description
+    -----------
+    Performs a console search of PRED-200 using a direct url.
+
+    -------------------------- EXAMPLE 11 --------------------------
+
+    PS>Javinizer -SetEmbyActorThumbs
+
+    Description
+    -----------
+    Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
 
 ```
 
@@ -273,10 +339,13 @@ PARAMETERS
 ## Settings Information
 
 Setting | Accepted Values | Details
---- | --- | ---
-scrape-r18 | True/False | Turns on the scraper for r18.com
+--- | :---: | ---
+scrape-r18 | True/False | Turns on the scraper for the English version of r18.com
+scrape-r18zh | True/False | Turns on the scraper for the Chinese version of r18.com
 scrape-dmm | True/False | Turns on the scraper for dmm.co.jp
-scrape-javlibrary | True/False | Turns on the scraper for javlibrary.com
+scrape-javlibrary | True/False | Turns on the scraper for the English version of javlibrary.com
+scrape-javlibraryja | True/False | Turns on the scraper for the Japanese version of javlibrary.com
+scrape-javlibraryzh | True/False | Turns on the scraper for the Chinese version of javlibrary.com
 multi-sort-throttle-limit | Integer value (1-15) | Sets the amount of threads to run the sort in parallel
 move-to-folder | True/False | Moves the sorted video to a new directory if found by scrapers
 rename-file | True/False | Renames the sorted video if found by scrapers
@@ -297,7 +366,8 @@ download-thumb-img | True/False | Downloads the movie full-size cover image
 download-poster-img | True/False | Crops the movie full-size cover image to poster size
 download-trailer-vid | True/False | Downloads the movie trailer to your movie directory
 download-actress-img | True/False | Downloads the actress images to the `.actors` directory in your movie directory
-translate-description | True/False | Translates the Japanese movie description from dmm.co.jp to English
+translate-description | True/False | Translates the Japanese movie description from dmm.co.jp
+translate-description-language | String value | Sets the language of the movie description translation. Check [here](https://developers.google.com/admin-sdk/directory/v1/languages) for language codes
 add-series-as-tag | True/False | Adds the \<tag> metadata line to your movie nfo to work with Emby tags; \<set> is added by default
 first-last-name-order | True/False | Sets the first/last name order for the actresses in your nfo metadata; True = `FirstName LastName` / False = `LastName FirstName`
 convert-alias-to-originalname | True/False | Converts actresses scraped from other sources (JAVLibrary) to their respective names on R18 if added to the `Alias` column in your `r18-thumbs.csv` file
@@ -342,4 +412,5 @@ debug-shell-output | True/False | Displays debug output to your shell
 - [x] Add R18 actress thumburl scraping for non-r18 actress data source scrapes - [1.0.0]
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
+- [x] Add additional language support [1.3.0]
 - [ ] Add additional scraper sources for uncensored JAV

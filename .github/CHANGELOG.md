@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0]
+### Added
+- Additional language support for existing scraper sources
+    - JavLibrary ZH (CN) `scrape-javlibraryzh=True`
+    - JavLibrary JA `scrape-javlibraryja=True`
+    - R18 ZH `scrape-r18zh=True`
+- Original Japanese actress entries to r18-thumbs.csv
+- Alternate language selection for description translation `translate-description-language=en`
+- Parameter `-ImportSettings` to specify an external settings file
+    - Example: `Javinizer -Path C:\Downloads\JAV-Unsorted -ImportSettings C:\settings-template1.ini -Multi`
+    - This is for those of you running Javinizer in automation or want to just specify different presets when sorting
+- Parameter `-MoveToFolder` and `-RenameFile` to set true/false value for `move-to-folder` in the commandline
+    - Example: `Javinizer -Path C:\Downloads\JAV-Sorted -Recurse -MoveToFolder:$false -RenameFile:$false
+    - This is for when you want to refresh metadata for already sorted videos but don't want to manually adjust your settings file
+
+### Changed
+- Default naming of `poster.jpg` -> `folder.jpg`
+    - This allows the poster image to show up as the default folder thumbnail in Windows File explorer
+    - I have not noticed any issues with Plex/Emby/Jellyfin for this naming convention but let me know if there is a conflict
+- Default throttling of thumbnail updates to 5
+    - Requests have been erroring out due to the speed of the requests and Cloudflare throttling
+- Update check will only occur once per session by checking global variable
+
+### Fixed
+- Actresses from DMM not being properly added to nfo when `first-last-name-order=false`
+- R18 thumbnail csv adding duplicate entries with reversed order when `first-last-name-order=false`
+
 ## [1.2.0]
 ### Added
 - Functionality to download actress images that are pulled from r18-thumbs.csv
