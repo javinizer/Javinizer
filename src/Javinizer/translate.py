@@ -2,6 +2,6 @@ from googletrans import Translator
 import sys
 
 translator = Translator()
-translation = translator.translate(sys.argv[1], dest='en')
+translation = translator.translate(sys.argv[1], dest=sys.argv[2])
 
 print(translation.text)
