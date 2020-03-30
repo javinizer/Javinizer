@@ -62,7 +62,7 @@ function Set-JavMovie {
                 $pathLength = (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName).Length
                 if ($pathLength -gt 215) {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Path length limitations: [$pathLength characters]"
-                    Write-Log -Log $logPath -Level WARN -Text "Skipped: [$($DataObject.OriginalFileName)] Path length limitations: [$pathLength characters]" -UseMutex
+                    Write-Log -Log $javinizerLogPath -Level WARN -Text "Skipped: [$($DataObject.OriginalFileName)] Path length limitations: [$pathLength characters]" -UseMutex
                     continue
                 }
 
@@ -196,7 +196,7 @@ function Set-JavMovie {
 
     end {
         # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
-        Write-Log -Log $logPath -Level INFO -Text "Success: [$($DataObject.OriginalFileName)]" -UseMutex
+        Write-Log -Log $javinizerLogPath -Level INFO -Text "Success: [$($DataObject.OriginalFileName)]" -UseMutex
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

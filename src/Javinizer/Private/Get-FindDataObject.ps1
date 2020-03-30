@@ -20,14 +20,26 @@ function Get-FindDataObject {
             (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
                 (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
                     (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-                            -not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-                            -not ($PSBoundParameters.ContainsKey('r18zh')))))) {
-            if ($settings.Main.'scrape-r18' -eq 'true') { $R18 = $true }
-            if ($settings.Main.'scrape-dmm' -eq 'true') { $Dmm = $true }
-            if ($settings.Main.'scrape-javlibrary' -eq 'true') { $Javlibrary = $true }
-            if ($settings.Main.'scrape-javlibraryzh' -eq 'true') { $JavlibraryZh = $true }
-            if ($settings.Main.'scrape-javlibraryja' -eq 'true') { $JavlibraryJa = $true }
-            if ($settings.Main.'scrape-r18zh' -eq 'true') { $R18Zh = $true }
+                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                                -not ($PSBoundParameters.ContainsKey('r18zh'))))))) {
+            if ($settings.Main.'scrape-r18' -eq 'true') {
+                $R18 = $true
+            }
+            if ($settings.Main.'scrape-dmm' -eq 'true') {
+                $Dmm = $true
+            }
+            if ($settings.Main.'scrape-javlibrary' -eq 'true') {
+                $Javlibrary = $true
+            }
+            if ($settings.Main.'scrape-javlibraryzh' -eq 'true') {
+                $JavlibraryZh = $true
+            }
+            if ($settings.Main.'scrape-javlibraryja' -eq 'true') {
+                $JavlibraryJa = $true
+            }
+            if ($settings.Main.'scrape-r18zh' -eq 'true') {
+                $R18Zh = $true
+            }
         }
     }
 
