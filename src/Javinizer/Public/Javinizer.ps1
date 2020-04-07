@@ -516,6 +516,8 @@ function Javinizer {
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
                     Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort path: [$($getPath.FullName)]"
                     Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Destination path: [$($getDestinationPath.FullName)]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Included file ext: [$($Settings.General.'included-file-extensions')]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Excluded file strings: [$($Settings.General.'excluded-file-strings')]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
