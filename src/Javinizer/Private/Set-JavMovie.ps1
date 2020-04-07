@@ -76,9 +76,11 @@ function Set-JavMovie {
                     New-Item -ItemType Directory -Name $DataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction Ignore | Out-Null
                 }
 
-                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
-                $nfoContents | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
-                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                if ($Settings.Metadata.'create-nfo' -eq 'True') {
+                    $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                    $nfoContents | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                    [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                }
 
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
@@ -86,9 +88,11 @@ function Set-JavMovie {
                     Move-Item -LiteralPath $Path -Destination $fixedFolderPath -Force:$Force -ErrorAction 'Stop'
                 }
             } else {
-                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
-                $nfoContents | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
-                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                if ($Settings.Metadata.'create-nfo' -eq 'True') {
+                    $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                    $nfoContents | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                    [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                }
 
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction 'Stop' | Out-Null
