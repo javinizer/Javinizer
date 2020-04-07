@@ -107,8 +107,8 @@ function Set-JavMovie {
                     if ($Settings.Metadata.'download-poster-img' -eq 'True') {
                         # Double backslash to conform with Python path standards
                         if ($null -ne $DataObject.CoverUrl) {
-                            $pythonCoverPath = $fixedCoverPath -replace '\\', '\\'
-                            $pythonPosterPath = $posterPath -replace '\\', '\\'
+                            $pythonCoverPath = $fixedCoverPath -replace '\\', '/'
+                            $pythonPosterPath = $posterPath -replace '\\', '/'
                             if ($Force.IsPresent) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                     python $cropPath $pythonCoverPath $pythonPosterPath
