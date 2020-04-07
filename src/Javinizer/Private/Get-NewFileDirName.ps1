@@ -43,7 +43,6 @@ function Get-NewFileDirName {
         $fileDirObject = [pscustomobject]@{
             FolderName           = $newFolderName
             FileName             = $newFileName
-            OriginalFileName     = $originalNewFileName
             DisplayName          = $newDisplayName
             PosterName           = $posterName
             ThumbnailName        = $thumbnailName

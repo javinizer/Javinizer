@@ -20,6 +20,7 @@ function Convert-JavTitle {
         $RemoveStrings = @(
             # Prefixes
             'hjd2048.com-',
+            '1080fhd.com_',
             '^[0-9]{4}',
             'xhd1080.com',
             'ShareSex.net',
