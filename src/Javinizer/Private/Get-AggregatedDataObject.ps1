@@ -155,7 +155,7 @@ function Get-AggregatedDataObject {
             NfoName              = $null
             OriginalFileName     = $null
             OriginalDirectory    = $null
-            OriginalFUllName     = $null
+            OriginalFullName     = $null
             PartNumber           = $null
         }
 
