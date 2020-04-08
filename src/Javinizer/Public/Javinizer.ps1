@@ -284,9 +284,9 @@ function Javinizer {
         }
 
         if ($settings.Other.'check-updates' -eq 'True') {
-            $global:javinizerUpdateCheck = $true
             if (-not ($javinizerUpdateCheck)) {
                 Update-Javinizer
+                $global:javinizerUpdateCheck = $true
             }
         }
 

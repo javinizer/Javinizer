@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1]
+### Fixed
+- Fixed Javinizer update check
+
 ## [1.4.0]
 ### Added
 - Ability to select which file extensions to use with Javinizer with setting `included-file-extensions`
