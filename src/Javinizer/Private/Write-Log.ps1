@@ -44,14 +44,14 @@ function Write-Log {
 
     $timestamp = Get-TimeStamp
     # Escape characters to be compatible with JSON
-    $Text =  [Regex]::Replace($Text, "\\u(?<Value>[a-zA-Z0-9]{4})", { param($m) ([char]([int]::Parse($m.Groups['Value'].Value, [System.Globalization.NumberStyles]::HexNumber))).ToString() } )
+    $Text = [Regex]::Replace($Text, "\\u(?<Value>[a-zA-Z0-9]{4})", { param($m) ([char]([int]::Parse($m.Groups['Value'].Value, [System.Globalization.NumberStyles]::HexNumber))).ToString() } )
 
     $logJSON = [ordered]@{
-        'timestamp' = $timestamp
-        'level' = $level
-        'originalfile' = $OriginalFile
+        'timestamp'       = $timestamp
+        'level'           = $level
+        'originalfile'    = $OriginalFile
         'destinationfile' = $DestinationFile
-        'message' = $Text
+        'message'         = $Text
     } | ConvertTo-Json -Compress
 
     # $line = "{`"timestamp`": `"$timestamp`", `"level`": `"$level`", `"originalfile`": `"$OriginalFile`", `"destinationfile`": `"$DestinationFile`", `"message`": `"$Text`"}"
