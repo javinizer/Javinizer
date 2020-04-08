@@ -38,18 +38,26 @@ function Write-Log {
         [Parameter(Mandatory = $true,
             Position = 2)]
         [system.io.fileinfo]$Log,
-        [Parameter(Position = 3)]
-        [switch]$UseMutex
+        [string]$OriginalFile,
+        [string]$DestinationFile
     )
 
-    $date = Get-TimeStamp
-    $line = "$date  $level  $text"
-    if ($UseMutex.IsPresent) {
-        $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
-        $LogMutex.WaitOne() | Out-Null
-        $line | Out-File -FilePath $log -Append
-        $LogMutex.ReleaseMutex() | Out-Null
-    } else {
-        $line | Out-File -FilePath $log -Append
-    }
+    $timestamp = Get-TimeStamp
+    # Escape characters to be compatible with JSON
+    $Text =  [Regex]::Replace($Text, "\\u(?<Value>[a-zA-Z0-9]{4})", { param($m) ([char]([int]::Parse($m.Groups['Value'].Value, [System.Globalization.NumberStyles]::HexNumber))).ToString() } )
+
+    $logJSON = [ordered]@{
+        'timestamp' = $timestamp
+        'level' = $level
+        'originalfile' = $OriginalFile
+        'destinationfile' = $DestinationFile
+        'message' = $Text
+    } | ConvertTo-Json -Compress
+
+    # $line = "{`"timestamp`": `"$timestamp`", `"level`": `"$level`", `"originalfile`": `"$OriginalFile`", `"destinationfile`": `"$DestinationFile`", `"message`": `"$Text`"}"
+
+    $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
+    $LogMutex.WaitOne() | Out-Null
+    $logJSON | Out-File -FilePath $log -Append
+    $LogMutex.ReleaseMutex() | Out-Null
 }

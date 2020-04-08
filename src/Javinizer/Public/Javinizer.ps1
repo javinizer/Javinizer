@@ -252,7 +252,6 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         $index = 1
-        $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
 
         try {
             # Load the settings file from either commandline path or default
@@ -264,6 +263,12 @@ function Javinizer {
             $settings = Import-IniSettings -Path $settingsPath
         } catch {
             throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
+        }
+
+        if (($settings.Other.'log-path' -eq '') -or ($null -eq $settings.Other.'log-path')) {
+            $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
+        } else {
+            $global:javinizerLogPath = $settings.Other.'log-path' -replace '"', ''
         }
 
         if ($settings.Other.'check-updates' -eq 'True') {
