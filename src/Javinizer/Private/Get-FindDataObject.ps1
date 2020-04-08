@@ -67,7 +67,7 @@ function Get-FindDataObject {
 
                 if ($urlLocation.Result -eq 'dmm') {
                     $dmmData = Get-DmmDataObject -Url $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
+                    Write-Output $dmmData | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
 
                 if ($urlLocation.Result -eq 'javlibrary') {
@@ -104,7 +104,7 @@ function Get-FindDataObject {
 
                     if ($dmm) {
                         $dmmData = Get-DmmDataObject -Name $fileDetails.Id  -AltName $fileDetails.ContentId -ErrorAction 'SilentlyContinue'
-                        Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
+                        Write-Output $dmmData | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
                     }
 
                     if ($javlibrary) {
@@ -140,7 +140,7 @@ function Get-FindDataObject {
 
                 if ($dmm) {
                     $dmmData = Get-DmmDataObject -Name $Find -ErrorAction 'SilentlyContinue'
-                    Write-Output $dmmData | Select-Object Url, Id, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
+                    Write-Output $dmmData | Select-Object Url, Id, ContentId, Title, Description, Date, Year, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
 
                 if ($javlibrary) {
