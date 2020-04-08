@@ -68,7 +68,7 @@ function Set-JavMovie {
                 $pathLength = (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName).Length
                 if ($pathLength -gt 215) {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations: [$pathLength characters]"
-                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -DestinationFile (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName) -Text "Skipped: Folder path length limitations [$pathLength characters] of 215"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -DestinationFile (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName) -Text "Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations [$pathLength characters] of 215"
                     continue
                 }
 
@@ -110,7 +110,7 @@ function Set-JavMovie {
                     }
                 } catch {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading cover images"
-                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: Error downloading cover images [$($PSItem.ToString())]"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading cover images [$($PSItem.ToString())]"
                     throw $_
                 }
 
@@ -137,7 +137,7 @@ function Set-JavMovie {
                     }
                 } catch {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
-                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: Error cropping cover to poster image [$($PSItem.ToString())]"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error cropping cover to poster image [$($PSItem.ToString())]"
                     throw $_
                 }
             }
@@ -159,7 +159,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
-                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: Error downloading screenshots $($PSItem.ToString())"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading screenshots $($PSItem.ToString())"
                 throw $_
             }
 
@@ -187,7 +187,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading actress images"
-                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: Error downloading actress images $($PSItem.ToString())"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading actress images $($PSItem.ToString())"
                 throw $_
             }
 
@@ -203,7 +203,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
-                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: Error downloading trailer video $($PSItem.ToString())"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading trailer video $($PSItem.ToString())"
                 throw $_
             }
         }
@@ -212,9 +212,9 @@ function Set-JavMovie {
     end {
         # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
         if ($Settings.General.'rename-file' -eq 'True') {
-            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $newFileName) -Text "Success"
+            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $newFileName) -Text "Success: [$($DataObject.OriginalFileName)]."
         } else {
-            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $DataObject.OriginalFileName) -Text "Success"
+            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $DataObject.OriginalFileName) -Text "Success: [$($DataObject.OriginalFileName)]"
         }
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }

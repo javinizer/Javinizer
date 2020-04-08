@@ -20,7 +20,7 @@ function Get-JavlibraryUrl {
             Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
 
-            if ($null -eq $webRequest) {
+            if (($null -eq $webRequest) -or ($webRequest -eq '')) {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
                 try {
                     New-CloudflareSession -ScriptRoot $ScriptRoot

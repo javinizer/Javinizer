@@ -58,6 +58,9 @@ function Javinizer {
     .PARAMETER OpenLog
         The openlog parameter will open your Javinizer.log file located in your module path.
 
+    .PARAMETER ViewLog
+        The viewlog parameter will output the Javinizer.log file as a JSON object in your PowerShell console.
+
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
@@ -219,6 +222,8 @@ function Javinizer {
         [string]$RestoreSettings,
         [Parameter(ParameterSetName = 'Log')]
         [switch]$OpenLog,
+        [Parameter(ParameterSetName = 'Log')]
+        [switch]$ViewLog,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -373,6 +378,14 @@ function Javinizer {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$javinizerLogPath]"
                             throw $_
                         }
+                    }
+                }
+
+                if ($ViewLog.IsPresent) {
+                    try {
+                        Write-Output (Get-Content -LiteralPath $javinizerLogPath | ConvertFrom-Json)
+                    } catch {
+                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error displaying javinizer.log from [$javinizerLogPath]: $($PSItem.ToString())"
                     }
                 }
             }
