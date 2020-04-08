@@ -154,6 +154,7 @@ function Get-AggregatedDataObject {
             TrailerName          = $null
             NfoName              = $null
             OriginalFileName     = $null
+            OriginalBaseName     = $null
             OriginalDirectory    = $null
             OriginalFullName     = $null
             PartNumber           = $null
@@ -404,6 +405,7 @@ function Get-AggregatedDataObject {
         $aggregatedDataObject.OriginalDirectory = $FileDetails.OriginalDirectory
         $aggregatedDataObject.OriginalFileName = $FileDetails.OriginalFileName
         $aggregatedDataObject.OriginalFullName = $FileDetails.OriginalFullName
+        $aggregatedDataObject.OriginalBaseName = $FileDetails.OriginalBaseName
 
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
         $aggregatedDataObject.FileName = $fileDirName.FileName

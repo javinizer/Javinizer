@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.2]
+### Fixed
+- `-MoveToFolder` and `-RenameFile` being incorrectly applied when `-Multi` is applied
+- Files being moved/named incorrectly when `rename-file=False`
+- nfo files being named incorrectly when `rename-file=False` and `create-nfo-per-file=True`
+
 ## [1.4.1]
 ### Fixed
 - Fixed Javinizer update check
