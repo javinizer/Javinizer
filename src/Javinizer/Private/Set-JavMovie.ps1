@@ -28,7 +28,13 @@ function Set-JavMovie {
         }
 
         $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
-        $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.NfoName + '.nfo')
+
+        if ($Settings.General.'create-nfo-per-file' -eq 'True') {
+            $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.FileName + '.nfo')
+        } else {
+            $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.NfoName + '.nfo')
+        }
+
         $coverPath = Join-Path -Path $folderPath -ChildPath ($DataObject.ThumbnailName + '.jpg')
         $posterPath = Join-Path -Path $folderPath -ChildPath ($DataObject.PosterName + '.jpg')
         $trailerPath = Join-Path -Path $folderPath -ChildPath ($DataObject.TrailerName + '.mp4')
@@ -61,18 +67,20 @@ function Set-JavMovie {
                 # Check that folder path is not longer than 256 characters
                 $pathLength = (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName).Length
                 if ($pathLength -gt 215) {
-                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Path length limitations: [$pathLength characters]"
-                    Write-Log -Log $javinizerLogPath -Level WARN -Text "Skipped: [$($DataObject.OriginalFileName)] Path length limitations: [$pathLength characters]" -UseMutex
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations: [$pathLength characters]"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -DestinationFile (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName) -Text "Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations [$pathLength characters] of 215"
                     continue
                 }
 
-                if (-not (Test-Path -LiteralPath (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName))) {
-                    New-Item -ItemType Directory -Name $DataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction Stop | Out-Null
+                if (!(Test-Path -LiteralPath (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName))) {
+                    New-Item -ItemType Directory -Name $DataObject.FolderName -Path $fixedDestinationPath -Force:$Force -ErrorAction Ignore | Out-Null
                 }
 
-                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
-                $nfoContents | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
-                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                if ($Settings.Metadata.'create-nfo' -eq 'True') {
+                    $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                    $nfoContents | Out-File -LiteralPath $fixednfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                    [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                }
 
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
@@ -80,9 +88,11 @@ function Set-JavMovie {
                     Move-Item -LiteralPath $Path -Destination $fixedFolderPath -Force:$Force -ErrorAction 'Stop'
                 }
             } else {
-                $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
-                $nfoContents | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
-                [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                if ($Settings.Metadata.'create-nfo' -eq 'True') {
+                    $nfoContents = Get-MetadataNfo -DataObject $DataObject -Settings $Settings -R18ThumbCsv $r18ThumbCsv -ErrorAction 'SilentlyContinue'
+                    $nfoContents | Out-File -LiteralPath $fixedNfoPath -Force:$Force -ErrorAction 'SilentlyContinue'
+                    [xml]$nfoXML = Get-Content -LiteralPath $fixedNfoPath
+                }
 
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction 'Stop' | Out-Null
@@ -94,12 +104,13 @@ function Set-JavMovie {
                     if ($null -ne $DataObject.CoverUrl) {
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile(($DataObject.CoverUrl).ToString(), $fixedCoverPath)
-                        } elseif ((-not (Test-Path -LiteralPath $fixedCoverPath))) {
+                        } elseif ((!(Test-Path -LiteralPath $fixedCoverPath))) {
                             $webClient.DownloadFile(($DataObject.CoverUrl).ToString(), $fixedCoverPath)
                         }
                     }
                 } catch {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading cover images"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading cover images [$($PSItem.ToString())]"
                     throw $_
                 }
 
@@ -107,15 +118,15 @@ function Set-JavMovie {
                     if ($Settings.Metadata.'download-poster-img' -eq 'True') {
                         # Double backslash to conform with Python path standards
                         if ($null -ne $DataObject.CoverUrl) {
-                            $pythonCoverPath = $fixedCoverPath -replace '\\', '\\'
-                            $pythonPosterPath = $posterPath -replace '\\', '\\'
+                            $pythonCoverPath = $fixedCoverPath -replace '\\', '/'
+                            $pythonPosterPath = $posterPath -replace '\\', '/'
                             if ($Force.IsPresent) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                     python $cropPath $pythonCoverPath $pythonPosterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                     python3 $cropPath $pythonCoverPath $pythonPosterPath
                                 }
-                            } elseif ((-not (Test-Path -LiteralPath $posterPath))) {
+                            } elseif ((!(Test-Path -LiteralPath $posterPath))) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                     python $cropPath $pythonCoverPath $pythonPosterPath
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
@@ -126,6 +137,7 @@ function Set-JavMovie {
                     }
                 } catch {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error cropping cover to poster image"
+                    Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error cropping cover to poster image [$($PSItem.ToString())]"
                     throw $_
                 }
             }
@@ -138,7 +150,7 @@ function Set-JavMovie {
                         foreach ($screenshot in $DataObject.ScreenshotUrl) {
                             if ($Force.IsPresent) {
                                 $webClient.DownloadFile($screenshot, (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
-                            } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
+                            } elseif (!(Test-Path -LiteralPath (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
                                 $webClient.DownloadFile($screenshot, (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
                             }
                             $index++
@@ -147,6 +159,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading screenshots"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading screenshots $($PSItem.ToString())"
                 throw $_
             }
 
@@ -165,7 +178,7 @@ function Set-JavMovie {
                                 }
                                 if ($Force.IsPresent) {
                                     $webClient.DownloadFile($actress.thumb, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
-                                } elseif (-not (Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
+                                } elseif (!(Test-Path -LiteralPath (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))) {
                                     $webClient.DownloadFile($actress.thumb, (Join-Path -Path $fixedActorPath -ChildPath $actressFileName))
                                 }
                             }
@@ -174,6 +187,7 @@ function Set-JavMovie {
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading actress images"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading actress images $($PSItem.ToString())"
                 throw $_
             }
 
@@ -182,13 +196,14 @@ function Set-JavMovie {
                     if ($null -ne $DataObject.TrailerUrl) {
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile($DataObject.TrailerUrl, $fixedTrailerPath)
-                        } elseif (-not (Test-Path -LiteralPath $trailerPath)) {
+                        } elseif (!(Test-Path -LiteralPath $trailerPath)) {
                             $webClient.DownloadFile($DataObject.TrailerUrl, $fixedTrailerPath)
                         }
                     }
                 }
             } catch {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
+                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading trailer video $($PSItem.ToString())"
                 throw $_
             }
         }
@@ -196,7 +211,11 @@ function Set-JavMovie {
 
     end {
         # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
-        Write-Log -Log $javinizerLogPath -Level INFO -Text "Success: [$($DataObject.OriginalFileName)]" -UseMutex
+        if ($Settings.General.'rename-file' -eq 'True') {
+            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $newFileName) -Text "Success: [$($DataObject.OriginalFileName)]."
+        } else {
+            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $DataObject.OriginalFileName) -Text "Success: [$($DataObject.OriginalFileName)]"
+        }
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }

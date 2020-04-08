@@ -7,32 +7,40 @@ function Start-MultiSort {
         [object]$Settings,
         [ValidateRange(1, 15)]
         [int]$Throttle,
-        [switch]$Strict
+        [switch]$Strict,
+        [switch]$MoveToFolder,
+        [switch]$RenameFile,
+        [switch]$Force
     )
 
     #$files = Get-ChildItem "Z:\git\Projects\JAV-Organizer\dev\dev" | Where-Object { $_.Mode -eq '-a----' -and $_.Extension -eq '.mp4' }
     $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
     $ScriptRoot = $PSScriptRoot
     $ScriptRoot = (Get-Item $ScriptRoot).Parent
-    if ($Strict.IsPresent) {
-        $strictPreference = 'True'
-    } else {
-        $strictPreference = 'False'
-    }
+
+    if ($Force.IsPresent) { $forcePreference = 'True' } else { $forcePreference = 'False' }
+    if ($Strict.IsPresent) { $strictPreference = 'True' } else { $strictPreference = 'False' }
+    if ($MoveToFolder.IsPresent) { $movePreference = 'True' } else { $movePreference = 'False' }
+    if ($RenameFile.IsPresent) { $renamePreference = 'True' } else { $renamePreference = 'False' }
 
     $importVariables = @(
         'ScriptRoot',
         'DestinationPath',
         'Session',
-        'strictPreference'
+        'forcePreference',
+        'strictPreference',
+        'movePreference',
+        'renamePreference'
     )
 
     $files | Start-RSJob -VariablesToImport $importVariables -Verbose:$false -ScriptBlock {
-        if ($strictPreference -eq 'True') {
-            Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot -Strict
-        } else {
-            Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot
-        }
+        if ($forcePreference -eq 'True') { $forceParam = $true } else { $forceParam = $false }
+        if ($strictPreference -eq 'True') { $strictParam = $true } else { $strictParam = $false }
+        if ($movePreference -eq 'True') { $moveParam = $true } else { $moveParam = $false }
+        if ($renamePreference -eq 'True') { $renameParam = $true } else { $renameParam = $false }
+
+        Javinizer -Path $_.FullName -DestinationPath $DestinationPath -ScriptRoot $ScriptRoot -Strict:$strictParam -MoveToFolder:$moveParam -RenameFile:$renameParam -Force:$forceParam
+
     } -Throttle $Throttle -FunctionFilesToImport (Join-Path -Path $PSScriptRoot -ChildPath 'Get-AggregatedDataObject.ps1'), `
     (Join-Path -Path (Get-Item $PSScriptRoot).Parent -ChildPath (Join-Path 'Public' -ChildPath 'Javinizer.ps1')), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-CommaDelimitedString.ps1'), `

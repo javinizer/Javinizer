@@ -128,7 +128,7 @@ SYNTAX
 
     Javinizer [-OpenSettings] [-BackupSettings <String>] [-RestoreSettings <String>] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-OpenLog] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-OpenLog] [-ViewLog] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-SetEmbyActorThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -192,6 +192,9 @@ PARAMETERS
     -OpenLog [<SwitchParameter>]
         The openlog parameter will open your Javinizer.log file located in your module path.
 
+    -ViewLog [<SwitchParameter>]
+        The viewlog parameter will output the Javinizer.log file as a JSON object in your PowerShell console.
+
     -GetThumbs [<SwitchParameter>]
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write
         unknown actress thumburls on sort.
@@ -236,7 +239,7 @@ PARAMETERS
 
 ### Examples
 
-```powershell
+```
 
     -------------------------- EXAMPLE 1 --------------------------
 
@@ -326,6 +329,14 @@ PARAMETERS
     -----------
     Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
 
+    -------------------------- EXAMPLE 12 --------------------------
+
+    PS>Javinizer -ViewLog | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
+
+    Description
+    -----------
+    Outputs your Javinizer log file to the console as a PowerShell object.
+
 ```
 
 ## Content Management System (CMS) Setup
@@ -362,6 +373,10 @@ screenshot-img-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIM
 actorimg-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the actor image folder to your designated string value
 max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your `rename-file-string` or `rename-folder-string`
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
+included-file-extensions | String value | Sets the file extension types for Javinizer to read from your sort directory in comma separated format (no spaces)
+excluded-file-strings | String value | Sets the paths/string values with wildcards (*) for Javinizer to ignore from your sort directory in comma separated format (no spaces)
+create-nfo | True/False | Creates a .nfo metadata file for the sorted movie that follows the nfo-file-string naming format
+create-nfo-per-file | True/False |  Creates a .nfo metadata for each sorted movie that mirrors the name of the movie (Required for Emby/Jellyfin)
 download-thumb-img | True/False | Downloads the movie full-size cover image
 download-poster-img | True/False | Crops the movie full-size cover image to poster size
 download-trailer-vid | True/False | Downloads the movie trailer to your movie directory
@@ -379,15 +394,17 @@ input-path | String value (Path) | The path to your unsorted JAV files
 output-path | String value (Path) | The path to where you want your unsorted JAV files to be sent to when sorted successfully
 server-url | String value (URL) | The address to your Emby/Jellyfin server
 server-api-key | String value | The API key for your Emby/Jellyfin server instance
+log-path | String value (Path) | Sets the path to your log file
+check-updates | True/False | Checks for updates to the Javinizer module upon your first console session runtime
 verbose-shell-output | True/False | Displays verbose output to your shell
 debug-shell-output | True/False | Displays debug output to your shell
 
 ## Other notes
 - If you are scraping large amounts of videos (1000+) with `translate-description=True`, do note that you may get IP banned from the Google Translate API for an indeterminate amount of time (up to 24 hours?)
     - You may want to scrape your library in batches, or set `translate-description=False` to avoid this altogether
-- If you want to update/refresh your existing metadata scraped from Javinizer, you can run a `Javinizer -Path <Path> -Recurse` sort on your sorted folder with `rename-file=False` and `move-to-folder=False`. **Test this in a controlled environment before using it on your existing directories.**
-    - By default, image/trailer files will not be overwritten on a sort, but nfo metadata will be
-        - If you use the `-Force` parameter, Javinizer will also overwrite your image/trailer files
+- If you want to update/refresh your existing metadata scraped from Javinizer, you can run a `Javinizer -Path <Path> -Recurse -MoveToFolder:$false -RenameFile:$false -Multi`
+    - By default, only nfo metadata will be overwritten when running Javinizer on already sorted directories
+        - If you use the `-Force` parameter, Javinizer will also overwrite your image/trailer/etc files
 - Actress metadata scraped from JAVLibrary will match actresses with their thumbnails from your `r18-thumbs.csv` file
 - Actress metadata scraped from JAVLibrary will replace the JAVLibrary names with their R18 names if added to the Alias column in your `r18-thumbs.csv` file
 - If you want to primarily have R18/Dmm metadata, you can set `normalize-genres=True` to have the JAVLibrary genre names converted to their R18 counterparts to have a cleaner/consistent library
@@ -401,7 +418,7 @@ debug-shell-output | True/False | Displays debug output to your shell
 | Unicode error when trying to translate plot description  | Try setting in Windows 10: `Region Settings` -> `Beta: Use Unicode UTF-8 for worldwide language support`. |
 | Descriptions still in Japanese even with `translate-description=True` | You may have been IP banned from the Google Translate API for scraping too much in a short amount of time. Wait a few hours and try again.
 | `crop.py` error when sorting multi-part videos using `-Multi` parameter | Ignore this error as it should not effect the end-result. |
-| Unable to sort videos with letters following the numeric ID (e.g. LE-01D, IBW-500z) | Sort using direct URLs with the `-Url` parameter, or rename the file to exactly how the ID appears on R18/JAVLibrary, and use the `-Strict` parameter when calling Javinizer. This may cause the filename to be appended with `-pt#` depending on which letter is used, but you can also set the setting `rename-file=False` or just rename it manually after.  |
+| Unable to sort videos with letters following the numeric ID (e.g. LE-01D, IBW-500z) | Sort using direct URLs with the `-Url` parameter, or rename the file to exactly how the ID appears on R18/JAVLibrary, and use the `-Strict` parameter (e.g. `Javinizer -Path . -Strict`) when calling Javinizer. This may cause the filename to be appended with `-pt#` depending on which letter is used, but you can also set the setting `rename-file=False` or just rename it manually after.  |
 
 
 ## Todo
@@ -413,4 +430,3 @@ debug-shell-output | True/False | Displays debug output to your shell
 - [x] Normalize genre names between JAVLibrary and R18 - [1.0.0]
 - [x] Add functionality to POST Emby/Jellyfin actress images from `r18-thumbs.csv` - [1.1.0]
 - [x] Add additional language support [1.3.0]
-- [ ] Add additional scraper sources for uncensored JAV

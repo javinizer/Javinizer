@@ -108,8 +108,8 @@ function Get-MetadataNfo {
 
         if ($DataObject.Actress.Count -gt 0) {
             if ($DataObject.Actress.Count -eq 1) {
-                if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress)) {
-                    if (-not (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl))) {
+                if ($DataObject.Actress -notin $csvFullName) {
+                    if (-not (($DataObject.ActressThumbUrl -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl) -or ($DataObject.ActressThumbUrl -eq ''))) {
                         if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
                             $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
                         } else {
@@ -182,7 +182,7 @@ function Get-MetadataNfo {
                             $DataObject.ActressThumbUrl += ''
                         }
                     } else {
-                        if (-not ($R18ThumbCsv.FullName -like $DataObject.Actress[$i])) {
+                        if ($DataObject.Actress[$i] -notin $csvFullName) {
                             if (-not (($DataObject.ActressThumbUrl[$i] -like '*nowprinting*') -or ($null -eq $DataObject.ActressThumbUrl[$i]) -or ($DataObject.ActressThumbUrl[$i] -eq ''))) {
                                 if ($Settings.Metadata.'first-last-name-order' -eq 'True') {
                                     $actressFirstName, $actressLastName = $DataObject.Actress -split ' '
@@ -201,7 +201,18 @@ function Get-MetadataNfo {
                                     Alias            = ''
                                 }
 
-                                $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                                try {
+                                    $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append -NoTypeInformation
+                                } catch {
+                                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], waiting 2 seconds and trying again"
+                                    Start-Sleep -Seconds 2
+                                    try {
+                                        $actressObject | Export-Csv -LiteralPath $r18CsvPath -Append
+                                    } catch {
+                                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error appending actress to [$r18CsvPath], skipping"
+                                    }
+                                }
+                                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Actress [$($DataObject.Actress)] written to [$r18CsvPath]"
                             }
                         }
                     }

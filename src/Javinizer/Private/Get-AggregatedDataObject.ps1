@@ -155,6 +155,7 @@ function Get-AggregatedDataObject {
             NfoName              = $null
             OriginalFileName     = $null
             OriginalDirectory    = $null
+            OriginalFullName     = $null
             PartNumber           = $null
         }
 
@@ -401,10 +402,11 @@ function Get-AggregatedDataObject {
         # Set part number for video before creating new filename
         $aggregatedDataObject.PartNumber = $FileDetails.PartNumber
         $aggregatedDataObject.OriginalDirectory = $FileDetails.OriginalDirectory
+        $aggregatedDataObject.OriginalFileName = $FileDetails.OriginalFileName
+        $aggregatedDataObject.OriginalFullName = $FileDetails.OriginalFullName
 
         $fileDirName = Get-NewFileDirName -DataObject $aggregatedDataObject -Settings $Settings
         $aggregatedDataObject.FileName = $fileDirName.FileName
-        $aggregatedDataObject.OriginalFileName = $fileDirName.OriginalFileName
         $aggregatedDataObject.FolderName = $fileDirName.FolderName
         $aggregatedDataObject.ScreenshotFolderName = $fileDirName.ScreenshotFolderName
         $aggregatedDataObject.ScreenshotImgName = $fileDirName.ScreenshotImgName

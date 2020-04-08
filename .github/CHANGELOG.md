@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1]
+### Fixed
+- Fixed Javinizer update check
+
+## [1.4.0]
+### Added
+- Ability to select which file extensions to use with Javinizer with setting `included-file-extensions`
+- Ability to exclude files that match a string/wildcard value with setting `excluded-file-strings`
+    - This uses the `-Exclude` parameter on cmdlet `Get-ChildItem` which supports string paths/strings with wildcard (*) Regex is NOT supported
+- Ability to omit the creation of a nfo file for a movie with setting `create-nfo`
+- Ability to create a nfo file per movie file sorted (for multi-part videos) with setting `create-nfo-per-file`
+    - This is now set as default, as this is a requirement for metadata to be loaded with movies into Emby/Jellyfin
+- Better logging functionality and setting of a static log path with setting `log-path`
+    - View logs from console with `Javinizer -ViewLog`
+    - Output as a PowerShell object, so you can specify pipeline elements (e.g `Javinizer -ViewLog | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table -Wrap`)
+
+### Changed
+- Removed r18 from default description
+- Logging to JSON formatted
+
+### Fixed
+- `-MoveToFolder`, `-RenameFile`, `-Force` parameters when using `-Multi` sort not being passed through
+- Duplicates being added to r18-thumbs.csv
+- Poster images failing to be cropped from Python when using Windows UNC paths (e.g \\server\jav\unsorted\)
+
 ## [1.3.0]
 ### Added
 - Additional language support for existing scraper sources

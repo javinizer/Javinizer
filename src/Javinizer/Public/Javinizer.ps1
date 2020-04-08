@@ -58,6 +58,9 @@ function Javinizer {
     .PARAMETER OpenLog
         The openlog parameter will open your Javinizer.log file located in your module path.
 
+    .PARAMETER ViewLog
+        The viewlog parameter will output the Javinizer.log file as a JSON object in your PowerShell console.
+
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
@@ -172,6 +175,13 @@ function Javinizer {
         -----------
         Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
 
+    .EXAMPLE
+        PS> Javinizer -ViewLog | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
+
+        Description
+        -----------
+        Outputs your Javinizer log file to the console as a PowerShell object.
+
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -219,6 +229,8 @@ function Javinizer {
         [string]$RestoreSettings,
         [Parameter(ParameterSetName = 'Log')]
         [switch]$OpenLog,
+        [Parameter(ParameterSetName = 'Log')]
+        [switch]$ViewLog,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -252,7 +264,6 @@ function Javinizer {
         $urlLocation = @()
         $urlList = @()
         $index = 1
-        $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
 
         try {
             # Load the settings file from either commandline path or default
@@ -266,10 +277,16 @@ function Javinizer {
             throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
+        if (($settings.Other.'log-path' -eq '') -or ($null -eq $settings.Other.'log-path')) {
+            $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
+        } else {
+            $global:javinizerLogPath = $settings.Other.'log-path' -replace '"', ''
+        }
+
         if ($settings.Other.'check-updates' -eq 'True') {
-            $global:javinizerUpdateCheck = $true
             if (-not ($javinizerUpdateCheck)) {
                 Update-Javinizer
+                $global:javinizerUpdateCheck = $true
             }
         }
 
@@ -368,6 +385,14 @@ function Javinizer {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error opening javinizer.log file from [$javinizerLogPath]"
                             throw $_
                         }
+                    }
+                }
+
+                if ($ViewLog.IsPresent) {
+                    try {
+                        Write-Output (Get-Content -LiteralPath $javinizerLogPath | ConvertFrom-Json)
+                    } catch {
+                        Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error displaying javinizer.log from [$javinizerLogPath]: $($PSItem.ToString())"
                     }
                 }
             }
@@ -516,6 +541,8 @@ function Javinizer {
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as directory and destinationpath: [$($getDestinationPath.FullName)] as directory"
                     Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort path: [$($getPath.FullName)]"
                     Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Destination path: [$($getDestinationPath.FullName)]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Included file ext: [$($Settings.General.'included-file-extensions')]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Excluded file strings: [$($Settings.General.'excluded-file-strings')]"
 
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
@@ -523,7 +550,7 @@ function Javinizer {
                             if ($Javlibrary) {
                                 New-CloudflareSession -ScriptRoot $ScriptRoot
                             }
-                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -Settings $settings
+                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$MoveToFolder -RenameFile:$RenameFile -Force:$Force -Settings $settings
                         } catch {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {
