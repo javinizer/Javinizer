@@ -550,7 +550,21 @@ function Javinizer {
                             if ($Javlibrary) {
                                 New-CloudflareSession -ScriptRoot $ScriptRoot
                             }
-                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$MoveToFolder -RenameFile:$RenameFile -Force:$Force -Settings $settings
+
+                            if ($Settings.General.'move-to-folder' -eq 'True') {
+                                $movePreference = $true
+                            } else {
+                                $movePreference = $false
+                            }
+
+                            if ($Settings.General.'rename-file' -eq 'True') {
+                                $renamePreference = $true
+                            } else {
+                                $renamePreference = $false
+                            }
+
+                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$movePreference -RenameFile:$renamePreference -Force:$Force -Settings $settings
+
                         } catch {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {

@@ -29,8 +29,13 @@ function Set-JavMovie {
 
         $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
 
-        if ($Settings.General.'create-nfo-per-file' -eq 'True') {
-            $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.FileName + '.nfo')
+
+        if ($Settings.Metadata.'create-nfo-per-file' -eq 'True') {
+            if ($Settings.General.'rename-file' -eq 'True') {
+                $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.FileName + '.nfo')
+            } else {
+                $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.OriginalBaseName + '.nfo')
+            }
         } else {
             $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.NfoName + '.nfo')
         }
@@ -85,7 +90,7 @@ function Set-JavMovie {
                 if ($Settings.General.'rename-file' -eq 'True') {
                     Rename-Item -LiteralPath $Path -NewName $newFileName -PassThru -Force:$Force -ErrorAction Stop | Move-Item -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
                 } else {
-                    Move-Item -LiteralPath $Path -Destination $fixedFolderPath -Force:$Force -ErrorAction 'Stop'
+                    Move-Item -LiteralPath $Path -Destination $folderPath -Force:$Force -ErrorAction 'Stop'
                 }
             } else {
                 if ($Settings.Metadata.'create-nfo' -eq 'True') {
