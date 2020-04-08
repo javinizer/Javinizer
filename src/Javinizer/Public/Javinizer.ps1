@@ -175,6 +175,13 @@ function Javinizer {
         -----------
         Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
 
+    .EXAMPLE
+        PS> Javinizer -ViewLog | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
+
+        Description
+        -----------
+        Outputs your Javinizer log file to the console as a PowerShell object.
+
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]

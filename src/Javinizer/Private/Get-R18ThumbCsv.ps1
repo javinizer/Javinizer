@@ -48,8 +48,8 @@ function Get-R18ThumbCsv {
                     foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
                         $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
+                        $actressFirstName = (((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', '') -replace '&middot;', ''
+                        $actressLastName = (((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', '') -replace '&middot;', ''
                         $actressFullName = (($ActressFirstName + ' ' + $actressLastName) -split '（')[0]
                         $actressFullNameReversed = (($actressLastName + ' ' + $actressFirstName) -split '（')[0]
                         $actressAliases = ((($actressFirstName -split '（')[1] -split '）')[0] -split '、') -join ','
@@ -84,8 +84,8 @@ function Get-R18ThumbCsv {
                     foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
                         $actressThumbUrl = ((($actressBlock -split 'src="')[1] -split '"')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressFirstName = ((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
-                        $actressLastName = ((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', ''
+                        $actressFirstName = (((($actressBlock -split '<div>')[1] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', '') -replace '&middot;', ''
+                        $actressLastName = (((($actressBlock -split '<div>')[2] -split '<\/div>')[0] -replace '\.\.\.', '') -replace '\\', '') -replace '&middot;', ''
                         $actressFullName = (($ActressFirstName + ' ' + $actressLastName) -split '（')[0]
                         $actressFullNameReversed = (($actressLastName + ' ' + $actressFirstName) -split '（')[0]
                         $actressAliases = ((($actressFirstName -split '（')[1] -split '）')[0] -split '、') -join ','
