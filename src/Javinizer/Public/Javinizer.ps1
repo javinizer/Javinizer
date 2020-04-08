@@ -564,6 +564,7 @@ function Javinizer {
                             }
 
                             Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$movePreference -RenameFile:$renamePreference -Force:$Force -Settings $settings
+
                         } catch {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
                         } finally {

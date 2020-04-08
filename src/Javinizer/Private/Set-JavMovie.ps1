@@ -29,6 +29,7 @@ function Set-JavMovie {
 
         $fixedFolderPath = ($folderPath.replace('[', '`[')).replace(']', '`]')
 
+
         if ($Settings.Metadata.'create-nfo-per-file' -eq 'True') {
             if ($Settings.General.'rename-file' -eq 'True') {
                 $nfoPath = Join-Path -Path $folderPath -ChildPath ($DataObject.FileName + '.nfo')
