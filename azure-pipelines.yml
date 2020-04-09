@@ -25,8 +25,6 @@ jobs:
         artifact: Javinizer
     - pwsh: |
         Get-ChildItem . -Recurse -Depth 4
-      inputs:
-        displayName: 'Get file structure'
 
   - job: build_pwsh_ubuntuLatest
     pool:
