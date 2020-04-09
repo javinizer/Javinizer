@@ -126,6 +126,8 @@ SYNTAX
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
+    Javinizer [-Version] [-ScriptRoot <String>] [<CommonParameters>]
+
     Javinizer [-OpenSettings] [-BackupSettings <String>] [-RestoreSettings <String>] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-OpenLog] [-ViewLog <String>] [-LogLevel <String>] [-Entries <Int32>] [-Order <String>] [-ScriptRoot <String>] [<CommonParameters>]
@@ -179,6 +181,9 @@ PARAMETERS
 
     -Help [<SwitchParameter>]
         The help parameter will open a help dialogue in your console for Javinizer usage.
+
+    -Version [<SwitchParameter>]
+        The version parameter will display Javinizer's current module version.
 
     -OpenSettings [<SwitchParameter>]
         The opensettings parameter will open your settings.ini file for you to view and edit.

@@ -46,6 +46,9 @@ function Javinizer {
     .PARAMETER Help
         The help parameter will open a help dialogue in your console for Javinizer usage.
 
+    .PARAMETER Version
+        The version parameter will display Javinizer's current module version.
+
     .PARAMETER OpenSettings
         The opensettings parameter will open your settings.ini file for you to view and edit.
 
@@ -237,6 +240,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Help')]
         [Alias('h')]
         [switch]$Help,
+        [Parameter(ParameterSetName = 'Version')]
+        [Alias('v')]
+        [switch]$Version,
         [Parameter(ParameterSetName = 'Settings')]
         [switch]$OpenSettings,
         [Parameter(ParameterSetName = 'Settings')]
@@ -482,6 +488,10 @@ function Javinizer {
 
             'Help' {
                 help Javinizer
+            }
+
+            'Version' {
+                Get-InstalledModule -Name Javinizer
             }
 
             'Thumbs' {
