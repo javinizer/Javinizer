@@ -187,16 +187,14 @@ Add-BuildTask Test {
     }
     if (Test-Path -Path $script:UnitTestsPath) {
         $invokePesterParams = @{
-            Path                   = 'Tests\Unit'
-            Strict                 = $false
-            PassThru               = $true
-            Verbose                = $false
-            EnableExit             = $false
-            CodeCoverage           = "$ModuleName\*\*.ps1"
-            CodeCoverageOutputFile = "$codeCovPath\CodeCoverage.xml"
-            # CodeCoverage                 = "$ModuleName\*\*.ps1"
-            # CodeCoverageOutputFile       = "$codeCovPath\codecoverage.xml"
-            # CodeCoverageOutputFileFormat = 'JaCoCo'
+            Path                         = 'Tests\Unit'
+            Strict                       = $false
+            PassThru                     = $true
+            Verbose                      = $false
+            EnableExit                   = $false
+            CodeCoverage                 = "$ModuleName\*\*.ps1"
+            CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
+            CodeCoverageOutputFileFormat = 'NUnitXml'
         }
 
         Write-Build White '      Performing Pester Unit Tests...'

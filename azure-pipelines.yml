@@ -16,13 +16,17 @@ jobs:
     - task: PublishTestResults@2
       inputs:
         testRunner: 'NUnit'
-        testResultsFiles: '**/out/testResults.xml'
+        testResultsFiles: '$(Build.SourcesDirectory)\ccReport\codeCoverage.xml'
         testRunTitle: 'pwsh_winLatest'
-      # displayName: 'Publish Test Results'
+        displayName: 'Publish Test Results'
     - task: PublishPipelineArtifact@1
       inputs:
         path: $(Build.SourcesDirectory)\src\Artifacts
         artifact: Javinizer
+    - pwsh: |
+        Get-ChildItem . -Recurse -Depth 4
+      inputs:
+        displayName: 'Get file structure'
 
   - job: build_pwsh_ubuntuLatest
     pool:
@@ -38,9 +42,9 @@ jobs:
     - task: PublishTestResults@2
       inputs:
         testRunner: 'NUnit'
-        testResultsFiles: '**/out/testResults.xml'
+        testResultsFiles: '$(Build.SourcesDirectory)\ccReport\codeCoverage.xml'
         testRunTitle: 'pwsh_ubuntuLatest'
-      # displayName: 'Publish Test Results'
+        displayName: 'Publish Test Results'
 
   - job: build_pwsh_macOSLatest
     pool:
@@ -57,6 +61,6 @@ jobs:
     - task: PublishTestResults@2
       inputs:
         testRunner: 'NUnit'
-        testResultsFiles: '**/out/testResults.xml'
+        testResultsFiles: '$(Build.SourcesDirectory)\ccReport\codeCoverage.xml'
         testRunTitle: 'pwsh_macOSLatest'
-      # displayName: 'Publish Test Results'
+        displayName: 'Publish Test Results'
