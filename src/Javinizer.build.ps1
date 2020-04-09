@@ -194,7 +194,7 @@ Add-BuildTask Test {
             EnableExit                   = $false
             CodeCoverage                 = "$ModuleName\*\*.ps1"
             CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
-            CodeCoverageOutputFileFormat = 'NUnitXml'
+            CodeCoverageOutputFileFormat = 'JaCoCo'
         }
 
         Write-Build White '      Performing Pester Unit Tests...'
