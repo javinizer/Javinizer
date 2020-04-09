@@ -3,7 +3,7 @@ function Update-Javinizer {
     $latestVer = (Find-Module -Name Javinizer).Version
 
     if ($currentVer -ne $latestVer) {
-        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There is a newer version of Javinizer available: [$currentVer --> $latestVer]"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There is a newer version of Javinizer available: [$currentVer --> $latestVer]" -ForegroundColor Red
     }
 }
 
