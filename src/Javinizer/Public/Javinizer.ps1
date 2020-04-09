@@ -59,7 +59,16 @@ function Javinizer {
         The openlog parameter will open your Javinizer.log file located in your module path.
 
     .PARAMETER ViewLog
-        The viewlog parameter will output the Javinizer.log file as a JSON object in your PowerShell console.
+        The viewlog parameter will output the Javinizer.log file in your console.
+
+    .PARAMETER LogLevel
+        The loglevel parameter will allow you to select which logging level to view (INFO, ERROR, WARN, DEBUG)
+
+    .PARAMETER Entries
+        The entries parameter lets you select the amount of log entries to view
+
+    .PARAMETER Order
+        The order parameter lets you select which sort order to view your log entries (Asc, Desc) with descending being default
 
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
@@ -176,7 +185,14 @@ function Javinizer {
         Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
 
     .EXAMPLE
-        PS> Javinizer -ViewLog | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
+        PS> Javinizer -ViewLog List -Entries 5 -LogLevel Error
+
+        Description
+        -----------
+        Writes your latest 5 error log entries in list view to the console from your Javinizer log file.
+
+    .EXAMPLE
+        PS> Javinizer -ViewLog Object | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
 
         Description
         -----------
