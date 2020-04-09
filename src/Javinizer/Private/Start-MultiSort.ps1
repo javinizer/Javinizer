@@ -46,10 +46,13 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-CommaDelimitedString.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-HTMLCharacter.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Convert-JavTitle.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Display-ConfirmMessage.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Format-Color.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-DmmDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-FindDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavlibraryDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavlibraryUrl.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Get-Log.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-MetadataNfo.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-MetadataPriority.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-NewFileDirName.ps1'), `

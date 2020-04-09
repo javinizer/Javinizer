@@ -217,7 +217,7 @@ function Set-JavMovie {
     end {
         # Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Success: [$($DataObject.OriginalFileName)]"
         if ($Settings.General.'rename-file' -eq 'True') {
-            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $newFileName) -Text "Success: [$($DataObject.OriginalFileName)]."
+            Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $newFileName) -Text "Success: [$($DataObject.OriginalFileName)]"
         } else {
             Write-Log -Log $javinizerLogPath -Level INFO -OriginalFile $DataObject.OriginalFullName -DestinationFile (Join-Path -Path $folderPath -ChildPath $DataObject.OriginalFileName) -Text "Success: [$($DataObject.OriginalFileName)]"
         }

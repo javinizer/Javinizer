@@ -230,7 +230,18 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Log')]
         [switch]$OpenLog,
         [Parameter(ParameterSetName = 'Log')]
-        [switch]$ViewLog,
+        [ValidateSet('List', 'Grid', 'Table', 'Object')]
+        [string]$ViewLog,
+        [Parameter(ParameterSetName = 'Log')]
+        [ValidateSet('INFO', 'WARN', 'ERROR', 'DEBUG')]
+        [string]$LogLevel,
+        [Parameter(ParameterSetName = 'Log')]
+        [int]$Entries,
+        [Parameter(ParameterSetName = 'Log')]
+        [ValidateSet('Asc', 'Desc')]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [string]$Order,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -388,9 +399,17 @@ function Javinizer {
                     }
                 }
 
-                if ($ViewLog.IsPresent) {
+                if ($ViewLog) {
                     try {
-                        Write-Output (Get-Content -LiteralPath $javinizerLogPath | ConvertFrom-Json)
+                        if (!($PSBoundParameters.ContainsKey('Entries'))) {
+                            $Entries = 10
+                        }
+
+                        if ($PSBoundParameters.ContainsKey('LogLevel')) {
+                            Get-Log -Path $javinizerLogPath -LogView $ViewLog -LogLevel $LogLevel -Entries $Entries -Order $Order
+                        } else {
+                            Get-Log -Path $javinizerLogPath -LogView $ViewLog -Entries $Entries -Order $Order
+                        }
                     } catch {
                         Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error displaying javinizer.log from [$javinizerLogPath]: $($PSItem.ToString())"
                     }

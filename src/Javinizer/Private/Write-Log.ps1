@@ -49,10 +49,10 @@ function Write-Log {
     $logJSON = [ordered]@{
         'timestamp'       = $timestamp
         'level'           = $level
+        'message'         = $Text
         'originalfile'    = $OriginalFile
         'destinationfile' = $DestinationFile
-        'message'         = $Text
-    } | ConvertTo-Json -Compress
+    } | ConvertTo-Json -Compress | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
 
     # $line = "{`"timestamp`": `"$timestamp`", `"level`": `"$level`", `"originalfile`": `"$OriginalFile`", `"destinationfile`": `"$DestinationFile`", `"message`": `"$Text`"}"
 

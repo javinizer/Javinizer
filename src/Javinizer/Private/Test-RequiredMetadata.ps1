@@ -28,8 +28,8 @@ function Test-RequiredMetadata {
         if ($errors -eq 0) {
             Write-Output $DataObject
         } else {
-            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] $errors null fields: [$nullFields]"
-            Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFullName -Text "Skipped: $errors null fields: [$nullFields]"
+            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] $errors null required fields: [$nullFields]"
+            Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFullName -Text "Skipped: [$($DataObject.OriginalFileName)] $errors null required fields: [$nullFields]"
             continue
         }
     }
