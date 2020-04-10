@@ -21,9 +21,9 @@ function Get-JavbusDataObject {
 
         }
 
-        if ($null -ne $javlibraryUrl) {
+        if ($null -ne $javbusUrl) {
             try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javbusUrl]"
                 $webRequest = Invoke-RestMethod -Uri $javbusUrl
                 $movieDataObject = [pscustomobject]@{
                     Source        = 'javbus'
@@ -206,9 +206,9 @@ function Get-JavbusActress {
 
     process {
         $actress = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String '<a href="(.*)\/star\/(.*)">(.*)<\/a>').Matches |
-        ForEach-Object { $_.Groups[3].Value } |
-        Where-Object { $_ -ne '' } |
+                    Select-String '<a href="(.*)\/star\/(.*)">(.*)<\/a>').Matches |
+                ForEach-Object { $_.Groups[3].Value } |
+            Where-Object { $_ -ne '' } |
         Select-Object -Unique
 
         Write-Output $actress
