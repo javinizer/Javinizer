@@ -71,7 +71,7 @@ function Set-JavMovie {
 
                 # Check that folder path is not longer than 256 characters
                 $pathLength = (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName).Length
-                if ($pathLength -gt 215) {
+                if ($pathLength -gt $Settings.General.'max-path-length') {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations: [$pathLength characters]"
                     Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -DestinationFile (Join-Path -Path $fixedDestinationPath -ChildPath $DataObject.FolderName) -Text "Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations [$pathLength characters] of 215"
                     continue
