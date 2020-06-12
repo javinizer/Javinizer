@@ -496,7 +496,7 @@ function Javinizer {
 
             'Thumbs' {
                 if ($GetThumbs.IsPresent) {
-                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Force:$Force
+                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Settings $settings -Force:$Force
                 } elseif ($OpenThumbs.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                         try {

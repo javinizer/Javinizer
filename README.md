@@ -379,6 +379,8 @@ scrape-dmm | True/False | Turns on the scraper for dmm.co.jp
 scrape-javlibrary | True/False | Turns on the scraper for the English version of javlibrary.com
 scrape-javlibraryja | True/False | Turns on the scraper for the Japanese version of javlibrary.com
 scrape-javlibraryzh | True/False | Turns on the scraper for the Chinese version of javlibrary.com
+scrape-actress-en | True/False | Turns on the scraper for english actress names on R18.com
+scrape-actress-ja | True/False | Turns on the scraper for japanese actress names on R18.com
 multi-sort-throttle-limit | Integer value (1-15) | Sets the amount of threads to run the sort in parallel
 move-to-folder | True/False | Moves the sorted video to a new directory if found by scrapers
 rename-file | True/False | Renames the sorted video if found by scrapers
@@ -394,6 +396,7 @@ screenshot-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUN
 screenshot-img-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the movie screenshot image to your designated string value with an appended increasing numeric value
 actorimg-folder-string | \<ID> \<TITLE> \<STUDIO> \<YEAR> \<RELEASEDATE> \<RUNTIME> \<ACTORS> \<LABEL> \<SET> \<ORIGINALTITLE> | Renames the actor image folder to your designated string value
 max-title-length | Integer value (1-255) | Sets the amount of characters to limit the metadata \<TITLE> to if it is included in your `rename-file-string` or `rename-folder-string`
+max-path-length | Integer value (0+) | Sets the amount of characters to limit the full path length of sorted file (e.g `C:\JAV\Sorted\MIRD-149 [MOODYZ] - Fan Thanksgiving Day From MOODYZ! Creampies From The Comfort Of Home! A 4 Hour Large Orgies Special (2015)\MIRD-149.wmv` is 153 characters)
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
 included-file-extensions | String value | Sets the file extension types for Javinizer to read from your sort directory in comma separated format (no spaces)
 excluded-file-strings | String value | Sets the paths/string values with wildcards (*) for Javinizer to ignore from your sort directory in comma separated format (no spaces)

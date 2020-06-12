@@ -3,6 +3,7 @@ function Get-R18ThumbCsv {
     param(
         [int]$NewPages,
         [string]$ScriptRoot,
+        [object]$Settings,
         [switch]$Force
     )
 
@@ -37,13 +38,17 @@ function Get-R18ThumbCsv {
                     $actressHtmlArray = @()
                     $actressObject = @()
 
-                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_" -Verbose:$false
-                    $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    if ($Settings.Main.'scrape-actress-en' -eq 'True') {
+                        $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_" -Verbose:$false
+                        $actressHtml = $webRequest.Content -split '<p><img '
+                        $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    }
 
-                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_/?lg=zh" -Verbose:$false
-                    $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    if ($Settings.Main.'scrape-actress-ja' -eq 'True') {
+                        $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_/?lg=zh" -Verbose:$false
+                        $actressHtml = $webRequest.Content -split '<p><img '
+                        $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    }
 
                     foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
@@ -73,13 +78,17 @@ function Get-R18ThumbCsv {
                     $actressHtmlArray = @()
                     $actressObject = @()
 
-                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
-                    $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    if ($Settings.Main.'scrape-actress-en' -eq 'True') {
+                        $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
+                        $actressHtml = $webRequest.Content -split '<p><img '
+                        $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    }
 
-                    $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_/?lg=zh" -Verbose:$false
-                    $actressHtml = $webRequest.Content -split '<p><img '
-                    $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    if ($Settings.Main.'scrape-actress-ja' -eq 'True') {
+                        $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_/?lg=zh" -Verbose:$false
+                        $actressHtml = $webRequest.Content -split '<p><img '
+                        $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
+                    }
 
                     foreach ($actress in $actressHtmlArray) {
                         $actressBlock = ($actress -split '<\/a>')[0]
