@@ -50,6 +50,8 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Format-Color.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-DmmDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-FindDataObject.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavbusUrl.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavbusDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavlibraryDataObject.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-JavlibraryUrl.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Get-Log.ps1'), `

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.3]
+### Added
+- Initial JavBus scraper functionality
+    - Setting scrape-javbus, scrape-javbusja
+- Setting `max-path-length` to allow user to define maximum path length of sorted files
+- Enhanced `-ViewLog` functionality and parameters
+    - Colored output for ERROR and WARN log messages
+    - -ViewLog <String> (List, Object, Table, Grid)
+    - -Entries <Int>
+    - -Order <String> (Asc, Desc) Default: Desc
+    - -LogLevel <String> (Info, Error, Warn, Debug)
+    - Examples:
+        - `Javinizer -ViewLog List`
+        - `Javinizer -ViewLog Table -LogLevel Error -Entries 10`
+        - `Javinizer -ViewLog Object | Where-Object {$_.message -like 'Skipped*'}`
+
+### Removed
+- Host output when Javinizer function is started/stopped
 
 ## [1.4.2]
 ### Fixed
