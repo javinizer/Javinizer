@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.4.3]
+## [1.5.0]
 ### Added
 - Initial JavBus scraper functionality
     - Setting scrape-javbus, scrape-javbusja
+- Setting toggle for r18.com actress name language scraping to csv when using -GetThumbs or -UpdateThumbs
+    - scrape-actress-en
+    - scrape-actress-ja
 - Setting `max-path-length` to allow user to define maximum path length of sorted files
 - Enhanced `-ViewLog` functionality and parameters
     - Colored output for ERROR and WARN log messages
