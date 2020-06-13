@@ -446,9 +446,6 @@ function Javinizer {
                         } else {
                             Get-Log -Path $javinizerLogPath -LogView $ViewLog -Entries $Entries -Order $Order
                         }
-                if ($ViewLog.IsPresent) {
-                    try {
-                        Write-Output (Get-Content -LiteralPath $javinizerLogPath | ConvertFrom-Json)
                     } catch {
                         Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error displaying javinizer.log from [$javinizerLogPath]: $($PSItem.ToString())"
                     }
@@ -514,9 +511,6 @@ function Javinizer {
             'Thumbs' {
                 if ($GetThumbs.IsPresent) {
                     Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Settings $settings -Force:$Force
-            'Thumbs' {
-                if ($GetThumbs.IsPresent) {
-                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Force:$Force
                 } elseif ($OpenThumbs.IsPresent) {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                         try {

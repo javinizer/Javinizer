@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## [1.5.0]
 ### Added
 - Initial JavBus scraper functionality
@@ -27,7 +26,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 - Host output when Javinizer function is started/stopped
-
 
 ## [1.4.2]
 ### Fixed
