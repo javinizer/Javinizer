@@ -54,12 +54,12 @@ function Test-UrlLocation {
             } elseif ($link -match 'javbus') {
                 if ($link -match '/ja') {
                     $testUrlObject = [pscustomobject]@{
-                        Url = $link
+                        Url    = $link
                         Result = 'javbusja'
                     }
                 } else {
                     $testUrlObject = [pscustomobject]@{
-                        Url = $link
+                        Url    = $link
                         Result = 'javbus'
                     }
                 }
