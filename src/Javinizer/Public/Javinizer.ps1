@@ -20,7 +20,7 @@ function Javinizer {
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
 
     .PARAMETER ImportSettings
-            The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
+        The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
 
     .PARAMETER Url
         The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs comma-separated-format (url1,url2,url3).
@@ -102,6 +102,15 @@ function Javinizer {
 
     .Parameter JavlibraryJa
         The javlibraryja parameter allows you to set your data source of JAVLibraryJa to true.
+
+    .Parameter Javbus
+        The javbus parameter allows you to set your data source of JAVLibraryJa to true.
+
+    .Parameter JavbusJa
+        The javbusja parameter allows you to set your data source of JAVLibraryJa to true.
+
+    .Parameter Jav321
+        The jav321 parameter allows you to set your data source of JAVLibraryJa to true.
 
     .PARAMETER Force
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.

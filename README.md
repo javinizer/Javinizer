@@ -1,7 +1,7 @@
 # Javinizer (JAV Organizer)
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
 [![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Release)](https://github.com/jvlflame/Javinizer/releases)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Last%20Commit)](https://github.com/jvlflame/Javinizer/commits/master)
+[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Last%20Commit)](https://github.com/jvlflame/Javinizer/commits/dev)
 [![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/)
 [![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
 [![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
@@ -120,9 +120,9 @@ SYNOPSIS
 
 SYNTAX
     Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Url <String>] [-Apply] [-Multi] [-Recurse] [-Strict][-Force] [-ImportSettings <String>]
-    [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-ScriptRoot <String>] [<CommonParameters>]
+    [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus] [-JavbusJa] [-Jav321] [-ScriptRoot <String>] [<CommonParameters>]
 
-    Javinizer [-Find] <String> [-Aggregated] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-ScriptRoot <String>] [<CommonParameters>]
+    Javinizer [-Find] <String> [-Aggregated] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus] [-JavbusJa] [-Jav321] [-ScriptRoot <String>] [<CommonParameters>]
 
     Javinizer [-Help] [-ScriptRoot <String>] [<CommonParameters>]
 
@@ -379,6 +379,9 @@ scrape-dmm | True/False | Turns on the scraper for dmm.co.jp
 scrape-javlibrary | True/False | Turns on the scraper for the English version of javlibrary.com
 scrape-javlibraryja | True/False | Turns on the scraper for the Japanese version of javlibrary.com
 scrape-javlibraryzh | True/False | Turns on the scraper for the Chinese version of javlibrary.com
+scrape-javbus | True/False | Turns on the scraper for the English version of javbus.com
+scrape-javbusja | True/False | Turns on the scraper for the Japanese version of javbus.com
+scrape-jav321 | True/False | Turns on the scraper for the Japanese version of jav321.com
 scrape-actress-en | True/False | Turns on the scraper for english actress names on R18.com
 scrape-actress-ja | True/False | Turns on the scraper for japanese actress names on R18.com
 multi-sort-throttle-limit | Integer value (1-15) | Sets the amount of threads to run the sort in parallel
@@ -425,6 +428,7 @@ verbose-shell-output | True/False | Displays verbose output to your shell
 debug-shell-output | True/False | Displays debug output to your shell
 
 ## Other notes
+- If your library consists of both censored and uncensored movies, I recommend keeping 2 separate settings files for each group. You can then use the `-ImportSettings` parameter to specify the second settings file
 - If you are scraping large amounts of videos (1000+) with `translate-description=True`, do note that you may get IP banned from the Google Translate API for an indeterminate amount of time (up to 24 hours?)
     - You may want to scrape your library in batches, or set `translate-description=False` to avoid this altogether
 - If you want to update/refresh your existing metadata scraped from Javinizer, you can run a `Javinizer -Path <Path> -Recurse -MoveToFolder:$false -RenameFile:$false -Multi`
