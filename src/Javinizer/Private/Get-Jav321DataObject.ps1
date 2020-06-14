@@ -33,7 +33,6 @@ function Get-Jav321DataObject {
                     Year            = Get-Jav321ReleaseYear -WebRequest $webRequest
                     Runtime         = Get-Jav321Runtime -WebRequest $webRequest
                     Maker           = Get-Jav321Maker -WebRequest $webRequest
-                    Rating          = Get-Jav321Rating -WebRequest $webRequest
                     Actress         = (Get-Jav321Actress -WebRequest $webRequest).Name
                     ActressThumbUrl = (Get-Jav321Actress -WebRequest $webRequest).ThumbUrl
                     Genre           = Get-Jav321Genre -WebRequest $webRequest
@@ -161,16 +160,6 @@ function Get-Jav321Maker {
     }
 }
 
-function Get-Jav321Rating {
-    param (
-        [object]$WebRequest
-    )
-
-    process {
-        # Write-Output $rating
-    }
-}
-
 function Get-Jav321Genre {
     param (
         [object]$WebRequest
@@ -183,8 +172,8 @@ function Get-Jav321Genre {
     process {
         try {
             $genre = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<span class="genre"><a href="(.*)\/genre\/(.*)">(.*)<\/a><\/span>').Matches |
-                    ForEach-Object { $_.Groups[3].Value }
+                Select-String '<a href="\/genre\/(.*)\/(.*)">(.*)<\/a> ').Matches.Groups[0] -split '<\/a>' |
+                    ForEach-Object { ($_ -split '>')[1] }
         } catch {
             return
         }
@@ -235,7 +224,7 @@ function Get-Jav321CoverUrl {
     process {
         try {
             $coverUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" src="(.*)" onerror').Matches.Groups[1].Value -split '"')[4]
+                Select-String -Pattern 'poster="(.*).jpg">').Matches.Groups[1].Value) + '.jpg'
         } catch {
             return
         }
@@ -256,11 +245,18 @@ function Get-Jav321ScreenshotUrl {
     process {
         try {
             $screenshotUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" src="(.*)" onerror') -split "src=\'" |
+                Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" src="(.*)"') -split "src=\'" |
                     Select-String -Pattern "(https:\/\/www.jav321.com\/digital\/video\/(.*)\/(.*).jpg)(.*)<\/a>").Matches |
                         ForEach-Object { $_.Groups[1].Value }
         } catch {
-            return
+            try {
+                $screenshotUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String -Pattern '<a href="\/snapshot/(.*)\/(.*)\/(.*)"><img class="img-responsive"') -split 'src="' |
+                    Select-String -Pattern '(https:\/\/www.jav321.com\/\/images\/(.*)\/(.*)\/(.*)\/(.*).jpg)"><\/a><\/p>').Matches |
+                        ForEach-Object { $_.Groups[1].Value }
+            } catch {
+                return
+            }
         }
 
         Write-Output $screenshotUrl
