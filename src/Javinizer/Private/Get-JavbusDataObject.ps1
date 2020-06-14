@@ -28,24 +28,25 @@ function Get-JavbusDataObject {
         if ($null -ne $javbusUrl) {
             try {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javbusUrl]"
-                $webRequest = Invoke-RestMethod -Uri $javbusUrl
+                $webRequest = Invoke-RestMethod -Uri $javbusUrl -Verbose:$false
                 $movieDataObject = [pscustomobject]@{
-                    Source        = 'javbus'
-                    Url           = $javbusUrl
-                    Id            = Get-JavbusId -WebRequest $webRequest
-                    Title         = Get-JavbusTitle -WebRequest $webRequest
-                    Date          = Get-JavbusReleaseDate -WebRequest $webRequest
-                    Year          = Get-JavbusReleaseYear -WebRequest $webRequest
-                    Runtime       = Get-JavbusRuntime -WebRequest $webRequest
-                    Director      = Get-JavbusDirector -WebRequest $webRequest
-                    Maker         = Get-JavbusMaker -WebRequest $webRequest
-                    Label         = Get-JavbusLabel -WebRequest $webRequest
-                    Series        = Get-JavbusSeries -WebRequest $webRequest
-                    Rating        = Get-JavbusRating -WebRequest $webRequest
-                    Actress       = Get-JavbusActress -WebRequest $webRequest
-                    Genre         = Get-JavbusGenre -WebRequest $webRequest
-                    CoverUrl      = Get-JavbusCoverUrl -WebRequest $webRequest
-                    ScreenshotUrl = Get-JavbusScreenshotUrl -WebRequest $webRequest
+                    Source          = 'javbus'
+                    Url             = $javbusUrl
+                    Id              = Get-JavbusId -WebRequest $webRequest
+                    Title           = Get-JavbusTitle -WebRequest $webRequest
+                    Date            = Get-JavbusReleaseDate -WebRequest $webRequest
+                    Year            = Get-JavbusReleaseYear -WebRequest $webRequest
+                    Runtime         = Get-JavbusRuntime -WebRequest $webRequest
+                    Director        = Get-JavbusDirector -WebRequest $webRequest
+                    Maker           = Get-JavbusMaker -WebRequest $webRequest
+                    Label           = Get-JavbusLabel -WebRequest $webRequest
+                    Series          = Get-JavbusSeries -WebRequest $webRequest
+                    Rating          = Get-JavbusRating -WebRequest $webRequest
+                    Actress         = (Get-JavbusActress -WebRequest $webRequest).Name
+                    ActressThumbUrl = (Get-JavbusActress -WebRequest $webRequest).ThumbUrl
+                    Genre           = Get-JavbusGenre -WebRequest $webRequest
+                    CoverUrl        = Get-JavbusCoverUrl -WebRequest $webRequest
+                    ScreenshotUrl   = Get-JavbusScreenshotUrl -WebRequest $webRequest
                 }
             } catch {
                 throw $_
@@ -272,11 +273,22 @@ function Get-JavbusActress {
                     ForEach-Object { $_.Groups[3].Value } |
                         Where-Object { $_ -ne '' } |
                             Select-Object -Unique
+
+            $actressThumb = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String '<a href="(.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches |
+                    ForEach-Object { $_.Groups[3].Value} |
+                        Where-Object { $_ -ne ''}
+
+
+            $movieActressObject = [pscustomobject]@{
+                Name     = $actress
+                ThumbUrl = $actressThumb
+            }
         } catch {
             return
         }
 
-        Write-Output $actress
+        Write-Output $movieActressObject
     }
 }
 
