@@ -92,10 +92,11 @@ function Get-JavbusTitle {
         $title = ($WebRequest | ForEach-Object { $_ -split '\n' } |
             Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[2].Value
 
-        $title = Convert-HtmlCharacter -String $title
         } catch {
             return
         }
+
+        $title = Convert-HtmlCharacter -String $title
         Write-Output $title
     }
 }
