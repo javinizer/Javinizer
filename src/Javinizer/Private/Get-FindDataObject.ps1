@@ -10,6 +10,7 @@ function Get-FindDataObject {
         [switch]$JavlibraryJa,
         [switch]$Javbus,
         [switch]$JavbusJa,
+        [switch]$Jav321,
         [switch]$R18,
         [switch]$R18Zh
     )
@@ -19,13 +20,14 @@ function Get-FindDataObject {
         $urlList = @()
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
-            (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
-                (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-                            -not ($PSBoundParameters.ContainsKey('r18zh')) -and `
-                                -not ($PSBoundParameters.ContainsKey('javbus')) -and `
-                                    -not ($PSBoundParameters.ContainsKey('javbusja'))))))) {
+        (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') {
                 $R18 = $true
             }
@@ -48,7 +50,11 @@ function Get-FindDataObject {
                 $Javbus = $true
             }
             if ($settings.Main.'scrape-javbusja' -eq 'true') {
-                $JavbusJa = $true
+                $javbusJa = $true
+            }
+
+            if ($settings.Main.'scrape-jav321' -eq 'true') {
+                $jav321 = $true
             }
         }
     }
@@ -104,12 +110,17 @@ function Get-FindDataObject {
                     $javbusData = Get-JavbusDataObject -Url $Find -Ja -ErrorAction 'SilentlyContinue'
                     Write-Output $javbusData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
+
+                if ($urlLocation.Result -eq 'jav321') {
+                    $jav321Data = Get-Jav321DataObject -Url $Find -ErrorAction 'SilentlyContinue'
+                    Write-Output $jav321Data | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
             }
         } elseif ($null -ne $getItem) {
             if (Test-Path -Path $getItem -PathType Leaf) {
                 $fileDetails = Convert-JavTitle -Path $Find -Recurse:$Recurse -Settings $Settings
                 if ($Aggregated.IsPresent) {
-                    $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $ettings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Javbus:$Javbus -JavbusJa:$JavbusJa -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                    $aggregatedDataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $ettings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Javbus:$Javbus -JavbusJa:$JavbusJa -Jav321:$Jav321 -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                     Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
                 } else {
                     if ($r18) {
@@ -151,11 +162,16 @@ function Get-FindDataObject {
                         $javbusData = Get-JavbusDataObject -Name $fileDetails.Id -Ja -ErrorAction 'SilentlyContinue'
                         Write-Output $javbusData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                     }
+
+                    if ($jav321) {
+                        $jav321Data = Get-Jav321DataObject -name $fileDetails.Id -ErrorAction 'SilentlyContinue'
+                        Write-Output $jav321Data | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                    }
                 }
             }
         } else {
             if ($Aggregated.IsPresent) {
-                $aggregatedDataObject = Get-AggregatedDataObject -Id $Find -Settings $Settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -Javbus:$Javbus -JavbusJa:$JavbusJa -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                $aggregatedDataObject = Get-AggregatedDataObject -Id $Find -Settings $Settings -R18:$R18 -Dmm:$Dmm -Javlibrary:$Javlibrary -Javbus:$Javbus -JavbusJa:$JavbusJa -Jav321:$Jav321 -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                 Write-Output $aggregatedDataObject | Select-Object Search, Id, Title, AlternateTitle, Description, ReleaseDate, ReleaseYear, Runtime, Director, Maker, Label, Series, Rating, RatingCount, Actress, Genre, ActressThumbUrl, CoverUrl, ScreenshotUrl, TrailerUrl, DisplayName, FolderName, FileName
             } else {
                 if ($r18) {
@@ -196,6 +212,11 @@ function Get-FindDataObject {
                 if ($javbusja) {
                     $javbusData = Get-JavbusDataObject -Name $Find -Ja -ErrorAction 'SilentlyContinue'
                     Write-Output $javbusData | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
+                }
+
+                if ($jav321) {
+                    $jav321Data = Get-Jav321DataObject -Name $Find -ErrorAction 'SilentlyContinue'
+                    Write-Output $jav321Data | Select-Object Url, Id, Title, Date, Year, Runtime, Director, Maker, Label, Series, Rating, Actress, Genre, CoverUrl, ScreenshotUrl
                 }
             }
         }

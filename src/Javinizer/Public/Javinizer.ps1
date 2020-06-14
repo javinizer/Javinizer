@@ -296,6 +296,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
         [switch]$JavbusJa,
+        [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'Info', Mandatory = $false)]
+        [switch]$Jav321,
         [string]$ScriptRoot = (Get-Item $PSScriptRoot).Parent
     )
 
@@ -371,13 +374,14 @@ function Javinizer {
         #$settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
-            (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
-                (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-                            -not ($PSBoundParameters.ContainsKey('r18zh')) -and `
-                                -not ($PSBoundParameters.ContainsKey('javbus')) -and `
-                                    -not ($PSBoundParameters.ContainsKey('javbusja'))))))) {
+        (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') {
                 $R18 = $true
             }
@@ -402,15 +406,19 @@ function Javinizer {
             if ($settings.Main.'scrape-javbusja' -eq 'true') {
                 $javbusJa = $true
             }
+
+            if ($settings.Main.'scrape-jav321' -eq 'true') {
+                $jav321 = $true
+            }
         }
     }
 
     process {
         # Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]; Javbus: [$Javbus]; JavbusJa: [$JavbusJa]"
+        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]; Javbus: [$Javbus]; JavbusJa: [$JavbusJa]; Jav321: [$Jav321]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
-                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$Javbus -JavbusJa:$JavbusJa
+                $dataObject = Get-FindDataObject -Find $Find -Settings $settings -Aggregated:$Aggregated -Dmm:$Dmm -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$Javbus -JavbusJa:$JavbusJa -Jav321:$Jav321
                 Write-Output $dataObject
             }
 
@@ -592,7 +600,7 @@ function Javinizer {
                         $dataObject = Get-AggregatedDataObject -UrlLocation $urlLocation -Settings $settings -ErrorAction 'SilentlyContinue'
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     } else {
-                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$Javbus -JavbusJa:$JavbusJa -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
+                        $dataObject = Get-AggregatedDataObject -FileDetails $fileDetails -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$Javbus -JavbusJa:$JavbusJa -Jav321:$Jav321 -ErrorAction 'SilentlyContinue' -ScriptRoot $ScriptRoot
                         Set-JavMovie -DataObject $dataObject -Settings $settings -Path $getPath.FullName -DestinationPath $getDestinationPath.FullName -ScriptRoot $ScriptRoot
                     }
                     # Match a directory/multiple files and perform actions on them
@@ -634,7 +642,7 @@ function Javinizer {
                     } else {
                         foreach ($video in $fileDetails) {
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
-                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$javbus -JavbusJa:$JavbusJa -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
+                            $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$javbus -JavbusJa:$JavbusJa -Jav321:$Jav321 -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
                             Set-JavMovie -DataObject $dataObject -Settings $settings -Path $video.OriginalFullName -DestinationPath $getDestinationPath.FullName -Force:$Force -ScriptRoot $ScriptRoot
                             $index++
                         }

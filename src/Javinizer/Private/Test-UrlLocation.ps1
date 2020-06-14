@@ -63,6 +63,11 @@ function Test-UrlLocation {
                         Result = 'javbus'
                     }
                 }
+            } elseif ($link -match 'jav321.com') {
+                $testUrlObject = [pscustomboject]@{
+                    Url    = $link
+                    Result = 'jav321'
+                }
             } else {
                 Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Url: [$Url] not matched"
             }

@@ -12,6 +12,7 @@ function Get-AggregatedDataObject {
         [switch]$JavlibraryJa,
         [switch]$Javbus,
         [switch]$JavbusJa,
+        [switch]$Jav321,
         [object]$Settings,
         [string]$Id,
         [string]$ScriptRoot
@@ -45,13 +46,14 @@ function Get-AggregatedDataObject {
         $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailerurl'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
-            (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
-                (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-                            -not ($PSBoundParameters.ContainsKey('r18zh')) -and `
-                                -not ($PSBoundParameters.ContainsKey('javbus')) -and `
-                                    -not ($PSBoundParameters.ContainsKey('javbusja'))))))) {
+        (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
+        (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
+        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') {
                 $R18 = $true
             }
@@ -76,6 +78,10 @@ function Get-AggregatedDataObject {
             if ($settings.Main.'scrape-javbusja' -eq 'true') {
                 $javbusJa = $true
             }
+
+            if ($settings.Main.'scrape-jav321' -eq 'true') {
+                $jav321 = $true
+            }
         }
 
         if ($UrlLocation) {
@@ -96,6 +102,10 @@ function Get-AggregatedDataObject {
 
                 if ($url.Result -contains 'javbus') {
                     $javbusData = Get-JavbusDataObject -Url $url.Url
+                }
+
+                if ($url.Result -contains 'jav321') {
+                    $jav321Data = Get-Jav321DataObject -url $url.Url
                 }
             }
         } elseif ($FileDetails) {
@@ -132,6 +142,10 @@ function Get-AggregatedDataObject {
             if ($JavbusJa.IsPresent) {
                 $javbusJaData = Get-JavbusDataObject -Name $fileDetails.Id -Ja
             }
+
+            if ($Jav321.IsPresent) {
+                $jav321Data = Get-Jav321DataObject -Name $fileDetails.Id
+            }
         } elseif ($PSBoundParameters.ContainsKey('Id')) {
             Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Type: [Id]"
             $currentSearch = $Id
@@ -156,15 +170,19 @@ function Get-AggregatedDataObject {
             }
 
             if ($JavlibraryJa.IsPresent) {
-                $javlibraryJaData = Get-JavlibraryDataObject -Name $Id -ScriptRoot $ScriptRoot -Ja
+                $javlibraryJaData = Get-JavlibraryDataObject -Name $Id -Ja
             }
 
             if ($Javbus.IsPresent) {
-                $javbusData = Get-JavbusDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot
+                $javbusData = Get-JavbusDataObject -Name $fileDetails.Id
             }
 
             if ($JavbusJa.IsPresent) {
                 $javbusJaData = Get-JavbusDataObject -Name $fileDetails.Id -ScriptRoot $ScriptRoot -Ja
+            }
+
+            if ($Jav321.IsPresent) {
+                $jav321Data = Get-Jav321DataObject -Name $fileDetails.Id
             }
         }
 
