@@ -46,14 +46,14 @@ function Get-AggregatedDataObject {
         $trailerurlPriority = Get-MetadataPriority -Settings $Settings -Type 'trailerurl'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
-        (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-        (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
-        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
+            (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
+                (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
+                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                            (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
+                                (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
+                                    (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
+                                        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') {
                 $R18 = $true
             }
@@ -189,6 +189,8 @@ function Get-AggregatedDataObject {
         $aggregatedDataObject = [pscustomobject]@{
             Search               = $null
             Id                   = $null
+            AjaxId               = $null
+            JavlibraryUrl        = $null
             Title                = $null
             AlternateTitle       = $null
             Description          = $null
@@ -461,6 +463,20 @@ function Get-AggregatedDataObject {
                 } else {
                     $aggregatedDataObject.TrailerUrl = $var.Value.TrailerUrl
                 }
+            }
+        }
+
+        # Set javlibraryurl and ajaxid for integration support
+        $javlibraryScrapers = @('javlibraryData', 'javlibraryZhData', 'javlibraryJaData')
+        foreach ($scraper in $javlibraryScrapers) {
+            $var = Get-Variable -Name $scraper
+
+            if ($null -eq $aggregatedDataObject.AjaxId) {
+                $aggregatedDataObject.AjaxId = $var.Value.AjaxId
+            }
+
+            if ($null -eq $aggregatedDataObject.JavlibraryUrl) {
+                $aggregatedDataObject.JavlibraryUrl = $var.Value.Url
             }
         }
 
