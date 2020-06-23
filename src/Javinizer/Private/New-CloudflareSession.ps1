@@ -33,8 +33,6 @@ function New-CloudflareSession {
                 $cookieContent += ($cookie -split '=')[1]
             }
 
-            $global:SessionCFUID = $cookieContent[0]
-
             $requestObject += [pscustomobject]@{
                 CookieName    = $cookieName
                 CookieContent = $cookieContent
@@ -43,16 +41,17 @@ function New-CloudflareSession {
 
             $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
 
+
             # Create __cfuid cookie
             $cookie = New-Object System.Net.Cookie($requestObject.CookieName[0], $requestObject.CookieContent[0], '/', 'javlibrary.com')
             $session.Cookies.Add($cookie)
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Cookie __cfuid: [$($session.UserAgent)]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Cookie __cfuid: [$($requestObject.CookieContent[0])]"
 
 
             # Create cf_clearance cookie
             $cookie = New-Object System.Net.Cookie($requestObject.CookieName[1], $requestObject.CookieContent[1], '/', 'javlibrary.com')
             $session.Cookies.Add($cookie)
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Cookie cf_clearance: [$($session.UserAgent)]"
+            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Cookie cf_clearance: [$($requestObject.CookieContent[1])]"
 
             # Replace WebRequest session UserAgent with UserAgent created by cfscrape
             # This is needed so that you will not be flagged as a bot by CloudFlare
@@ -60,6 +59,7 @@ function New-CloudflareSession {
         }
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] UserAgent: [$($session.UserAgent)]"
         $global:Session = $session
+        $global:SessionCFDUID = $requestObject.CookieContent[0]
     }
 
     end {

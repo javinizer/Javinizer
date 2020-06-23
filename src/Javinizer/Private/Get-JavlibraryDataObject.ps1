@@ -32,7 +32,6 @@ function Get-JavlibraryDataObject {
         if ($null -ne $javlibraryUrl) {
             try {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                New-CloudflareSession -ScriptRoot $ScriptRoot
                 $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"

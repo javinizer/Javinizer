@@ -69,6 +69,7 @@ function Start-MultiSort {
     (Join-Path -Path $PSScriptRoot -ChildPath 'Import-IniSettings.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'New-CloudflareSession.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Set-JavMovie.ps1'), `
+    (Join-Path -Path $PSScriptRoot -ChildPath 'Set-JavLibraryOwned.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-RequiredMetadata.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlLocation.ps1'), `
     (Join-Path -Path $PSScriptRoot -ChildPath 'Test-UrlMatch.ps1'), `

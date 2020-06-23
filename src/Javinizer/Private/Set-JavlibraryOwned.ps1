@@ -26,11 +26,11 @@ function Set-JavlibraryOwned {
             "referer"          = $JavlibraryUrl
             "accept-encoding"  = "gzip, deflate, br"
             "accept-language"  = "en-US,en;q=0.9"
-            "cookie"           = "timezone=420; over18=18; __cfduid=$SessionCFUID; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
+            "cookie"           = "timezone=420; over18=18; __cfduid=$SessionCFDUID; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
         } `
             -ContentType "application/x-www-form-urlencoded; charset=UTF-8" `
             -Body "type=2&targetid=$AjaxId" `
-            -Verbose:$false
+            -Verbose:$false | Out-Null
     } catch {
         Write-Error "Error setting owned status for [$JavlibraryUrl]: $PSItem"
     }
