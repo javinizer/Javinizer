@@ -24,27 +24,19 @@ function Get-R18ThumbCsv {
             }
 
             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
-
-            $importVariables = @(
-                'originalCsv',
-                'csvPath',
-                'Force',
-                'NewPages'
-            )
-
             if ($PSBoundParameters.ContainsKey('NewPages')) {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 5 -ScriptBlock {
+                1..$NewPages | Foreach-Object -ThrottleLimit 5 -Parallel {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
 
-                    if ($Settings.Main.'scrape-actress-en' -eq 'True') {
+                    if ($using:Settings.Main.'scrape-actress-en' -eq 'True') {
                         $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_" -Verbose:$false
                         $actressHtml = $webRequest.Content -split '<p><img '
                         $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
                     }
 
-                    if ($Settings.Main.'scrape-actress-ja' -eq 'True') {
+                    if ($using:Settings.Main.'scrape-actress-ja' -eq 'True') {
                         $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page=$_/?lg=zh" -Verbose:$false
                         $actressHtml = $webRequest.Content -split '<p><img '
                         $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
@@ -70,21 +62,25 @@ function Get-R18ThumbCsv {
                             }
                         }
                     }
-                    Write-Output $actressObject
-                } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
+
+                    $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
+                    $LogMutex.WaitOne() | Out-Null
+                    $actressObject | Export-Csv -LiteralPath (Join-Path -Path $using:ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
+                    $LogMutex.ReleaseMutex() | Out-Null
+                }
             } else {
-                1..$NewPages | Start-RSJob -VariablesToImport $importVariables -Throttle 5 -ScriptBlock {
+                1..$NewPages | Foreach-Object -ThrottleLimit 5 -Parallel {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
 
-                    if ($Settings.Main.'scrape-actress-en' -eq 'True') {
+                    if ($using:Settings.Main.'scrape-actress-en' -eq 'True') {
                         $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_" -Verbose:$false
                         $actressHtml = $webRequest.Content -split '<p><img '
                         $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
                     }
 
-                    if ($Settings.Main.'scrape-actress-ja' -eq 'True') {
+                    if ($using:Settings.Main.'scrape-actress-ja' -eq 'True') {
                         $webRequest = Invoke-WebRequest "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=$_/?lg=zh" -Verbose:$false
                         $actressHtml = $webRequest.Content -split '<p><img '
                         $actressHtmlArray += $actressHtml | Where-Object { $_ -like 'src=*' }
@@ -110,8 +106,11 @@ function Get-R18ThumbCsv {
                             }
                         }
                     }
-                    Write-Output $actressObject
-                } | Wait-RSJob -ShowProgress | Receive-RSJob | Export-Csv -LiteralPath (Join-Path -Path $ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append -Force:$Force
+                    $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
+                    $LogMutex.WaitOne() | Out-Null
+                    $actressObject | Export-Csv -LiteralPath (Join-Path -Path $using:ScriptRoot -ChildPath 'r18-thumbs-temp.csv') -Append
+                    $LogMutex.ReleaseMutex() | Out-Null
+                }
             }
 
             try {
