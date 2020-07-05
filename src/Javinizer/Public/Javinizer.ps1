@@ -273,6 +273,8 @@ function Javinizer {
         [AllowEmptyString()]
         [AllowNull()]
         [string]$Order,
+        [Parameter(ParameterSetName = 'JavLibrary')]
+        [string]$SetJavLibraryOwned,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -383,14 +385,14 @@ function Javinizer {
         #$settings.Other.GetEnumerator() | Sort-Object Key | Out-String | Write-Debug -ErrorAction 'SilentlyContinue'
 
         if (-not ($PSBoundParameters.ContainsKey('r18')) -and `
-        (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
-        (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
-        (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
-        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
+            (-not ($PSBoundParameters.ContainsKey('dmm')) -and `
+                (-not ($PSBoundParameters.ContainsKey('javlibrary')) -and `
+                    (-not ($PSBoundParameters.ContainsKey('javlibraryzh')) -and `
+                        (-not ($PSBoundParameters.ContainsKey('javlibraryja')) -and `
+                            (-not ($PSBoundParameters.ContainsKey('r18zh')) -and `
+                                (-not ($PSBoundParameters.ContainsKey('javbus')) -and `
+                                    (-not ($PSBoundParameters.ContainsKey('javbusja')) -and `
+                                        (-not ($PSBoundParameters.ContainsKey('jav321'))))))))))) {
             if ($settings.Main.'scrape-r18' -eq 'true') {
                 $R18 = $true
             }
@@ -418,6 +420,35 @@ function Javinizer {
 
             if ($settings.Main.'scrape-jav321' -eq 'true') {
                 $jav321 = $true
+            }
+        }
+
+        if ($Javlibrary) {
+            if ($null -eq $session) {
+                New-CloudflareSession -ScriptRoot $ScriptRoot
+            }
+        }
+
+        if ($Settings.JavLibrary.'set-owned' -eq 'True') {
+            if (!($global:javlibraryOwnedMovies)) {
+                $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Headers @{
+                    "method"="GET"
+                      "authority"="www.javlibrary.com"
+                      "scheme"="https"
+                      "path"="/en/mv_owned_print.php"
+                      "upgrade-insecure-requests"="1"
+                      "user-agent"=$session.UserAgent
+                      "accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+                      "sec-fetch-site"="none"
+                      "sec-fetch-mode"="navigate"
+                      "sec-fetch-user"="?1"
+                      "sec-fetch-dest"="document"
+                      "accept-encoding"="gzip, deflate, br"
+                      "accept-language"="en-US,en;q=0.9"
+                      "cookie"="__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
+                    }
+
+                $global:javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })[2..($javinizerOwnedMovies.Length - 1)]
             }
         }
     }
@@ -517,6 +548,29 @@ function Javinizer {
                 }
             }
 
+            'JavLibrary' {
+                if (Test-Path -LiteralPath $SetJavLibraryOwned) {
+                    try {
+                        $movieList = Get-Content $SetJavLibraryOwned
+                        New-CloudflareSession -ScriptRoot $ScriptRoot
+                    } catch {
+                        Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error importing [$SetJavLibraryOwned]: $PSItem"
+                    }
+
+                    foreach ($movie in $movieList) {
+                        $javlibObject = Get-JavLibraryDataObject -Name $movie
+                        if ($null -ne $javlibObject) {
+                            $ajaxId = $javlibObject.AjaxId
+                            $url = $javlibObject.Url
+                            Set-JavLibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
+                        } else {
+                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$movie] not matched on JAVLibrary, skipping..."
+                            return
+                        }
+                    }
+                }
+            }
+
             'Help' {
                 help Javinizer
             }
@@ -593,6 +647,10 @@ function Javinizer {
                     Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
                     return
                 }
+
+                if ($null -eq $session) {
+                    New-CloudflareSession -ScriptRoot $ScriptRoot
+                }
                 #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
@@ -624,7 +682,9 @@ function Javinizer {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         try {
                             if ($Javlibrary) {
-                                New-CloudflareSession -ScriptRoot $ScriptRoot
+                                if ($null -eq $session) {
+                                    New-CloudflareSession -ScriptRoot $ScriptRoot
+                                }
                             }
 
                             if ($Settings.General.'move-to-folder' -eq 'True') {
@@ -642,7 +702,7 @@ function Javinizer {
                             Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$movePreference -RenameFile:$renamePreference -Force:$Force -Settings $settings
 
                         } catch {
-                            Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]"
+                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]: $PSItem"
                         } finally {
                             # Stop all running jobs if script is stopped by user input
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort has completed or has been stopped prematurely; Stopping all running jobs..."
