@@ -432,21 +432,21 @@ function Javinizer {
         if ($Settings.JavLibrary.'set-owned' -eq 'True') {
             if (!($global:javlibraryOwnedMovies)) {
                 $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Headers @{
-                    "method"="GET"
-                      "authority"="www.javlibrary.com"
-                      "scheme"="https"
-                      "path"="/en/mv_owned_print.php"
-                      "upgrade-insecure-requests"="1"
-                      "user-agent"=$session.UserAgent
-                      "accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-                      "sec-fetch-site"="none"
-                      "sec-fetch-mode"="navigate"
-                      "sec-fetch-user"="?1"
-                      "sec-fetch-dest"="document"
-                      "accept-encoding"="gzip, deflate, br"
-                      "accept-language"="en-US,en;q=0.9"
-                      "cookie"="__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
-                    }
+                    "method"                    = "GET"
+                    "authority"                 = "www.javlibrary.com"
+                    "scheme"                    = "https"
+                    "path"                      = "/en/mv_owned_print.php"
+                    "upgrade-insecure-requests" = "1"
+                    "user-agent"                = $session.UserAgent
+                    "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+                    "sec-fetch-site"            = "none"
+                    "sec-fetch-mode"            = "navigate"
+                    "sec-fetch-user"            = "?1"
+                    "sec-fetch-dest"            = "document"
+                    "accept-encoding"           = "gzip, deflate, br"
+                    "accept-language"           = "en-US,en;q=0.9"
+                    "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
+                }
 
                 $global:javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })[2..($javinizerOwnedMovies.Length - 1)]
             }

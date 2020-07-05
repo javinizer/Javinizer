@@ -4,8 +4,7 @@ function Update-Javinizer {
 
     if ($null -eq $currentVer) {
         # do nothing
-    }
-    elseif ($currentVer -ne $latestVer) {
+    } elseif ($currentVer -ne $latestVer) {
         Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There is a newer version of Javinizer available: [$currentVer --> $latestVer]" -ForegroundColor Red
     }
 }

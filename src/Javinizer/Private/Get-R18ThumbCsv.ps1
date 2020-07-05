@@ -3,7 +3,6 @@ function Get-R18ThumbCsv {
     param(
         [int]$NewPages,
         [string]$ScriptRoot,
-        [object]$Settings,
         [switch]$Force
     )
 
@@ -25,7 +24,7 @@ function Get-R18ThumbCsv {
 
             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Scraping [$NewPages] of [$EndPage] actress pages on R18.com"
             if ($PSBoundParameters.ContainsKey('NewPages')) {
-                1..$NewPages | Foreach-Object -ThrottleLimit 5 -Parallel {
+                1..$NewPages | ForEach-Object -ThrottleLimit 5 -Parallel {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
@@ -69,7 +68,7 @@ function Get-R18ThumbCsv {
                     $LogMutex.ReleaseMutex() | Out-Null
                 }
             } else {
-                1..$NewPages | Foreach-Object -ThrottleLimit 5 -Parallel {
+                1..$NewPages | ForEach-Object -ThrottleLimit 5 -Parallel {
                     $actressBlock = @()
                     $actressHtmlArray = @()
                     $actressObject = @()
