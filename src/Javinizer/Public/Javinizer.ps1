@@ -632,7 +632,7 @@ function Javinizer {
                 try {
                     if ($Settings.JavLibrary.'set-owned' -eq 'True') {
                         if (!($global:javlibraryOwnedMovies)) {
-                            $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Headers @{
+                            $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
                                 "method"                    = "GET"
                                 "authority"                 = "www.javlibrary.com"
                                 "scheme"                    = "https"

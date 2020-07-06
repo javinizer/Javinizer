@@ -35,7 +35,8 @@ function Set-JavlibraryOwned {
                 "cookie"           = "timezone=420; over18=18; __cfduid=$SessionCFDUID; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
             } `
                 -ContentType "application/x-www-form-urlencoded; charset=UTF-8" `
-                -Body "type=2&targetid=$AjaxId"
+                -Body "type=2&targetid=$AjaxId" `
+                -Verbose:$false
         }
     } catch {
         Write-Error "Error setting owned status for [$JavlibraryUrl]: $PSItem"
