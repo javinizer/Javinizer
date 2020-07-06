@@ -3,6 +3,7 @@ function Get-R18ThumbCsv {
     param(
         [int]$NewPages,
         [string]$ScriptRoot,
+        [object]$Settings,
         [switch]$Force
     )
 
