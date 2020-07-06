@@ -11,7 +11,9 @@ function Set-JavlibraryOwned {
 
     try {
         $index = 0
-        while ($check.content -notmatch '"ERROR":1') {
+        $timeout = New-TimeSpan -Seconds 60
+        $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+        while ($check.content -notmatch '"ERROR":1' -and $stopwatch.elapsed -lt $timeout) {
             if ($check.Content -match '"ERROR":-3') {
                 Start-Sleep -Seconds 3
             }
@@ -35,10 +37,15 @@ function Set-JavlibraryOwned {
                 "cookie"           = "timezone=420; over18=18; __cfduid=$SessionCFDUID; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
             } `
                 -ContentType "application/x-www-form-urlencoded; charset=UTF-8" `
-                -Body "type=2&targetid=$AjaxId"
+                -Body "type=2&targetid=$AjaxId" `
+                -Verbose:$false
+        }
+
+        if ($stopwatch.elapsed -gt $timeout) {
+            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$JavlibraryUrl] timed out while setting owned status"
         }
     } catch {
-        Write-Error "Error setting owned status for [$JavlibraryUrl]: $PSItem"
+        Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error setting owned status for [$JavlibraryUrl]: $PSItem"
     }
 }
 

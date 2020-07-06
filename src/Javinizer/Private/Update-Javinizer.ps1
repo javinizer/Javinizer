@@ -1,6 +1,6 @@
 function Update-Javinizer {
-    $currentVer = (Get-InstalledModule -Name Javinizer).Version | Out-Null
-    $latestVer = (Find-Module -Name Javinizer).Version | Out-Null
+    $currentVer = (Get-InstalledModule -Name Javinizer -ErrorAction 'SilentlyContinue').Version
+    $latestVer = (Find-Module -Name Javinizer -ErrorAction 'SilentlyContinue').Version
 
     if ($null -eq $currentVer) {
         # do nothing

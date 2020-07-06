@@ -73,6 +73,9 @@ function Javinizer {
     .PARAMETER Order
         The order parameter lets you select which sort order to view your log entries (Asc, Desc) with descending being default
 
+    .PARAMETER SetJavLibraryOwned
+        The setjavlibraryowned parameter lets you reference a path to a list of your JAV movies in line separated format in a flat text file to set as owned on JAVLibrary
+
     .PARAMETER GetThumbs
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
 
@@ -316,7 +319,6 @@ function Javinizer {
     begin {
         $urlLocation = @()
         $urlList = @()
-        $index = 1
 
         try {
             # Load the settings file from either commandline path or default
@@ -520,18 +522,69 @@ function Javinizer {
             }
 
             'JavLibrary' {
-                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] This feature is not enabled yet. Please check back in a future version."
-                return
-                <#
-                if (Test-Path -LiteralPath $SetJavLibraryOwned) {
-                    try {
-                        $movieList = Get-Content $SetJavLibraryOwned
-                        New-CloudflareSession -ScriptRoot $ScriptRoot
-                    } catch {
-                        Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error importing [$SetJavLibraryOwned]: $PSItem"
+
+                if (!($Session)) {
+                    New-CloudflareSession -ScriptRoot $ScriptRoot
+                }
+
+                try {
+                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Getting owned movies on JAVLibrary"
+                    $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
+                        "method"                    = "GET"
+                        "authority"                 = "www.javlibrary.com"
+                        "scheme"                    = "https"
+                        "path"                      = "/en/mv_owned_print.php"
+                        "upgrade-insecure-requests" = "1"
+                        "user-agent"                = $session.UserAgent
+                        "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+                        "sec-fetch-site"            = "none"
+                        "sec-fetch-mode"            = "navigate"
+                        "sec-fetch-user"            = "?1"
+                        "sec-fetch-dest"            = "document"
+                        "accept-encoding"           = "gzip, deflate, br"
+                        "accept-language"           = "en-US,en;q=0.9"
+                        "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
                     }
 
-                    foreach ($movie in $movieList) {
+                    $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
+                    $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
+                } catch {
+                    Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting existing owned movies on JAVLibrary: $PSItem"
+                    return
+                }
+
+                if ($null -ne $global:javlibraryOwnedMovies) {
+                    if ($global:javlibraryOwnedMovies.Count -gt 1) {
+                        if ($javlibraryOwnedMovies[0].Length -le 1) {
+                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
+                            return
+                        }
+                    } else {
+                        if ($global:javlibraryOwnedMovies.Length -le 1) {
+                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
+                            return
+                        }
+                    }
+                }
+
+                try {
+                    $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
+                } catch {
+                    Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error importing [$SetJavLibraryOwned]: $PSItem"
+                    return
+                }
+
+                $unowned = @()
+                foreach ($movie in $movieList) {
+                    if (!($javlibraryOwnedMovies -match $movie)) {
+                        $unowned += $movie
+                    }
+                }
+
+                if ($unowned.Count -ge 1) {
+                    $index = 1
+                    foreach ($movie in $unowned) {
+                        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($unowned.Count)) Setting [$movie] to owned on JAVLibrary"
                         $javlibObject = Get-JavLibraryDataObject -Name $movie
                         if ($null -ne $javlibObject) {
                             $ajaxId = $javlibObject.AjaxId
@@ -541,9 +594,12 @@ function Javinizer {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$movie] not matched on JAVLibrary, skipping..."
                             return
                         }
+                        $index++
+
                     }
+                } else {
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] No new movies were detected in [$SetJavLibraryOwned], exiting..."
                 }
-                #>
             }
 
             'Help' {
@@ -623,7 +679,7 @@ function Javinizer {
                     return
                 }
 
-                if ($Javlibrary) {
+                if ($Javlibrary -or $Settings.JavLibrary.'set-owned' -eq 'True') {
                     if ($null -eq $session) {
                         New-CloudflareSession -ScriptRoot $ScriptRoot
                     }
@@ -631,8 +687,9 @@ function Javinizer {
 
                 try {
                     if ($Settings.JavLibrary.'set-owned' -eq 'True') {
+                        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Getting owned movies on JAVLibrary"
                         if (!($global:javlibraryOwnedMovies)) {
-                            $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Headers @{
+                            $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
                                 "method"                    = "GET"
                                 "authority"                 = "www.javlibrary.com"
                                 "scheme"                    = "https"
@@ -649,18 +706,34 @@ function Javinizer {
                                 "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
                             }
 
-                            $global:javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })[2..($javinizerOwnedMovies.Length - 1)]
+                            $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
+                            $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
                         }
                     }
                 } catch {
                     Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting existing owned movies on JAVLibrary: $PSItem"
                 }
+
+                if ($null -ne $global:javlibraryOwnedMovies) {
+                    if ($global:javlibraryOwnedMovies.Count -gt 1) {
+                        if ($javlibraryOwnedMovies[0].Length -le 1) {
+                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
+                            return
+                        }
+                    } else {
+                        if ($global:javlibraryOwnedMovies.Length -le 1) {
+                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
+                            return
+                        }
+                    }
+                }
+
                 #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
                 if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
-                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
+                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] (1 of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -685,7 +758,7 @@ function Javinizer {
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         try {
-                            if ($Javlibrary) {
+                            if ($Javlibrary -or $Settings.JavLibrary.'set-owned' -eq 'True') {
                                 if ($null -eq $session) {
                                     New-CloudflareSession -ScriptRoot $ScriptRoot
                                 }
@@ -713,6 +786,7 @@ function Javinizer {
                             Get-RSJob | Stop-RSJob
                         }
                     } else {
+                        $index = 1
                         foreach ($video in $fileDetails) {
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] ($index of $($fileDetails.Count)) Sorting [$($video.OriginalFileName)]"
                             $dataObject = Get-AggregatedDataObject -FileDetails $video -Settings $settings -R18:$R18 -R18Zh:$R18Zh -Dmm:$Dmm -Javlibrary:$Javlibrary -JavlibraryZh:$JavlibraryZh -JavlibraryJa:$JavlibraryJa -Javbus:$javbus -JavbusJa:$JavbusJa -Jav321:$Jav321 -ScriptRoot $ScriptRoot -ErrorAction 'SilentlyContinue'
