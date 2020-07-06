@@ -132,6 +132,8 @@ SYNTAX
 
     Javinizer [-OpenLog] [-ViewLog <String>] [-LogLevel <String>] [-Entries <Int32>] [-Order <String>] [-ScriptRoot <String>] [<CommonParameters>]
 
+    Javinizer [-SetJavlibraryOwned <String>] [-ScriptRoot <String>] [<CommonParameters>]
+
     Javinizer [-GetThumbs] [-UpdateThumbs <Int32>] [-OpenThumbs] [-SetEmbyActorThumbs] [-ScriptRoot <String>] [<CommonParameters>]
 
 
@@ -177,7 +179,7 @@ PARAMETERS
         The movetofolder parameter will allow you to set a true/false value for the setting move-to-folder from the commandline.
 
     -RenameFile <Boolean>
-        The renamefile parameter will allow you to set a true/false v alue for the setting rename-file from the commandline.
+        The renamefile parameter will allow you to set a true/false value for the setting rename-file from the commandline.
 
     -Help [<SwitchParameter>]
         The help parameter will open a help dialogue in your console for Javinizer usage.
@@ -208,6 +210,9 @@ PARAMETERS
 
     -Order <String>
         The order parameter lets you select which sort order to view your log entries (Asc, Desc) with descending being default
+
+    -SetJavlibraryOwned <String>
+        The setjavlibraryowned parameter lets you reference a path to a list of your JAV movies in line separated format in a flat text file to set as owned on JAVLibrary
 
     -GetThumbs [<SwitchParameter>]
         The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write
