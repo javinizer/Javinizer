@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.0]
+### Added
+- Added setting to match JAV files using regular expressions
+    - Regex match will not perform any string transformations, so the movie ID in your filename will need to match the website metadata exactly
+    - This is intended for users who have previously sorted files using a unique template and are unable to match using Javinizer's default matcher
+    ```
+    # Default values
+    [General]
+    regex-match=false
+    regex=([a-zA-Z|tT28]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})(?:-pt){0,1}(\d{1,2})?
+    ```
+- **Experimental** Added JAVLibrary integration with setting movies as "Owned" when sorting with Javinizer
+    ```
+    # Default values
+    [JAVLibrary]
+    set-owned=True
+    username=
+    session-cookie=
+    ```
+
+### Fixed
+- Fixed `-GetThumbs` and `-UpdateThumbs` functionality
+    - Removed PoshRSJob dependency, instead using PowerShell Core native `ForEach-Object -Parallel` for multi-threaded webpage scraping
+        - There will no longer be a progress bar displayed
+- Fixed error output due to missing native dependencies when checking for Javinizer module updates
+
+## [1.6.0]
+### Added
+- Initial Jav321 scraper functionality
+    - Setting scrape-jav321
+- Actress thumb url scraping for JavBus scraper
+
 ## [1.5.0]
 ### Added
 - Initial JavBus scraper functionality

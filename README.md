@@ -231,6 +231,15 @@ PARAMETERS
     -Dmm [<SwitchParameter>]
         The dmm parameter allows you to set your data source of DMM to true.
 
+    -Jav321 [<SwitchParameter>]
+        The jav321 parameter allows you to set your data source of Jav321 to true.
+
+    -Javbus [<SwitchParameter>]
+        The javbus parameter allows you to set your data source of JAVLibraryJa to true.
+
+    -JavbusJa [<SwitchParameter>]
+        The javbusja parameter allows you to set your data source of JavbusJa to true.
+
     -Javlibrary [<SwitchParameter>]
         The javlibrary parameter allows you to set your data source of JAVLibrary to true.
 
@@ -403,6 +412,8 @@ max-path-length | Integer value (0+) | Sets the amount of characters to limit th
 minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video for Javinizer to read from your sort directory in MB
 included-file-extensions | String value | Sets the file extension types for Javinizer to read from your sort directory in comma separated format (no spaces)
 excluded-file-strings | String value | Sets the paths/string values with wildcards (*) for Javinizer to ignore from your sort directory in comma separated format (no spaces)
+regex-match | True/False | Sets Javinizer to match your JAV files using a regular expression instead of the default matcher; The JAV ID in the filename must match website metadata exactly to successfully match
+regex | String value | The regular expression string to match files if `regex-match=True`; Match 1 should be the movie ID (e.g. ABP-234), Match 2 (optional) should be the part number of the movie (e.g. 2)
 create-nfo | True/False | Creates a .nfo metadata file for the sorted movie that follows the nfo-file-string naming format
 create-nfo-per-file | True/False |  Creates a .nfo metadata for each sorted movie that mirrors the name of the movie (Required for Emby/Jellyfin)
 download-thumb-img | True/False | Downloads the movie full-size cover image
@@ -422,7 +433,10 @@ input-path | String value (Path) | The path to your unsorted JAV files
 output-path | String value (Path) | The path to where you want your unsorted JAV files to be sent to when sorted successfully
 server-url | String value (URL) | The address to your Emby/Jellyfin server
 server-api-key | String value | The API key for your Emby/Jellyfin server instance
-log-path | String value (Path) | Sets the path to your log file
+set-owned | True/False | Sets sorted movies as "Owned" on JAVLibrary, requires a JAVLibrary account
+username | String value | Your JAVLibrary username
+session-cookie | String value | After logging in, view the cookies under the `www.javlibrary.com/cookies/session` directory and copy the cookie content
+log-path | String value (Path) | Sets the path to your log file; If left blank, it will default to a location within your module folder
 check-updates | True/False | Checks for updates to the Javinizer module upon your first console session runtime
 verbose-shell-output | True/False | Displays verbose output to your shell
 debug-shell-output | True/False | Displays debug output to your shell
@@ -438,7 +452,6 @@ debug-shell-output | True/False | Displays debug output to your shell
 - Actress metadata scraped from JAVLibrary will replace the JAVLibrary names with their R18 names if added to the Alias column in your `r18-thumbs.csv` file
 - If you want to primarily have R18/Dmm metadata, you can set `normalize-genres=True` to have the JAVLibrary genre names converted to their R18 counterparts to have a cleaner/consistent library
     - If you want to primarily use JAVLibrary metadata, set `normalize-genres=False`
-
 
 ## Troubleshooting
 
