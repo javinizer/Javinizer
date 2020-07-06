@@ -520,6 +520,9 @@ function Javinizer {
             }
 
             'JavLibrary' {
+                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] This feature is not enabled yet. Please check back in a future version."
+                return
+                <#
                 if (Test-Path -LiteralPath $SetJavLibraryOwned) {
                     try {
                         $movieList = Get-Content $SetJavLibraryOwned
@@ -540,6 +543,7 @@ function Javinizer {
                         }
                     }
                 }
+                #>
             }
 
             'Help' {
