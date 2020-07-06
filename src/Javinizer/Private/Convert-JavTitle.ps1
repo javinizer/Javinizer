@@ -86,7 +86,11 @@ function Convert-JavTitle {
                 if ($file -match $regex) {
                     $id = ($file | Select-String $regex).Matches.Groups[1].Value
                     $partNum = ($file | Select-String $regex).Matches.Groups[2].Value
-                    $fileBaseNameUpper[$counter] = "$id-pt$PartNum"
+                    if ($null -ne $partNum) {
+                        $fileBaseNameUpper[$counter] = "$id-pt$PartNum"
+                    } else {
+                        $fileBaseNameUpper[$counter] = "$id"
+                    }
                     $counter++
                 } else {
                     break
