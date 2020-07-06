@@ -75,26 +75,35 @@ function Convert-JavTitle {
         $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
         $fileBaseNameOriginal = @($files.BaseName)
 
-        foreach ($file in $FileBaseNameOriginal) {
-            $fileBaseNameUpper += $file.ToUpper()
-        }
-
         if ($Settings.General.'regex-match' -eq 'True') {
+            foreach ($file in $FileBaseNameOriginal) {
+                $fileBaseNameUpper += $file.ToUpper()
+            }
+
             $regex = $Settings.General.regex
-            $counter = -1
+            $index = 0
             foreach ($file in $fileBaseNameUpper) {
-                if ($file -match $regex) {
-                    $id = ($file | Select-String $regex).Matches.Groups[1].Value
-                    $partNum = ($file | Select-String $regex).Matches.Groups[2].Value
-                    if ($null -ne $partNum) {
-                        $fileBaseNameUpper[$counter] = "$id-pt$PartNum"
+                $id = ($file | Select-String $regex).Matches.Groups[1].Value
+                $partNum = ($file | Select-String $regex).Matches.Groups[2].Value
+                if ($fileBaseNameUpper -eq 1) {
+                    if ($partNum -ne '') {
+                        $fileBaseNameUpper = "$id-pt$PartNum"
+                    } elseif ($id -ne '') {
+                        $fileBaseNameUpper = "$id"
                     } else {
-                        $fileBaseNameUpper[$counter] = "$id"
+                        $fileBaseNameUpper = $file
                     }
-                    $counter++
                 } else {
-                    break
+                    if ($partNum -ne '') {
+                        $fileBaseNameUpper[$index] = "$id-pt$PartNum"
+                    } elseif ($id -ne '') {
+                        $fileBaseNameUpper[$index] = "$id"
+                    } else {
+                        $fileBaseNameUpper[$index] = $file
+                    }
                 }
+
+                $index++
             }
         } else {
             # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
