@@ -631,6 +631,7 @@ function Javinizer {
 
                 try {
                     if ($Settings.JavLibrary.'set-owned' -eq 'True') {
+                        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Getting owned movies on JAVLibrary"
                         if (!($global:javlibraryOwnedMovies)) {
                             $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
                                 "method"                    = "GET"
@@ -649,7 +650,8 @@ function Javinizer {
                                 "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
                             }
 
-                            $global:javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })[2..($javinizerOwnedMovies.Length - 1)]
+                            $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
+                            $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
                         }
                     }
                 } catch {

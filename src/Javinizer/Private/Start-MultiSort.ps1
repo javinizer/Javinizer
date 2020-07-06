@@ -27,6 +27,8 @@ function Start-MultiSort {
         'ScriptRoot',
         'DestinationPath',
         'Session',
+        'javinizerUpdateCheck',
+        'javlibraryOwnedMovies',
         'forcePreference',
         'strictPreference',
         'movePreference',
