@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.1]
+### Added
+- Parameter `-SetJavlibraryOwned` to add a list of movies as owned on JAVLibrary
+    - Requires a flat text file of movie IDs
+    - e.g. `Javinizer -SetJavlibraryOwned 'C:\Downloads\javlist.txt'
+
+### Changed
+- 60s timeout when attempting to set owned status on JAVLibrary
+- Error check to test successful authentication to JAVLibrary before running sort
+
+### Fixed
+- Fixed movie count being doubled on sort
+- Fixed movie mismatch when `regex-match=True`
+- Fixed running Javinizer `-Multi` sort when `set-owned=True`
+
+### Removed
+- Removed verbose messages on GET/POST requests to JAVLibrary when setting owned status
+
 ## [1.7.0]
 ### Added
 - Added setting to match JAV files using regular expressions
