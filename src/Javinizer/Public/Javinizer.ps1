@@ -615,7 +615,7 @@ function Javinizer {
                     $fixedPath = ($getPath.FullName).replace('[', '`[').replace(']', '`]')
                     $fileDetails = Convert-JavTitle -Path $fixedPath -Recurse:$Recurse -Settings $settings -Strict:$Strict
                 } catch {
-                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist; Exiting..."
+                    Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Path: [$Path] does not contain any video files or does not exist: $PSItem"
                     return
                 }
 

@@ -74,39 +74,59 @@ function Convert-JavTitle {
     process {
         $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
         $fileBaseNameOriginal = @($files.BaseName)
-        # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
-        foreach ($string in $RemoveStrings) {
-            if ($string -eq '_') {
-                $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, '-'
-            } else {
-                $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, ''
-            }
-        }
 
         foreach ($file in $FileBaseNameOriginal) {
             $fileBaseNameUpper += $file.ToUpper()
         }
 
-        # Iterate through each file in $files to add hypen(-) between title and ID if not exists
-        $Counter = -1
-        foreach ($file in $fileBaseNameUpper) {
-            if ($file -notmatch 't28' -and $file -notmatch 't-28') {
-                # Iterate through file name length
-                for ($x = 0; $x -lt $file.Length; $x++) {
-                    # Match if an alphabetical character index is next to a numerical index
-                    if ($file[$x] -match '^[a-z]*$' -and $file[$x + 1] -match '^[0-9]$') {
-                        # Write modified filename to $fileBaseNameHypen, inserting a '-' at the specified
-                        # index between the alphabetical and numerical character, and appending extension
-                        $fileBaseNameHypen = ($file.Insert($x + 1, '-'))
+        if ($Settings.General.'regex-match' -eq 'True') {
+            $regex = $Settings.General.regex
+            $counter = -1
+            foreach ($file in $fileBaseNameUpper) {
+                if ($file -match $regex) {
+                    $id = ($file | Select-String $regex).Matches.Groups[1].Value
+                    $partNum = ($file | Select-String $regex).Matches.Groups[2].Value
+                    $fileBaseNameUpper[$counter] = "$id-pt$PartNum"
+                    $counter++
+                } else {
+                    break
+                }
+            }
+        } else {
+            # Iterate through each value in $RemoveStrings and replace from $FileBaseNameOriginal
+            foreach ($string in $RemoveStrings) {
+                if ($string -eq '_') {
+                    $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, '-'
+                } else {
+                    $fileBaseNameOriginal = $fileBaseNameOriginal -replace $string, ''
+                }
+            }
+
+            foreach ($file in $FileBaseNameOriginal) {
+                $fileBaseNameUpper += $file.ToUpper()
+            }
+
+            # Iterate through each file in $files to add hypen(-) between title and ID if not exists
+            $counter = -1
+            foreach ($file in $fileBaseNameUpper) {
+                if ($file -notmatch 't28' -and $file -notmatch 't-28') {
+                    # Iterate through file name length
+                    for ($x = 0; $x -lt $file.Length; $x++) {
+                        # Match if an alphabetical character index is next to a numerical index
+                        if ($file[$x] -match '^[a-z]*$' -and $file[$x + 1] -match '^[0-9]$') {
+                            # Write modified filename to $fileBaseNameHypen, inserting a '-' at the specified
+                            # index between the alphabetical and numerical character, and appending extension
+                            $fileBaseNameHypen = ($file.Insert($x + 1, '-'))
+                        }
                     }
+                    # Get index if file changed
+                    $counter++
+                    # Rename changed files
+                    if ($null -ne $fileBaseNameHypen) {
+                        $fileBaseNameUpper[$counter] = $fileBaseNameHypen
+                    }
+                    $fileBaseNameHypen = $null
                 }
-                # Get index if file changed
-                $Counter++
-                # Rename changed files
-                if ($null -ne $fileBaseNameHypen) {
-                    $fileBaseNameUpper[$Counter] = $fileBaseNameHypen
-                }
-                $fileBaseNameHypen = $null
             }
         }
 
@@ -114,7 +134,7 @@ function Convert-JavTitle {
         for ($x = 0; $x -lt $fileBaseNameUpper.Length; $x++) {
             $filePartNumber = $null
             #Match ID-###A, ID###B, etc.
-            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[a-iA-I]") {
+            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[a-dA-D]") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 1"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -122,14 +142,14 @@ function Convert-JavTitle {
                 elseif ($fileP3 -eq 'B') { $filePartNumber = '2' }
                 elseif ($fileP3 -eq 'C') { $filePartNumber = '3' }
                 elseif ($fileP3 -eq 'D') { $filePartNumber = '4' }
-                elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
-                elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
-                elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
-                elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
-                elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
+                #elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
+                #elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
+                #elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
+                #elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
+                #elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
             }
             # Match ID-###-A, ID-###-B, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-dA-D]") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 2"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -138,18 +158,20 @@ function Convert-JavTitle {
                 elseif ($fileP3 -eq 'B') { $filePartNumber = '2' }
                 elseif ($fileP3 -eq 'C') { $filePartNumber = '3' }
                 elseif ($fileP3 -eq 'D') { $filePartNumber = '4' }
-                elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
-                elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
-                elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
-                elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
-                elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
+                #elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
+                #elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
+                #elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
+                #elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
+                #elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
             }
-            #Match ID-###-A, ID-###-B, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]$") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 3"
-                $fileP1, $fileP2, $fileP3, $fileP4 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})[-]([a-zA-Z])"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2 + $fileP3
-            }
+            <#
+                #Match ID-###-A, ID-###-B, etc.
+                elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]$") {
+                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 3"
+                    $fileP1, $fileP2, $fileP3, $fileP4 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})[-]([a-zA-Z])"
+                    $fileBaseNameUpperCleaned += $fileP1 + $fileP2 + $fileP3
+                }
+                #>
             # Match ID-###-1, ID-###-2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]\d$") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 4"
@@ -175,7 +197,7 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNum
             }
             # Match ID-### - pt1, ID-### - pt2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] pt") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] pt|PT") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 7"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -183,7 +205,7 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNum
             }
             # Match ID-### - part1, ID ### - part2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] part") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] part|PART") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 8"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -191,7 +213,7 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNum
             }
             # Match ID-###-pt1, ID-###-pt2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]pt") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]pt|PT") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 9"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -199,7 +221,7 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNum
             }
             # Match ID-###-part1, ID-###-part2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]part") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]part|PART") {
                 Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 10"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
@@ -207,7 +229,7 @@ function Convert-JavTitle {
                 $filePartNumber = $filePartNum
             }
             # Match ID-###-cd1, ID-###-cd2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]cd") {
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]cd|CD") {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'cd', '')[1]
