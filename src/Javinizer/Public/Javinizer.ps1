@@ -104,13 +104,13 @@ function Javinizer {
         The javlibraryja parameter allows you to set your data source of JAVLibraryJa to true.
 
     .Parameter Javbus
-        The javbus parameter allows you to set your data source of JAVLibraryJa to true.
+        The javbus parameter allows you to set your data source of Javbus to true.
 
     .Parameter JavbusJa
-        The javbusja parameter allows you to set your data source of JAVLibraryJa to true.
+        The javbusja parameter allows you to set your data source of JavbusJa to true.
 
     .Parameter Jav321
-        The jav321 parameter allows you to set your data source of JAVLibraryJa to true.
+        The jav321 parameter allows you to set your data source of Jav321 to true.
 
     .PARAMETER Force
         The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
@@ -520,6 +520,9 @@ function Javinizer {
             }
 
             'JavLibrary' {
+                Write-Warning "This feature is not currently available"
+                return
+                <#
                 if (Test-Path -LiteralPath $SetJavLibraryOwned) {
                     try {
                         $movieList = Get-Content $SetJavLibraryOwned
@@ -540,6 +543,7 @@ function Javinizer {
                         }
                     }
                 }
+                #>
             }
 
             'Help' {
