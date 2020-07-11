@@ -11,7 +11,7 @@ function Set-JavlibraryOwned {
 
     try {
         $index = 0
-        $timeout = New-TimeSpan -Seconds 60
+        $timeout = New-TimeSpan -Seconds $Settings.JavLibrary.'request-timeout-sec'
         $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
         while ($check.content -notmatch '"ERROR":1' -and $stopwatch.elapsed -lt $timeout) {
             if ($check.Content -match '"ERROR":-3') {
