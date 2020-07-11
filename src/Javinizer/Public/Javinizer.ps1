@@ -343,6 +343,8 @@ function Javinizer {
                 Update-Javinizer
                 $global:javinizerUpdateCheck = $true
             }
+        } else {
+            $global:javinizerUpdateCheck = $false
         }
 
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
@@ -374,8 +376,6 @@ function Javinizer {
         } else {
             $DebugPreference = 'SilentlyContinue'
         }
-
-        $ProgressPreference = 'SilentlyContinue'
 
         #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Parameter set: [$($PSCmdlet.ParameterSetName)]"
         #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Bound parameters: [$($PSBoundParameters.Keys)]"
@@ -709,6 +709,8 @@ function Javinizer {
                             $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
                             $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
                         }
+                    } else {
+                        $global:javlibraryOwnedMovies = $null
                     }
                 } catch {
                     Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting existing owned movies on JAVLibrary: $PSItem"
@@ -733,7 +735,6 @@ function Javinizer {
                 # Match a single file and perform actions on it
                 if ((Test-Path -LiteralPath $getPath.FullName -PathType Leaf) -and (Test-Path -LiteralPath $getDestinationPath.FullName -PathType Container)) {
                     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Detected path: [$($getPath.FullName)] as single item"
-                    Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] (1 of $($fileDetails.Count)) Sorting [$($fileDetails.OriginalFileName)]"
                     if ($PSBoundParameters.ContainsKey('Url')) {
                         if ($Url -match ',') {
                             $urlList = $Url -split ','
@@ -762,6 +763,8 @@ function Javinizer {
                                 if ($null -eq $session) {
                                     New-CloudflareSession -ScriptRoot $ScriptRoot
                                 }
+                            } else {
+                                $global:session = $null
                             }
 
                             if ($Settings.General.'move-to-folder' -eq 'True') {
@@ -776,14 +779,77 @@ function Javinizer {
                                 $renamePreference = $false
                             }
 
-                            Start-MultiSort -Path $getPath.FullName -Throttle $throttleCount -Recurse:$Recurse -DestinationPath $getDestinationPath.FullName -Strict:$Strict -MoveToFolder:$movePreference -RenameFile:$renamePreference -Force:$Force -Settings $settings
+                            Get-Job | Remove-Job -Force
+
+                            <# With foreach-object -parallel
+                            Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings | ForEach-Object -AsJob -ThrottleLimit $Settings.General.'multi-sort-throttle-limit' -Parallel {
+
+                                $global:javinizerUpdatecheck = $using:javinizerUpdateCheck
+
+                                if ($Javlibrary) {
+                                    $global:Session = $using:Session
+                                }
+
+                                if ($Settings.JavLibrary.'set-owned' -eq 'True') {
+                                    $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
+                                }
+
+                                Javinizer -Path $_.FullName -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
+                            } | Out-Null
+                            #>
+
+                            $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
+                            foreach ($file in $files) {
+                                $filePath = $file.FullName
+                                Start-ThreadJob -Name $file.BaseName -ThrottleLimit $Settings.General.'multi-sort-throttle-limit' -ScriptBlock {
+                                    $global:javinizerUpdatecheck = $using:javinizerUpdateCheck
+
+                                    if ($using:Javlibrary) {
+                                        $global:Session = $using:Session
+                                    }
+
+                                    $Settings = $using:Settings
+
+                                    if ($Settings.JavLibrary.'set-owned' -eq 'True') {
+                                        $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
+                                    }
+                                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                                    Javinizer -Path $using:filePath -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
+                                } | Out-Null
+                            }
+
+                            $waitJobs = Get-Job -IncludeChildJob | Where-Object { $_.PSJobTypeName -eq 'ThreadJob' }
+                            $totalJobs = $waitJobs.Count
+                            $completed = 0
+                            while ($waitJobs.Count -ne 0) {
+                                $runningJobs = @()
+                                $completedJobs = @()
+                                $otherJobs = @()
+
+                                foreach ($job in $waitJobs) {
+                                    if ($job.State -eq 'Completed') {
+                                        $completedJobs += $job
+                                    } elseif ($job.State -eq 'Running') {
+                                        $runningJobs += $job
+                                    } else {
+                                        $otherJobs += $job
+                                    }
+                                }
+
+                                Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($Waitjobs.Count)" -PercentComplete (($completed / $totalJobs) * 100)
+                                Write-Progress -ParentId 1 -Id 2 -Activity "Max threads: [$($Settings.General.'multi-sort-throttle-limit')]"  -Status "Sorting: $($runningJobs.Name -join ', ')"
+
+                                $waitJobs = $runningJobs + $otherJobs
+                                $completed += $completedJobs.Count
+                            }
 
                         } catch {
                             Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]: $PSItem"
                         } finally {
                             # Stop all running jobs if script is stopped by user input
+                            Get-Job | Receive-Job
                             Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Sort has completed or has been stopped prematurely; Stopping all running jobs..."
-                            Get-RSJob | Stop-RSJob
+                            Get-Job | Remove-Job -Force
                         }
                     } else {
                         $index = 1
