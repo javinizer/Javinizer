@@ -49,6 +49,16 @@ function Test-Settings {
         'actor-folder-string'
     )
 
+    $intSettings = @(
+        'multi-sort-throttle-limit',
+        'max-title-length',
+        'max-path-length',
+        'minimum-filesize-to-sort',
+        'regex-id-match',
+        'regex-pt-match',
+        'request-timeout-sec'
+    )
+
     $javlibrarySettings = @(
         'set-owned',
         'username',
@@ -96,6 +106,17 @@ function Test-Settings {
             }
         }
 
+        if ($setting.Name -in $intSettings) {
+            if ($setting.Value -notmatch '^\d+$') {
+                $entry = [PSCustomObject]@{
+                    Name  = $setting.Name
+                    Value = $setting.Value
+                    Type  = 'Int'
+                }
+                $errorObject += $entry
+            }
+        }
+
         <#
         if ($setting.Name -in $stringSettings) {
             $tags = (($Setting.Value | Select-String '<(.*?)>' -AllMatches).Matches.Groups | Where-Object { $_.Name -eq 1 }).Value
@@ -127,6 +148,10 @@ function Test-Settings {
     foreach ($err in $errorObject) {
         if ($err.Type -eq 'Boolean') {
             Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error validating setting [$($err.Name)] with value [$($err.Value)], value must match [True / False]"
+        }
+
+        if ($err.Type -eq 'Int') {
+            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error validating setting [$($err.Name)] with value [$($err.Value)], value must match an integer"
         }
 
         if ($err.Type -eq 'String') {
