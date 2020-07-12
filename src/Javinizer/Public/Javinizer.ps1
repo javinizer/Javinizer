@@ -332,6 +332,8 @@ function Javinizer {
             throw "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Unable to load settings from path: $settingsPath"
         }
 
+        Test-Settings -Path $settingsPath -ErrorAction Stop
+
         if (($settings.Other.'log-path' -eq '') -or ($null -eq $settings.Other.'log-path')) {
             $global:javinizerLogPath = Join-Path -Path $ScriptRoot -ChildPath javinizer.log
         } else {
@@ -427,7 +429,7 @@ function Javinizer {
     }
 
     process {
-        # Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]; Javbus: [$Javbus]; JavbusJa: [$JavbusJa]; Jav321: [$Jav321]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
@@ -868,6 +870,6 @@ function Javinizer {
     }
 
     end {
-        # Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
