@@ -579,7 +579,7 @@ function Javinizer {
                     if (Test-Path -Path $SetJavLibraryOwned -PathType Leaf) {
                         $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
                     } else {
-                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings).Id
+                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings -Strict:$Strict).Id
                     }
                 } catch {
                     Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting movies [$SetJavLibraryOwned]: $PSItem"
