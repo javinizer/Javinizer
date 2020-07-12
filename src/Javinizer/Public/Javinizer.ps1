@@ -429,7 +429,7 @@ function Javinizer {
     }
 
     process {
-        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        # Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
         Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18: [$R18]; R18Zh: [$R18Zh] Dmm: [$Dmm]; Javlibrary: [$Javlibrary]; JavlibraryZh: [$JavlibraryZh]; JavlibraryJa: [$JavlibraryJa]; Javbus: [$Javbus]; JavbusJa: [$JavbusJa]; Jav321: [$Jav321]"
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
@@ -870,6 +870,6 @@ function Javinizer {
     }
 
     end {
-        Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
+        # Write-Host "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
