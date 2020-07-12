@@ -81,10 +81,12 @@ function Convert-JavTitle {
             }
 
             $regex = $Settings.General.regex
+            $regexIdMatch = $Settings.General.'regex-id-match'
+            $regexPtMatch = $Settings.General.'regex-pt-match'
             $index = 0
             foreach ($file in $fileBaseNameUpper) {
-                $id = ($file | Select-String $regex).Matches.Groups[1].Value
-                $partNum = ($file | Select-String $regex).Matches.Groups[2].Value
+                $id = ($file | Select-String $regex).Matches.Groups[$regexIdMatch].Value
+                $partNum = ($file | Select-String $regex).Matches.Groups[$regexPtMatch].Value
                 if ($fileBaseNameUpper -eq 1) {
                     if ($partNum -ne '') {
                         $fileBaseNameUpper = "$id-pt$PartNum"
