@@ -576,9 +576,13 @@ function Javinizer {
                 }
 
                 try {
-                    $movieList = (Get-VideoFile -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings).BaseName
+                    if (Test-Path -Path $SetJavLibraryOwned -PathType Leaf) {
+                        $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
+                    } else {
+                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings).Id
+                    }
                 } catch {
-                    Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error importing [$SetJavLibraryOwned]: $PSItem"
+                    Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting movies [$SetJavLibraryOwned]: $PSItem"
                     return
                 }
 
@@ -600,7 +604,6 @@ function Javinizer {
                             Set-JavlibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
                         } else {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$movie] not matched on JAVLibrary, skipping..."
-                            return
                         }
                         $index++
 
