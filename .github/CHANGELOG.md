@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.2]
+### Added
+- Settings file validation for:
+    - True/False values
+    - Integer values
+    - Multi-sort throttle value
+
+### Changed
+- `-SetJavlibraryOwned` now accepts a Path as well as a text list of movie IDs
+    - If a path is detected, it will use Javinizer's default movie matching scheme to match IDs (regex-match supported as well)
+        - e.g. `Javinizer -SetJavlibraryOwned "C:\JAV\Sorted" -Recurse`
+    - If a file is detected, it will use the text list of movie IDs
+        - e.g. `Javinizer -SetJavlibraryOwned "C:\JAV\movies.txt"`
+- Timeout for setting owned movies on JAVLibrary is now user-defined (in seconds)
+    - Setting `request-timeout-sec`
+- Regex match sorting now allows user-defined match values (use `$DebugPreference = 'Continue'` if troubleshooting your matches)
+    - Setting `regex-id-match` and `regex-pt-match`
+- `-Multi` sort now uses PowerShell native `Start-ThreadJob` cmdlet as opposed to PoshRSJob
+- Progress bar when using parameter `-Multi` now includes current in-progress threads
+
+### Fixed
+- Movies failing to be sorted into separate folders when using `-Multi` with default settings
+- Javinizer failing when regex match fails on an item and returns a null value
+- Javinizer not ignoring movies that don't match the regex string when `regex-match=True`
+
+### Removed
+- PoshRSJob dependency removed
+
 ## [1.7.1]
 ### Added
 - Parameter `-SetJavlibraryOwned` to add a list of movies as owned on JAVLibrary
