@@ -73,7 +73,7 @@ function Javinizer {
     .PARAMETER Order
         The order parameter lets you select which sort order to view your log entries (Asc, Desc) with descending being default
 
-    .PARAMETER SetJavLibraryOwned
+    .PARAMETER SetJavlibraryOwned
         The setjavlibraryowned parameter lets you reference a path to a list of your JAV movies in line separated format in a flat text file to set as owned on JAVLibrary
 
     .PARAMETER GetThumbs
@@ -238,6 +238,7 @@ function Javinizer {
         [Alias('m')]
         [switch]$Multi,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'JavLibrary')]
         [switch]$Recurse,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Strict,
@@ -277,7 +278,7 @@ function Javinizer {
         [AllowNull()]
         [string]$Order,
         [Parameter(ParameterSetName = 'JavLibrary')]
-        [string]$SetJavLibraryOwned,
+        [string]$SetJavlibraryOwned,
         [Parameter(ParameterSetName = 'Thumbs')]
         [switch]$GetThumbs,
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -317,6 +318,11 @@ function Javinizer {
     )
 
     begin {
+
+        if (!($Multi.IsPresent -or $GetThumbs.IsPresent -or $UpdateThumbs.IsPresent)) {
+            $ProgressPreference = 'SilentlyContinue'
+        }
+
         $urlLocation = @()
         $urlList = @()
 
@@ -570,7 +576,7 @@ function Javinizer {
                 }
 
                 try {
-                    $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
+                    $movieList = (Get-VideoFile -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings).BaseName
                 } catch {
                     Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error importing [$SetJavLibraryOwned]: $PSItem"
                     return
@@ -591,7 +597,7 @@ function Javinizer {
                         if ($null -ne $javlibObject) {
                             $ajaxId = $javlibObject.AjaxId
                             $url = $javlibObject.Url
-                            Set-JavLibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
+                            Set-JavlibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
                         } else {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$movie] not matched on JAVLibrary, skipping..."
                             return
@@ -780,8 +786,6 @@ function Javinizer {
                             } else {
                                 $renamePreference = $false
                             }
-
-                            Get-Job | Remove-Job -Force
 
                             <# With foreach-object -parallel
                             Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings | ForEach-Object -AsJob -ThrottleLimit $Settings.General.'multi-sort-throttle-limit' -Parallel {
