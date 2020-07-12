@@ -1,10 +1,10 @@
 # Javinizer (JAV Organizer)
 [![Build Status](https://dev.azure.com/jli141928/Javinizer/_apis/build/status/jvlflame.Javinizer?branchName=master)](https://dev.azure.com/jli141928/Javinizer/_build/latest?definitionId=2&branchName=master)
-[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=Release)](https://github.com/jvlflame/Javinizer/releases)
-[![Last commit](https://img.shields.io/github/last-commit/jvlflame/Javinizer?style=flat&color=blue&label=Last%20Commit)](https://github.com/jvlflame/Javinizer/commits/dev)
-[![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=PSGallery%20Downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/)
-[![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=GitHub%20Downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
-[![Discord](https://img.shields.io/discord/608449512352120834?color=yellow&style=flat&label=Discord)](https://discord.gg/K2Yjevk)
+[![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=release)](https://github.com/jvlflame/Javinizer/releases)
+[![Last commit](https://img.shields.io/github/commits-since/jvlflame/Javinizer/latest/staging?style=flat&color=blue)](https://github.com/jvlflame/Javinizer/commits/staging)
+[![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery%20downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/)
+[![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=github%20downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
+[![Discord](https://img.shields.io/discord/608449512352120834?color=brightgreen&style=flat&label=discord%20chat)](https://discord.gg/K2Yjevk)
 
 A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
@@ -23,16 +23,12 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 ### Install module dependencies
 
 - [PowerShell 6 or PowerShell 7](https://github.com/PowerShell/PowerShell) - Windows PowerShell 5 is **NOT** supported
-    - [PoshRSJob](https://github.com/proxb/PoshRSJob)
 - [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
     - [Cloudscraper](https://pypi.org/project/cloudscraper/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
 
 ```powershell
-# pwsh
-PS> Install-Module PoshRSJob
-
 # python (Windows)
 > pip install cloudscraper
 > pip install pillow
@@ -418,6 +414,8 @@ minimum-filesze-to-sort | Integer value (0+) | Sets the minimum filesize video f
 included-file-extensions | String value | Sets the file extension types for Javinizer to read from your sort directory in comma separated format (no spaces)
 excluded-file-strings | String value | Sets the paths/string values with wildcards (*) for Javinizer to ignore from your sort directory in comma separated format (no spaces)
 regex-match | True/False | Sets Javinizer to match your JAV files using a regular expression instead of the default matcher; The JAV ID in the filename must match website metadata exactly to successfully match
+regex-id-match | Integer value (0+) | Sets the regex match value of the movie Id in the filename
+regex-pt-match | Integer value (0+) | Sets the regex match value of the movie part number in the filename
 regex | String value | The regular expression string to match files if `regex-match=True`; Match 1 should be the movie ID (e.g. ABP-234), Match 2 (optional) should be the part number of the movie (e.g. 2)
 create-nfo | True/False | Creates a .nfo metadata file for the sorted movie that follows the nfo-file-string naming format
 create-nfo-per-file | True/False |  Creates a .nfo metadata for each sorted movie that mirrors the name of the movie (Required for Emby/Jellyfin)
@@ -441,6 +439,7 @@ server-api-key | String value | The API key for your Emby/Jellyfin server instan
 set-owned | True/False | Sets sorted movies as "Owned" on JAVLibrary, requires a JAVLibrary account
 username | String value | Your JAVLibrary username
 session-cookie | String value | After logging in, view the cookies under the `www.javlibrary.com/cookies/session` directory and copy the cookie content
+request-timeout-sec | Integer value (0+) | Sets the timeout value in seconds on how long Javinizer will continue polling Javinizer to set the owned status (polls every 3 seconds)
 log-path | String value (Path) | Sets the path to your log file; If left blank, it will default to a location within your module folder
 check-updates | True/False | Checks for updates to the Javinizer module upon your first console session runtime
 verbose-shell-output | True/False | Displays verbose output to your shell

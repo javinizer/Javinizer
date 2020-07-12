@@ -34,6 +34,10 @@ function Get-VideoFile {
             }
         }
 
+        if ($Settings.General.'regex-match' -eq 'True') {
+            $files = $files | Where-Object { $_.BaseName -match ($Settings.General.regex) }
+        }
+
         Write-Output $files
     }
 
