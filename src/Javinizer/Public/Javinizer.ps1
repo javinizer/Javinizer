@@ -822,7 +822,6 @@ function Javinizer {
                                     if ($Settings.JavLibrary.'set-owned' -eq 'True') {
                                         $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
                                     }
-                                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                                     Javinizer -Path $using:filePath -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
                                 } | Out-Null
                             }
