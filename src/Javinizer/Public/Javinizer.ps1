@@ -241,6 +241,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'JavLibrary')]
         [switch]$Recurse,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'JavLibrary')]
         [switch]$Strict,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
