@@ -241,6 +241,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'JavLibrary')]
         [switch]$Recurse,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
+        [Parameter(ParameterSetName = 'JavLibrary')]
         [switch]$Strict,
         [Parameter(ParameterSetName = 'Path', Mandatory = $false)]
         [switch]$Force,
@@ -579,7 +580,7 @@ function Javinizer {
                     if (Test-Path -Path $SetJavLibraryOwned -PathType Leaf) {
                         $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
                     } else {
-                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings).Id
+                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings -Strict:$Strict).Id
                     }
                 } catch {
                     Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting movies [$SetJavLibraryOwned]: $PSItem"
@@ -822,7 +823,6 @@ function Javinizer {
                                     if ($Settings.JavLibrary.'set-owned' -eq 'True') {
                                         $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
                                     }
-                                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                                     Javinizer -Path $using:filePath -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
                                 } | Out-Null
                             }
