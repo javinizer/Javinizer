@@ -568,11 +568,6 @@ function Javinizer {
                             Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
                             return
                         }
-                    } else {
-                        if ($global:javlibraryOwnedMovies.Length -le 1) {
-                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
-                            return
-                        }
                     }
                 }
 
@@ -731,11 +726,6 @@ function Javinizer {
                 if ($null -ne $global:javlibraryOwnedMovies) {
                     if ($global:javlibraryOwnedMovies.Count -gt 1) {
                         if ($javlibraryOwnedMovies[0].Length -le 1) {
-                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
-                            return
-                        }
-                    } else {
-                        if ($global:javlibraryOwnedMovies.Length -le 1) {
                             Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
                             return
                         }
