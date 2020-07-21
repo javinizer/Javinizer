@@ -56,7 +56,8 @@ function Test-Settings {
         'minimum-filesize-to-sort',
         'regex-id-match',
         'regex-pt-match',
-        'request-timeout-sec'
+        'request-timeout-sec',
+        'request-timeout-interval-sec'
     )
 
     $javlibrarySettings = @(

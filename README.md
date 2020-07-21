@@ -439,6 +439,7 @@ server-api-key | String value | The API key for your Emby/Jellyfin server instan
 set-owned | True/False | Sets sorted movies as "Owned" on JAVLibrary, requires a JAVLibrary account
 username | String value | Your JAVLibrary username
 session-cookie | String value | After logging in, view the cookies under the `www.javlibrary.com/cookies/session` directory and copy the cookie content
+request-timeout-interval-sec | Interger value (0+) | Sets the timeout value in seconds on how long Javinizer will wait between setting a movie as owned on JAVLibrary. This is required due to JAVLibrary erroring when setting movies as owned too quickly
 request-timeout-sec | Integer value (0+) | Sets the timeout value in seconds on how long Javinizer will continue polling Javinizer to set the owned status (polls every 3 seconds)
 log-path | String value (Path) | Sets the path to your log file; If left blank, it will default to a location within your module folder
 check-updates | True/False | Checks for updates to the Javinizer module upon your first console session runtime

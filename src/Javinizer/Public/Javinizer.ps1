@@ -598,6 +598,7 @@ function Javinizer {
                             $ajaxId = $javlibObject.AjaxId
                             $url = $javlibObject.Url
                             Set-JavlibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
+                            Start-Sleep -Seconds $Settings.JavLibrary.'request-timeout-interval-sec'
                         } else {
                             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$movie] not matched on JAVLibrary, skipping..."
                         }
