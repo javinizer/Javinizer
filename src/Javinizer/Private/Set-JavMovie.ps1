@@ -211,18 +211,6 @@ function Set-JavMovie {
                 Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error downloading trailer video $($PSItem.ToString())"
                 throw $_
             }
-
-            try {
-                if ($Settings.JavLibrary.'set-owned' -eq 'True') {
-                    if (!($javlibraryOwnedMovies -match $DataObject.Id)) {
-                        Set-JavlibraryOwned -AjaxId $DataObject.AjaxId -JavlibraryUrl $DataObject.JavlibraryUrl -Settings $Settings
-                    }
-                }
-            } catch {
-                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error downloading trailer video"
-                Write-Log -Log $javinizerLogPath -Level ERROR -OriginalFile $DataObject.OriginalFileName -Text "Skipped: [$($DataObject.OriginalFileName)] Error setting owned status on JavLibrary $($PSItem.ToString())"
-                throw $_
-            }
         }
     }
 

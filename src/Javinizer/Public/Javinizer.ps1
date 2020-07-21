@@ -692,46 +692,6 @@ function Javinizer {
                     }
                 }
 
-                try {
-                    if ($Settings.JavLibrary.'set-owned' -eq 'True') {
-                        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Getting owned movies on JAVLibrary"
-                        if (!($global:javlibraryOwnedMovies)) {
-                            $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
-                                "method"                    = "GET"
-                                "authority"                 = "www.javlibrary.com"
-                                "scheme"                    = "https"
-                                "path"                      = "/en/mv_owned_print.php"
-                                "upgrade-insecure-requests" = "1"
-                                "user-agent"                = $session.UserAgent
-                                "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-                                "sec-fetch-site"            = "none"
-                                "sec-fetch-mode"            = "navigate"
-                                "sec-fetch-user"            = "?1"
-                                "sec-fetch-dest"            = "document"
-                                "accept-encoding"           = "gzip, deflate, br"
-                                "accept-language"           = "en-US,en;q=0.9"
-                                "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
-                            }
-
-                            $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
-                            $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
-                        }
-                    } else {
-                        $global:javlibraryOwnedMovies = $null
-                    }
-                } catch {
-                    Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error getting existing owned movies on JAVLibrary: $PSItem"
-                }
-
-                if ($null -ne $global:javlibraryOwnedMovies) {
-                    if ($global:javlibraryOwnedMovies.Count -gt 1) {
-                        if ($javlibraryOwnedMovies[0].Length -le 1) {
-                            Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error authenticating to JAVLibrary to set owned movies, check that your username and session-cookie are valid"
-                            return
-                        }
-                    }
-                }
-
                 #Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Converted file details: [$($fileDetails)]"
 
                 # Match a single file and perform actions on it
@@ -761,7 +721,7 @@ function Javinizer {
                     if ($Multi.IsPresent) {
                         $throttleCount = $Settings.General.'multi-sort-throttle-limit'
                         try {
-                            if ($Javlibrary -or $Settings.JavLibrary.'set-owned' -eq 'True') {
+                            if ($Javlibrary) {
                                 if ($null -eq $session) {
                                     New-CloudflareSession -ScriptRoot $ScriptRoot
                                 }
@@ -810,9 +770,6 @@ function Javinizer {
 
                                     $Settings = $using:Settings
 
-                                    if ($Settings.JavLibrary.'set-owned' -eq 'True') {
-                                        $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
-                                    }
                                     Javinizer -Path $using:filePath -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
                                 } | Out-Null
                             }
