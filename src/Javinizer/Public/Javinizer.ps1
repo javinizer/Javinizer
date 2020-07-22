@@ -742,34 +742,22 @@ function Javinizer {
                                 $renamePreference = $false
                             }
 
-                            <# With foreach-object -parallel
-                            Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings | ForEach-Object -AsJob -ThrottleLimit $Settings.General.'multi-sort-throttle-limit' -Parallel {
-
-                                $global:javinizerUpdatecheck = $using:javinizerUpdateCheck
-
-                                if ($Javlibrary) {
-                                    $global:Session = $using:Session
-                                }
-
-                                if ($Settings.JavLibrary.'set-owned' -eq 'True') {
-                                    $global:javlibraryOwnedMovies = $using:javlibraryOwnedMovies
-                                }
-
-                                Javinizer -Path $_.FullName -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
-                            } | Out-Null
-                            #>
-
                             $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
                             foreach ($file in $files) {
                                 $filePath = $file.FullName
                                 Start-ThreadJob -Name $file.BaseName -ThrottleLimit $Settings.General.'multi-sort-throttle-limit' -ScriptBlock {
+                                    $Settings = $using:Settings
+
+                                    # This will import the module in the separate Javinizer threads if the module isn't installed using PowerShellGet
+                                    if ($Settings.Other.'module-psm1-path') {
+                                        Import-Module $Settings.Other.'module-psm1-path'
+                                    }
+
                                     $global:javinizerUpdatecheck = $using:javinizerUpdateCheck
 
                                     if ($using:Javlibrary) {
                                         $global:Session = $using:Session
                                     }
-
-                                    $Settings = $using:Settings
 
                                     Javinizer -Path $using:filePath -DestinationPath:($using:DestinationPath) -ScriptRoot $using:ScriptRoot -Strict:($using:Strict) -MoveToFolder:($using:movePreference) -RenameFile:($using:renamePreference) -Force:($using:Force)
                                 } | Out-Null
