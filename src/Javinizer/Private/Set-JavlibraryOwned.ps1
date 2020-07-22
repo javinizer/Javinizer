@@ -10,7 +10,6 @@ function Set-JavlibraryOwned {
     Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Url: $JavlibraryUrl"
 
     try {
-        $index = 0
         $timeout = New-TimeSpan -Seconds $Settings.JavLibrary.'request-timeout-sec'
         $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
         while ($check.content -notmatch '"ERROR":1' -and $stopwatch.elapsed -lt $timeout) {
@@ -43,9 +42,11 @@ function Set-JavlibraryOwned {
 
         if ($stopwatch.elapsed -gt $timeout) {
             Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Movie [$JavlibraryUrl] timed out while setting owned status"
+            Write-Log -Log $javinizerLogPath -Level ERROR -Text "Movie [$JavlibraryUrl] timed out while setting owned status"
         }
     } catch {
         Write-Error "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Error setting owned status for [$JavlibraryUrl]: $PSItem"
+        Write-Log -Log $javinizerLogPath -Level ERROR -Text "Error setting owned status for [$JavlibraryUrl]: $PSItem"
     }
 }
 
