@@ -30,7 +30,6 @@ function Test-Settings {
         'first-last-name-order',
         'convert-alias-to-originalname'
         'normalize-genres',
-        'set-owned',
         'check-updates',
         'verbose-shell-output',
         'debug-shell-output'
@@ -57,14 +56,13 @@ function Test-Settings {
         'regex-id-match',
         'regex-pt-match',
         'request-timeout-sec',
-        'request-timeout-interval-sec'
+        'request-interval-sec'
     )
 
     $javlibrarySettings = @(
-        'set-owned',
         'username',
         'session-cookie',
-        'requeste-timeout-sec'
+        'request-timeout-sec'
     )
 
     $validTags = @(
