@@ -8,7 +8,7 @@ function Test-RequiredMetadata {
     )
 
     begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+        Write-JLog -Level Debug -Message "Function started"
         $nullFields = @()
         $errors = 0
     }
@@ -35,7 +35,6 @@ function Test-RequiredMetadata {
     }
 
     end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-JLog -Level Debug -Message "Function ended"
     }
 }
-

@@ -3,45 +3,45 @@ function Get-VideoFile {
     param (
         [Parameter(Position = 0)]
         [string]$Path,
-        [int]$FileSize,
+        [Parameter()]
         [switch]$Recurse,
-        [object]$Settings
+        [Parameter()]
+        [int]$MinimumFileSize,
+        [Parameter()]
+        [array]$ExcludedStrings,
+        [Parameter()]
+        [array]$IncludedExtensions,
+        [Parameter()]
+        [string]$RegexEnabled,
+        [Parameter()]
+        [string]$RegexString
     )
 
     begin {
-        $fileExtensions = @()
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $FileSize = $Settings.General.'minimum-filesize-to-sort'
+        Write-JLog -Level Debug -Message "Function started"
     }
 
     process {
-        $fixedPath = ($Path).replace('`[', '[').replace('`]', ']')
-        $excludedStrings = Convert-CommaDelimitedString -String $Settings.General.'excluded-file-strings'
-        $extensionArray = Convert-CommaDelimitedString -String $Settings.General.'included-file-extensions'
-        foreach ($extension in $extensionArray) {
-            $fileExtensions += ('.' + $extension)
-        }
-
-        if ($excludedStrings) {
-            $files = Get-ChildItem -LiteralPath $fixedPath -Recurse:$Recurse -Exclude:$excludedStrings | Where-Object {
-                $_.Extension -in $fileExtensions `
+        if ($ExcludedStrings) {
+            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
+                $_.Extension -in $IncludedExtensions `
                     -and $_.Length -ge ($FileSize * 1MB)
             }
         } else {
-            $files = Get-ChildItem -LiteralPath $fixedPath -Recurse:$Recurse | Where-Object {
-                $_.Extension -in $fileExtensions `
+            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse | Where-Object {
+                $_.Extension -in $IncludedExtensions `
                     -and $_.Length -ge ($FileSize * 1MB)
             }
         }
 
-        if ($Settings.General.'regex-match' -eq 'True') {
-            $files = $files | Where-Object { $_.BaseName -match ($Settings.General.regex) }
+        if ($RegexEnabled -eq 'true') {
+            $files = $files | Where-Object { $_.BaseName -match $RegexString }
         }
 
         Write-Output $files
     }
 
     end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
+        Write-JLog -Level Debug -Message "Function ended"
     }
 }

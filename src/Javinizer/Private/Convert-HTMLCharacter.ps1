@@ -1,6 +1,7 @@
 function Convert-HTMLCharacter {
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]$String
     )
 
@@ -17,8 +18,7 @@ function Convert-HTMLCharacter {
             -replace '&#039', ''
 
         $newString = $String.Trim()
-        # Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Begin String: [$String]; End string: [$newString]"
+        # Write-JLog -Level Debug -Message "Begin String: [$String]; End string: [$newString]"
         Write-Output $newString
-
     }
 }

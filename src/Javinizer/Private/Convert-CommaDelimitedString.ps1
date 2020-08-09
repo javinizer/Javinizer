@@ -1,7 +1,7 @@
 function Convert-CommaDelimitedString {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]$String
     )
 
@@ -17,7 +17,7 @@ function Convert-CommaDelimitedString {
             $stringArray = $String
         }
 
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Begin string: [$String], End string [$stringArray]"
+        Write-JLog -Level Debug -Message "Begin string: [$String], End string [$stringArray]"
         Write-Output $stringArray
     }
 }
