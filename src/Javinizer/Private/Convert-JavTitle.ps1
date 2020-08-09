@@ -1,21 +1,28 @@
 function Convert-JavTitle {
     [CmdletBinding()]
     param (
-        [ValidateScript( {
-                if (-Not ($_ | Test-Path) ) {
-                    throw "$_ does not exist"
-                }
-                return $true
-            })]
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Path,
-        [object]$Settings,
-        [switch]$Recurse,
-        [switch]$Strict
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [object]$Files,
+        [Parameter()]
+        [switch]$Strict,
+        [Parameter()]
+        [string]$RegexEnabled,
+        [Parameter()]
+        [string]$RegexString,
+        [Parameter()]
+        [int]$RegexIdMatch,
+        [Parameter()]
+        [int]$RegexPtMatch
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+    process {
+        $dataObject = @()
+        $fileBaseNameUpper = @()
+        $fileBaseNameUpperCleaned = @()
+        $fileBaseNameHyphen = $null
+        $fileP1, $fileP2, $fileP3, $fileP4 = @()
+        $fileBaseNameOriginal = @($Files.BaseName)
+
         # Unwanted strings in files to remove
         $RemoveStrings = @(
             # Prefixes
@@ -63,33 +70,18 @@ function Convert-JavTitle {
             '_'
         )
 
-        $dataObject = @()
-        $fileBaseNameUpper = @()
-        $fileBaseNameUpperCleaned = @()
-        $finalFileName = @()
-        $fileBaseNameHypen = $null
-        $fileP1, $fileP2, $fileP3, $fileP4 = @()
-    }
-
-    process {
-        $files = Get-VideoFile -Path $Path -Recurse:$Recurse -Settings $Settings
-        $fileBaseNameOriginal = @($files.BaseName)
-
-        if ($Settings.General.'regex-match' -eq 'True') {
+        if ($RegexEnabled -eq 'True') {
             foreach ($file in $FileBaseNameOriginal) {
                 $fileBaseNameUpper += $file.ToUpper()
             }
 
-            $regex = $Settings.General.regex
-            $regexIdMatch = $Settings.General.'regex-id-match'
-            $regexPtMatch = $Settings.General.'regex-pt-match'
             $index = 0
             foreach ($file in $fileBaseNameUpper) {
                 try {
-                    $id = ($file | Select-String $regex).Matches.Groups[$regexIdMatch].Value
-                    $partNum = ($file | Select-String $regex).Matches.Groups[$regexPtMatch].Value
+                    $id = ($file | Select-String $RegexString).Matches.Groups[$RegexIdMatch].Value
+                    $partNum = ($file | Select-String $RegexString).Matches.Groups[$RegexPtMatch].Value
                 } catch {
-                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] File [$file] not matched by regex"
+                    Write-JLog -Level Debug -Message "File [$file] not matched by regex"
                     break
                 }
                 if ($fileBaseNameUpper -eq 1) {
@@ -126,26 +118,42 @@ function Convert-JavTitle {
                 $fileBaseNameUpper += $file.ToUpper()
             }
 
-            # Iterate through each file in $files to add hypen(-) between title and ID if not exists
+            # Iterate through each file in $Files to add hypen(-) between title and ID if not exists
             $counter = -1
             foreach ($file in $fileBaseNameUpper) {
-                if ($file -notmatch 't28' -and $file -notmatch 't-28') {
+                if ($file -match '^t28' -or $file -match '^t-28' -or $file -match '^r18' -or $file -match '^r-18') {
+                    if ($file -match '^t28' -or $file -match '^t-28') {
+                        $file = $file -replace 't-28', 't28'
+                        if ($file -notmatch '-') {
+                            $file = ($file -split 't28') -join 'T28-'
+                            $fileBaseNameUpper[$counter] = $file
+                        }
+                    } elseif ($file -match '^r18' -or $file -match '^r-18') {
+                        $file = $file -replace 'r-18', 'r18'
+                        if ($file -notmatch '-') {
+                            $file = ($file -split 'r18') -join 'R18-'
+                            $fileBaseNameUpper[$counter] = $file
+                        }
+                    } else {
+                        $fileBaseNameUpper[$counter] = $file
+                    }
+                } else {
                     # Iterate through file name length
                     for ($x = 0; $x -lt $file.Length; $x++) {
                         # Match if an alphabetical character index is next to a numerical index
                         if ($file[$x] -match '^[a-z]*$' -and $file[$x + 1] -match '^[0-9]$') {
-                            # Write modified filename to $fileBaseNameHypen, inserting a '-' at the specified
+                            # Write modified filename to $fileBaseNameHyphen, inserting a '-' at the specified
                             # index between the alphabetical and numerical character, and appending extension
-                            $fileBaseNameHypen = ($file.Insert($x + 1, '-'))
+                            $fileBaseNameHyphen = ($file.Insert($x + 1, '-'))
                         }
                     }
                     # Get index if file changed
                     $counter++
                     # Rename changed files
-                    if ($null -ne $fileBaseNameHypen) {
-                        $fileBaseNameUpper[$counter] = $fileBaseNameHypen
+                    if ($null -ne $fileBaseNameHyphen) {
+                        $fileBaseNameUpper[$counter] = $fileBaseNameHyphen
                     }
-                    $fileBaseNameHypen = $null
+                    $fileBaseNameHyphen = $null
                 }
             }
         }
@@ -155,7 +163,6 @@ function Convert-JavTitle {
             $filePartNumber = $null
             #Match ID-###A, ID###B, etc.
             if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[a-dA-D]") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 1"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 if ($fileP3 -eq 'A') { $filePartNumber = '1' }
@@ -170,7 +177,6 @@ function Convert-JavTitle {
             }
             # Match ID-###-A, ID-###-B, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-dA-D]") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 2"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $fileP3 = $fileP3 -replace '-', ''
@@ -187,14 +193,13 @@ function Convert-JavTitle {
             <#
                 #Match ID-###-A, ID-###-B, etc.
                 elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]$") {
-                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 3"
+                    Write-JLog -Level Debug -Message "Match 3"
                     $fileP1, $fileP2, $fileP3, $fileP4 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})[-]([a-zA-Z])"
                     $fileBaseNameUpperCleaned += $fileP1 + $fileP2 + $fileP3
                 }
                 #>
             # Match ID-###-1, ID-###-2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]\d$") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 4"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ($fileP3 -replace '-', '')[1]
@@ -202,7 +207,6 @@ function Convert-JavTitle {
             }
             # Match ID-###-01, ID-###-02, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]0\d$") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 5"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
@@ -210,7 +214,6 @@ function Convert-JavTitle {
             }
             # Match ID-###-001, ID-###-002, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]00\d$") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 6"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
@@ -218,7 +221,6 @@ function Convert-JavTitle {
             }
             # Match ID-### - pt1, ID-### - pt2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] pt|PT") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 7"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -226,7 +228,6 @@ function Convert-JavTitle {
             }
             # Match ID-### - part1, ID ### - part2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6} [-] part|PART") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 8"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -234,7 +235,6 @@ function Convert-JavTitle {
             }
             # Match ID-###-pt1, ID-###-pt2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]pt|PT") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 9"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -242,7 +242,6 @@ function Convert-JavTitle {
             }
             # Match ID-###-part1, ID-###-part2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-]part|PART") {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 10"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
                 $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
@@ -258,34 +257,40 @@ function Convert-JavTitle {
 
             # Match everything else
             else {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Match 11"
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})"
                 $fileBaseNameUpperCleaned += $fileP1 + $fileP2
             }
-
-            if ($fileBaseNameUpper[$x] -match '00\d') {
-                $contentId = $fileBaseNameUpper[$x] -split '-'
-                $contentId = $contentId[0] + '00' + $contentId[1]
-            } elseif ($fileBaseNameUpper[$x] -match '0\d\d') {
-                $contentId = $fileBaseNameUpper[$x] -split '-'
-                $contentId = $contentId[0] + '00' + $contentId[1]
+            <#             if ($fileBaseNameUpper[$x] -match '([a-zA-Z|tT28]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
+                $movieId = $fileBaseNameUpper[$x]
+                $splitId = $fileBaseNameUpper[$x] -split '-'
+                $contentId = $splitId[0] + $splitId[1].PadLeft(5, '0')
             } else {
-                $contentId = $fileBaseNameUpper[$x] -split '-'
-                $contentId = $contentId[0] + '00' + $contentId[1]
+                $movieId = ($fileBaseNameUpper[$x] -split '\d', 3 | Where-Object { $_ -ne '' }) -join '-'
+                $contentId = $fileBaseNameUpper[$x]
+            } #>
+
+
+            if ($fileBaseNameUpper[$x] -match '(([a-zA-Z|tT28|rR18]+)-(\d+z{0,1}Z{0,1}e{0,1}E{0,1}))') {
+                $movieId = $fileBaseNameUpperCleaned[$x]
+                $splitId = $fileBaseNameUpperCleaned[$x] -split '-'
+                $contentId = $splitId[0] + $splitId[1].PadLeft(5, '0')
+            } else {
+                $movieId = ($fileBaseNameUpperCleaned[$x] -split '\d', 3 | Where-Object { $_ -ne '' }) -join '-'
+                $contentId = $fileBaseNameUpperCleaned[$x]
             }
 
-            if ($files.Count -eq '1') {
-                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension
-                $originalFileName = $files.Name
-                $originalBaseName = $files.BaseName
-                $originalDirectory = $files.Directory
-                $fileExtension = $files.Extension
+
+            if ($Files.Count -eq '1') {
+                $originalFileName = $Files.Name
+                $originalBaseName = $Files.BaseName
+                $originalDirectory = $Files.Directory
+                $fileExtension = $Files.Extension
+                $filePartNumber = $filePartNumber
             } else {
-                $finalFileName = $fileBaseNameUpperCleaned[$x] + $files.Extension[$x]
-                $originalFileName = $files.Name[$x]
-                $originalBaseName = $files.BaseName[$x]
-                $originalDirectory = $files.Directory[$x]
-                $fileExtension = $files.Extension[$x]
+                $originalFileName = $Files.Name[$x]
+                $originalBaseName = $Files.BaseName[$x]
+                $originalDirectory = $Files.Directory[$x]
+                $fileExtension = $Files.Extension[$x]
                 $filePartNumber = $filePartNumber
             }
 
@@ -293,52 +298,26 @@ function Convert-JavTitle {
                 $dataObject += [pscustomobject]@{
                     Id                = $originalBaseName
                     ContentId         = $contentId
-                    NewFileName       = $finalFileName
                     OriginalFileName  = $originalFileName
                     OriginalBaseName  = $originalBaseName
                     OriginalDirectory = $originalDirectory
+                    OriginalFullName  = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
                     Extension         = $fileExtension
-                    OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
                     PartNumber        = $filePartNumber
                 }
             } else {
                 $dataObject += [pscustomobject]@{
-                    Id                = $fileBaseNameUpperCleaned[$x]
+                    Id                = $movieId
                     ContentId         = $contentId
-                    NewFileName       = $finalFileName
                     OriginalFileName  = $originalFileName
                     OriginalBaseName  = $originalBaseName
                     OriginalDirectory = $originalDirectory
+                    OriginalFullName  = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
                     Extension         = $fileExtension
-                    OriginalFullName  = if ($files.Count -eq 1) { $files.FullName } else { $files.fullname[$x] }
                     PartNumber        = $filePartNumber
                 }
             }
         }
-
         Write-Output $dataObject
     }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
-    }
 }
-
-<# function Rename-Definitions {
-    param (
-        [object]$Files
-    )
-
-    foreach ($file in $Files) {
-        $newFileName = $file.BaseName -replace '\[HD\]', '' `
-            -replace '\[FHD\]', '' `
-            -replace '\[SD\]', '' `
-            -replace '(SD)', '' `
-            -replace '(HD)', '' `
-            -replace '(FHD)', ''
-
-        $cleanFiles += $newFileName
-    }
-
-    Write-Output $cleanFiles
-} #>
