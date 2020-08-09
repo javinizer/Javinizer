@@ -1,0 +1,184 @@
+{
+    "scraper": {
+        "movie": {
+            "r18": "true",
+            "r18zh": "true",
+            "javlibrary": "true",
+            "javlibraryja": "true",
+            "javlibraryzh": "true",
+            "javbus": "true",
+            "javbusja": "true",
+            "jav321": "true"
+        },
+        "actress": {
+            "r18": "true",
+            "r18zh": "true"
+        }
+    },
+    "multiThrottle": "5",
+    "moveToFolder": "true",
+    "renameFile": "true",
+    "maxTitleLength": "100",
+    "maxPathLength": "255",
+    "minFileSize": "0",
+    "includedFileExtension": [
+        ".asf",
+        ".avi",
+        ".flv",
+        ".m4v",
+        ".mkv",
+        ".mp4",
+        ".mov",
+        ".rmvb",
+        ".wmv"
+    ],
+    "excludedFileString": [
+        "*-trailer.*",
+        "*-5.*"
+    ],
+    "regexMatch": {
+        "enabled": "false",
+        "string": "([a-zA-Z|tT28]+-\\d+z{0,1}Z{0,1}e{0,1}E{0,1})(?:-pt){0,1}(\\d{1,2})?",
+        "idMatch": "1",
+        "ptMatch": "2"
+    },
+    "file": {
+        "create": {
+            "nfo": "true",
+            "nfoPerFile": "true",
+            "actressImg": "true",
+            "thumbImg": "true",
+            "posterImg": "true",
+            "screenshotImg": "true",
+            "trailerVid": "true"
+        },
+        "renameString": {
+            "file": "<ID>",
+            "folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
+            "poster": "folder",
+            "thumbnail": "fanart",
+            "trailer": "<ID>-trailer",
+            "nfo": "<ID>",
+            "screenshotFolder": "extrafanart",
+            "screenshotImg": "fanart",
+            "actorImgFolder": ".actors"
+        }
+    },
+    "metadata": {
+        "required": [
+            "actress",
+            "coverUrl",
+            "genre",
+            "id",
+            "maker",
+            "releaseDate",
+            "title"
+        ],
+        "priority": {
+            "actress": [
+                "r18",
+                "javlibrary"
+            ],
+            "actressThumbUrl": [
+                "r18"
+            ],
+            "alternateTitle": [
+                "dmm"
+            ],
+            "coverUrl": [
+                "r18",
+                "dmm",
+                "javlibrary"
+            ],
+            "description": [
+                "dmm"
+            ],
+            "director": [
+                "r18",
+                "javlibrary"
+            ],
+            "genre": [
+                "r18",
+                "javlibrary"
+            ],
+            "id": [
+                "r18",
+                "javlibrary"
+            ],
+            "label": [
+                "r18",
+                "javlibrary"
+            ],
+            "maker": [
+                "r18",
+                "javlibrary"
+            ],
+            "rating": [
+                "dmm"
+            ],
+            "ratingCount": [
+                "dmm"
+            ],
+            "releaseDate": [
+                "r18",
+                "javlibrary",
+                "dmm"
+            ],
+            "releaseYear": [
+                "r18",
+                "javlibrary",
+                "dmm"
+            ],
+            "runtime": [
+                "r18",
+                "javlibrary",
+                "dmm"
+            ],
+            "series": [
+                "r18"
+            ],
+            "screenshotUrl": [
+                "r18",
+                "dmm"
+            ],
+            "title": [
+                "r18",
+                "javlibrary"
+            ],
+            "trailerUrl": [
+                "r18"
+            ]
+        },
+        "displayName": "[<ID>] <TITLE>",
+        "seriesAsTag": "true",
+        "nameOrder": "first",
+        "convertAliasToOriginalName": "true",
+        "normalizeGenres": "true",
+        "ignoredGenres": [
+            "Featured Actress",
+            "Hi-Def"
+        ]
+    },
+    "location": {
+        "input": "C:\\Downloads\\Unsorted",
+        "output": "C:\\Downloads\\Sorted"
+    },
+    "emby": {
+        "url": "192.168.0.1:8096",
+        "apiKey": ""
+    },
+    "javlibrary": {
+        "username": "",
+        "sessionCookie": "",
+        "requestIntervalSec": "15",
+        "requestTimeoutSec": "90"
+    },
+    "javlibrary.test": "true",
+    "admin": {
+        "log": {
+            "path": "x:\\git\\projects\\jav-organizer\\src\\javinizer\\javinizer.log",
+            "level": "DEBUG"
+        },
+        "checkUpdate": ""
+    }
+}
