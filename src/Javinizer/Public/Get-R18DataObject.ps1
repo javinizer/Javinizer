@@ -64,26 +64,25 @@ function Get-R18DataObject {
         }
 
         $movieDataObject = [pscustomobject]@{
-            Source          = 'r18'
-            Url             = $Url
-            ContentId       = Get-R18ContentId -WebRequest $webRequest
-            Id              = Get-R18Id -WebRequest $webRequest
-            Title           = Get-R18Title -WebRequest $webRequest
-            Description     = Get-R18Description -WebRequest $webRequest
-            Date            = Get-R18ReleaseDate -WebRequest $webRequest
-            Year            = Get-R18ReleaseYear -WebRequest $webRequest
-            Runtime         = Get-R18Runtime -WebRequest $webRequest
-            Director        = Get-R18Director -WebRequest $webRequest
-            Maker           = Get-R18Maker -WebRequest $webRequest
-            Label           = Get-R18Label -WebRequest $webRequest
-            Series          = Get-R18Series -WebRequest $webRequest
-            Rating          = Get-R18Rating -WebRequest $webRequest
-            Actress         = (Get-R18Actress -WebRequest $webRequest).Name
-            Genre           = Get-R18Genre -WebRequest $webRequest
-            ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
-            CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
-            ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
-            TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
+            Source        = 'r18'
+            Url           = $Url
+            ContentId     = Get-R18ContentId -WebRequest $webRequest
+            Id            = Get-R18Id -WebRequest $webRequest
+            Title         = Get-R18Title -WebRequest $webRequest -Replace $replaceHashTable
+            Description   = Get-R18Description -WebRequest $webRequest
+            Date          = Get-R18ReleaseDate -WebRequest $webRequest
+            Year          = Get-R18ReleaseYear -WebRequest $webRequest
+            Runtime       = Get-R18Runtime -WebRequest $webRequest
+            Director      = Get-R18Director -WebRequest $webRequest
+            Maker         = Get-R18Maker -WebRequest $webRequest
+            Label         = Get-R18Label -WebRequest $webRequest
+            Series        = Get-R18Series -WebRequest $webRequest -Replace $replaceHashTable
+            Rating        = Get-R18Rating -WebRequest $webRequest
+            Actress       = Get-R18Actress -WebRequest $webRequest
+            Genre         = Get-R18Genre -WebRequest $webRequest -Replace $replaceHashTable
+            CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
+            ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest
+            TrailerUrl    = Get-R18TrailerUrl -WebRequest $webRequest
         }
 
         Write-JLog -Level Debug -Message "R18 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
@@ -130,16 +129,21 @@ function Get-R18Id {
 function Get-R18Title {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [object]$WebRequest,
+        [Parameter()]
+        [object]$Replace
     )
 
     process {
         $title = (($WebRequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
         $title = Convert-HtmlCharacter -String $title
-        foreach ($string in $replaceHashTable.GetEnumerator()) {
-            $title = $title -replace [regex]::Escape($string.Name), $string.Value
-            $title = $title -replace '  ', ' '
+        if ($Replace) {
+            foreach ($string in $Replace.GetEnumerator()) {
+                $title = $title -replace [regex]::Escape($string.Name), $string.Value
+                $title = $title -replace '  ', ' '
+            }
         }
+
         Write-Output $Title
     }
 }
@@ -293,33 +297,39 @@ function Get-R18Label {
 function Get-R18Series {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [object]$WebRequest,
+        [Parameter()]
+        [object]$Replace
     )
 
     process {
         $series = ((($WebRequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
-        $series = Convert-HtmlCharacter -String $series
-        $series = $series -replace '\n', ' ' -replace "`t", ''
+        if ($null -ne $series) {
+            $series = Convert-HtmlCharacter -String $series | Out-Null
+            $series = $series -replace '\n', ' ' -replace "`t", ''
 
-        $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
-        $seriesUrl = ($WebRequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
+            $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
+            $seriesUrl = ($WebRequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
-        if ($series -like '*...') {
-            try {
-                Write-JLog -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
-                $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
-            } catch {
-                Write-JLog -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
+            if ($series -like '*...') {
+                try {
+                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
+                    $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
+                } catch {
+                    Write-JLog -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
+                }
+                $series = (Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]) -replace "`t", ''
             }
-            $series = (Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]) -replace "`t", ''
-        }
 
-        foreach ($string in $replaceHashTable.GetEnumerator()) {
-            $series = $series -replace [regex]::Escape($string.Name), $string.Value
-        }
+            if ($Replace) {
+                foreach ($string in $Replace.GetEnumerator()) {
+                    $series = $series -replace [regex]::Escape($string.Name), $string.Value
+                }
+            }
 
-        if ($series -like '</dd*') {
-            $series = $null
+            if ($series -like '</dd*') {
+                $series = $null
+            }
         }
 
         Write-Output $series
@@ -341,7 +351,9 @@ function Get-R18Rating {
 function Get-R18Genre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [object]$WebRequest,
+        [Parameter()]
+        [object]$Replace
     )
 
     process {
@@ -352,8 +364,10 @@ function Get-R18Genre {
             $genre = $genre.trim()
             if ($genre -notmatch 'https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)' -and $genre -ne '') {
                 $genre = Convert-HtmlCharacter -String $genre
-                foreach ($string in $replaceHashTable.GetEnumerator()) {
-                    $genre = $genre -replace [regex]::Escape($string.Name), $string.Value
+                if ($Replace) {
+                    foreach ($string in $Replace.GetEnumerator()) {
+                        $genre = $genre -replace [regex]::Escape($string.Name), $string.Value
+                    }
                 }
                 $genreArray += $genre
             }
@@ -378,6 +392,7 @@ function Get-R18Actress {
         $movieActressExtract = @()
         $movieActress = @()
         $movieActressThumb = @()
+        $movieActressObject = @()
         $movieActressHtml = $WebRequest.Content -split '\n'
         foreach ($line in $movieActressHtml) {
             if ($line -match '<p><img alt') {
@@ -386,21 +401,22 @@ function Get-R18Actress {
         }
 
         foreach ($actress in $movieActressExtract) {
-            $movieActress += ((($actress -split 'alt="')[1] -split '"')[0]).Trim()
-            $movieActressThumb += (($actress -split 'src="')[1] -split '"')[0]
-        }
+            $movieActress = ((($actress -split 'alt="')[1] -split '"')[0]).Trim()
+            $movieActressThumb = (($actress -split 'src="')[1] -split '"')[0]
 
-        if ($movieActress -eq '----') {
-            $movieActress = $null
-        }
+            if ($movieActress -eq '----') {
+                $movieActress = $null
+            }
 
-        if ($movieActressThumb.Count -eq 0) {
-            $movieActressThumb = $null
-        }
+            if ($movieActressThumb.Count -eq 0) {
+                $movieActressThumb = $null
+            }
 
-        $movieActressObject = [pscustomobject]@{
-            Name     = $movieActress
-            ThumbUrl = $movieActressThumb
+            $movieActressObject += [pscustomobject]@{
+                FirstName = ($movieActress -split ' ')[0]
+                LastName  = ($movieActress -split ' ')[1]
+                ThumbUrl  = $movieActressThumb
+            }
         }
 
         Write-Output $movieActressObject
@@ -437,6 +453,7 @@ function Get-R18ScreenshotUrl {
                 $screenshotUrl += $screenshot
             }
         }
+
         Write-Output $screenshotUrl
     }
 }
@@ -449,12 +466,15 @@ function Get-R18TrailerUrl {
 
     process {
         $trailerUrl = @()
-        $trailerUrl += (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
-        $trailerUrl += (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
-        $trailerUrl += (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
 
         if ($trailerUrl[0] -eq '') {
             $trailerUrl = $null
+        } else {
+            $trailerUrl = [pscustomobject]@{
+                Low =(($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
+                Med =(($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
+                High =(($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
+            }
         }
 
         Write-Output $trailerUrl

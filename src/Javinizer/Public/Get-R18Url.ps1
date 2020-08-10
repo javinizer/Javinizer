@@ -3,7 +3,7 @@ function Get-R18Url {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]$Id,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('en', 'zh')]
         [string]$Language
     )
@@ -14,7 +14,7 @@ function Get-R18Url {
         $searchUrl = "https://www.r18.com/common/search/searchword=$Id/"
 
         # If contentId is given, convert it back to standard movie ID to validate
-        if ($Id -match '([a-zA-Z|tT28|rR18]{1,10})\d{1,5}') {
+        if ($Id -match '(?:\d{1,5})?([a-zA-Z]{2,10}|[tT]28|[rR]18)(\d{1,5})') {
             Write-JLog -Level Debug -Message "Content ID [$Id] detected"
             $splitId = $Id | Select-String -Pattern '([a-zA-Z|tT28|rR18]{1,10})(\d{1,5})'
             $studioName = $splitId.Matches.Groups[1].Value
