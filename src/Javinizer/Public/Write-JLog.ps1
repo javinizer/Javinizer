@@ -1,9 +1,9 @@
 function Write-JLog {
     [CmdletBinding()]
     param (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [string]$Message,
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('Debug', 'Info', 'Warning', 'Error')]
         [string]$Level,
         [Parameter()]
@@ -17,7 +17,7 @@ function Write-JLog {
     }
 
     if ($Level -eq 'Info') {
-        Write-Host $Message
+        Write-Verbose -Message $Message
         Write-Log -Level $Level -Message $Message | Wait-Logging
     }
 
@@ -28,6 +28,6 @@ function Write-JLog {
 
     if ($Level -eq 'Error') {
         Write-Log -Level $Level -Message $Message | Wait-Logging
-        Write-Error $Message -ErrorAction $Action
+        Write-Error -Message $Message -ErrorAction $Action
     }
 }
