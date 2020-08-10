@@ -1,80 +1,56 @@
 function Get-JavbusDataObject {
     [CmdletBinding()]
-    [OutputType([pscustomobject])]
     param (
-        [Parameter(Position = 0)]
-        [string]$Name,
-        [Parameter(Position = 1)]
-        [string]$Url,
-        [switch]$Ja
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Url
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $movieDataObject = @()
-    }
-
     process {
-        if ($Url) {
-            $javbusUrl = $Url
-        } else {
-            if ($Ja.IsPresent) {
-                $javbusUrl = Get-JavbusUrl -Name $Name -Language 'ja'
-            } else {
-                $javbusUrl = Get-JavbusUrl -Name $Name -Language 'en'
-            }
+        $movieDataObject = @()
+
+
+        try {
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$Url]"
+            $webRequest = Invoke-RestMethod -Uri $Url -Verbose:$false
+        } catch {
+            Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
-        if ($null -ne $javbusUrl) {
-            try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javbusUrl]"
-                $webRequest = Invoke-RestMethod -Uri $javbusUrl -Verbose:$false
-                $movieDataObject = [pscustomobject]@{
-                    Source          = 'javbus'
-                    Url             = $javbusUrl
-                    Id              = Get-JavbusId -WebRequest $webRequest
-                    Title           = Get-JavbusTitle -WebRequest $webRequest
-                    Date            = Get-JavbusReleaseDate -WebRequest $webRequest
-                    Year            = Get-JavbusReleaseYear -WebRequest $webRequest
-                    Runtime         = Get-JavbusRuntime -WebRequest $webRequest
-                    Director        = Get-JavbusDirector -WebRequest $webRequest
-                    Maker           = Get-JavbusMaker -WebRequest $webRequest
-                    Label           = Get-JavbusLabel -WebRequest $webRequest
-                    Series          = Get-JavbusSeries -WebRequest $webRequest
-                    Rating          = Get-JavbusRating -WebRequest $webRequest
-                    Actress         = (Get-JavbusActress -WebRequest $webRequest).Name
-                    ActressThumbUrl = (Get-JavbusActress -WebRequest $webRequest).ThumbUrl
-                    Genre           = Get-JavbusGenre -WebRequest $webRequest
-                    CoverUrl        = Get-JavbusCoverUrl -WebRequest $webRequest
-                    ScreenshotUrl   = Get-JavbusScreenshotUrl -WebRequest $webRequest
-                }
-            } catch {
-                throw $_
-            }
-        } else {
-            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on Javbus"
-            return
+        $movieDataObject = [pscustomobject]@{
+            Source          = 'javbus'
+            Url             = $Url
+            Id              = Get-JavbusId -WebRequest $webRequest
+            Title           = Get-JavbusTitle -WebRequest $webRequest
+            Date            = Get-JavbusReleaseDate -WebRequest $webRequest
+            Year            = Get-JavbusReleaseYear -WebRequest $webRequest
+            Runtime         = Get-JavbusRuntime -WebRequest $webRequest
+            Director        = Get-JavbusDirector -WebRequest $webRequest
+            Maker           = Get-JavbusMaker -WebRequest $webRequest
+            Label           = Get-JavbusLabel -WebRequest $webRequest
+            Series          = Get-JavbusSeries -WebRequest $webRequest
+            Rating          = Get-JavbusRating -WebRequest $webRequest
+            Actress         = (Get-JavbusActress -WebRequest $webRequest).Name
+            ActressThumbUrl = (Get-JavbusActress -WebRequest $webRequest).ThumbUrl
+            Genre           = Get-JavbusGenre -WebRequest $webRequest
+            CoverUrl        = Get-JavbusCoverUrl -WebRequest $webRequest
+            ScreenshotUrl   = Get-JavbusScreenshotUrl -WebRequest $webRequest
         }
 
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] JavBus data object:"
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        Write-JLog -Level Debug -Message "JavBus data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
-    }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
 function Get-JavbusId {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         try {
-        $id = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[1].Value
+            $id = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[1].Value
         } catch {
             return
         }
@@ -85,12 +61,13 @@ function Get-JavbusId {
 
 function Get-JavbusTitle {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
     process {
         try {
-        $title = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[2].Value
+            $title = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[2].Value
 
         } catch {
             return
@@ -103,13 +80,14 @@ function Get-JavbusTitle {
 
 function Get-JavbusReleaseDate {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         try {
-        $releaseDate = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String '<p><span class="header">(.*):<\/span> (\d{4}-\d{2}-\d{2})<\/p>').Matches.Groups[2].Value
+            $releaseDate = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String '<p><span class="header">(.*):<\/span> (\d{4}-\d{2}-\d{2})<\/p>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -120,6 +98,7 @@ function Get-JavbusReleaseDate {
 
 function Get-JavbusReleaseYear {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -137,13 +116,14 @@ function Get-JavbusReleaseYear {
 
 function Get-JavbusRuntime {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         try {
-        $length = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String '<p><span class="header">(.*):<\/span> (\d{1,3})(.*)<\/p>').Matches[1].Groups[2].Value
+            $length = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+                Select-String '<p><span class="header">(.*):<\/span> (\d{1,3})(.*)<\/p>').Matches[1].Groups[2].Value
         } catch {
             return
         }
@@ -154,13 +134,14 @@ function Get-JavbusRuntime {
 
 function Get-JavbusDirector {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         try {
             $director = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-            Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -174,6 +155,7 @@ function Get-JavbusDirector {
 
 function Get-JavbusMaker {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -192,6 +174,7 @@ function Get-JavbusMaker {
 
 function Get-JavbusLabel {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -210,12 +193,13 @@ function Get-JavbusLabel {
 
 function Get-JavbusSeries {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         try {
-            $series = ($WebRequest | ForEach-Object { $_ -split '\n'} |
+            $series = ($WebRequest | ForEach-Object { $_ -split '\n' } |
                 Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www.javbus.(com|org)/(.*)/series/(.*)">(.*)<\/a>').Matches.Groups[5].Value
         } catch {
             return
@@ -228,6 +212,7 @@ function Get-JavbusSeries {
 
 function Get-JavbusRating {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -238,18 +223,16 @@ function Get-JavbusRating {
 
 function Get-JavbusGenre {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $genre = @()
-    }
-
     process {
+        $genre = @()
         try {
             $genre = ($WebRequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<span class="genre"><a href="(.*)\/genre\/(.*)">(.*)<\/a><\/span>').Matches |
-                    ForEach-Object { $_.Groups[3].Value }
+            ForEach-Object { $_.Groups[3].Value }
         } catch {
             return
         }
@@ -260,25 +243,24 @@ function Get-JavbusGenre {
 
 function Get-JavbusActress {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $actress = @()
-    }
-
     process {
+        $actress = @()
+
         try {
             $actress = ($WebRequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<a href="(.*)\/star\/(.*)">(.*)<\/a>').Matches |
-                    ForEach-Object { $_.Groups[3].Value } |
-                        Where-Object { $_ -ne '' } |
-                            Select-Object -Unique
+            ForEach-Object { $_.Groups[3].Value } |
+            Where-Object { $_ -ne '' } |
+            Select-Object -Unique
 
             $actressThumb = ($WebRequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<a href="(.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches |
-                    ForEach-Object { $_.Groups[3].Value} |
-                        Where-Object { $_ -ne ''}
+            ForEach-Object { $_.Groups[3].Value } |
+            Where-Object { $_ -ne '' }
 
 
             $movieActressObject = [pscustomobject]@{
@@ -295,6 +277,7 @@ function Get-JavbusActress {
 
 function Get-JavbusCoverUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -312,19 +295,18 @@ function Get-JavbusCoverUrl {
 
 function Get-JavbusScreenshotUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $screenshotUrl = @()
-    }
-
     process {
+        $screenshotUrl = @()
+
         try {
             $screenshotUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern 'href="(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*))">') -split '<a class="sample-box"' |
-                    Select-String -Pattern '(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*).jpg)">').Matches |
-                        ForEach-Object { $_.Groups[1].Value }
+                    Select-String -Pattern 'href="(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*))">') -split '<a class="sample-box"' |
+                Select-String -Pattern '(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*).jpg)">').Matches |
+            ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
         }

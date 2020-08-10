@@ -1,79 +1,51 @@
 function Get-DmmDataObject {
     [CmdletBinding()]
-    [OutputType([pscustomobject])]
     param (
-        [Parameter(Position = 0)]
-        [string]$Name,
-        [Parameter(Position = 1)]
-        [string]$Url,
-        [string]$AltName
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Url
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $movieDataObject = @()
-    }
-
     process {
-        if ($Url) {
-            $dmmUrl = $Url
-        } else {
-            # ! Current limitation: relies on the video being available on R18.com to generate the DMM link
-            $r18Url = Get-R18Url -Name $Name -AltName $AltName
-            if ($null -eq $r18Url) {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched; Skipping..."
-                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on Dmm"
-                return
-            }
-            $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
-            $dmmUrl = 'https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=' + $r18Id
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 ID is: $r18Id"
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] DMM url is: $dmmUrl"
+        $movieDataObject = @()
+        $dmmUrl = $Url
+
+        try {
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$dmmUrl]"
+            $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
+        } catch {
+            Write-JLog -Level Error -Message "Error [GET] on URL [$dmmUrl]: $PSItem"
         }
 
-        if ($null -ne $dmmUrl) {
-            try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$dmmUrl]"
-                $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
-            } catch {
-                throw $_
-            }
-
-            $movieDataObject = [pscustomobject]@{
-                Source        = 'dmm'
-                Url           = $dmmUrl
-                ContentId     = Get-DmmContentId -WebRequest $webRequest
-                Title         = Get-DmmTitle -WebRequest $webRequest
-                Description   = Get-DmmDescription -WebRequest $webRequest
-                Date          = Get-DmmReleaseDate -WebRequest $webRequest
-                Year          = Get-DmmReleaseYear -WebRequest $webRequest
-                Runtime       = Get-DmmRuntime -WebRequest $webRequest
-                Director      = Get-DmmDirector -WebRequest $webRequest
-                Maker         = Get-DmmMaker -WebRequest $webRequest
-                Label         = Get-DmmLabel -WebRequest $webRequest
-                Series        = Get-DmmSeries -WebRequest $webRequest
-                Rating        = Get-DmmRating -WebRequest $webRequest
-                RatingCount   = Get-DmmRatingCount -WebRequest $webRequest
-                Actress       = Get-DmmActress -WebRequest $webRequest
-                Genre         = Get-DmmGenre -WebRequest $webRequest
-                CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
-                ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
-                #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
-            }
+        $movieDataObject = [pscustomobject]@{
+            Source        = 'dmm'
+            Url           = $dmmUrl
+            ContentId     = Get-DmmContentId -WebRequest $webRequest
+            Title         = Get-DmmTitle -WebRequest $webRequest
+            Description   = Get-DmmDescription -WebRequest $webRequest
+            Date          = Get-DmmReleaseDate -WebRequest $webRequest
+            Year          = Get-DmmReleaseYear -WebRequest $webRequest
+            Runtime       = Get-DmmRuntime -WebRequest $webRequest
+            Director      = Get-DmmDirector -WebRequest $webRequest
+            Maker         = Get-DmmMaker -WebRequest $webRequest
+            Label         = Get-DmmLabel -WebRequest $webRequest
+            Series        = Get-DmmSeries -WebRequest $webRequest
+            Rating        = Get-DmmRating -WebRequest $webRequest
+            RatingCount   = Get-DmmRatingCount -WebRequest $webRequest
+            Actress       = Get-DmmActress -WebRequest $webRequest
+            Genre         = Get-DmmGenre -WebRequest $webRequest
+            CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
+            ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
+            #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
         }
 
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] DMM data object:"
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        Write-JLog -Level Debug -Message "DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
-    }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
 function Get-DmmContentId {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -86,6 +58,7 @@ function Get-DmmContentId {
 
 function Get-DmmTitle {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -98,6 +71,7 @@ function Get-DmmTitle {
 
 function Get-DmmDescription {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -118,6 +92,7 @@ function Get-DmmDescription {
 
 function Get-DmmReleaseDate {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -132,6 +107,7 @@ function Get-DmmReleaseDate {
 
 function Get-DmmReleaseYear {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -144,6 +120,7 @@ function Get-DmmReleaseYear {
 
 function Get-DmmRuntime {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -156,6 +133,7 @@ function Get-DmmRuntime {
 
 function Get-DmmDirector {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -173,6 +151,7 @@ function Get-DmmDirector {
 
 function Get-DmmMaker {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -185,6 +164,7 @@ function Get-DmmMaker {
 
 function Get-DmmLabel {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -202,6 +182,7 @@ function Get-DmmLabel {
 
 function Get-DmmSeries {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -219,6 +200,7 @@ function Get-DmmSeries {
 
 function Get-DmmRating {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -238,6 +220,7 @@ function Get-DmmRating {
 
 function Get-DmmRatingCount {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -250,14 +233,12 @@ function Get-DmmRatingCount {
 
 function Get-DmmActress {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $actressArray = @()
-    }
-
     process {
+        $actressArray = @()
         $actressHtml = ((($WebRequest.Content -split '出演者：<\/td>')[1] -split '<\/td>')[0] -split '<span id="performer">')[1]
         $actressHtml = $actressHtml -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(.*)\/">', ''
         $actressHtml = $actressHtml -split '<\/a>', ''
@@ -279,14 +260,12 @@ function Get-DmmActress {
 
 function Get-DmmGenre {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $genreArray = @()
-    }
-
     process {
+        $genreArray = @()
         $genre = (((($WebRequest.Content -split 'ジャンル：<\/td>')[1] -split '<\/td>')[0] -split '<td>')[1] -split '">')
         $genre = ($genre -replace '<\/a>', '') -replace '&nbsp;&nbsp;', ''
         $genre = $genre -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=keyword\/id=(.*)\/'
@@ -308,6 +287,7 @@ function Get-DmmGenre {
 
 function Get-DmmCoverUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -319,14 +299,12 @@ function Get-DmmCoverUrl {
 }
 function Get-DmmScreenshotUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $screenshotUrl = @()
-    }
-
     process {
+        $screenshotUrl = @()
         $screenshotHtml = $WebRequest.Links | Where-Object { $_.name -eq 'sample-image' }
         $screenshotHtml = $screenshotHtml.'outerHTML'
 

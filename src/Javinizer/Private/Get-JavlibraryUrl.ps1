@@ -1,44 +1,21 @@
 function Get-JavlibraryUrl {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Name,
-        [int]$Tries,
-        [string]$ScriptRoot,
-        [string]$Language,
-        [switch]$Zh,
-        [switch]$Ja
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Id,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('en', 'ja', 'zh')]
+        [string]$Language
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Name"
-    }
-
     process {
-        try {
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
 
-            if (($null -eq $webRequest) -or ($webRequest -eq '')) {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
-                try {
-                    New-CloudflareSession -ScriptRoot $ScriptRoot
-                } catch {
-                    throw $_
-                }
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-            }
-        } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
-            try {
-                New-CloudflareSession -ScriptRoot $ScriptRoot
-            } catch {
-                throw $_
-            }
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+        try {
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+        } catch {
+            Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
         }
 
         # Check if the search uniquely matched a video page
@@ -46,15 +23,15 @@ function Get-JavlibraryUrl {
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match 'http:\/\/www\.javlibrary\.com\/en\/\?v=') {
             try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             } catch {
-                throw $_
+                Write-JLog -Level Error -Message "Error [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
             }
 
             $resultId = Get-JLId -WebRequest $webRequest
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
-            if ($resultId -eq $Name) {
+            Write-JLog -Level Debug -Message "Result is [$resultId]"
+            if ($resultId -eq $Id) {
                 $javlibraryUrl = $searchResultUrl
             }
         }
@@ -74,12 +51,17 @@ function Get-JavlibraryUrl {
                     $videoId = ($result -split '=')[1]
                     $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
 
-                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                    $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-                    $resultId = Get-JLId -WebRequest $webRequest
-                    Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                    try {
+                        Write-JLog -Level Debug -Message "Performing [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                        $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+                    } catch {
+                        Write-JLog -Level Error -Message "Error [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
+                    }
 
-                    if ($resultId -eq $Name) {
+                    $resultId = Get-JLId -WebRequest $webRequest
+                    Write-JLog -Level Debug -Message "Result [$count] is [$resultId]"
+
+                    if ($resultId -eq $Id) {
                         $javlibraryUrl = (Test-UrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
                         break
                     }
@@ -94,21 +76,16 @@ function Get-JavlibraryUrl {
         }
 
         if ($null -eq $javlibraryUrl) {
-            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on JAVLibrary"
+            Write-JLog -Level Warning -Message "Search [$Id] not matched on JAVLibrary"
             return
         } else {
-            if ($Ja.IsPresent) {
+            if ($Language -eq 'ja') {
                 $javlibraryUrl = $javlibraryUrl -replace '/en/', '/ja/'
-            } elseif ($Zh.IsPresent) {
+            } elseif ($Language -eq 'zh') {
                 $javlibraryUrl = $javlibraryUrl -replace '/en/', '/cn/'
             }
 
             Write-Output $javlibraryUrl
         }
     }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
-    }
 }
-

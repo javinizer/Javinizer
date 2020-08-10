@@ -1,82 +1,46 @@
 function Get-JavlibraryDataObject {
     [CmdletBinding()]
-    [OutputType([pscustomobject])]
     param (
-        [Parameter(Position = 0)]
-        [string]$Name,
-        [Parameter(Position = 1)]
-        [string]$Url,
-        [string]$ScriptRoot,
-        [switch]$Zh,
-        [switch]$Ja
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Url
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $movieDataObject = @()
-    }
-
     process {
-        if ($Url) {
-            $javlibraryUrl = $Url
-        } else {
-            if ($Zh.IsPresent) {
-                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Zh
-            } elseif ($Ja.IsPresent) {
-                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot -Ja
-            } else {
-                $javlibraryUrl = Get-JavLibraryUrl -Name $Name -ScriptRoot $ScriptRoot
-            }
+        $movieDataObject = @()
+
+        try {
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$Url] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+        } catch {
+            Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
-        if ($null -ne $javlibraryUrl) {
-            try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-            } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Session to JAVLibrary is unsuccessful, attempting to start a new session with Cloudflare"
-                try {
-                    New-CloudflareSession -ScriptRoot $ScriptRoot
-                } catch {
-                    throw $_
-                }
-
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$javlibraryUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                $webRequest = Invoke-WebRequest -Uri $javlibraryUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-            }
-
-            $movieDataObject = [pscustomobject]@{
-                Source        = 'javlibrary'
-                Url           = $javlibraryUrl
-                Id            = Get-JLId -WebRequest $webRequest
-                AjaxId        = Get-JLAjaxId -WebRequest $webRequest
-                Title         = Get-JLTitle -WebRequest $webRequest
-                Date          = Get-JLReleaseDate -WebRequest $webRequest
-                Year          = Get-JLReleaseYear -WebRequest $webRequest
-                Runtime       = Get-JLRuntime -WebRequest $webRequest
-                Director      = Get-JLDirector -WebRequest $webRequest
-                Maker         = Get-JLMaker -WebRequest $webRequest
-                Label         = Get-JLLabel -WebRequest $webRequest
-                Rating        = Get-JLRating -WebRequest $webRequest
-                Actress       = Get-JLActress -WebRequest $webRequest
-                Genre         = Get-JLGenre -WebRequest $webRequest
-                CoverUrl      = Get-JLCoverUrl -WebRequest $webRequest
-                ScreenshotUrl = Get-JLScreenshotUrl -WebRequest $webRequest
-            }
+        $movieDataObject = [pscustomobject]@{
+            Source        = 'javlibrary'
+            Url           = $Url
+            Id            = Get-JLId -WebRequest $webRequest
+            AjaxId        = Get-JLAjaxId -WebRequest $webRequest
+            Title         = Get-JLTitle -WebRequest $webRequest
+            Date          = Get-JLReleaseDate -WebRequest $webRequest
+            Year          = Get-JLReleaseYear -WebRequest $webRequest
+            Runtime       = Get-JLRuntime -WebRequest $webRequest
+            Director      = Get-JLDirector -WebRequest $webRequest
+            Maker         = Get-JLMaker -WebRequest $webRequest
+            Label         = Get-JLLabel -WebRequest $webRequest
+            Rating        = Get-JLRating -WebRequest $webRequest
+            Actress       = Get-JLActress -WebRequest $webRequest
+            Genre         = Get-JLGenre -WebRequest $webRequest
+            CoverUrl      = Get-JLCoverUrl -WebRequest $webRequest
+            ScreenshotUrl = Get-JLScreenshotUrl -WebRequest $webRequest
         }
 
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] JAVLibrary data object:"
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        Write-JLog -Level Debug -Message "JAVLibrary data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
-    }
 }
-
 function Get-JLId {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -88,6 +52,7 @@ function Get-JLId {
 
 function Get-JLAjaxId {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -103,9 +68,9 @@ function Get-JLAjaxId {
     }
 }
 
-# TODO: Add specific functionality to match video IDs containing trailing alpha characters (e.g. IBW-123z)
 function Get-JLTitle {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
     process {
@@ -118,6 +83,7 @@ function Get-JLTitle {
 
 function Get-JLReleaseDate {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -129,6 +95,7 @@ function Get-JLReleaseDate {
 
 function Get-JLReleaseYear {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -141,6 +108,7 @@ function Get-JLReleaseYear {
 
 function Get-JLRuntime {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -152,6 +120,7 @@ function Get-JLRuntime {
 
 function Get-JLDirector {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -169,6 +138,7 @@ function Get-JLDirector {
 
 function Get-JLMaker {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -181,6 +151,7 @@ function Get-JLMaker {
 
 function Get-JLLabel {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -193,6 +164,7 @@ function Get-JLLabel {
 
 function Get-JLRating {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -205,14 +177,12 @@ function Get-JLRating {
 
 function Get-JLGenre {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $genre = @()
-    }
-
     process {
+        $genre = @()
         $genreHtml = ($WebRequest.Content -split '<div id="video_genres" class="item">')[1]
         $genreHtml = ($genreHtml -split '<\/td>')[1]
         $genreHtml = $genreHtml -split 'rel="category tag">'
@@ -233,14 +203,12 @@ function Get-JLGenre {
 
 function Get-JLActress {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $actress = @()
-    }
-
     process {
+        $actress = @()
         $actressSplitString = '<span class="star">'
         $actressSplitHtml = $WebRequest.Content -split $actressSplitString
 
@@ -263,6 +231,7 @@ function Get-JLActress {
 
 function Get-JLCoverUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -279,14 +248,12 @@ function Get-JLCoverUrl {
 
 function Get-JLScreenshotUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $screenshotUrl = @()
-    }
-
     process {
+        $screenshotUrl = @()
         $screenshotHtml = (($WebRequest.Content -split '<div class="previewthumbs" style="display:block; margin:10px auto;">')[1] -split '<\/div>')[0]
         $screenshotHtml = $screenshotHtml -split '<img src="'
         foreach ($screenshot in $screenshotHtml) {

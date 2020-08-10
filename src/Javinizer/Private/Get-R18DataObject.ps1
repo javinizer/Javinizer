@@ -1,17 +1,11 @@
 function Get-R18DataObject {
     [CmdletBinding()]
-    [OutputType([pscustomobject])]
     param (
-        [Parameter(Position = 0)]
-        [string]$Name,
-        [Parameter(Position = 1)]
-        [string]$Url,
-        [string]$AltName,
-        [switch]$Zh
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Url
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
+    process {
         $movieDataObject = @()
         $replaceHashTable = @{
             'S********l'                     = 'Schoolgirl'
@@ -61,67 +55,45 @@ function Get-R18DataObject {
             'K**l'                           = 'Kill'
             'A***e'                          = 'Abuse'
         }
-    }
 
-    process {
-        if ($Url) {
-            $r18Url = $Url
-        } else {
-            if ($Zh.IsPresent) {
-                $r18Url = Get-R18Url -Name $Name -AltName $AltName -Zh
-            } else {
-                $r18Url = Get-R18Url -Name $Name -AltName $AltName
-            }
+        try {
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$Url]"
+            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+        } catch {
+            Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
-        if ($null -ne $r18Url) {
-            try {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$r18Url]"
-                $webRequest = Invoke-WebRequest -Uri $r18Url -Method Get -Verbose:$false
-
-                $movieDataObject = [pscustomobject]@{
-                    Source          = 'r18'
-                    Url             = $r18Url
-                    ContentId       = Get-R18ContentId -WebRequest $webRequest
-                    Id              = Get-R18Id -WebRequest $webRequest
-                    Title           = Get-R18Title -WebRequest $webRequest
-                    Description     = Get-R18Description -WebRequest $webRequest
-                    Date            = Get-R18ReleaseDate -WebRequest $webRequest
-                    Year            = Get-R18ReleaseYear -WebRequest $webRequest
-                    Runtime         = Get-R18Runtime -WebRequest $webRequest
-                    Director        = Get-R18Director -WebRequest $webRequest
-                    Maker           = Get-R18Maker -WebRequest $webRequest
-                    Label           = Get-R18Label -WebRequest $webRequest
-                    Series          = Get-R18Series -WebRequest $webRequest
-                    Rating          = Get-R18Rating -WebRequest $webRequest
-                    Actress         = (Get-R18Actress -WebRequest $webRequest).Name
-                    Genre           = Get-R18Genre -WebRequest $webRequest
-                    ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
-                    CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
-                    ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
-                    TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
-                }
-            } catch {
-                throw $_
-            }
-        } else {
-            Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on R18"
-            return
+        $movieDataObject = [pscustomobject]@{
+            Source          = 'r18'
+            Url             = $Url
+            ContentId       = Get-R18ContentId -WebRequest $webRequest
+            Id              = Get-R18Id -WebRequest $webRequest
+            Title           = Get-R18Title -WebRequest $webRequest
+            Description     = Get-R18Description -WebRequest $webRequest
+            Date            = Get-R18ReleaseDate -WebRequest $webRequest
+            Year            = Get-R18ReleaseYear -WebRequest $webRequest
+            Runtime         = Get-R18Runtime -WebRequest $webRequest
+            Director        = Get-R18Director -WebRequest $webRequest
+            Maker           = Get-R18Maker -WebRequest $webRequest
+            Label           = Get-R18Label -WebRequest $webRequest
+            Series          = Get-R18Series -WebRequest $webRequest
+            Rating          = Get-R18Rating -WebRequest $webRequest
+            Actress         = (Get-R18Actress -WebRequest $webRequest).Name
+            Genre           = Get-R18Genre -WebRequest $webRequest
+            ActressThumbUrl = (Get-R18Actress -WebRequest $webRequest).ThumbUrl
+            CoverUrl        = Get-R18CoverUrl -WebRequest $webRequest
+            ScreenshotUrl   = Get-R18ScreenshotUrl -WebRequest $webRequest
+            TrailerUrl      = Get-R18TrailerUrl -WebRequest $webRequest
         }
 
-
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] R18 data object:"
-        $movieDataObject | Format-List | Out-String | Write-Debug
+        Write-JLog -Level Debug -Message "R18 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
-    }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
 
 function Get-R18ContentId {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -139,6 +111,7 @@ function Get-R18ContentId {
 
 function Get-R18Id {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -156,6 +129,7 @@ function Get-R18Id {
 
 function Get-R18Title {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -172,6 +146,7 @@ function Get-R18Title {
 
 function Get-R18Description {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -189,6 +164,7 @@ function Get-R18Description {
 
 function Get-R18ReleaseDate {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -237,6 +213,7 @@ function Get-R18ReleaseDate {
 
 function Get-R18ReleaseYear {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -249,6 +226,7 @@ function Get-R18ReleaseYear {
 
 function Get-R18Runtime {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -261,6 +239,7 @@ function Get-R18Runtime {
 
 function Get-R18Director {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -277,6 +256,7 @@ function Get-R18Director {
 
 function Get-R18Maker {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -294,6 +274,7 @@ function Get-R18Maker {
 
 function Get-R18Label {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -311,21 +292,26 @@ function Get-R18Label {
 
 function Get-R18Series {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
         $series = ((($WebRequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
         $series = Convert-HtmlCharacter -String $series
-        $series = $series -replace '\n', ' '
+        $series = $series -replace '\n', ' ' -replace "`t", ''
 
         $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
         $seriesUrl = ($WebRequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
         if ($series -like '*...') {
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing GET on Uri [$seriesUrl]"
-            $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
-            $series = Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]
+            try {
+                Write-JLog -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
+                $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
+            } catch {
+                Write-JLog -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
+            }
+            $series = (Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]) -replace "`t", ''
         }
 
         foreach ($string in $replaceHashTable.GetEnumerator()) {
@@ -342,6 +328,7 @@ function Get-R18Series {
 
 function Get-R18Rating {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -353,14 +340,12 @@ function Get-R18Rating {
 
 function Get-R18Genre {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $genreArray = @()
-    }
-
     process {
+        $genreArray = @()
         $genreHtml = ((($WebRequest.Content -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
 
         foreach ($genre in $genreHtml) {
@@ -384,18 +369,15 @@ function Get-R18Genre {
 
 function Get-R18Actress {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
+    process {
         $movieActressHtml = @()
         $movieActressExtract = @()
         $movieActress = @()
         $movieActressThumb = @()
-    }
-
-    process {
-        #$movieActressHtml = ($WebRequest.Content -split '<p><img')[1]
         $movieActressHtml = $WebRequest.Content -split '\n'
         foreach ($line in $movieActressHtml) {
             if ($line -match '<p><img alt') {
@@ -427,6 +409,7 @@ function Get-R18Actress {
 
 function Get-R18CoverUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
@@ -439,14 +422,12 @@ function Get-R18CoverUrl {
 
 function Get-R18ScreenshotUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $screenshotUrl = @()
-    }
-
     process {
+        $screenshotUrl = @()
         $screenshotHtml = (($WebRequest.Content -split '<ul class="js-owl-carousel clearfix">')[1] -split '<\/ul>')[0]
         $screenshotHtml = $screenshotHtml -split '<li>'
         foreach ($screenshot in $screenshotHtml) {
@@ -462,15 +443,12 @@ function Get-R18ScreenshotUrl {
 
 function Get-R18TrailerUrl {
     param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
-    begin {
-        $trailerUrl = @()
-    }
-
     process {
-        # $trailerHtml = $WebRequest.Content -split '\n'
+        $trailerUrl = @()
         $trailerUrl += (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
         $trailerUrl += (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
         $trailerUrl += (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
@@ -479,14 +457,6 @@ function Get-R18TrailerUrl {
             $trailerUrl = $null
         }
 
-        <# $trailerHtml = $trailerHtml | Select-String -Pattern 'https:\/\/awscc3001\.r18\.com\/litevideo\/freepv' -AllMatches
-
-        foreach ($trailer in $trailerHtml) {
-            $trailer = (($trailer -split '"')[1] -split '"')[0]
-            $trailerUrl += $trailer
-        } #>
-
-        Write-Debug "Trailer Url is $trailerUrl"
         Write-Output $trailerUrl
     }
 }

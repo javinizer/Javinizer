@@ -1,30 +1,31 @@
 function Get-JavbusUrl {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$Name,
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [string]$Id,
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('ja', 'en', 'zh')]
         [string]$Language
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $searchUrl = "https://www.javbus.com/search/$Name&type=0&parent=uc"
-    }
-
     process {
+        $searchUrl = "https://www.javbus.com/search/$Id&type=0&parent=uc"
+
         try {
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$searchUrl]"
+            Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             try {
-                $searchUrl = "https://www.javbus.com/uncensored/search/$Name&type=0&parent=uc"
+                $searchUrl = "https://www.javbus.com/uncensored/search/$Id&type=0&parent=uc"
+                Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
                 try {
-                    $searchUrl = "https://www.javbus.org/search/$Name&type=0&parent=uc"
+                    $searchUrl = "https://www.javbus.org/search/$Id&type=0&parent=uc"
+                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
                     $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
                 } catch {
-                    Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on JavBus"
+                    Write-JLog -Level Warning -Message "Search [$Id] not matched on JavBus"
                     return
                 }
             }
@@ -40,19 +41,27 @@ function Get-JavbusUrl {
         }
 
         if ($numResults -ge 1) {
-            Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Name]"
+            Write-JLog -Level Debug -Message "Searching [$Tries] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$result]"
-                $webRequest = Invoke-RestMethod -Uri $result -Method Get -Verbose:$false
+                try {
+                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$result]"
+                    $webRequest = Invoke-RestMethod -Uri $result -Method Get -Verbose:$false
+                } catch {
+                    Write-JLog -Level Error -Message "Error [GET] on URL [$result]: $PSItem"
+                }
                 $resultId = Get-JavbusId -WebRequest $webRequest
-                if ($resultId -eq $Name) {
-                    $directUrl = "https://" + ($result -split '/')[-2]+ "/$Language/" + ($result -split '/')[-1]
+                if ($resultId -eq $Id) {
+                    if ($Language -eq 'zh') {
+                        $directUrl = "https://" + ($result -split '/')[-2] + "/" + ($result -split '/')[-1]
+                    } else {
+                        $directUrl = "https://" + ($result -split '/')[-2] + "/$Language/" + ($result -split '/')[-1]
+                    }
                     break
                 }
 
-                Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                Write-JLog -Level Debug -Message "Result [$count] is [$resultId]"
 
                 if ($count -eq $Tries) {
                     break
@@ -62,7 +71,7 @@ function Get-JavbusUrl {
             }
 
             if ($null -eq $directUrl) {
-                Write-Verbose "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Search [$Name] not matched on JavBus"
+                Write-JLog -Level Warning -Message "Search [$Id] not matched on JavBus"
                 return
             } else {
                 Write-Output $directUrl
@@ -70,4 +79,3 @@ function Get-JavbusUrl {
         }
     }
 }
-
