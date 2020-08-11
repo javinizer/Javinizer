@@ -3,7 +3,7 @@ function Get-JavbusUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]$Id,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('ja', 'en', 'zh')]
         [string]$Language
     )

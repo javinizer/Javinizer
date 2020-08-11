@@ -388,34 +388,38 @@ function Get-R18Actress {
     )
 
     process {
-        $movieActressHtml = @()
-        $movieActressExtract = @()
-        $movieActress = @()
-        $movieActressThumb = @()
         $movieActressObject = @()
-        $movieActressHtml = $WebRequest.Content -split '\n'
-        foreach ($line in $movieActressHtml) {
-            if ($line -match '<p><img alt') {
-                $movieActressExtract += ($line).Trim()
-            }
+
+        try {
+            $movieActress = ($WebRequest.Content | Select-String -AllMatches -Pattern '<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>').Matches
+        } catch {
+            return
         }
 
-        foreach ($actress in $movieActressExtract) {
-            $movieActress = ((($actress -split 'alt="')[1] -split '"')[0]).Trim()
-            $movieActressThumb = (($actress -split 'src="')[1] -split '"')[0]
-
-            if ($movieActress -eq '----') {
-                $movieActress = $null
+        foreach ($actress in $movieActress) {
+            $actressName = $actress.Groups[1].Value
+            Write-Debug "ActressName: $actressName"
+            $thumbUrl = 'https://pics.r18.com/mono/actjpgs/' + ($actress.Groups[2].Value)
+            Write-Debug "thumbUrl: $thumbUrl"
+            if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
+                $thumbUrl = $null
             }
 
-            if ($movieActressThumb.Count -eq 0) {
-                $movieActressThumb = $null
-            }
-
-            $movieActressObject += [pscustomobject]@{
-                FirstName = ($movieActress -split ' ')[0]
-                LastName  = ($movieActress -split ' ')[1]
-                ThumbUrl  = $movieActressThumb
+            # Match if the name contains Japanese characters
+            if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                $movieActressObject += [pscustomobject]@{
+                    LastName     = $null
+                    FirstName    = $null
+                    JapaneseName = $actressName
+                    ThumbUrl     = $thumbUrl
+                }
+            } else {
+                $movieActressObject += [pscustomobject]@{
+                    LastName     = ($actressName -split ' ')[1]
+                    FirstName    = ($actressName -split ' ')[0]
+                    JapaneseName = $null
+                    ThumbUrl     = $thumbUrl
+                }
             }
         }
 
@@ -471,9 +475,9 @@ function Get-R18TrailerUrl {
             $trailerUrl = $null
         } else {
             $trailerUrl = [pscustomobject]@{
-                Low =(($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
-                Med =(($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
-                High =(($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
+                Low  = (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
+                Med  = (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
+                High = (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
             }
         }
 

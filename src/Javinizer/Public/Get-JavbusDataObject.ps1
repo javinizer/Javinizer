@@ -17,23 +17,22 @@ function Get-JavbusDataObject {
         }
 
         $movieDataObject = [pscustomobject]@{
-            Source          = 'javbus'
-            Url             = $Url
-            Id              = Get-JavbusId -WebRequest $webRequest
-            Title           = Get-JavbusTitle -WebRequest $webRequest
-            Date            = Get-JavbusReleaseDate -WebRequest $webRequest
-            Year            = Get-JavbusReleaseYear -WebRequest $webRequest
-            Runtime         = Get-JavbusRuntime -WebRequest $webRequest
-            Director        = Get-JavbusDirector -WebRequest $webRequest
-            Maker           = Get-JavbusMaker -WebRequest $webRequest
-            Label           = Get-JavbusLabel -WebRequest $webRequest
-            Series          = Get-JavbusSeries -WebRequest $webRequest
-            Rating          = Get-JavbusRating -WebRequest $webRequest
-            Actress         = (Get-JavbusActress -WebRequest $webRequest).Name
-            ActressThumbUrl = (Get-JavbusActress -WebRequest $webRequest).ThumbUrl
-            Genre           = Get-JavbusGenre -WebRequest $webRequest
-            CoverUrl        = Get-JavbusCoverUrl -WebRequest $webRequest
-            ScreenshotUrl   = Get-JavbusScreenshotUrl -WebRequest $webRequest
+            Source        = 'javbus'
+            Url           = $Url
+            Id            = Get-JavbusId -WebRequest $webRequest
+            Title         = Get-JavbusTitle -WebRequest $webRequest
+            Date          = Get-JavbusReleaseDate -WebRequest $webRequest
+            Year          = Get-JavbusReleaseYear -WebRequest $webRequest
+            Runtime       = Get-JavbusRuntime -WebRequest $webRequest
+            Director      = Get-JavbusDirector -WebRequest $webRequest
+            Maker         = Get-JavbusMaker -WebRequest $webRequest
+            Label         = Get-JavbusLabel -WebRequest $webRequest
+            Series        = Get-JavbusSeries -WebRequest $webRequest
+            Rating        = Get-JavbusRating -WebRequest $webRequest
+            Actress       = Get-JavbusActress -WebRequest $webRequest
+            Genre         = Get-JavbusGenre -WebRequest $webRequest
+            CoverUrl      = Get-JavbusCoverUrl -WebRequest $webRequest
+            ScreenshotUrl = Get-JavbusScreenshotUrl -WebRequest $webRequest
         }
 
         Write-JLog -Level Debug -Message "JavBus data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
@@ -248,26 +247,52 @@ function Get-JavbusActress {
     )
 
     process {
-        $actress = @()
+        $actresses = @()
+        $movieActressObject = @()
+        $textInfo = (Get-Culture).TextInfo
 
         try {
-            $actress = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<a href="(.*)\/star\/(.*)">(.*)<\/a>').Matches |
-            ForEach-Object { $_.Groups[3].Value } |
-            Where-Object { $_ -ne '' } |
-            Select-Object -Unique
+            try {
+                $actresses = ($WebRequest | Select-String -AllMatches -Pattern '<a href="https:\/\/www\.javbus\.com\/(?:.*)\/star\/(?:.*)"><img src="(.*)" title="(.*)"><\/a>').Matches
+            } catch {
+                return
+            }
 
-            $actressThumb = ($WebRequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<a href="(.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches |
-            ForEach-Object { $_.Groups[3].Value } |
-            Where-Object { $_ -ne '' }
+            foreach ($actress in $actresses) {
+                $thumbUrl = $actress.Groups[1].Value
+                if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
+                    $thumbUrl = $null
+                }
 
+                # Match if the name contains Japanese characters
+                if ($actress.Groups[2].Value -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $movieActressObject += [pscustomobject]@{
+                        LastName     = $null
+                        FirstName    = $null
+                        JapaneseName = $actress.Groups[2].Value
+                        ThumbUrl     = $thumbUrl
+                    }
+                } else {
+                    $firstName = ($actress.Groups[2].Value -split ' ')[1]
+                    if ($null -ne $firstName) {
+                        $firstName = $textInfo.ToTitleCase($firstName.ToLower())
+                    }
 
-            $movieActressObject = [pscustomobject]@{
-                Name     = $actress
-                ThumbUrl = $actressThumb
+                    $lastName = ($actress.Groups[2].Value -split ' ')[0]
+                    if ($null -ne $lastName) {
+                        $lastName = $textInfo.ToTitleCase($lastName.ToLower())
+                    }
+
+                    $movieActressObject += [pscustomobject]@{
+                        LastName     = $lastName
+                        FirstName    = $firstName
+                        JapaneseName = $null
+                        ThumbUrl     = $thumbUrl
+                    }
+                }
             }
         } catch {
+            Write-Error $_
             return
         }
 

@@ -3,7 +3,7 @@ function Get-JavlibraryUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [string]$Id,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('en', 'ja', 'zh')]
         [string]$Language
     )
@@ -29,7 +29,7 @@ function Get-JavlibraryUrl {
                 Write-JLog -Level Error -Message "Error [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
             }
 
-            $resultId = Get-JLId -WebRequest $webRequest
+            $resultId = Get-JavlibraryId -WebRequest $webRequest
             Write-JLog -Level Debug -Message "Result is [$resultId]"
             if ($resultId -eq $Id) {
                 $javlibraryUrl = $searchResultUrl
@@ -58,7 +58,7 @@ function Get-JavlibraryUrl {
                         Write-JLog -Level Error -Message "Error [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
                     }
 
-                    $resultId = Get-JLId -WebRequest $webRequest
+                    $resultId = Get-JavlibraryId -WebRequest $webRequest
                     Write-JLog -Level Debug -Message "Result [$count] is [$resultId]"
 
                     if ($resultId -eq $Id) {

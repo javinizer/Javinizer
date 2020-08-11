@@ -238,7 +238,7 @@ function Get-DmmActress {
     )
 
     process {
-        $actressArray = @()
+        $movieActressObject = @()
         $actressHtml = ((($WebRequest.Content -split '出演者：<\/td>')[1] -split '<\/td>')[0] -split '<span id="performer">')[1]
         $actressHtml = $actressHtml -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(.*)\/">', ''
         $actressHtml = $actressHtml -split '<\/a>', ''
@@ -247,14 +247,19 @@ function Get-DmmActress {
             foreach ($actress in $actressHtml) {
                 $actress = Convert-HtmlCharacter -String $actress
                 if ($actress -ne '') {
-                    $actressArray += $actress -replace '<\/a>', ''
+                    $movieActressObject += [pscustomobject]@{
+                        LastName     = $null
+                        FirstName    = $null
+                        JapaneseName = $actress -replace '<\/a>', ''
+                        ThumbUrl     = $null
+                    }
                 }
             }
-            Write-Output $actressArray
         } else {
-            $actressArray = $null
-            Write-Output $actressArray
+            $movieActressObject = $null
         }
+        Write-Output $movieActressObject
+
     }
 }
 

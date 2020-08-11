@@ -18,27 +18,28 @@ function Get-JavlibraryDataObject {
         $movieDataObject = [pscustomobject]@{
             Source        = 'javlibrary'
             Url           = $Url
-            Id            = Get-JLId -WebRequest $webRequest
-            AjaxId        = Get-JLAjaxId -WebRequest $webRequest
-            Title         = Get-JLTitle -WebRequest $webRequest
-            Date          = Get-JLReleaseDate -WebRequest $webRequest
-            Year          = Get-JLReleaseYear -WebRequest $webRequest
-            Runtime       = Get-JLRuntime -WebRequest $webRequest
-            Director      = Get-JLDirector -WebRequest $webRequest
-            Maker         = Get-JLMaker -WebRequest $webRequest
-            Label         = Get-JLLabel -WebRequest $webRequest
-            Rating        = Get-JLRating -WebRequest $webRequest
-            Actress       = Get-JLActress -WebRequest $webRequest
-            Genre         = Get-JLGenre -WebRequest $webRequest
-            CoverUrl      = Get-JLCoverUrl -WebRequest $webRequest
-            ScreenshotUrl = Get-JLScreenshotUrl -WebRequest $webRequest
+            Id            = Get-JavlibraryId -WebRequest $webRequest
+            AjaxId        = Get-JavlibraryAjaxId -WebRequest $webRequest
+            Title         = Get-JavlibraryTitle -WebRequest $webRequest
+            Date          = Get-JavlibraryReleaseDate -WebRequest $webRequest
+            Year          = Get-JavlibraryReleaseYear -WebRequest $webRequest
+            Runtime       = Get-JavlibraryRuntime -WebRequest $webRequest
+            Director      = Get-JavlibraryDirector -WebRequest $webRequest
+            Maker         = Get-JavlibraryMaker -WebRequest $webRequest
+            Label         = Get-JavlibraryLabel -WebRequest $webRequest
+            Rating        = Get-JavlibraryRating -WebRequest $webRequest
+            Actress       = Get-JavlibraryActress -WebRequest $webRequest
+            Genre         = Get-JavlibraryGenre -WebRequest $webRequest
+            CoverUrl      = Get-JavlibraryCoverUrl -WebRequest $webRequest
+            ScreenshotUrl = Get-JavlibraryScreenshotUrl -WebRequest $webRequest
         }
 
         Write-JLog -Level Debug -Message "JAVLibrary data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
 }
-function Get-JLId {
+
+function Get-JavlibraryId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -50,7 +51,7 @@ function Get-JLId {
     }
 }
 
-function Get-JLAjaxId {
+function Get-JavlibraryAjaxId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -68,7 +69,7 @@ function Get-JLAjaxId {
     }
 }
 
-function Get-JLTitle {
+function Get-JavlibraryTitle {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -81,7 +82,7 @@ function Get-JLTitle {
     }
 }
 
-function Get-JLReleaseDate {
+function Get-JavlibraryReleaseDate {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -93,20 +94,20 @@ function Get-JLReleaseDate {
     }
 }
 
-function Get-JLReleaseYear {
+function Get-JavlibraryReleaseYear {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
-        $releaseYear = Get-JLReleaseDate -WebRequest $WebRequest
+        $releaseYear = Get-JavlibraryReleaseDate -WebRequest $WebRequest
         $releaseYear = ($releaseYear -split '-')[0]
         Write-Output $releaseYear
     }
 }
 
-function Get-JLRuntime {
+function Get-JavlibraryRuntime {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -118,7 +119,7 @@ function Get-JLRuntime {
     }
 }
 
-function Get-JLDirector {
+function Get-JavlibraryDirector {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -131,12 +132,13 @@ function Get-JLDirector {
         } else {
             $director = $null
         }
+
         $director = Convert-HtmlCharacter -String $director
         Write-Output $director
     }
 }
 
-function Get-JLMaker {
+function Get-JavlibraryMaker {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -149,7 +151,7 @@ function Get-JLMaker {
     }
 }
 
-function Get-JLLabel {
+function Get-JavlibraryLabel {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -162,7 +164,7 @@ function Get-JLLabel {
     }
 }
 
-function Get-JLRating {
+function Get-JavlibraryRating {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -175,7 +177,7 @@ function Get-JLRating {
     }
 }
 
-function Get-JLGenre {
+function Get-JavlibraryGenre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -201,35 +203,52 @@ function Get-JLGenre {
     }
 }
 
-function Get-JLActress {
+function Get-JavlibraryActress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
     )
 
     process {
-        $actress = @()
-        $actressSplitString = '<span class="star">'
-        $actressSplitHtml = $WebRequest.Content -split $actressSplitString
+        $movieActressObject = @()
 
-        foreach ($section in $actressSplitHtml) {
-            $fullName = (($section -split "rel=`"tag`">")[1] -split "<\/a><\/span>")[0]
-            if ($fullName -ne '') {
-                if ($fullName.Length -lt 25) {
-                    $actress += $fullName
+        try {
+            $movieActress = ($WebRequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[1].Value
+        } catch {
+            return
+        }
+
+        foreach ($actress in $movieActress) {
+            if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                $movieActressObject += [pscustomobject]@{
+                    LastName     = $null
+                    FirstName    = $null
+                    JapaneseName = $actress
+                    ThumbUrl     = $null
+                }
+            } else {
+                $nameParts = ($actress -split ' ').Count
+                if ($nameParts -eq 1) {
+                    $lastName = $null
+                    $firstName = $actress
+                } else {
+                    $lastName = ($actress -split ' ')[0]
+                    $firstName = ($actress -split ' ')[1]
+                }
+                $movieActressObject += [pscustomobject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $null
+                    ThumbUrl     = $null
                 }
             }
         }
 
-        if ($actress.Count -eq 0) {
-            $actress = $null
-        }
-
-        Write-Output $actress
+        Write-Output $movieActressObject
     }
 }
 
-function Get-JLCoverUrl {
+function Get-JavlibraryCoverUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
@@ -246,7 +265,7 @@ function Get-JLCoverUrl {
     }
 }
 
-function Get-JLScreenshotUrl {
+function Get-JavlibraryScreenshotUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [object]$WebRequest
