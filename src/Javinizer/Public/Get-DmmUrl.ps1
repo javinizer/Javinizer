@@ -28,7 +28,7 @@ function Get-DmmUrl {
                 Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]"
             }
 
-            $retryCount = 5
+            $retryCount = 3
             $searchResults = ($webrequest.links.href | Where-Object { $_ -like '*digital/videoa/*' })
             $numResults = $searchResults.count
 
@@ -64,11 +64,16 @@ function Get-DmmUrl {
             }
         }
 
-        $urlObject = [PSCustomObject]@{
-            Url      = $directUrl
-            Language = 'ja'
+        if ($null -eq $directUrl) {
+            Write-JLog -Level Warning -Message "Search [$Id] not matched on DMM"
+            return
+        } else {
+            $urlObject = [PSCustomObject]@{
+                Url      = $directUrl
+                Language = 'ja'
+            }
+    
+            Write-Output $urlObject
         }
-
-        Write-Output $urlObject
     }
 }

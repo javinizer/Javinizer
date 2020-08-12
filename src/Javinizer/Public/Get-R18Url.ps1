@@ -39,7 +39,7 @@ function Get-R18Url {
             Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]: $PSItem"
         }
 
-        $retryCount = 5
+        $retryCount = 3
         $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/*/detail/-/id=*" }).href)
         $numResults = $searchResults.count
 
