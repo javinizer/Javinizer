@@ -2,10 +2,10 @@ function Get-R18Url {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Id,
+        [String]$Id,
         [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('en', 'zh')]
-        [string]$Language
+        [String]$Language
     )
 
     process {
@@ -144,7 +144,13 @@ function Get-R18Url {
             if ($Language -eq 'zh') {
                 $directUrl = $directUrl + '&lg=zh'
             }
-            Write-Output $directUrl
+
+            $urlObject = [PSCustomObject]@{
+                Url      = $directUrl
+                Language = $Language
+            }
+
+            Write-Output $urlObject
         }
     }
 }

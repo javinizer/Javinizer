@@ -1,13 +1,15 @@
 function Get-JavbusData {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Url
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [String]$Url,
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('en', 'ja', 'zh')]
+        [String]$Language = 'en'
     )
 
     process {
         $movieDataObject = @()
-
 
         try {
             Write-JLog -Level Debug -Message "Performing [GET] on URL [$Url]"
@@ -17,7 +19,7 @@ function Get-JavbusData {
         }
 
         $movieDataObject = [pscustomobject]@{
-            Source        = 'javbus'
+            Source        = if ($Language -eq 'en') { 'javbus' } elseif ($Language -eq 'ja') { 'javbusja' } elseif ($Language -eq 'zh') { 'javbuszh' }
             Url           = $Url
             Id            = Get-JavbusId -WebRequest $webRequest
             Title         = Get-JavbusTitle -WebRequest $webRequest

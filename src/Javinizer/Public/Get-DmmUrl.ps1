@@ -64,6 +64,11 @@ function Get-DmmUrl {
             }
         }
 
-        Write-Output $directUrl
+        $urlObject = [PSCustomObject]@{
+            Url      = $directUrl
+            Language = 'ja'
+        }
+
+        Write-Output $urlObject
     }
 }

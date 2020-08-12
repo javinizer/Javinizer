@@ -33,7 +33,11 @@ function Get-JavbusUrl {
 
         $Tries = 5
         # Get the page search results
-        $searchResults = (($webRequest | ForEach-Object { $_ -split '\n' } | Select-String '<a class="movie-box" href="(.*)">').Matches) | ForEach-Object { $_.Groups[1].Value }
+        try {
+            $searchResults = (($webRequest | ForEach-Object { $_ -split '\n' } | Select-String '<a class="movie-box" href="(.*)">').Matches) | ForEach-Object { $_.Groups[1].Value }
+        } catch {
+            return
+        }
         $numResults = $searchResults.Count
 
         if ($Tries -gt $numResults) {
@@ -74,7 +78,12 @@ function Get-JavbusUrl {
                 Write-JLog -Level Warning -Message "Search [$Id] not matched on JavBus"
                 return
             } else {
-                Write-Output $directUrl
+                $urlObject = [PSCustomObject]@{
+                    Url      = $directUrl
+                    Language = $Language
+                }
+
+                Write-Output $urlObject
             }
         }
     }

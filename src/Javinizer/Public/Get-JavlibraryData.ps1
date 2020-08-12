@@ -1,8 +1,11 @@
 function Get-JavlibraryData {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Url
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [String]$Url,
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('en', 'ja', 'zh')]
+        [String]$Language = 'en'
     )
 
     process {
@@ -16,7 +19,7 @@ function Get-JavlibraryData {
         }
 
         $movieDataObject = [pscustomobject]@{
-            Source        = 'javlibrary'
+            Source        = if ($Language -eq 'en') { 'javlibrary' } elseif ($Language -eq 'ja') { 'javlibraryja' } elseif ($Language -eq 'zh') { 'javlibraryzh' }
             Url           = $Url
             Id            = Get-JavlibraryId -WebRequest $webRequest
             AjaxId        = Get-JavlibraryAjaxId -WebRequest $webRequest

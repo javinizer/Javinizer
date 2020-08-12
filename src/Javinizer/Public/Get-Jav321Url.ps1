@@ -2,7 +2,7 @@ function Get-Jav321Url {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Id
+        [String]$Id
     )
 
     process {
@@ -61,7 +61,11 @@ function Get-Jav321Url {
                 Write-JLog -Level Warning -Message "Search [$Id] not matched on Jav321"
                 return
             } else {
-                Write-Output $directUrl
+                $urlObject = [PSCustomObject]@{
+                    Url      = $directUrl
+                    Language = 'ja'
+                }
+                Write-Output $urlObject
             }
         } else {
             Write-JLog -Level Warning -Message "Search [$Id] not matched on Jav321"

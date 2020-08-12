@@ -1,8 +1,11 @@
 function Get-R18Data {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Url
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [String]$Url,
+        [Parameter( Position = 1, ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('en', 'zh')]
+        [String]$Language = 'en'
     )
 
     process {
@@ -64,7 +67,7 @@ function Get-R18Data {
         }
 
         $movieDataObject = [pscustomobject]@{
-            Source        = 'r18'
+            Source        = if ($Language -eq 'en') { 'r18' } elseif ($Language -eq 'zh') { 'r18zh' }
             Url           = $Url
             ContentId     = Get-R18ContentId -WebRequest $webRequest
             Id            = Get-R18Id -WebRequest $webRequest

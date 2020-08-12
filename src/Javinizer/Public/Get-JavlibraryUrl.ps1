@@ -2,10 +2,10 @@ function Get-JavlibraryUrl {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Id,
+        [String]$Id,
         [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('en', 'ja', 'zh')]
-        [string]$Language
+        [String]$Language
     )
 
     process {
@@ -85,7 +85,12 @@ function Get-JavlibraryUrl {
                 $javlibraryUrl = $javlibraryUrl -replace '/en/', '/cn/'
             }
 
-            Write-Output $javlibraryUrl
+            $urlObject = [PSCustomObject]@{
+                Url      = $javlibraryUrl
+                Language = $Language
+            }
+
+            Write-Output $urlObject
         }
     }
 }
