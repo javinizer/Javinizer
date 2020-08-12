@@ -1,4 +1,4 @@
-function Get-R18DataObject {
+function Get-R18Data {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]

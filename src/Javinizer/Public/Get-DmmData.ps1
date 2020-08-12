@@ -1,4 +1,4 @@
-function Get-DmmDataObject {
+function Get-DmmData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]

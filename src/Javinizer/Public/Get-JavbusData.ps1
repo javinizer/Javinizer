@@ -1,4 +1,4 @@
-function Get-JavbusDataObject {
+function Get-JavbusData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
