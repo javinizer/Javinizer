@@ -19,7 +19,7 @@ function Get-DmmData {
         $movieDataObject = [pscustomobject]@{
             Source        = 'dmm'
             Url           = $dmmUrl
-            ContentId     = Get-DmmContentId -WebRequest $webRequest
+            Id            = Get-DmmContentId -WebRequest $webRequest
             Title         = Get-DmmTitle -WebRequest $webRequest
             Description   = Get-DmmDescription -WebRequest $webRequest
             ReleaseDate   = Get-DmmReleaseDate -WebRequest $webRequest
