@@ -1,18 +1,18 @@
-function Convert-JavTitle {
+function Convert-JVTitle {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$Files,
+        [PSObject]$Files,
         [Parameter()]
-        [switch]$Strict,
+        [Switch]$Strict,
         [Parameter()]
-        [string]$RegexEnabled,
+        [Boolean]$RegexEnabled,
         [Parameter()]
-        [string]$RegexString,
+        [String]$RegexString,
         [Parameter()]
-        [int]$RegexIdMatch,
+        [Int]$RegexIdMatch,
         [Parameter()]
-        [int]$RegexPtMatch
+        [Int]$RegexPtMatch
     )
 
     process {
@@ -70,7 +70,7 @@ function Convert-JavTitle {
             '_'
         )
 
-        if ($RegexEnabled -eq 'True') {
+        if ($RegexEnabled) {
             foreach ($file in $FileBaseNameOriginal) {
                 $fileBaseNameUpper += $file.ToUpper()
             }
@@ -296,25 +296,27 @@ function Convert-JavTitle {
 
             if ($Strict.IsPresent) {
                 $dataObject += [pscustomobject]@{
-                    Id                = $originalBaseName
-                    ContentId         = $contentId
-                    OriginalFileName  = $originalFileName
-                    OriginalBaseName  = $originalBaseName
-                    OriginalDirectory = $originalDirectory
-                    OriginalFullName  = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
-                    Extension         = $fileExtension
-                    PartNumber        = $filePartNumber
+                    Id         = $originalBaseName
+                    ContentId  = $contentId
+                    FileName   = $originalFileName
+                    BaseName   = $originalBaseName
+                    Directory  = $originalDirectory
+                    FullName   = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
+                    Extension  = $fileExtension
+                    Length     = [Math]::Round($Files.Length[$x] / 1MB, 2)
+                    PartNumber = $filePartNumber
                 }
             } else {
                 $dataObject += [pscustomobject]@{
-                    Id                = $movieId
-                    ContentId         = $contentId
-                    OriginalFileName  = $originalFileName
-                    OriginalBaseName  = $originalBaseName
-                    OriginalDirectory = $originalDirectory
-                    OriginalFullName  = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
-                    Extension         = $fileExtension
-                    PartNumber        = $filePartNumber
+                    Id         = $movieId
+                    ContentId  = $contentId
+                    FileName   = $originalFileName
+                    BaseName   = $originalBaseName
+                    Directory  = $originalDirectory
+                    FullName   = if ($Files.Count -eq 1) { $Files.FullName } else { $Files.fullname[$x] }
+                    Extension  = $fileExtension
+                    Length     = [Math]::Round($Files.Length[$x] / 1MB, 2)
+                    PartNumber = $filePartNumber
                 }
             }
         }
