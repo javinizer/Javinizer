@@ -22,8 +22,8 @@ function Get-DmmData {
             ContentId     = Get-DmmContentId -WebRequest $webRequest
             Title         = Get-DmmTitle -WebRequest $webRequest
             Description   = Get-DmmDescription -WebRequest $webRequest
-            Date          = Get-DmmReleaseDate -WebRequest $webRequest
-            Year          = Get-DmmReleaseYear -WebRequest $webRequest
+            ReleaseDate   = Get-DmmReleaseDate -WebRequest $webRequest
+            ReleaseYear   = Get-DmmReleaseYear -WebRequest $webRequest
             Runtime       = Get-DmmRuntime -WebRequest $webRequest
             Director      = Get-DmmDirector -WebRequest $webRequest
             Maker         = Get-DmmMaker -WebRequest $webRequest

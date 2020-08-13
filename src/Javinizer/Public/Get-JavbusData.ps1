@@ -23,8 +23,8 @@ function Get-JavbusData {
             Url           = $Url
             Id            = Get-JavbusId -WebRequest $webRequest
             Title         = Get-JavbusTitle -WebRequest $webRequest
-            Date          = Get-JavbusReleaseDate -WebRequest $webRequest
-            Year          = Get-JavbusReleaseYear -WebRequest $webRequest
+            ReleaseDate   = Get-JavbusReleaseDate -WebRequest $webRequest
+            ReleaseYear   = Get-JavbusReleaseYear -WebRequest $webRequest
             Runtime       = Get-JavbusRuntime -WebRequest $webRequest
             Director      = Get-JavbusDirector -WebRequest $webRequest
             Maker         = Get-JavbusMaker -WebRequest $webRequest

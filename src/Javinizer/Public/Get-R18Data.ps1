@@ -73,8 +73,8 @@ function Get-R18Data {
             Id            = Get-R18Id -WebRequest $webRequest
             Title         = Get-R18Title -WebRequest $webRequest -Replace $replaceHashTable
             Description   = Get-R18Description -WebRequest $webRequest
-            Date          = Get-R18ReleaseDate -WebRequest $webRequest
-            Year          = Get-R18ReleaseYear -WebRequest $webRequest
+            ReleaseDate   = Get-R18ReleaseDate -WebRequest $webRequest
+            ReleaseYear   = Get-R18ReleaseYear -WebRequest $webRequest
             Runtime       = Get-R18Runtime -WebRequest $webRequest
             Director      = Get-R18Director -WebRequest $webRequest
             Maker         = Get-R18Maker -WebRequest $webRequest

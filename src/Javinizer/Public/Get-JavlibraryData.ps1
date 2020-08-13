@@ -24,8 +24,8 @@ function Get-JavlibraryData {
             Id            = Get-JavlibraryId -WebRequest $webRequest
             AjaxId        = Get-JavlibraryAjaxId -WebRequest $webRequest
             Title         = Get-JavlibraryTitle -WebRequest $webRequest
-            Date          = Get-JavlibraryReleaseDate -WebRequest $webRequest
-            Year          = Get-JavlibraryReleaseYear -WebRequest $webRequest
+            ReleaseDate   = Get-JavlibraryReleaseDate -WebRequest $webRequest
+            ReleaseYear   = Get-JavlibraryReleaseYear -WebRequest $webRequest
             Runtime       = Get-JavlibraryRuntime -WebRequest $webRequest
             Director      = Get-JavlibraryDirector -WebRequest $webRequest
             Maker         = Get-JavlibraryMaker -WebRequest $webRequest
