@@ -15,7 +15,7 @@ function Get-Jav321Data {
             Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
-        $movieDataObject = [pscustomobject]@{
+        $movieDataObject = [PSCustomObject]@{
             Source          = 'jav321'
             Url             = $Url
             Id              = Get-Jav321Id -WebRequest $webRequest
@@ -39,12 +39,12 @@ function Get-Jav321Data {
 function Get-Jav321Id {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $id = ((($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $id = ((($Webrequest | ForEach-Object { $_ -split '\n' } |
                         Select-String '<b>品番<\/b>: (.*)<br><b>').Matches.Groups[1].Value -split '<br>')[0]).ToUpper()
         } catch {
             return
@@ -57,12 +57,12 @@ function Get-Jav321Id {
 function Get-Jav321Title {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $title = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $title = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<div class="panel-heading"><h3>(.*) <small>').Matches.Groups[1].Value
         } catch {
             return
@@ -76,12 +76,12 @@ function Get-Jav321Title {
 function Get-Jav321ReleaseDate {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $releaseDate = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $releaseDate = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<b>(.*)<\/b>: (\d{4}-\d{2}-\d{2})<br>').Matches.Groups[2].Value
         } catch {
             return
@@ -94,12 +94,12 @@ function Get-Jav321ReleaseDate {
 function Get-Jav321ReleaseYear {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $releaseYear = Get-Jav321ReleaseDate -WebRequest $WebRequest
+            $releaseYear = Get-Jav321ReleaseDate -WebRequest $Webrequest
             $releaseYear = ($releaseYear -split '-')[0]
         } catch {
             return
@@ -112,12 +112,12 @@ function Get-Jav321ReleaseYear {
 function Get-Jav321Runtime {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $length = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $length = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<b>(.*)<\/b>: (\d{1,3}) minutes<br>').Matches.Groups[2].Value
         } catch {
             return
@@ -130,12 +130,12 @@ function Get-Jav321Runtime {
 function Get-Jav321Maker {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $maker = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $maker = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<b>メーカー<\/b>: (.*)>(.*)<\/a><br><b>ジャンル').Matches.Groups[2].Value
         } catch {
             return
@@ -149,14 +149,14 @@ function Get-Jav321Maker {
 function Get-Jav321Genre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         $genre = @()
 
         try {
-            $genre = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $genre = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<a href="\/genre\/(.*)\/(.*)">(.*)<\/a> ').Matches.Groups[0] -split '<\/a>' |
             ForEach-Object { ($_ -split '>')[1] }
         } catch {
@@ -170,25 +170,25 @@ function Get-Jav321Genre {
 function Get-Jav321Actress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         $actress = @()
 
         try {
-            $actress = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $actress = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<a href="\/star\/(.*)\/(.*)">(.*)<\/a>によって行われる<\/div>').Matches |
             ForEach-Object { $_.Groups[3].Value } |
             Where-Object { $_ -ne '' }
 
-            $actressThumb = ($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $actressThumb = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<div class="thumbnail"><a href="/star\/(.*)\/(.*)"><img class="img-responsive" src="(.*)" onerror').Matches |
             ForEach-Object { $_.Groups[3].Value } |
             Where-Object { $_ -ne '' }
 
 
-            $movieActressObject = [pscustomobject]@{
+            $movieActressObject = [PSCustomObject]@{
                 Name     = $actress
                 ThumbUrl = $actressThumb
             }
@@ -203,12 +203,12 @@ function Get-Jav321Actress {
 function Get-Jav321CoverUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         try {
-            $coverUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $coverUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
                     Select-String -Pattern 'poster="(.*).jpg">').Matches.Groups[1].Value) + '.jpg'
         } catch {
             return
@@ -221,20 +221,20 @@ function Get-Jav321CoverUrl {
 function Get-Jav321ScreenshotUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         $screenshotUrl = @()
 
         try {
-            $screenshotUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
+            $screenshotUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
                     Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" src="(.*)"') -split "src=\'" |
                 Select-String -Pattern "(https:\/\/www.jav321.com\/digital\/video\/(.*)\/(.*).jpg)(.*)<\/a>").Matches |
             ForEach-Object { $_.Groups[1].Value }
         } catch {
             try {
-                $screenshotUrl = (($WebRequest | ForEach-Object { $_ -split '\n' } |
+                $screenshotUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
                         Select-String -Pattern '<a href="\/snapshot/(.*)\/(.*)\/(.*)"><img class="img-responsive"') -split 'src="' |
                     Select-String -Pattern '(https:\/\/www.jav321.com\/\/images\/(.*)\/(.*)\/(.*)\/(.*).jpg)"><\/a><\/p>').Matches |
                 ForEach-Object { $_.Groups[1].Value }

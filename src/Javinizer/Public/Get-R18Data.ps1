@@ -66,7 +66,7 @@ function Get-R18Data {
             Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
-        $movieDataObject = [pscustomobject]@{
+        $movieDataObject = [PSCustomObject]@{
             Source        = if ($Language -eq 'en') { 'r18' } elseif ($Language -eq 'zh') { 'r18zh' }
             Url           = $Url
             ContentId     = Get-R18ContentId -WebRequest $webRequest
@@ -96,11 +96,11 @@ function Get-R18Data {
 function Get-R18ContentId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $contentId = (((($WebRequest.Content -split 'ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
+        $contentId = (((($Webrequest.Content -split 'ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $contentId = Convert-HtmlCharacter -String $contentId
 
         if ($contentId -eq '----') {
@@ -114,11 +114,11 @@ function Get-R18ContentId {
 function Get-R18Id {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $id = (((($WebRequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
+        $id = (((($Webrequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
         $id = Convert-HtmlCharacter -String $id
 
         if ($id -eq '----') {
@@ -132,13 +132,13 @@ function Get-R18Id {
 function Get-R18Title {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest,
+        [Object]$Webrequest,
         [Parameter()]
-        [object]$Replace
+        [Object]$Replace
     )
 
     process {
-        $title = (($WebRequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
+        $title = (($Webrequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
         $title = Convert-HtmlCharacter -String $title
         if ($Replace) {
             foreach ($string in $Replace.GetEnumerator()) {
@@ -154,12 +154,12 @@ function Get-R18Title {
 function Get-R18Description {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        if ($WebRequest.Content -match '<h1>Product Description<\/h1>') {
-            $description = ((($WebRequest.Content -split '<h1>Product Description<\/h1>')[1] -split '<p>')[1] -split '<\/p>')[0]
+        if ($Webrequest.Content -match '<h1>Product Description<\/h1>') {
+            $description = ((($Webrequest.Content -split '<h1>Product Description<\/h1>')[1] -split '<p>')[1] -split '<\/p>')[0]
             $description = Convert-HtmlCharacter -String $description
         } else {
             $description = $null
@@ -172,11 +172,11 @@ function Get-R18Description {
 function Get-R18ReleaseDate {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $releaseDate = (($WebRequest.Content -split '<dd itemprop=\"dateCreated\">')[1] -split '<br>')[0]
+        $releaseDate = (($Webrequest.Content -split '<dd itemprop=\"dateCreated\">')[1] -split '<br>')[0]
         $releaseDate = ($releaseDate.Trim() -replace '\.', '') -replace ',', ''
 
         if ($releaseDate -match '/') {
@@ -221,11 +221,11 @@ function Get-R18ReleaseDate {
 function Get-R18ReleaseYear {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $releaseYear = Get-R18ReleaseDate -WebRequest $WebRequest
+        $releaseYear = Get-R18ReleaseDate -WebRequest $Webrequest
         $releaseYear = ($releaseYear -split '-')[0]
         Write-Output $releaseYear
     }
@@ -234,11 +234,11 @@ function Get-R18ReleaseYear {
 function Get-R18Runtime {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $length = (((($WebRequest.Content -split '<dd itemprop="duration">')[1] -split '<br>')[0] -split 'min')[0] -split '分鐘')[0]
+        $length = (((($Webrequest.Content -split '<dd itemprop="duration">')[1] -split '<br>')[0] -split 'min')[0] -split '分鐘')[0]
         $length = $length.Trim()
         Write-Output $length
     }
@@ -247,11 +247,11 @@ function Get-R18Runtime {
 function Get-R18Director {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $director = (($WebRequest.Content -split '<dd itemprop="director">')[1] -split '<br>')[0]
+        $director = (($Webrequest.Content -split '<dd itemprop="director">')[1] -split '<br>')[0]
         $director = Convert-HtmlCharacter -String $director
 
         if ($director -eq '----') {
@@ -264,11 +264,11 @@ function Get-R18Director {
 function Get-R18Maker {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $maker = ((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
+        $maker = ((($Webrequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
         $maker = Convert-HtmlCharacter -String $maker
 
         if ($maker -eq '----') {
@@ -282,11 +282,11 @@ function Get-R18Maker {
 function Get-R18Label {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $label = (((($WebRequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/dl>')[0] -split '<dd>')[1] -split '<br>')[0]
+        $label = (((($Webrequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/dl>')[0] -split '<dd>')[1] -split '<br>')[0]
         $label = Convert-HtmlCharacter -String $label
 
         if ($label -eq '----') {
@@ -300,19 +300,19 @@ function Get-R18Label {
 function Get-R18Series {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest,
+        [Object]$Webrequest,
         [Parameter()]
-        [object]$Replace
+        [Object]$Replace
     )
 
     process {
-        $series = ((($WebRequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
+        $series = ((($Webrequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
         if ($null -ne $series) {
             $series = Convert-HtmlCharacter -String $series | Out-Null
             $series = $series -replace '\n', ' ' -replace "`t", ''
 
             $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
-            $seriesUrl = ($WebRequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
+            $seriesUrl = ($Webrequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
             if ($series -like '*...') {
                 try {
@@ -342,7 +342,7 @@ function Get-R18Series {
 function Get-R18Rating {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
@@ -354,14 +354,14 @@ function Get-R18Rating {
 function Get-R18Genre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest,
+        [Object]$Webrequest,
         [Parameter()]
-        [object]$Replace
+        [Object]$Replace
     )
 
     process {
         $genreArray = @()
-        $genreHtml = ((($WebRequest.Content -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
+        $genreHtml = ((($Webrequest.Content -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
 
         foreach ($genre in $genreHtml) {
             $genre = $genre.trim()
@@ -387,14 +387,14 @@ function Get-R18Genre {
 function Get-R18Actress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         $movieActressObject = @()
 
         try {
-            $movieActress = ($WebRequest.Content | Select-String -AllMatches -Pattern '<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>').Matches
+            $movieActress = ($Webrequest.Content | Select-String -AllMatches -Pattern '<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>').Matches
         } catch {
             return
         }
@@ -410,14 +410,14 @@ function Get-R18Actress {
 
             # Match if the name contains Japanese characters
             if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                $movieActressObject += [pscustomobject]@{
+                $movieActressObject += [PSCustomObject]@{
                     LastName     = $null
                     FirstName    = $null
                     JapaneseName = $actressName
                     ThumbUrl     = $thumbUrl
                 }
             } else {
-                $movieActressObject += [pscustomobject]@{
+                $movieActressObject += [PSCustomObject]@{
                     LastName     = ($actressName -split ' ')[1]
                     FirstName    = ($actressName -split ' ')[0]
                     JapaneseName = $null
@@ -433,11 +433,11 @@ function Get-R18Actress {
 function Get-R18CoverUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
-        $coverUrl = (($WebRequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
+        $coverUrl = (($Webrequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
         $coverUrl = (($coverUrl -split 'src="')[1] -split '">')[0]
         Write-Output $coverUrl
     }
@@ -446,12 +446,12 @@ function Get-R18CoverUrl {
 function Get-R18ScreenshotUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
         $screenshotUrl = @()
-        $screenshotHtml = (($WebRequest.Content -split '<ul class="js-owl-carousel clearfix">')[1] -split '<\/ul>')[0]
+        $screenshotHtml = (($Webrequest.Content -split '<ul class="js-owl-carousel clearfix">')[1] -split '<\/ul>')[0]
         $screenshotHtml = $screenshotHtml -split '<li>'
         foreach ($screenshot in $screenshotHtml) {
             $screenshot = $screenshot -replace '<p><img class="lazyOwl" ', ''
@@ -468,7 +468,7 @@ function Get-R18ScreenshotUrl {
 function Get-R18TrailerUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [object]$WebRequest
+        [Object]$Webrequest
     )
 
     process {
@@ -477,11 +477,19 @@ function Get-R18TrailerUrl {
         if ($trailerUrl[0] -eq '') {
             $trailerUrl = $null
         } else {
-            $trailerUrl = [pscustomobject]@{
-                Low  = (($WebRequest.Content -split 'data-video-low="')[1] -split '"')[0]
-                Med  = (($WebRequest.Content -split 'data-video-med="')[1] -split '"')[0]
-                High = (($WebRequest.Content -split 'data-video-high="')[1] -split '"')[0]
+            $trailerUrlObject = [PSCustomObject]@{
+                Low  = (($Webrequest.Content -split 'data-video-low="')[1] -split '"')[0]
+                Med  = (($Webrequest.Content -split 'data-video-med="')[1] -split '"')[0]
+                High = (($Webrequest.Content -split 'data-video-high="')[1] -split '"')[0]
             }
+        }
+
+        if ($trailerUrlObject.High) {
+            $trailerUrl = $trailerUrlObject.High
+        } elseif ($trailerUrlObject.Med) {
+            $trailerUrl = $trailerUrlObject.Med
+        } else {
+            $trailerUrl = $trailerUrlObject.Low
         }
 
         Write-Output $trailerUrl
