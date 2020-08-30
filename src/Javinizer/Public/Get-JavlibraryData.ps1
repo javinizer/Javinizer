@@ -214,9 +214,11 @@ function Get-JavlibraryActress {
 
     process {
         $movieActressObject = @()
+        $movieActress = @()
 
         try {
-            $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[1].Value
+            $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
+                -split 'title="Add this star to my favorite list\."><\/span><\/span>' | ForEach-Object { Select-String }
         } catch {
             return
         }
