@@ -14,6 +14,7 @@ function Get-DmmData {
             $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
         } catch {
             Write-JLog -Level Error -Message "Error [GET] on URL [$dmmUrl]: $PSItem"
+            return
         }
 
         $movieDataObject = [PSCustomObject]@{

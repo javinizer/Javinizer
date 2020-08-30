@@ -1,7 +1,7 @@
 function Get-JVData {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
         [String]$Id,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.r18')]
@@ -40,104 +40,123 @@ function Get-JVData {
     process {
         $javinizerDataObject = @()
 
+        if ($Settings) {
+            $R18 = $Settings.'scraper.movie.r18'
+            $R18Zh = $Settings.'scraper.movie.r18zh'
+            $Jav321 = $Settings.'scraper.movie.jav321'
+            $Javlibrary = $Settings.'scraper.movie.javlibrary'
+            $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
+            $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
+            $Dmm = $Settings.'scraper.movie.dmm'
+            $Javbus = $Settings.'scraper.movie.javbus'
+            $JavbusJa = $Settings.'scraper.movie.javbusja'
+            $JavbusZh = $Settings.'scraper.movie.javbuszh'
+        }
+
         try {
             if ($R18) {
-                Write-JLog -Level Info -Message "Searching [R18] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18"
                 Start-ThreadJob -Name "$Id-R18" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-R18Url -Id $using:Id -Language en | Get-R18Data
                 } | Out-Null
             }
-    
+
             if ($R18Zh) {
-                Write-JLog -Level Info -Message "Searching [R18Zh] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18Zh"
                 Start-ThreadJob -Name "$Id-R18Zh" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-R18Url -Id $using:Id -Language zh | Get-R18Data
                 } | Out-Null
             }
-    
+
             if ($Javlibrary) {
-                Write-JLog -Level Info -Message "Searching [Javlibrary] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javlibrary"
                 Start-ThreadJob -Name "$Id-Javlibrary" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavlibraryUrl -Id $using:Id -Language en | Get-JavlibraryData
                 } | Out-Null
             }
-    
+
             if ($JavlibraryJa) {
-                Write-JLog -Level Info -Message "Searching [JavlibraryJa] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryJa"
                 Start-ThreadJob -Name "$Id-JavlibraryJa" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavlibraryUrl -Id $using:Id -Language ja | Get-JavlibraryData
                 } | Out-Null
             }
-    
+
             if ($JavlibraryZh) {
-                Write-JLog -Level Info -Message "Searching [JavlibraryZh] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryZh"
                 Start-ThreadJob -Name "$Id-JavlibraryZh" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavlibraryUrl -Id $using:Id -Language zh | Get-JavlibraryData
                 } | Out-Null
             }
-    
+
             if ($Dmm) {
-                Write-JLog -Level Info -Message "Searching [Dmm] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Dmm"
                 Start-ThreadJob -Name "$Id-Dmm" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-DmmUrl -Id $using:Id | Get-DmmData
                 } | Out-Null
             }
-    
+
             if ($Javbus) {
-                Write-JLog -Level Info -Message "Searching [Javbus] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javbus"
                 Start-ThreadJob -Name "$Id-Javbus" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavbusUrl -Id $using:Id -Language en | Get-JavbusData
                 } | Out-Null
             }
-    
+
             if ($JavbusJa) {
-                Write-JLog -Level Info -Message "Searching [JavbusJa] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusJa"
                 Start-ThreadJob -Name "$Id-JavbusJa" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavbusUrl -Id $using:Id -Language ja | Get-JavbusData
                 } | Out-Null
             }
-    
+
             if ($JavbusZh) {
-                Write-JLog -Level Info -Message "Searching [JavbusZh] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusZh"
                 Start-ThreadJob -Name "$Id-JavbusZh" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-JavbusUrl -Id $using:Id -Language zh | Get-JavbusData
                 } | Out-Null
             }
-    
+
             if ($Jav321) {
-                Write-JLog -Level Info -Message "Searching [Jav321] for Id: [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Jav321"
                 Start-ThreadJob -Name "$Id-Jav321" -ScriptBlock {
                     Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
                     Get-Jav321Url -Id $using:Id | Get-Jav321Data
                 } | Out-Null
             }
-    
-            # Wait for all jobs to complete to write to the combined data object
-            $javinizerDataObject = Get-Job | Receive-Job -AutoRemoveJob -Wait -Force
 
+            # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
+            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Waiting for jobs to complete"
+            $jobId = @((Get-Job | Where-Object { $_.Name -like "$Id*" } | Select-Object Id).Id)
+            Wait-Job -Id $jobId | Out-Null
+
+            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Jobs completed"
+            $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
+
+            $hasData = ($javinizerDataObject | Select-Object Source).Source
+            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Data successfully retrieved from sources [$hasData]"
 
             $dataObject = [PSCustomObject]@{
-                Data     = $javinizerDataObject
-                Settings = $Settings
+                Data = $javinizerDataObject
             }
-            
+
             Write-Output $dataObject
 
         } catch {
-            Write-JLog -Level Error -Message "Error occured during scraper jobs: $PSItem"
+            Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
         } finally {
             # Remove all completed or running jobs before exiting this script
             # If jobs remain after closure, it may cause issues in concurrent runs
-            Write-JLog -Level Debug -Message "Stopping/removing all completed/running jobs"
+            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Stopping/removing all completed/running jobs"
             Get-Job | Remove-Job -Force
         }
     }

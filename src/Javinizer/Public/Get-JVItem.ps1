@@ -53,8 +53,8 @@ function Get-JVItem {
             }
         } else {
             foreach ($file in $files) {
-                $fileObject += $file | Convert-JVTitle -Strict:$Strict -RegexEnabled:$RegexEnabled 
-            }    
+                $fileObject += $file | Convert-JVTitle -Strict:$Strict -RegexEnabled:$RegexEnabled
+            }
         }
 
         Write-Output $fileObject

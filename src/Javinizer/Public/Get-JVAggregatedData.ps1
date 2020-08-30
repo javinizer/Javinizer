@@ -1,10 +1,9 @@
 function Get-JVAggregatedData {
-    [CmdletBinding(DefaultParameterSetName = 'Pipeline')]
+    [CmdletBinding(DefaultParameterSetName = 'Setting')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pipeline')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'Setting')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [PSObject]$Data,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pipeline')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Setting')]
         [PSObject]$Settings,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.actress')]
@@ -50,7 +49,31 @@ function Get-JVAggregatedData {
         [Array]$TitlePriority,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.trailerurl')]
-        [Array]$TrailerUrlPriority
+        [Array]$TrailerUrlPriority,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.displayname')]
+        [String]$DisplayNameFormat,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.firstnameorder')]
+        [Boolean]$FirstNameOrder,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.thumbcsv')]
+        [Boolean]$ThumbCsv,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.thumbcsv.convertalias')]
+        [Boolean]$ThumbCsvAlias,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.genre.normalize')]
+        [Boolean]$NormalizeGenre,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.genre.ignore')]
+        [Array]$IgnoreGenre,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.requiredfield')]
+        [Array]$RequiredField,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.maxtitlelength')]
+        [Int]$MaxTitleLength
     )
 
     process {
@@ -70,10 +93,12 @@ function Get-JVAggregatedData {
             $ScreenshotUrlPriority = $Settings.'sort.metadata.priority.screenshoturl'
             $TitlePriority = $Settings.'sort.metadata.priority.title'
             $TrailerUrlPriority = $Settings.'sort.metadata.priority.trailerurl'
+            $DisplayNameFormat = $Settings.'sort.metadata.nfo.displayname'
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
             Id             = $null
+            DisplayName    = $null
             Title          = $null
             AlternateTitle = $null
             Description    = $null
@@ -119,14 +144,16 @@ function Get-JVAggregatedData {
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
-                    Write-Debug "[$field] [$priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
+                    Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
                 }
             }
         }
 
+        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat
+
+
         $dataObject = [PSCustomObject]@{
-            Data     = $aggregatedDataObject
-            Settings = $Settings
+            Data = $aggregatedDataObject
         }
 
         Write-Output $dataObject
