@@ -48,8 +48,8 @@ function Convert-JVString {
             -replace '<ID>', "$($Data.Id)" `
             -replace '<TITLE>', "$($Data.Title)" `
             -replace '<RELEASEDATE>', "$($Data.ReleaseDate)" `
-            -replace '<YEAR>', "$(($Data.ReleaseDate -split '-')[0])" `
-            -replace '<STUDIO>', "($($Data.Maker)" `
+            -replace '<YEAR>', "($($Data.ReleaseDate -split '-')[0])" `
+            -replace '<STUDIO>', "$($Data.Maker)" `
             -replace '<RUNTIME>', "$($Data.Runtime)" `
             -replace '<SET>', "$($Data.Series)" `
             -replace '<LABEL>', "$($Data.Label)" `
