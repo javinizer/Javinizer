@@ -1,81 +1,78 @@
-function Test-UrlLocation {
+function Get-JVUrlLocation {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [array]$Url
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $testUrlObject = @()
-    }
-
     process {
+        $testUrlObject = @()
         foreach ($link in $Url) {
             if ($link -match 'r18.com') {
                 if ($link -match 'lg=zh') {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'r18zh'
+                        Source = 'r18zh'
                     }
                 } else {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'r18'
+                        Source = 'r18'
                     }
                 }
             } elseif ($link -match 'javlibrary.com') {
                 if ($link -match '/ja/') {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javlibraryja'
+                        Source = 'javlibraryja'
                     }
                 } elseif ($link -match '/cn/') {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javlibraryzh'
+                        Source = 'javlibraryzh'
                     }
                 } elseif ($link -match '/tw/') {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javlibraryzh'
+                        Source = 'javlibraryzh'
                     }
                 } else {
                     $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javlibrary'
+                        Source = 'javlibrary'
                     }
                 }
             } elseif ($link -match 'dmm.co.jp') {
-                $testUrlObject = [pscustomobject]@{
+                $testUrlObject += [pscustomobject]@{
                     Url    = $link
-                    Result = 'dmm'
+                    Source = 'dmm'
                 }
             } elseif ($link -match 'javbus') {
                 if ($link -match '/ja') {
-                    $testUrlObject = [pscustomobject]@{
+                    $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javbusja'
+                        Source = 'javbusja'
+                    }
+                } elseif ($link -match '/zh') {
+                    $testUrlObject += [pscustomobject]@{
+                        Url    = $link
+                        Source = 'javbuszh'
                     }
                 } else {
-                    $testUrlObject = [pscustomobject]@{
+                    $testUrlObject += [pscustomobject]@{
                         Url    = $link
-                        Result = 'javbus'
+                        Source = 'javbus'
                     }
                 }
             } elseif ($link -match 'jav321.com') {
-                $testUrlObject = [pscustomboject]@{
+                $testUrlObject += [pscustomboject]@{
                     Url    = $link
-                    Result = 'jav321'
+                    Source = 'jav321'
                 }
             } else {
-                Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Url: [$Url] not matched"
+                Write-JLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }
         }
         Write-Output $testUrlObject
-    }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
