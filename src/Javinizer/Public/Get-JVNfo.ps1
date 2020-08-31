@@ -14,7 +14,7 @@ function Get-JVNfo {
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$ReleaseDate,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Int]$Runtime,
+        [String]$Runtime,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Director,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
@@ -34,6 +34,8 @@ function Get-JVNfo {
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$TrailerUrl,
         [Parameter()]
+        [Boolean]$ActressLanguageJa,
+        [Parameter()]
         [Boolean]$NameOrder,
         [Parameter()]
         [Boolean]$AddTag
@@ -49,7 +51,7 @@ function Get-JVNfo {
             )
 
             process {
-                $newString = ((($String -replace '&', '&amp') -replace '<', '(') -replace '>', ')') -replace '/', '-'
+                $newString = ((($String -replace '&', '&amp;') -replace '<', '(') -replace '>', ')') -replace '/', '-'
                 Write-Output $newString
             }
         }
@@ -98,22 +100,49 @@ function Get-JVNfo {
         }
 
         foreach ($item in $Actress) {
-            if ($NameOrder) {
-                $ActressName = ("$($item.FirstName) $($item.LastName)").Trim()
+            $actressName = $null
+            if ($ActressLanguageJa) {
+                if ($null -ne $item.JapaneseName) {
+                    $actressName = ($item.JapaneseName)
+                }
+
+                if ($null -eq $actressName) {
+                    if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
+                        if ($NameOrder) {
+                            $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
+                        } else {
+                            $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
+                        }
+                    }
+                }
             } else {
-                $ActressName = ("$($item.LastName) $($item.FirstName)").Trim()
+                if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
+                    if ($NameOrder) {
+                        $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
+                    } else {
+                        $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
+                    }
+                }
+
+                if ($null -eq $actressName) {
+                    if ($null -ne $item.JapaneseName) {
+                        $actressName = ($item.JapaneseName).Trim()
+                    }
+                }
             }
+
+
             $actressNfoString = @"
     <actor>
-        <name>$ActressName</name>
+        <name>$actressName</name>
         <thumb>$($item.ThumbUrl)</thumb>
         <role>Actress</role>
     </actor>
 
 "@
+            $nfoString = $nfoString + $actressNfoString
         }
 
-        $nfoString = $nfoString + $actressNfoString
         $endNfoString = @"
 </movie>
 "@
