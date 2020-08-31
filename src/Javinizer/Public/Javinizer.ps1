@@ -245,14 +245,13 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321,
         [Parameter(ParameterSetName = 'Path', Position = 0)]
-        [Alias('p')]
         [System.IO.DirectoryInfo]$Path,
         [Parameter(ParameterSetName = 'Path', Position = 1)]
-        [Alias('d')]
         [System.IO.DirectoryInfo]$DestinationPath,
+        [Parameter(ParameterSetName = 'Path', Position = 2)]
+        [PSObject]$Settings,
         [Parameter(ParameterSetName = 'Path')]
-        [Alias('u')]
-        [Array]$Url,
+        [PSObject]$Url,
         [Parameter(ParameterSetName = 'Path')]
         [Alias('m')]
         [Switch]$Multi,
@@ -261,10 +260,6 @@ function Javinizer {
         [Switch]$Recurse,
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Force,
-        [Parameter(ParameterSetName = 'Path')]
-        [PSObject]$Settings,
-        [Parameter(ParameterSetName = 'Path')]
-        [String]$ImportSettings,
         [Parameter(ParameterSetName = 'Help')]
         [Alias('h')]
         [Switch]$Help,
@@ -292,7 +287,13 @@ function Javinizer {
     )
 
     begin {
-        $urlLocation = @()
+        if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+            $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+        }
+
+        if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+            $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+        }
 
         if (!($Multi.IsPresent -or $GetThumbs.IsPresent -or $UpdateThumbs.IsPresent)) {
             $ProgressPreference = 'SilentlyContinue'
@@ -332,12 +333,21 @@ function Javinizer {
     }
 
     process {
-        $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
+        if ($Settings) {
+            $settingsPath = $Settings
+        } else {
+            $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
+        }
+
         $Settings = Get-Content -LiteralPath $settingsPath | ConvertFrom-Json -Depth 32
 
         if ($Settings.'admin.log.path' -eq '') {
             $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
         } else {
+            if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
+                New-Item -LiteralPath $Settings.'admin.log.path'
+            }
+
             $logPath = $Settings.'admin.log.path'
         }
 
