@@ -581,7 +581,7 @@ function Javinizer {
 
                 try {
                     $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Count - $($javMovies.Count)]"
+                    Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- no movies detected in [$Path]"
                 }

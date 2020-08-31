@@ -67,12 +67,12 @@ function Update-JVThumbs {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$Path]"
+                            Write-JLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
                             $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$Path]"
+                        Write-JLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
                         $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                     }
                 }
