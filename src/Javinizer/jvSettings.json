@@ -34,14 +34,14 @@
     "sort.maxpathlength": 255,
     "sort.maxtitlelength": 100,
     "sort.create.nfo": 1,
-    "sort.create.nfoperfile": 1,
-    "sort.download.actressimg": 1,
+    "sort.create.nfoperfile": 0,
+    "sort.download.actressimg": 0,
     "sort.download.thumbimg": 1,
     "sort.download.posterimg": 1,
-    "sort.download.screenshotimg": 1,
-    "sort.download.trailervid": 1,
+    "sort.download.screenshotimg": 0,
+    "sort.download.trailervid": 0,
     "sort.format.file": "<ID>",
-    "sort.format.folder": "<ID> - <TITLE> (<YEAR>)",
+    "sort.format.folder": "<ID> [<Studio>] - <TITLE> (<YEAR>)",
     "sort.format.posterimg": "folder",
     "sort.format.thumbimg": "fanart",
     "sort.format.trailervid": "<ID>-trailer",
@@ -51,10 +51,11 @@
     "sort.format.actressimgfolder": ".actors",
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
     "sort.metadata.nfo.seriesastag": 1,
-    "sort.metadata.nfo.firstnameorder": 1,
+    "sort.metadata.nfo.firstnameorder": 0,
+    "sort.metadata.nfo.actresslanguageja": 0,
     "sort.metadata.thumbcsv": 1,
     "sort.metadata.thumbcsv.convertalias": 1,
-    "sort.metadata.genre.normalize": 0,
+    "sort.metadata.genre.replace": 0,
     "sort.metadata.genre.ignore": [
         "Featured Actress",
         "Hi-Def"
@@ -114,7 +115,8 @@
         "dmm"
     ],
     "sort.metadata.priority.series": [
-        "r18"
+        "r18",
+        "r18zh"
     ],
     "sort.metadata.priority.screenshotUrl": [
         "r18",
@@ -136,7 +138,7 @@
     "javlibrary.request.interval": 15,
     "javlibrary.request.timeout": 90,
     "admin.log": 1,
-    "admin.log.path": "x:\\git\\projects\\jav-organizer\\src\\javinizer\\javinizer.log",
-    "admin.log.level": "DEBUG",
+    "admin.log.path": "x:\\git\\projects\\jav-organizer\\src\\javinizer\\jvLog2.log",
+    "admin.log.level": "debug",
     "admin.update.check": 0
 }
