@@ -94,6 +94,8 @@ function Get-JVAggregatedData {
             $TitlePriority = $Settings.'sort.metadata.priority.title'
             $TrailerUrlPriority = $Settings.'sort.metadata.priority.trailerurl'
             $DisplayNameFormat = $Settings.'sort.metadata.nfo.displayname'
+            $ThumbCsv = $Settings.'sort.metadata.thumbcsv'
+            $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
@@ -149,8 +151,101 @@ function Get-JVAggregatedData {
             }
         }
 
+        # The displayname value is updated after the previous fields have already been scraped
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat
 
+        if ($ThumbCsv) {
+            $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
+            if (Test-Path -LiteralPath $thumbCsvPath) {
+                $actressCsv = Import-Csv -LiteralPath $thumbCsvPath
+                for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
+                    if ($ThumbCsvAlias) {
+                        $aliases = @()
+                        $aliasObject = @()
+                        $csvAlias = $actressCsv.Alias
+                        foreach ($alias in ($csvAlias | Where-Object { $_ -ne '' })) {
+                            $index = [Array]::IndexOf($csvAlias, $alias)
+                            $aliases = $alias -split '\|'
+                            foreach ($alias in $aliases) {
+                                $aliasObject += [PSCustomObject]@{
+                                    LastName  = ($alias -split ' ')[0]
+                                    FirstName = ($alias -split ' ')[1]
+                                    Index     = $index
+                                }
+                            }
+                        }
+
+                        if ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
+                            $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
+                            $actressString = "$($actressCsv[$matched.Index].LastName) $($actressCsv[$matched.Index].FirstName)".Trim()
+
+                            if ($matched.Count -eq 1) {
+                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
+                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
+                            } elseif ($matched.Count -gt 1) {
+                                # Automatically select the first match if multiple actresses with identical names are found
+                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched[0].Index].FirstName
+                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
+                            }
+
+                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
+                        }
+                    }
+
+                    # Check if FirstName/LastName matches the thumb csv
+                    if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
+                        if ($matched.Count -eq 1) {
+                            $matchedActress = $matched
+                        } elseif ($matched.Count -gt 1) {
+                            # Automatically select the first match if multiple actresses with identical names are found
+                            $matchedActress = $matched[0]
+                        }
+
+                        if ($null -ne $matchedActress) {
+                            $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
+                            $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
+                            $actressString = "$($aggregatedDataObject.Actress[$x].LastName) $($aggregatedDataObject.Actress[$x].FirstName)".Trim()
+                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                        }
+                        # Check if JapaneseName matches the thumb csv
+                    } elseif ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName')) {
+                        if ($matched.Count -eq 1) {
+                            $matchedActress = $matched
+                        } elseif ($matched.Count -gt 1) {
+                            # Automatically select the first match if multiple actresses with identical names are found
+                            $matchedActress = $matched[0]
+                        }
+
+                        if ($null -ne $matchedActress) {
+                            $aggregatedDataObject.Actress[$x].FirstName = $matchedActress.FirstName
+                            $aggregatedDataObject.Actress[$x].LastName = $matchedActress.LastName
+                            $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
+                            $actressString = "$($aggregatedDataObject.Actress[$x].JapaneseName)".Trim()
+                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                        }
+                        # Check if FirstName matches the thumb csv for single-word names
+                    } elseif ($null -eq $aggregatedDataObject.Actress[$x].LastName -and $null -ne $aggregatedDataObject.Actress[$x].FirstName) {
+                        $matched = Compare-Object -ReferenceObject ($actressCsv | Where-Object { $_.LastName -eq '' }) -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName')
+
+                        if ($matched.Count -eq 1) {
+                            $matchedActress = $matched
+                        } elseif ($matched.Count -gt 1) {
+                            # Automatically select the first match if multiple actresses with identical names are found
+                            $matchedActress = $matched[0]
+                        }
+
+                        if ($null -ne $matchedActress) {
+                            $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
+                            $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
+                            $actressString = "$($aggregatedDataObject.Actress[$x].FirstName)".Trim()
+                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                        }
+                    }
+                }
+            } else {
+                Write-JLog -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+            }
+        }
 
         $dataObject = [PSCustomObject]@{
             Data = $aggregatedDataObject
