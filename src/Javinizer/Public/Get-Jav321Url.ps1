@@ -9,11 +9,10 @@ function Get-Jav321Url {
         $searchUrl = "https://jp.jav321.com/search"
 
         try {
-            Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
+            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Post -Body "sn=$Id" -Verbose:$false
         } catch {
-            Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]: $PSItem"
-            return
+            Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
         }
 
 
@@ -31,16 +30,16 @@ function Get-Jav321Url {
         }
 
         if ($numResults -ge 1) {
-            Write-JLog -Level Debug -Message "Searching [$Tries] of [$numResults] results for [$Id]"
+            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
                 $result = "https://jp.jav321.com/video/$result"
                 try {
-                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$result]"
+                    Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-RestMethod -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JLog -Level Error -Message "Error [GET] on URL [$result]: $PSItem"
+                    Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
                 }
 
                 $resultId = Get-Jav321Id -WebRequest $webRequest
@@ -49,7 +48,7 @@ function Get-Jav321Url {
                     break
                 }
 
-                Write-JLog -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 if ($count -eq $Tries) {
                     break
                 }
@@ -58,7 +57,7 @@ function Get-Jav321Url {
             }
 
             if ($null -eq $directUrl) {
-                Write-JLog -Level Warning -Message "Search [$Id] not matched on Jav321"
+                Write-JLog -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on Jav321"
                 return
             } else {
                 $urlObject = [PSCustomObject]@{
@@ -68,7 +67,7 @@ function Get-Jav321Url {
                 Write-Output $urlObject
             }
         } else {
-            Write-JLog -Level Warning -Message "Search [$Id] not matched on Jav321"
+            Write-JLog -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on Jav321"
             return
         }
     }

@@ -33,10 +33,10 @@ function Get-R18Url {
 
         # Try matching the video with Video ID
         try {
-            Write-JLog -Level Debug -Message "Performing [GET] on Uri [$searchUrl]"
+            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
-            Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]: $PSItem"
+            Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
         }
 
         $retryCount = 3
@@ -53,10 +53,10 @@ function Get-R18Url {
             $count = 1
             foreach ($result in $searchResults) {
                 try {
-                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$result]"
+                    Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JLog -Level Error -Message "Error [GET] on URL [$result]: $PSItem"
+                    Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
@@ -79,10 +79,10 @@ function Get-R18Url {
             $searchUrl = "https://www.r18.com/common/search/searchword=$contentId/"
 
             try {
-                Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
-                Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]: $PSItem"
+                Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
             }
 
             $retryCount = 5
@@ -96,10 +96,10 @@ function Get-R18Url {
             $count = 1
             foreach ($result in $altSearchResults) {
                 try {
-                    Write-JLog -Level Debug -Message "Performing [GET] on URL [$result]"
+                    Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JLog -Level Error -Message "Error [GET] on URL [$result]: $PSItem"
+                    Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
@@ -122,7 +122,7 @@ function Get-R18Url {
             $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$contentId/"
 
             try {
-                Write-JLog -Level Debug -Message "Performing [GET] on Uri [$testUrl]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
                 $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
             } catch {
                 $webRequest = $null
@@ -130,7 +130,7 @@ function Get-R18Url {
 
             if ($null -ne $webRequest) {
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JLog -Level Debug -Message "Result is [$resultId]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $testUrl
                 }
@@ -138,7 +138,7 @@ function Get-R18Url {
         }
 
         if ($null -eq $directUrl) {
-            Write-JLog -Level Warning -Message  "Search [$Id] not matched on R18"
+            Write-JLog -Level Warning -Message "[$Id] not matched on R18"
             return
         } else {
             if ($Language -eq 'zh') {

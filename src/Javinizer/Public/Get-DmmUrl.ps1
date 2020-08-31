@@ -22,10 +22,10 @@ function Get-DmmUrl {
             $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
 
             try {
-                Write-JLog -Level Debug -Message "Performing [GET] on URL [$searchUrl]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
-                Write-JLog -Level Error -Message "Error [GET] on URL [$searchUrl]"
+                Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]"
             }
 
             $retryCount = 3
@@ -37,19 +37,19 @@ function Get-DmmUrl {
             }
 
             if ($numResults -ge 1) {
-                Write-JLog -Level Debug -Message "Searching [$retryCount] of [$numResults] results for [$Id]"
+                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
                 $count = 1
                 foreach ($result in $searchResults) {
                     try {
-                        Write-JLog -Level Debug -Message "Performing [GET] on URL [$result]"
+                        Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                         $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                     } catch {
-                        Write-JLog -Level Error -Message "Error [GET] on URL [$result]: $PSItem"
+                        Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
                     }
 
                     $resultId = Get-DmmContentId -WebRequest $webRequest
-                    Write-JLog -Level Debug -Message "Result [$count] is [$resultId]"
+                    Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                     if ($resultId -match $Id) {
                         $directUrl = $result
                         break
@@ -65,14 +65,14 @@ function Get-DmmUrl {
         }
 
         if ($null -eq $directUrl) {
-            Write-JLog -Level Warning -Message "Search [$Id] not matched on DMM"
+            Write-JLog -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on DMM"
             return
         } else {
             $urlObject = [PSCustomObject]@{
                 Url      = $directUrl
                 Language = 'ja'
             }
-    
+
             Write-Output $urlObject
         }
     }

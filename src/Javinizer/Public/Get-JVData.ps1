@@ -39,6 +39,7 @@ function Get-JVData {
 
     process {
         $javinizerDataObject = @()
+        $Id = $Id.ToUpper()
 
         if ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
@@ -135,11 +136,11 @@ function Get-JVData {
             }
 
             # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
-            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Waiting for jobs to complete"
+            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Waiting for scraper jobs to complete"
             $jobId = @((Get-Job | Where-Object { $_.Name -like "$Id*" } | Select-Object Id).Id)
             Wait-Job -Id $jobId | Out-Null
 
-            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Jobs completed"
+            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] Scraper jobs completed"
             $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
 
             $hasData = ($javinizerDataObject | Select-Object Source).Source
