@@ -7,7 +7,7 @@ function Get-JVItem {
         [Switch]$Recurse,
         [Parameter()]
         [Switch]$Strict,
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter()]
         [PSObject]$Settings,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.minimumfilesize')]
@@ -34,6 +34,16 @@ function Get-JVItem {
 
     process {
         $fileObject = @()
+        if ($Settings) {
+            $MinimumFileSize = $Settings.'match.mninimumfilesize'
+            $ExcludedStrings = $Settings.'match.excludedfilestring'
+            $IncludedExtensions = $Settings.'includedfileextension'
+            $RegexEnabled = $Settings.'match.regex'
+            $RegexString = $Settings.'match.regex.string'
+            $RegexIdMatch = $Settings.'match.regex.idmatch'
+            $RegexPtMatch = $Settings.'match.regex.ptmatch'
+        }
+
         if ($ExcludedStrings) {
             $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
                 $_.Extension -in $IncludedExtensions `
