@@ -63,8 +63,8 @@ function Get-JVAggregatedData {
         [Alias('sort.metadata.thumbcsv.convertalias')]
         [Boolean]$ThumbCsvAlias,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.genre.normalize')]
-        [Boolean]$NormalizeGenre,
+        [Alias('sort.metadata.genre.replace')]
+        [Boolean]$ReplaceGenre,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genre.ignore')]
         [Array]$IgnoreGenre,
@@ -72,8 +72,11 @@ function Get-JVAggregatedData {
         [Alias('sort.metadata.requiredfield')]
         [Array]$RequiredField,
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.maxtitlelength')]
-        [Int]$MaxTitleLength
+        [Alias('sort.metadata.nfo.translate')]
+        [Boolean]$Translate,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.language')]
+        [String]$TranslateLanguage
     )
 
     process {
@@ -96,6 +99,9 @@ function Get-JVAggregatedData {
             $DisplayNameFormat = $Settings.'sort.metadata.nfo.displayname'
             $ThumbCsv = $Settings.'sort.metadata.thumbcsv'
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
+            $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
+            $Translate = $Settings.'sort.metadata.nfo.translate'
+            $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
@@ -243,7 +249,25 @@ function Get-JVAggregatedData {
                     }
                 }
             } else {
-                Write-JLog -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+                Write-JLog -Level Warning -Message "[$($Data[0].Id)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+            }
+        }
+
+        if ($IgnoreGenre) {
+            $ignoredGenres = $ignoreGenre -join '|'
+            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres }
+        }
+
+        if ($Translate) {
+            if ($TranslateLanguage) {
+                $descriptionTemp = $aggregatedDataObject.Description
+                $translatedDescription = Get-TranslatedString -String $descriptionTemp -Language $TranslateLanguage
+
+                if ($null -ne $translatedDescription -or $translatedDescription -ne '') {
+                    $aggregatedDataObject.Description = $translatedDescription
+                }
+            } else {
+                Write-JLog -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
             }
         }
 
