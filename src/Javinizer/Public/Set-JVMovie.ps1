@@ -20,11 +20,8 @@ function Set-JVMovie {
         [Alias('sort.renamefile')]
         [Boolean]$RenameFile,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.maxpathlength')]
-        [Boolean]$MaxPathLength,
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.maxtitlelength')]
-        [Boolean]$MaxTitleLength,
+        [Int]$MaxTitleLength,
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.create.nfo')]
         [Boolean]$CreateNfo,
@@ -94,11 +91,9 @@ function Set-JVMovie {
     }
 
     process {
-        <# Pre-impact code #>
         if ($Settings) {
             $MoveToFolder = $Settings.'sort.movetofolder'
             $RenameFile = $Settings.'sort.renamefile'
-            $MaxPathLength = $Settings.'sort.maxpathlength'
             $MaxTitleLength = $Settings.'sort.maxtitlelength'
             $CreateNfo = $Settings.'sort.create.nfo'
             $CreateNfoPerFile = $Settings.'sort.create.nfoperfile'
@@ -121,15 +116,15 @@ function Set-JVMovie {
             $NameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
         }
 
-        $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber
-        $folderName = Convert-JVString -Data $Data -Format $FolderFormat
-        $nfoName = Convert-JVString -Data $Data -Format $NfoFormat
-        $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat
-        $posterName = Convert-JVString -Data $Data -Format $PosterFormat
-        $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat
-        $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat
-        $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat
-        $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat
+        $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength
+        $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength
+        $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength
+        $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength
+        $posterName = Convert-JVString -Data $Data -Format $PosterFormat -MaxTitleLength $MaxTitleLength
+        $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength
+        $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat -MaxTitleLength $MaxTitleLength
+        $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat -MaxTitleLength $MaxTitleLength
+        $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat -MaxTitleLength $MaxTitleLength
 
         if ($MoveToFolder) {
             if ($DestinationPath) {
