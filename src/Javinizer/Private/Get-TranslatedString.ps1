@@ -2,17 +2,13 @@ function Get-TranslatedString {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true, Position = 0)]
-        [string]$String,
-        [string]$ScriptRoot,
-        [string]$Language
+        [String]$String,
+        [String]$Language
     )
 
-    begin {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function started"
-        $translatePath = Join-Path -Path $ScriptRoot -ChildPath 'translate.py'
-    }
-
     process {
+        $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
+
         if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
             $translatedString = python $translatePath $String $Language
         } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
@@ -20,9 +16,5 @@ function Get-TranslatedString {
         }
 
         Write-Output $translatedString
-    }
-
-    end {
-        Write-Debug "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Function ended"
     }
 }
