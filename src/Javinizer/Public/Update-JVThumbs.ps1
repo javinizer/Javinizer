@@ -1,6 +1,8 @@
-function Update-JVThumbCsv {
+function Update-JVThumbs {
     [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
+        [Parameter()]
+        [System.IO.FileInfo]$Path = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Page')]
         [Int]$StartPage,
         [Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'Page')]
@@ -10,13 +12,12 @@ function Update-JVThumbCsv {
     process {
         try {
             $ProgressPreference = 'SilentlyContinue'
-            $csvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvthumbs.csv'
 
-            if (!(Test-Path -LiteralPath $csvPath)) {
-                New-Item -Path $csvPath -ItemType File | Out-Null
+            if (!(Test-Path -LiteralPath $Path)) {
+                New-Item -Path $Path -ItemType File | Out-Null
             }
 
-            $actressCsv = Import-Csv -LiteralPath $csvPath
+            $actressCsv = Import-Csv -LiteralPath $Path
 
             if ($StartPage) {
                 $pageUrl = 'https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page='
@@ -54,10 +55,10 @@ function Update-JVThumbCsv {
                 $groupedObject = ($actressObject + $actressObjectJa | Group-Object ThumbUrl) | Where-Object { $_.Count -eq 2 }
                 foreach ($actress in $groupedObject) {
                     $combinedActressObject += [PSCustomObject]@{
-                        LastName     = (($actress.Group[0].Name -replace '\.\.\.', '').Trim() -split ' ')[1]
-                        FirstName    = (($actress.Group[0].Name -replace '\.\.\.', '').Trim() -split ' ')[0]
-                        JapaneseName = ($actress.Group[1].Name).Trim() -replace '（.*）', ''
-                        ThumbUrl     = $actress.Group[0].ThumbUrl
+                        LastName     = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[1]
+                        FirstName    = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[0]
+                        JapaneseName = ($actress.Group[1].Name).Trim() -replace '（.*）', '' -replace '&amp;', '&'
+                        ThumbUrl     = $actress.Group[0].ThumbUrl -replace '&amp;', '&'
                         Alias        = $null
                     }
                 }
@@ -66,19 +67,18 @@ function Update-JVThumbCsv {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$csvPath]"
-                            $actress | Export-Csv -LiteralPath $csvPath -Append -Encoding utf8
+                            Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$Path]"
+                            $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$csvPath]"
-                        $actress | Export-Csv -LiteralPath $csvPath -Append -Encoding utf8
+                        Write-JLog -Level Info -Message "[$($MyInvocation.MyCommand.Name)] [Page $x] Actress [($actressString - $($actress.JapaneseName)] written to [$Path]"
+                        $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                     }
                 }
             }
         } catch {
-            Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$csvPath]: $PSItem"
-            return
+            Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$Path]: $PSItem"
         }
     }
 }
