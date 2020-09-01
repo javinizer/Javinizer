@@ -222,8 +222,8 @@ function Javinizer {
                 }
 
                 if ($Nfo) {
-                    $nfo = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AddTag:$Settings.'sort.metadata.nfo.seriesastag'
-                    Write-Output $nfo
+                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AddTag:$Settings.'sort.metadata.nfo.seriesastag'
+                    Write-Output $nfoData
                 } else {
                     Write-Output $data.Data
                 }
@@ -324,7 +324,7 @@ function Javinizer {
 
                     $javData = Get-JVData  -Url $Url -Settings $Settings
                     if ($null -ne $javData) {
-                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath | test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
                             $javAggregatedData | Set-JVMovie -Path $javMovies.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $JavMovies.PartNumber -Force:$Force
                         }
@@ -336,7 +336,7 @@ function Javinizer {
                         $index++
                         $javData = Get-JVData  -Id $movie.Id -Settings $Settings
                         if ($null -ne $javData) {
-                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                             if ($null -ne $javAggregatedData) {
                                 $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                             } else {
