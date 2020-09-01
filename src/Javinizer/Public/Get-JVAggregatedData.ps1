@@ -177,7 +177,7 @@ function Get-JVAggregatedData {
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
-                    Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
+                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
                 }
             }
         }
@@ -219,7 +219,7 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
                             }
 
-                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
+                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
                         }
                     }
 
@@ -236,7 +236,7 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
                             $actressString = "$($aggregatedDataObject.Actress[$x].LastName) $($aggregatedDataObject.Actress[$x].FirstName)".Trim()
-                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                         # Check if JapaneseName matches the thumb csv
                     } elseif ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName')) {
@@ -252,7 +252,7 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].LastName = $matchedActress.LastName
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $actressString = "$($aggregatedDataObject.Actress[$x].JapaneseName)".Trim()
-                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                         # Check if FirstName matches the thumb csv for single-word names
                     } elseif ($null -eq $aggregatedDataObject.Actress[$x].LastName -and $null -ne $aggregatedDataObject.Actress[$x].FirstName) {
@@ -269,12 +269,12 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
                             $actressString = "$($aggregatedDataObject.Actress[$x].FirstName)".Trim()
-                            Write-JLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                     }
                 }
             } else {
-                Write-JLog -Level Warning -Message "[$($Data[0].Id)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+                Write-JVLog -Level Warning -Message "[$($Data[0].Id)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
             }
         }
 
@@ -292,7 +292,7 @@ function Get-JVAggregatedData {
                     $aggregatedDataObject.Description = $translatedDescription
                 }
             } else {
-                Write-JLog -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
+                Write-JVLog -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
             }
         }
 

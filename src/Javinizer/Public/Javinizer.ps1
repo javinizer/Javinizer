@@ -358,7 +358,7 @@ function Javinizer {
                 }
             }
         } catch {
-            Write-JLog -Level Error -Message $_
+            Write-JVLog -Level Error -Message $_
         } #>
     }
 
@@ -474,7 +474,7 @@ function Javinizer {
                     try {
                         Invoke-Item -LiteralPath $logPath
                     } catch {
-                        Write-JLog -Level Error -Message "Error occurred when opening log file [$logPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "Error occurred when opening log file [$logPath]: $PSItem"
                     }
                 }
             }
@@ -484,7 +484,7 @@ function Javinizer {
                     try {
                         Invoke-Item -Path $settingsPath
                     } catch {
-                        Write-JLog -Level Error -Message "Error occurred when opening settings file [$settingsPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "Error occurred when opening settings file [$settingsPath]: $PSItem"
                     }
                 }
             }
@@ -496,7 +496,7 @@ function Javinizer {
                 }
 
                 try {
-                    Write-JLog -Level Debug -Message "Getting owned movies on JAVLibrary"
+                    Write-JVLog -Level Debug -Message "Getting owned movies on JAVLibrary"
                     $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
                         "method"                    = "GET"
                         "authority"                 = "www.javlibrary.com"
@@ -517,14 +517,14 @@ function Javinizer {
                     $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
                     $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
                 } catch {
-                    Write-JLog -Level Error -Message "Error getting existing owned movies on JAVLibrary: $PSItem"
+                    Write-JVLog -Level Error -Message "Error getting existing owned movies on JAVLibrary: $PSItem"
                     return
                 }
 
                 if ($null -ne $global:javlibraryOwnedMovies) {
                     if ($global:javlibraryOwnedMovies.Count -gt 1) {
                         if ($javlibraryOwnedMovies[0].Length -le 1) {
-                            Write-JLog -Level Error -Message "Error authenticating to JAVLibrary to set owned movies, check that your username and sessionCookie are valid"
+                            Write-JVLog -Level Error -Message "Error authenticating to JAVLibrary to set owned movies, check that your username and sessionCookie are valid"
                         }
                     }
                 }
@@ -536,7 +536,7 @@ function Javinizer {
                         $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings -Strict:$Strict).Id
                     }
                 } catch {
-                    Write-JLog -Level Error -Message "Error getting movies from [$SetJavLibraryOwned]: $PSItem"
+                    Write-JVLog -Level Error -Message "Error getting movies from [$SetJavLibraryOwned]: $PSItem"
                 }
 
                 # Validate which movies in the current path are unowned
@@ -548,12 +548,12 @@ function Javinizer {
                     }
                 }
 
-                Write-JLog -Level Info -Message "[$($unowned.Count)] movies to add"
+                Write-JVLog -Level Info -Message "[$($unowned.Count)] movies to add"
 
                 if ($unowned.Count -ge 1) {
                     $index = 1
                     foreach ($movie in $unowned) {
-                        Write-JLog -Level Info -Message "($index of $($unowned.Count)) Setting [$movie] as owned on JAVLibrary"
+                        Write-JVLog -Level Info -Message "($index of $($unowned.Count)) Setting [$movie] as owned on JAVLibrary"
                         $javlibObject = Get-JavlibraryData -Name $movie
                         if ($null -ne $javlibObject) {
                             $ajaxId = $javlibObject.AjaxId
@@ -561,12 +561,12 @@ function Javinizer {
                             Set-JavlibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
                             Start-Sleep -Seconds $Settings.JavLibrary.'request-interval-sec'
                         } else {
-                            Write-JLog -Level Warning -Message "Skipping [$movie] -- not matched on JAVLibrary"
+                            Write-JVLog -Level Warning -Message "Skipping [$movie] -- not matched on JAVLibrary"
                         }
                         $index++
                     }
                 } else {
-                    Write-JLog -Level Warning -Message "Exiting -- no new movies detected in [$SetJavLibraryOwned]"
+                    Write-JVLog -Level Warning -Message "Exiting -- no new movies detected in [$SetJavLibraryOwned]"
                 }
             }
 
@@ -585,7 +585,7 @@ function Javinizer {
                     try {
                         Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
                     } catch {
-                        Write-JLog -Level Error -Message "Error opening thumb csv: $PSItem"
+                        Write-JVLog -Level Error -Message "Error opening thumb csv: $PSItem"
                     }
                 } elseif ($PSBoundParameters.ContainsKey('UpdateThumbs')) {
                     Get-R18ThumbCsv -ScriptRoot $ScriptRoot -NewPages $UpdateThumbs -Force:$Force
@@ -602,7 +602,7 @@ function Javinizer {
 
                 # This will check that the Path is valid
                 if (!(Test-Path -LiteralPath $Path)) {
-                    Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Path [$Path] is not a valid path"
+                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Path [$Path] is not a valid path"
                 }
 
                 # Default destination path to location.output in settings if not specified
@@ -616,14 +616,14 @@ function Javinizer {
 
                 # This will check that the DestinationPath is a valid directory
                 if (Test-Path -LiteralPath $DestinationPath -PathType Leaf) {
-                    Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
+                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
                 }
 
                 try {
                     $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
                     Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
-                    Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- no movies detected in [$Path]"
+                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- no movies detected in [$Path]"
                 }
 
                 $index = 1

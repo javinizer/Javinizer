@@ -70,7 +70,7 @@ function Get-JVUrlLocation {
                     Source = 'jav321'
                 }
             } else {
-                Write-JLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
+                Write-JVLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }
         }
         Write-Output $testUrlObject

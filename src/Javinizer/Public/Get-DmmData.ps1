@@ -10,10 +10,10 @@ function Get-DmmData {
         $dmmUrl = $Url
 
         try {
-            Write-JLog -Level Debug -Message "Performing [GET] on URL [$dmmUrl]"
+            Write-JVLog -Level Debug -Message "Performing [GET] on URL [$dmmUrl]"
             $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
         } catch {
-            Write-JLog -Level Error -Message "Error [GET] on URL [$dmmUrl]: $PSItem"
+            Write-JVLog -Level Error -Message "Error [GET] on URL [$dmmUrl]: $PSItem"
         }
 
         $movieDataObject = [PSCustomObject]@{
@@ -38,7 +38,7 @@ function Get-DmmData {
             #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
         }
 
-        Write-JLog -Level Debug -Message "DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
+        Write-JVLog -Level Debug -Message "DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
 }

@@ -1,4 +1,4 @@
-function Write-JLog {
+function Write-JVLog {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]

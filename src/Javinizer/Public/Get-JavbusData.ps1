@@ -9,10 +9,10 @@ function Get-JavbusData {
         $movieDataObject = @()
 
         try {
-            Write-JLog -Level Debug -Message "Performing [GET] on URL [$Url]"
+            Write-JVLog -Level Debug -Message "Performing [GET] on URL [$Url]"
             $webRequest = Invoke-RestMethod -Uri $Url -Verbose:$false
         } catch {
-            Write-JLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
+            Write-JVLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
         $movieDataObject = [PSCustomObject]@{
@@ -34,7 +34,7 @@ function Get-JavbusData {
             ScreenshotUrl = Get-JavbusScreenshotUrl -WebRequest $webRequest
         }
 
-        Write-JLog -Level Debug -Message "JavBus data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
+        Write-JVLog -Level Debug -Message "JavBus data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
 }

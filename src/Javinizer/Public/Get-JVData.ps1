@@ -70,7 +70,7 @@ function Get-JVData {
             $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
 
             if ($R18) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18"
                 Start-ThreadJob -Name "$Id-R18" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-R18Url -Id $using:Id -Language en | Get-R18Data
@@ -78,7 +78,7 @@ function Get-JVData {
             }
 
             if ($R18Zh) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18Zh"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18Zh"
                 Start-ThreadJob -Name "$Id-R18Zh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-R18Url -Id $using:Id -Language zh | Get-R18Data
@@ -86,7 +86,7 @@ function Get-JVData {
             }
 
             if ($Javlibrary) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javlibrary"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javlibrary"
                 Start-ThreadJob -Name "$Id-Javlibrary" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language en | Get-JavlibraryData
@@ -94,7 +94,7 @@ function Get-JVData {
             }
 
             if ($JavlibraryJa) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryJa"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryJa"
                 Start-ThreadJob -Name "$Id-JavlibraryJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language ja | Get-JavlibraryData
@@ -102,7 +102,7 @@ function Get-JVData {
             }
 
             if ($JavlibraryZh) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryZh"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryZh"
                 Start-ThreadJob -Name "$Id-JavlibraryZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language zh | Get-JavlibraryData
@@ -110,7 +110,7 @@ function Get-JVData {
             }
 
             if ($Dmm) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Dmm"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Dmm"
                 Start-ThreadJob -Name "$Id-Dmm" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-DmmUrl -Id $using:Id | Get-DmmData
@@ -118,7 +118,7 @@ function Get-JVData {
             }
 
             if ($Javbus) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javbus"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javbus"
                 Start-ThreadJob -Name "$Id-Javbus" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language en | Get-JavbusData
@@ -126,7 +126,7 @@ function Get-JVData {
             }
 
             if ($JavbusJa) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusJa"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusJa"
                 Start-ThreadJob -Name "$Id-JavbusJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language ja | Get-JavbusData
@@ -134,7 +134,7 @@ function Get-JVData {
             }
 
             if ($JavbusZh) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusZh"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusZh"
                 Start-ThreadJob -Name "$Id-JavbusZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language zh | Get-JavbusData
@@ -142,7 +142,7 @@ function Get-JVData {
             }
 
             if ($Jav321) {
-                Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Jav321"
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Jav321"
                 Start-ThreadJob -Name "$Id-Jav321" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     Get-Jav321Url -Id $using:Id | Get-Jav321Data
@@ -158,7 +158,7 @@ function Get-JVData {
             $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
 
             $hasData = ($javinizerDataObject | Select-Object Source).Source
-            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Data successfully retrieved from sources [$hasData]"
+            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Data successfully retrieved from sources [$hasData]"
 
             $dataObject = [PSCustomObject]@{
                 Data = $javinizerDataObject
@@ -167,11 +167,11 @@ function Get-JVData {
             Write-Output $dataObject
 
         } catch {
-            Write-JLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
+            Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
         } finally {
             # Remove all completed or running jobs before exiting this script
             # If jobs remain after closure, it may cause issues in concurrent runs
-            Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Stopping/removing all completed/running jobs"
+            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Stopping/removing all completed/running jobs"
             Get-Job | Remove-Job -Force
         }
     }

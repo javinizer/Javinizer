@@ -69,18 +69,18 @@ function Update-JVThumbs {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
+                            Write-JVLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
                             $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
+                        Write-JVLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
                         $actress | Export-Csv -LiteralPath $Path -Append -Encoding utf8
                     }
                 }
             }
         } catch {
-            Write-JLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$Path]: $PSItem"
+            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$Path]: $PSItem"
         }
     }
 }

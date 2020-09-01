@@ -167,7 +167,7 @@ function Set-JVMovie {
             }
         }
 
-        Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] The destination folderPath is [$folderPath]"
+        Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] The destination folderPath is [$folderPath]"
 
         <#         $pathLength = (Join-Path -Path $folderPath -ChildPath $fileName).Length
         if ($pathLength -gt $MaxPathLength) {
@@ -180,10 +180,10 @@ function Set-JVMovie {
             try {
                 if (!(Test-Path -LiteralPath $folderPath)) {
                     New-Item -Path $folderPath -ItemType Directory -Force:$Force | Out-Null
-                    Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] New directory created at path [$folderPath]"
+                    Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] New directory created at path [$folderPath]"
                 }
             } catch {
-                Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$folderPath]: $PSItem"
+                Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$folderPath]: $PSItem"
             }
 
             if ($CreateNfo) {
@@ -191,9 +191,9 @@ function Set-JVMovie {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
                     $nfoContents = $Data | Get-JVNfo -NameOrder $NameOrder -AddTag $AddTag
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
-                    Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Nfo file created at path [$nfoPath]"
+                    Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Nfo file created at path [$nfoPath]"
                 } catch {
-                    Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating nfo file [$nfoPath]: $PSItem"
+                    Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating nfo file [$nfoPath]: $PSItem"
                 }
             }
 
@@ -207,15 +207,15 @@ function Set-JVMovie {
                         } elseif ((!(Test-Path -LiteralPath $thumbPath))) {
                             $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
                         }
-                        Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail image [$($Data.CoverUrl)] downloaded to path [$thumbPath]"
+                        Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail image [$($Data.CoverUrl)] downloaded to path [$thumbPath]"
                     } catch {
-                        Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$thumbPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$thumbPath]: $PSItem"
                     }
 
                     if ($DownloadPosterImg) {
                         try {
                             $cropScript = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'crop.py'
-                            Write-JLog -Level Debug "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] crop.py path located at path [$cropScript]"
+                            Write-JVLog -Level Debug "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] crop.py path located at path [$cropScript]"
                             $posterPath = Join-Path $folderPath -ChildPath "$posterName.jpg"
                             $pythonThumbPath = $thumbPath -replace '\\', '/'
                             $pythonPosterPath = $posterPath -replace '\\', '/'
@@ -233,9 +233,9 @@ function Set-JVMovie {
                                     python3 $cropScript $pythonThumbPath $pythonPosterPath
                                 }
                             }
-                            Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Poster image [$thumbPath] cropped to path [$posterPath]"
+                            Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Poster image [$thumbPath] cropped to path [$posterPath]"
                         } catch {
-                            Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating poster image file [$posterPath]: $PSItem"
+                            Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating poster image file [$posterPath]: $PSItem"
                         }
                     }
                 }
@@ -261,11 +261,11 @@ function Set-JVMovie {
                                 } elseif (!(Test-Path -LiteralPath $actressThumbPath)) {
                                     $webClient.DownloadFile($actress.thumb, $actressThumbPath)
                                 }
-                                Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Actress image file [$($actress.thumb)] downloaded to path [$actressThumbPath]"
+                                Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Actress image file [$($actress.thumb)] downloaded to path [$actressThumbPath]"
                             }
                         }
                     } catch {
-                        Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating actress image files: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating actress image files: $PSItem"
                     }
                 }
             }
@@ -288,10 +288,10 @@ function Set-JVMovie {
                                 $webClient.DownloadFile($screenshot, $screenshotPath)
                             }
                             $index++
-                            Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Screenshot image file [$screenshot] downloaded to path [$screenshotPath]"
+                            Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Screenshot image file [$screenshot] downloaded to path [$screenshotPath]"
                         }
                     } catch {
-                        Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating screenshot image files: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating screenshot image files: $PSItem"
                     }
                 }
             }
@@ -305,9 +305,9 @@ function Set-JVMovie {
                         } elseif (!(Test-Path -LiteralPath $trailerPath)) {
                             $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
                         }
-                        Write-JLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Trailer video [$($Data.TrailerUrl)] downloaded to path [$trailerPath]"
+                        Write-JVLog -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Trailer video [$($Data.TrailerUrl)] downloaded to path [$trailerPath]"
                     } catch {
-                        Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating trailer video file [$($Data.TrailerUrl)] to [$trailerName]: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating trailer video file [$($Data.TrailerUrl)] to [$trailerName]: $PSItem"
                     }
                 }
             }
@@ -317,21 +317,21 @@ function Set-JVMovie {
                     $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                         Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                        Write-JLog -Level Info "[$($Data.Id)] Completed [$Path] -> [$filePath]"
+                        Write-JVLog -Level Info "[$($Data.Id)] Completed [$Path] -> [$filePath]"
                     }
                 } catch {
-                    Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
+                    Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
                 }
             } else {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                         Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                        Write-JLog -Level Info "[$($Data.Id)] Completed [$Path] -> [$filePath]"
+                        Write-JVLog -Level Info "[$($Data.Id)] Completed [$Path] -> [$filePath]"
 
                     }
                 } catch {
-                    Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
+                    Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
                 }
             }
         }
