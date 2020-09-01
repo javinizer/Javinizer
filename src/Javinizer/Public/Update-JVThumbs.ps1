@@ -20,18 +20,26 @@ function Update-JVThumbs {
             }
 
             $actressCsv = Import-Csv -LiteralPath $Path
+            $pageUrl = 'https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page='
+            $webRequest = Invoke-WebRequest -Uri "$($pageUrl)1" -Method Get -Verbose:$false
+            $lastPage = ((($webRequest.Content -split '<li>\.\.\.<\/li>')[1] -split '<\/a><\/li>')[0] -split '>')[2]
 
-            if ($StartPage) {
-                $pageUrl = 'https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page='
-            } else {
-                $pageUrl = 'https://www.r18.com/videos/vod/movies/actress/letter=a/sort=new/page='
+            if ($StartPage -eq '' -or $null -eq $StartPage) {
                 $StartPage = 1
-                $webRequest = Invoke-WebRequest -Uri "https://www.r18.com/videos/vod/movies/actress/letter=a/sort=popular/page=1/" -Method Get -Verbose:$false
-                $EndPage = ((($webRequest.Content -split '<li>\.\.\.<\/li>')[1] -split '<\/a><\/li>')[0] -split '>')[2]
             }
 
+            if ($EndPage -eq '' -or $null -eq $EndPage) {
+                $EndPage = $lastPage
+            }
+
+            if ($EndPage -gt $lastPage) {
+                $EndPage = $LastPage
+            }
+
+            Write-Host "[$($MyInvocation.MyCommand.Name)] [Total Pages - $lastPage] [Scraping - $StartPage => $EndPage]"
+
             for ($x = $StartPage; $x -le $EndPage; $x++) {
-                Write-Host "[$($MyInvocation.MyCommand.Name)] Scraping actress page [$x]"
+                Write-Host "[$x of $EndPage] Scraping page [$x]"
                 $actressObject = @()
                 $actressObjectJa = @()
                 $combinedActressObject = @()
