@@ -183,16 +183,29 @@ function Javinizer {
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
             if ($MoveToFolder -eq $true) {
                 $Settings.'sort.movetofolder' = 1
+                Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             } elseif ($MoveToFolder -eq $false) {
                 $Settings.'sort.movetofolder' = 0
+                Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             }
         }
 
         if ($PSBoundParameters.ContainsKey('RenameFile')) {
             if ($RenameFile -eq $true) {
                 $Settings.'sort.renamefile' = 1
+                Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [1]"
             } elseif ($RenameFile -eq $false) {
                 $Settings.'sort.renamefile' = 0
+                Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [0]"
+            }
+        }
+
+        if ($Set) {
+            foreach ($item in $Set.GetEnumerator()) {
+                $settingName = $item.Key
+                $settingValue = $item.Value
+                $Settings."$($item.Key)" = $item.Value
+                Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
             }
         }
 
