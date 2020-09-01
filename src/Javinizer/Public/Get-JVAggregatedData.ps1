@@ -124,6 +124,7 @@ function Get-JVAggregatedData {
             $DisplayNameFormat = $Settings.'sort.metadata.nfo.displayname'
             $ThumbCsv = $Settings.'sort.metadata.thumbcsv'
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
+            $ReplaceGenre = $Settings.'sort.metadata.genre.replace'
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
@@ -188,7 +189,12 @@ function Get-JVAggregatedData {
         if ($ThumbCsv) {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
             if (Test-Path -LiteralPath $thumbCsvPath) {
-                $actressCsv = Import-Csv -LiteralPath $thumbCsvPath
+                try {
+                    $actressCsv = Import-Csv -LiteralPath $thumbCsvPath
+                } catch {
+                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$genreCsvPath]: $PSItem"
+                }
+
                 for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
                     if ($ThumbCsvAlias) {
                         $aliases = @()
@@ -274,13 +280,43 @@ function Get-JVAggregatedData {
                     }
                 }
             } else {
-                Write-JVLog -Level Warning -Message "[$($Data[0].Id)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+                Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
             }
         }
 
+        if ($ReplaceGenre) {
+            $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
+            if (Test-Path -LiteralPath $genreCsvPath) {
+                try {
+                    $replaceGenres = Import-Csv -LiteralPath $genreCsvPath
+                } catch {
+                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$genreCsvPath]: $PSItem"
+                }
+
+                $newGenres = $aggregatedDataObject.Genre
+                foreach ($genrePair in $replaceGenres) {
+                    if ($($genrePair.Original -in $newGenres)) {
+                        $newGenres = $newGenres -replace "$($genrePair.Original)", "$($genrePair.Replacement)"
+                        Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
+                    }
+                }
+
+                $aggregatedDataObject.Genre = $newGenres
+            } else {
+                Write-JVLog -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
+            }
+
+        }
+
         if ($IgnoreGenre) {
-            $ignoredGenres = $ignoreGenre -join '|'
-            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres }
+            $newGenres = $aggregatedDataObject.Genre
+            foreach ($genre in $IgnoreGenre) {
+                if ($genre -in $newGenres) {
+                    $newGenres = $newGenres -replace "$genre", $null
+                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
+                }
+            }
+            $aggregatedDataObject.Genre = $newGenres | Where-Object { $_ -ne '' }
         }
 
         if ($Translate) {
@@ -290,6 +326,7 @@ function Get-JVAggregatedData {
 
                 if ($null -ne $translatedDescription -or $translatedDescription -ne '') {
                     $aggregatedDataObject.Description = $translatedDescription
+                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
                 }
             } else {
                 Write-JVLog -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
