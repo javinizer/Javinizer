@@ -3,30 +3,40 @@ function Get-JVItem {
     param (
         [Parameter(Mandatory = $true, Position = 0)]
         [String]$Path,
+
         [Parameter()]
         [Switch]$Recurse,
+
         [Parameter()]
         [Switch]$Strict,
+
         [Parameter()]
         [PSObject]$Settings,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.minimumfilesize')]
         [Int]$MinimumFileSize,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.excludedfilestring')]
         [Array]$ExcludedStrings,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.includedfileextension')]
         [Array]$IncludedExtensions,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.regex')]
         [Boolean]$RegexEnabled,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.regex.string')]
         [String]$RegexString,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.regex.idmatch')]
         [Int]$RegexIdMatch,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('match.regex.ptmatch')]
         [Int]$RegexPtMatch

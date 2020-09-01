@@ -220,68 +220,98 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
+
         [Parameter(ParameterSetNAme = 'Info')]
         [Switch]$Aggregated,
+
         [Parameter(ParameterSetNAme = 'Info')]
-        [Switch]$ShowNfo,
+        [Switch]$Nfo,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$R18,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$R18Zh,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Dmm,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Javlibrary,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$JavlibraryZh,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$JavlibraryJa,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Javbus,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$JavbusJa,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$JavbusZh,
+
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321,
+
         [Parameter(ParameterSetName = 'Path', Position = 0)]
         [System.IO.DirectoryInfo]$Path,
+
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [System.IO.DirectoryInfo]$DestinationPath,
+
         [Parameter(ParameterSetName = 'Path', Position = 2)]
         [PSObject]$Settings,
+
         [Parameter(ParameterSetName = 'Path')]
         [PSObject]$Url,
+
         [Parameter(ParameterSetName = 'Path')]
         [Alias('m')]
         [Switch]$Multi,
+
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'JavLibrary')]
         [Switch]$Recurse,
+
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Force,
+
         [Parameter(ParameterSetName = 'Help')]
         [Alias('h')]
         [Switch]$Help,
+
         [Parameter(ParameterSetName = 'Version')]
         [Alias('v')]
         [Switch]$Version,
+
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenSettings,
+
         [Parameter(ParameterSetName = 'Settings')]
         [String]$BackupSettings,
+
         [Parameter(ParameterSetName = 'Settings')]
         [String]$RestoreSettings,
+
         [Parameter(ParameterSetName = 'Log')]
         [Switch]$OpenLog,
+
         [Parameter(ParameterSetName = 'JavLibrary')]
         [String]$SetJavlibraryOwned,
+
         [Parameter(ParameterSetName = 'Thumbs')]
         [Switch]$GetThumbs,
+
         [Parameter(ParameterSetName = 'Thumbs')]
         [Int]$UpdateThumbs,
+
         [Parameter(ParameterSetName = 'Thumbs')]
         [Switch]$OpenThumbs,
+
         [Parameter(ParameterSetName = 'Thumbs')]
         [Switch]$SetEmbyActorThumbs
     )
@@ -431,7 +461,7 @@ function Javinizer {
                     $data = $data | Get-JVAggregatedData -Settings $Settings
                 }
 
-                if ($ShowNfo) {
+                if ($Nfo) {
                     $nfo = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AddTag:$Settings.'sort.metadata.nfo.seriesastag'
                     Write-Output $nfo
                 } else {

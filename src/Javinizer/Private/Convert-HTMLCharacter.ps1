@@ -3,7 +3,7 @@ function Convert-HTMLCharacter {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [AllowEmptyString()]
-        [string]$String
+        [String]$String
     )
 
     process {

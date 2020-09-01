@@ -3,10 +3,13 @@ function Convert-JVString {
     param (
         [Parameter(Mandatory = $true)]
         [PSObject]$Data,
+
         [Parameter(Mandatory = $true)]
         [String]$FormatString,
+
         [Parameter()]
         [Int]$PartNumber,
+
         [Parameter()]
         [Int]$MaxTitleLength
     )

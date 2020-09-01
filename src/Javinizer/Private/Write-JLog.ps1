@@ -3,9 +3,11 @@ function Write-JLog {
     param (
         [Parameter(Mandatory = $true)]
         [string]$Message,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('Debug', 'Info', 'Warning', 'Error')]
         [string]$Level,
+
         [Parameter()]
         [ValidateSet('Break', 'Continue', 'Ignore', 'Inquire', 'SilentlyContinue', 'Stop', 'Suspend')]
         [string]$Action = 'Stop'

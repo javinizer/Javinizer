@@ -3,40 +3,58 @@ function Get-JVNfo {
     param(
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Id,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$DisplayName,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Title,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$AlternateTitle,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Description,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$ReleaseDate,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Runtime,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Director,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Maker,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Label,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Series,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [PSObject]$Actress,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Array]$Genre,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$CoverUrl,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Array]$ScreenshotUrl,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$TrailerUrl,
+
         [Parameter()]
         [Boolean]$ActressLanguageJa,
+
         [Parameter()]
         [Boolean]$NameOrder,
+
         [Parameter()]
         [Boolean]$AddTag
     )

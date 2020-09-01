@@ -3,77 +3,102 @@ function Get-JVAggregatedData {
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [PSObject]$Data,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'Setting')]
         [PSObject]$Settings,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.actress')]
         [Array]$ActressPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.alternatetitle')]
         [Array]$AlternateTitlePriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.coverurl')]
         [Array]$CoverUrlPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.description')]
         [Array]$DescriptionPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.director')]
         [Array]$DirectorPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.genre')]
         [Array]$GenrePriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.id')]
         [Array]$IdPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.label')]
         [Array]$LabelPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.maker')]
         [Array]$MakerPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.releasedate')]
         [Array]$ReleaseDatePriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.runtime')]
         [Array]$RuntimePriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.series')]
         [Array]$SeriesPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.screenshoturl')]
         [Array]$ScreenshotUrlPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.title')]
         [Array]$TitlePriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.trailerurl')]
         [Array]$TrailerUrlPriority,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.displayname')]
         [String]$DisplayNameFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.firstnameorder')]
         [Boolean]$FirstNameOrder,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.thumbcsv')]
         [Boolean]$ThumbCsv,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.thumbcsv.convertalias')]
         [Boolean]$ThumbCsvAlias,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genre.replace')]
         [Boolean]$ReplaceGenre,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genre.ignore')]
         [Array]$IgnoreGenre,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.requiredfield')]
         [Array]$RequiredField,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate')]
         [Boolean]$Translate,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.language')]
         [String]$TranslateLanguage

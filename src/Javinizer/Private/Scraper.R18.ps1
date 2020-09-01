@@ -38,6 +38,7 @@ function Get-R18Title {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
         [Parameter()]
         [Object]$Replace
     )
@@ -206,6 +207,7 @@ function Get-R18Series {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
         [Parameter()]
         [Object]$Replace
     )
@@ -260,6 +262,7 @@ function Get-R18Genre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
         [Parameter()]
         [Object]$Replace
     )

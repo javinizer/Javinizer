@@ -3,36 +3,47 @@ function Get-JVData {
     param (
         [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
         [String]$Id,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.r18')]
         [Boolean]$R18,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.r18zh')]
         [Boolean]$R18Zh,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javlibrary')]
         [Boolean]$Javlibrary,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javlibraryja')]
         [Boolean]$JavlibraryJa,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javlibraryzh')]
         [Boolean]$JavlibraryZh,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.dmm')]
         [Boolean]$Dmm,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javbus')]
         [Boolean]$Javbus,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javbusja')]
         [Boolean]$JavbusJa,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.javbuszh')]
         [Boolean]$JavbusZh,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('scraper.movie.jav321')]
         [Boolean]$Jav321,
+
         [Parameter(ValueFromPipeline = $true)]
         [PSObject]$Settings
     )

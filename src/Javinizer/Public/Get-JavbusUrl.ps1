@@ -2,10 +2,11 @@ function Get-JavbusUrl {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [string]$Id,
+        [String]$Id,
+
         [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('ja', 'en', 'zh')]
-        [string]$Language
+        [String]$Language
     )
 
     process {

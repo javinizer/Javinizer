@@ -3,14 +3,19 @@ function Convert-JVTitle {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [PSObject]$Files,
+
         [Parameter()]
         [Switch]$Strict,
+
         [Parameter()]
         [Boolean]$RegexEnabled,
+
         [Parameter()]
         [String]$RegexString,
+
         [Parameter()]
         [Int]$RegexIdMatch,
+
         [Parameter()]
         [Int]$RegexPtMatch
     )

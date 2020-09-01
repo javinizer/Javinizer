@@ -3,8 +3,10 @@ function Update-JVThumbs {
     param(
         [Parameter()]
         [System.IO.FileInfo]$Path = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
+
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Page')]
         [Int]$StartPage,
+
         [Parameter(Mandatory = $true, Position = 1, ParameterSetName = 'Page')]
         [Int]$EndPage
     )

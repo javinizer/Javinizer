@@ -3,79 +3,106 @@ function Set-JVMovie {
     param (
         [Parameter(Mandatory = $true, Position = 0)]
         [System.IO.FileInfo]$Path,
+
         [Parameter(Mandatory = $true, Position = 1)]
         [System.IO.DirectoryInfo]$DestinationPath,
+
         [Parameter(Mandatory = $true)]
         [PSObject]$Settings,
+
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [PSObject]$Data,
+
         [Parameter()]
         [Int]$PartNumber,
+
         [Parameter()]
         [Switch]$Force,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.movetofolder')]
         [Boolean]$MoveToFolder,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.renamefile')]
         [Boolean]$RenameFile,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.maxtitlelength')]
         [Int]$MaxTitleLength,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.create.nfo')]
         [Boolean]$CreateNfo,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.create.nfoperfile')]
         [Boolean]$CreateNfoPerFile,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.actressimg')]
         [Boolean]$DownloadActressImg,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.thumbimg')]
         [Boolean]$DownloadThumbImg,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.posterimg')]
         [Boolean]$DownloadPosterImg,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.screenshotimg')]
         [Boolean]$DownloadScreenshotImg,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.trailervid')]
         [Boolean]$DownloadTrailerVid,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.file')]
         [String]$FileFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.folder')]
         [String]$FolderFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.posterimg')]
         [String]$PosterFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.thumbimg')]
         [String]$ThumbnailFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.trailervid')]
         [String]$TrailerFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.nfo')]
         [String]$NfoFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.screenshotimg')]
         [String]$ScreenshotImgFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.screenshotfolder')]
         [String]$ScreenshotFolderFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.actressimgfolder')]
         [String]$ActressFolderFormat,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.displayname')]
         [String]$DisplayName,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.seriesastag')]
         [Boolean]$AddTag,
+
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$NameOrder
