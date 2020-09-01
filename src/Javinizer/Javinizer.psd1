@@ -9,29 +9,29 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule           = 'Javinizer.psm1'
+    RootModule        = 'Javinizer.psm1'
 
     # Version number of this module.
 
-    ModuleVersion        = '2.0.0'
+    ModuleVersion     = '2.0.0'
 
     # Supported PSEditions
-    CompatiblePSEditions = @('Core')
+    # CompatiblePSEditions = @('Core')
 
     # ID used to uniquely identify this module
-    GUID                 = '31b44904-fe6e-4bfe-8c6f-99dfb294a164'
+    GUID              = '31b44904-fe6e-4bfe-8c6f-99dfb294a164'
 
     # Author of this module
-    Author               = 'jvlflame'
+    Author            = 'jvlflame'
 
     # Company or vendor of this module
-    CompanyName          = 'Unknown'
+    CompanyName       = 'Unknown'
 
     # Copyright statement for this module
-    Copyright            = '(c) jvlflame. All rights reserved.'
+    Copyright         = '(c) jvlflame. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description          = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
+    Description       = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion    = '6'
@@ -70,7 +70,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport    = @(
+    FunctionsToExport = @(
         'Javinizer',
         'Get-DmmData',
         'Get-DmmUrl',
@@ -92,13 +92,13 @@
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport      = '*'
+    CmdletsToExport   = '*'
 
     # Variables to export from this module
-    VariablesToExport    = '*'
+    VariablesToExport = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport      = '*'
+    AliasesToExport   = '*'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -110,7 +110,7 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData          = @{
+    PrivateData       = @{
 
         PSData = @{
 
