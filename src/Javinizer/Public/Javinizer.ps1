@@ -317,9 +317,9 @@ function Javinizer {
 
             'Thumbs' {
                 if ($Pages) {
-                    Update-JVThumbs -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
+                    Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
                 } else {
-                    Update-JVThumbs -ThumbCsvPath $thumbCsvPath
+                    Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath
                 }
             }
 

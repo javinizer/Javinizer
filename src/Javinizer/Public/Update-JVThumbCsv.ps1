@@ -1,7 +1,7 @@
 #Requires -Modules @{ ModuleName="Logging"; RequiredVersion="4.4.0" }
 #Requires -PSEdition Core
 
-function Update-JVThumbs {
+function Update-JVThumbCsv {
     [CmdletBinding(DefaultParameterSetName = 'None')]
     param(
         [Parameter()]
