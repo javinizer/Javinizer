@@ -1,3 +1,6 @@
+#Requires -Modules @{ ModuleName="Logging"; RequiredVersion="4.4.0" }
+#Requires -PSEdition Core
+
 function Get-JVData {
     [CmdletBinding(DefaultParameterSetName = 'Id')]
     param (

@@ -9,32 +9,32 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = 'Javinizer.psm1'
+    RootModule           = 'Javinizer.psm1'
 
     # Version number of this module.
 
-    ModuleVersion     = '2.0.0'
+    ModuleVersion        = '2.0.0'
 
     # Supported PSEditions
-    # CompatiblePSEditions = @()
+    CompatiblePSEditions = @('Core')
 
     # ID used to uniquely identify this module
-    GUID              = '31b44904-fe6e-4bfe-8c6f-99dfb294a164'
+    GUID                 = '31b44904-fe6e-4bfe-8c6f-99dfb294a164'
 
     # Author of this module
-    Author            = 'jvlflame'
+    Author               = 'jvlflame'
 
     # Company or vendor of this module
-    CompanyName       = 'Unknown'
+    CompanyName          = 'Unknown'
 
     # Copyright statement for this module
-    Copyright         = '(c) jvlflame. All rights reserved.'
+    Copyright            = '(c) jvlflame. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
+    Description          = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    PowerShellVersion    = '6'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -52,7 +52,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    # RequiredModules = @()
+    RequiredModules      = @(@{ModuleName = 'Logging'; ModuleVersion = '4.4.0'; GUID = '25a60f1d-85dd-4ad6-9efc-35fd3894f6c1' })
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -70,7 +70,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @(
+    FunctionsToExport    = @(
         'Javinizer',
         'Get-DmmData',
         'Get-DmmUrl',
@@ -92,13 +92,13 @@
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = '*'
+    CmdletsToExport      = '*'
 
     # Variables to export from this module
-    VariablesToExport = '*'
+    VariablesToExport    = '*'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = '*'
+    AliasesToExport      = '*'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -110,15 +110,15 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData       = @{
+    PrivateData          = @{
 
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags                     = @('JAV', 'Scraper')
 
             # A URL to the license for this module.
-            # LicenseUri = ''
+            LicenseUri               = 'https://github.com/jvlflame/Javinizer/blob/master/LICENSE'
 
             # A URL to the main website for this project.
             ProjectUri               = 'https://github.com/jvlflame/Javinizer'
@@ -130,7 +130,7 @@
             ReleaseNotes             = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
-            Prerelease               = 'alpha1'
+            Prerelease               = 'alpha2'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
