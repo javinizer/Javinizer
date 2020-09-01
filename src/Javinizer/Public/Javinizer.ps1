@@ -33,11 +33,26 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [System.IO.DirectoryInfo]$DestinationPath,
 
-        [Parameter(ParameterSetName = 'Path', Position = 2)]
-        [PSObject]$Settings,
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Recurse,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Array]$Url,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [System.IO.FileInfo]$SettingsPath,
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Strict,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Boolean]$MoveToFolder,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Boolean]$RenameFile,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Force,
 
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
@@ -79,15 +94,6 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321,
 
-        [Parameter(ParameterSetName = 'Path')]
-        [Array]$Url,
-
-        [Parameter(ParameterSetName = 'Path')]
-        [Switch]$Recurse,
-
-        [Parameter(ParameterSetName = 'Path')]
-        [Switch]$Force,
-
         [Parameter(ParameterSetName = 'Emby')]
         [Switch]$SetEmbyThumbs,
 
@@ -112,6 +118,13 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Thumbs')]
         [Array]$Pages,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetNAme = 'Info')]
+        [Parameter(ParameterSetName = 'Settings')]
+        [Parameter(ParameterSetName = 'Emby')]
+        [Parameter(ParameterSetName = 'Thumbs')]
+        [Hashtable]$Set,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
         [Alias('v')]
         [Switch]$Version,
@@ -123,14 +136,12 @@ function Javinizer {
 
     process {
         try {
-            if ($Settings) {
-                $settingsPath = $Settings
-            } else {
-                $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
+            if (!($SettingsPath)) {
+                $SettingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
             }
-            $Settings = Get-Content -LiteralPath $settingsPath | ConvertFrom-Json -Depth 32
+            $Settings = Get-Content -LiteralPath $SettingsPath | ConvertFrom-Json -Depth 32
         } catch {
-            Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when loading settings file [$settingsPath]: $PSItem" -ErrorAction Stop
+            Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when loading settings file [$SettingsPath]: $PSItem" -ErrorAction Stop
         }
 
         if ($Settings.'admin.log' -eq '1') {
@@ -218,10 +229,10 @@ function Javinizer {
             'Settings' {
                 if ($OpenSettings) {
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] [SettingsPath - $settingsPath]"
-                        Invoke-Item -LiteralPath $settingsPath
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [SettingsPath - $SettingsPath]"
+                        Invoke-Item -LiteralPath $SettingsPath
                     } catch {
-                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$settingsPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$SettingsPath]: $PSItem"
                     }
                 }
 
@@ -258,7 +269,14 @@ function Javinizer {
             }
 
             'Version' {
-                Get-InstalledModule -Name Javinizer
+                $moduleManifest = Get-Content -LiteralPath (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psd1')
+                [PSCustomObject]@{
+                    Version      = ($moduleManifest | Select-String -Pattern "ModuleVersion\s*= '(.*)'").Matches.Groups[1].Value
+                    Prerelease   = ($moduleManifest | Select-String -Pattern "Prerelease\s*= '(.*)'").Matches.Groups[1].Value
+                    Project      = ($moduleManifest | Select-String -Pattern "ProjectUri\s*= '(.*)'").Matches.Groups[1].Value
+                    License      = ($moduleManifest | Select-String -Pattern "LicenseUri\s*= '(.*)'").Matches.Groups[1].Value
+                    ReleaseNotes = ($moduleManifest | Select-String -Pattern "ReleaseNotes\s*= '(.*)'").Matches.Groups[1].Value
+                }
             }
 
             'Emby' {
@@ -304,7 +322,7 @@ function Javinizer {
 
                 if ($Url) {
                     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
-                        Write-JVLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- [$Path] is not a valid single file path"
+                        Write-JVLog -Level Warning -Message "Exiting -- [$Path] is not a valid single file path"
                         return
                     }
 
