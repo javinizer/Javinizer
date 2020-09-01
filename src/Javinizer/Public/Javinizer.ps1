@@ -312,27 +312,27 @@ function Javinizer {
             } else {
                 $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
             }
-
             $Settings = Get-Content -LiteralPath $settingsPath | ConvertFrom-Json -Depth 32
         } catch {
             Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when loading settings file [$settingsPath]: $PSItem" -ErrorAction Stop
         }
 
-        if ($Settings.'admin.log.path' -eq '') {
-            $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
-        } else {
-            if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
-                New-Item -LiteralPath $Settings.'admin.log.path'
+        if ($Settings.'admin.log' -eq '1') {
+            if ($Settings.'admin.log.path' -eq '') {
+                $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
+            } else {
+                if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
+                    New-Item -LiteralPath $Settings.'admin.log.path'
+                }
+                $logPath = $Settings.'admin.log.path'
             }
-            $logPath = $Settings.'admin.log.path'
-        }
-
-        Add-LoggingTarget -Name File -Configuration @{
-            Path     = $logPath
-            Append   = $true
-            Encoding = 'utf8'
-            Level    = $Settings.'admin.log.level'
-            Format   = '[%{timestamp}] [%{level:-7}] %{message}'
+            Add-LoggingTarget -Name File -Configuration @{
+                Path     = $logPath
+                Append   = $true
+                Encoding = 'utf8'
+                Level    = $Settings.'admin.log.level'
+                Format   = '[%{timestamp}] [%{level:-7}] %{message}'
+            }
         }
 
         if ($Settings.'sort.metadata.thumbcsv.path' -eq '') {
