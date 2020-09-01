@@ -66,10 +66,13 @@ function Get-JVData {
         }
 
         try {
+            # You need to change this path if you're running the script from outside of the Javinizer module folder
+            $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
+
             if ($R18) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18"
                 Start-ThreadJob -Name "$Id-R18" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-R18Url -Id $using:Id -Language en | Get-R18Data
                 } | Out-Null
             }
@@ -77,7 +80,7 @@ function Get-JVData {
             if ($R18Zh) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching R18Zh"
                 Start-ThreadJob -Name "$Id-R18Zh" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-R18Url -Id $using:Id -Language zh | Get-R18Data
                 } | Out-Null
             }
@@ -85,7 +88,7 @@ function Get-JVData {
             if ($Javlibrary) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javlibrary"
                 Start-ThreadJob -Name "$Id-Javlibrary" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language en | Get-JavlibraryData
                 } | Out-Null
             }
@@ -93,7 +96,7 @@ function Get-JVData {
             if ($JavlibraryJa) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryJa"
                 Start-ThreadJob -Name "$Id-JavlibraryJa" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language ja | Get-JavlibraryData
                 } | Out-Null
             }
@@ -101,7 +104,7 @@ function Get-JVData {
             if ($JavlibraryZh) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavlibraryZh"
                 Start-ThreadJob -Name "$Id-JavlibraryZh" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavlibraryUrl -Id $using:Id -Language zh | Get-JavlibraryData
                 } | Out-Null
             }
@@ -109,7 +112,7 @@ function Get-JVData {
             if ($Dmm) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Dmm"
                 Start-ThreadJob -Name "$Id-Dmm" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-DmmUrl -Id $using:Id | Get-DmmData
                 } | Out-Null
             }
@@ -117,7 +120,7 @@ function Get-JVData {
             if ($Javbus) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Javbus"
                 Start-ThreadJob -Name "$Id-Javbus" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language en | Get-JavbusData
                 } | Out-Null
             }
@@ -125,7 +128,7 @@ function Get-JVData {
             if ($JavbusJa) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusJa"
                 Start-ThreadJob -Name "$Id-JavbusJa" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language ja | Get-JavbusData
                 } | Out-Null
             }
@@ -133,7 +136,7 @@ function Get-JVData {
             if ($JavbusZh) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching JavbusZh"
                 Start-ThreadJob -Name "$Id-JavbusZh" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-JavbusUrl -Id $using:Id -Language zh | Get-JavbusData
                 } | Out-Null
             }
@@ -141,7 +144,7 @@ function Get-JVData {
             if ($Jav321) {
                 Write-JLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching Jav321"
                 Start-ThreadJob -Name "$Id-Jav321" -ScriptBlock {
-                    Import-Module X:\git\Projects\JAV-Organizer\src\Javinizer\Javinizer.psm1
+                    Import-Module $using:jvModulePath
                     Get-Jav321Url -Id $using:Id | Get-Jav321Data
                 } | Out-Null
             }
