@@ -166,7 +166,9 @@ function Get-JVData {
                 Data = $javinizerDataObject
             }
 
-            Write-Output $dataObject
+            if ($null -ne $javinizerDataObject) {
+                Write-Output $dataObject
+            }
 
         } catch {
             Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"

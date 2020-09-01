@@ -629,10 +629,19 @@ function Javinizer {
                 $index = 1
                 foreach ($movie in $javMovies) {
                     Write-Host "[$index of $($javMovies.Count)] Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                    $javData = Get-JVData -Settings $Settings -Id $movie.Id
-                    $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings
-                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber
                     $index++
+                    $javData = Get-JVData -Settings $Settings -Id $movie.Id
+                    if ($null -ne $javData) {
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        if ($null -ne $javAggregatedData) {
+                            $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber
+                        } else {
+                            Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                            return
+                        }
+                    } else {
+                        Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                    }
                 }
             }
         }
