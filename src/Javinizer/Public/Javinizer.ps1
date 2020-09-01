@@ -74,7 +74,7 @@ function Javinizer {
         [Switch]$Jav321,
 
         [Parameter(ParameterSetName = 'Path')]
-        [PSObject]$Url,
+        [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Recurse,
@@ -104,7 +104,7 @@ function Javinizer {
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
-        [PSObject]$Pages,
+        [Array]$Pages,
 
         [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
         [Alias('v')]
@@ -116,8 +116,6 @@ function Javinizer {
     )
 
     process {
-        Import-Module (Join-Path -Path (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'External') -ChildPath Logging -AdditionalChildPath Logging.psm1) -Verbose:$false
-
         try {
             if ($Settings) {
                 $settingsPath = $Settings
@@ -315,22 +313,30 @@ function Javinizer {
                     Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JVLog -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
+                    return
                 }
 
                 if ($Url) {
-                    if (Test-Path -LiteralPath $Path -PathType Leaf) {
-                        Write-JVLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- [$Path] is not a valid file path"
+                    if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
+                        Write-JVLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- [$Path] is not a valid single file path"
+                        return
                     }
 
-
+                    $javData = Get-JVData  -Url $Url -Settings $Settings
+                    if ($null -ne $javData) {
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath | test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        if ($null -ne $javAggregatedData) {
+                            $javAggregatedData | Set-JVMovie -Path $javMovies.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $JavMovies.PartNumber -Force:$Force
+                        }
+                    }
                 } else {
                     $index = 1
                     foreach ($movie in $javMovies) {
                         Write-Host "[$index of $($javMovies.Count)] Sorting [$($movie.FileName)] as [$($movie.Id)]"
                         $index++
-                        $javData = Get-JVData -Settings $Settings -Id $movie.Id
+                        $javData = Get-JVData  -Id $movie.Id -Settings $Settings
                         if ($null -ne $javData) {
-                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                             if ($null -ne $javAggregatedData) {
                                 $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                             } else {

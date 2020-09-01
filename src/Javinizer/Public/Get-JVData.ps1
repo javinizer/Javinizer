@@ -1,62 +1,68 @@
 function Get-JVData {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Id')]
     param (
-        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [String]$Id,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.r18')]
         [Boolean]$R18,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.r18zh')]
         [Boolean]$R18Zh,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javlibrary')]
         [Boolean]$Javlibrary,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javlibraryja')]
         [Boolean]$JavlibraryJa,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javlibraryzh')]
         [Boolean]$JavlibraryZh,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.dmm')]
         [Boolean]$Dmm,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javbus')]
         [Boolean]$Javbus,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javbusja')]
         [Boolean]$JavbusJa,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javbuszh')]
         [Boolean]$JavbusZh,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.jav321')]
         [Boolean]$Jav321,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'http://www.javlibrary.com',
 
-        [Parameter(ValueFromPipeline = $true)]
-        [PSObject]$Settings
+        [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Id')]
+        [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Url')]
+        [PSObject]$Settings,
+
+        [Parameter(ParameterSetName = 'Url')]
+        [PSObject]$Url
     )
 
     process {
         $javinizerDataObject = @()
         $Id = $Id.ToUpper()
 
-        if ($Settings) {
+        if ($Url) {
+            $urlObject = $Url | Get-JVUrlLocation
+        } elseif ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
             $R18Zh = $Settings.'scraper.movie.r18zh'
             $Jav321 = $Settings.'scraper.movie.jav321'
@@ -67,6 +73,9 @@ function Get-JVData {
             $Javbus = $Settings.'scraper.movie.javbus'
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
+        }
+
+        if ($Settings) {
             $JavlibraryBaseUrl = $Settings.'javlibrary.baseurl'
         }
 
@@ -79,91 +88,135 @@ function Get-JVData {
             # You need to change this path if you're running the script from outside of the Javinizer module folder
             $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
 
+            foreach ($item in $urlObject) {
+                Set-Variable -Name "$($item.Source)" -Value $true
+                Set-Variable -Name "$($item.Source)Url" -Value $item.Url
+            }
+
             if ($R18) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18]"
-                Start-ThreadJob -Name "$Id-R18" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
+                Start-ThreadJob -Name "R18" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-R18Url -Id $using:Id -Language en | Get-R18Data
+                    if ($using:R18Url) {
+                        $using:R18Url | Get-R18Data
+                    } else {
+                        Get-R18Url -Id $using:Id -Language en | Get-R18Data
+                    }
                 } | Out-Null
             }
 
             if ($R18Zh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh]"
-                Start-ThreadJob -Name "$Id-R18Zh" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
+                Start-ThreadJob -Name "R18Zh" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-R18Url -Id $using:Id -Language zh | Get-R18Data
+                    if ($using:R18ZhUrl) {
+                        $using:R18ZhUrl | Get-R18Data
+                    } else {
+                        Get-R18Url -Id $using:Id -Language zh | Get-R18Data
+                    }
                 } | Out-Null
             }
 
             if ($Javlibrary) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary]"
-                Start-ThreadJob -Name "$Id-Javlibrary" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
+                Start-ThreadJob -Name "Javlibrary" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language en | Get-JavlibraryData
+                    if ($using:JavlibraryUrl) {
+                        $using:JavlibraryUrl | Get-JavlibraryData
+                    } else {
+                        Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language en | Get-JavlibraryData
+                    }
                 } | Out-Null
             }
 
             if ($JavlibraryJa) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa]"
-                Start-ThreadJob -Name "$Id-JavlibraryJa" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa] [Url - $JavlibraryJaUrl]"
+                Start-ThreadJob -Name "JavlibraryJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language ja | Get-JavlibraryData
+                    if ($using:JavlibraryJaUrl) {
+                        $using:JavlibraryJaUrl | Get-JavlibraryData
+                    } else {
+                        Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language ja | Get-JavlibraryData
+                    }
                 } | Out-Null
             }
 
             if ($JavlibraryZh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh]"
-                Start-ThreadJob -Name "$Id-JavlibraryZh" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh] [Url - $JavlibraryZhUrl]"
+                Start-ThreadJob -Name "JavlibraryZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language zh | Get-JavlibraryData
+                    if ($using:JavlibraryZhUrl) {
+                        $using:JavlibraryZhUrl | Get-JavlibraryData
+                    } else {
+                        Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language zh | Get-JavlibraryData
+                    }
                 } | Out-Null
             }
 
             if ($Dmm) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm]"
-                Start-ThreadJob -Name "$Id-Dmm" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                Start-ThreadJob -Name "Dmm" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-DmmUrl -Id $using:Id | Get-DmmData
+                    if ($using:DmmUrl) {
+                        $using:DmmUrl | Get-DmmData
+                    } else {
+                        Get-DmmUrl -Id $using:Id | Get-DmmData
+                    }
                 } | Out-Null
             }
 
             if ($Javbus) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus]"
-                Start-ThreadJob -Name "$Id-Javbus" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
+                Start-ThreadJob -Name "Javbus" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavbusUrl -Id $using:Id -Language en | Get-JavbusData
+                    if ($using:JavbusUrl) {
+                        $using:JavbusUrl | Get-JavbusData
+                    } else {
+                        Get-JavbusUrl -Id $using:Id -Language en | Get-JavbusData
+                    }
                 } | Out-Null
             }
 
             if ($JavbusJa) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa]"
-                Start-ThreadJob -Name "$Id-JavbusJa" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
+                Start-ThreadJob -Name "JavbusJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavbusUrl -Id $using:Id -Language ja | Get-JavbusData
+                    if ($using:JavbusJaUrl) {
+                        $using:JavbusJaUrl | Get-JavbusData
+                    } else {
+                        Get-JavbusUrl -Id $using:Id -Language ja | Get-JavbusData
+                    }
                 } | Out-Null
             }
 
             if ($JavbusZh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh]"
-                Start-ThreadJob -Name "$Id-JavbusZh" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh] [Url - $JavbusZhUrl]"
+                Start-ThreadJob -Name "JavbusZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavbusUrl -Id $using:Id -Language zh | Get-JavbusData
+                    if ($using:JavbusZhUrl) {
+                        $using:JavbusZhUrl | Get-JavbusData
+                    } else {
+                        Get-JavbusUrl -Id $using:Id -Language zh | Get-JavbusData
+                    }
                 } | Out-Null
             }
 
             if ($Jav321) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321]"
-                Start-ThreadJob -Name "$Id-Jav321" -ScriptBlock {
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
+                Start-ThreadJob -Name "Jav321" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-Jav321Url -Id $using:Id | Get-Jav321Data
+                    if ($using:Jav321Url) {
+                        $using:Jav321Url | Get-Jav321Data
+                    } else {
+                        Get-Jav321Url -Id $using:Id | Get-Jav321Data
+                    }
                 } | Out-Null
             }
 
-            # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
-
-            $jobId = @((Get-Job | Where-Object { $_.Name -like "$Id*" } | Select-Object Id).Id)
-            $jobName = @((Get-Job | Where-Object { $_.Name -like "$Id*" } | Select-Object Name).Name)
+            $jobId = @((Get-Job | Where-Object { $_.Name -notlike "Powershell*" } | Select-Object Id).Id)
+            $jobName = @((Get-Job | Where-Object { $_.Name -notlike "PowerShell*" } | Select-Object Name).Name)
             Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"
+            # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
             Wait-Job -Id $jobId | Out-Null
 
             Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
