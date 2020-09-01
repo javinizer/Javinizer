@@ -18,202 +18,9 @@ function Javinizer {
 
     .PARAMETER DestinationPath
         The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
-
-    .PARAMETER ImportSettings
-        The importsettings parameter allows you to specify an external settings file. This is useful if you want to have different presets for groups of videos.
-
-    .PARAMETER Url
-        The url parameter allows you to set direct URLs to JAVLibrary, DMM, and R18 data sources to scrape a video from in direct URLs comma-separated-format (url1,url2,url3).
-
-    .PARAMETER Apply
-        The apply parameter allows you to automatically begin your sort using settings specified in your settings.ini file.
-
-    .PARAMETER MoveToFolder
-        The movetofolder parameter will allow you to set a true/false value for the setting move-to-folder from the commandline.
-
-    .PARAMETER Multi
-        The multi parameter will perform your sort using multiple concurrent threads with a throttle limit of (1-5) set in your settings.ini file.
-
-    .PARAMETER Recurse
-        The recurse parameter will perform your sort recursively within your specified sort directory.
-
-    .PARAMETER RenameFile
-        The renamefile parameter will allow you to set a true/false v alue for the setting rename-file from the commandline.
-
-    .PARAMETER Strict
-        The strict parameter will perform your sort without automatically cleaning your filenames. It will read the exact filename.
-
-    .PARAMETER Help
-        The help parameter will open a help dialogue in your console for Javinizer usage.
-
-    .PARAMETER Version
-        The version parameter will display Javinizer's current module version.
-
-    .PARAMETER OpenSettings
-        The opensettings parameter will open your settings.ini file for you to view and edit.
-
-    .PARAMETER BackupSettings
-        The backupsettings parameter will backup your settings.ini and r18-thumbs.csv file to an archive.
-
-    .PARAMETER RestoreSettings
-        The restoresettings parameter will restore your archive created from the backupsettings parameter to the root module folder.
-
-    .PARAMETER OpenLog
-        The openlog parameter will open your Javinizer.log file located in your module path.
-
-    .PARAMETER ViewLog
-        The viewlog parameter will output the Javinizer.log file in your console.
-
-    .PARAMETER LogLevel
-        The loglevel parameter will allow you to select which logging level to view (INFO, ERROR, WARN, DEBUG)
-
-    .PARAMETER Entries
-        The entries parameter lets you select the amount of log entries to view
-
-    .PARAMETER Order
-        The order parameter lets you select which sort order to view your log entries (Asc, Desc) with descending being default
-
-    .PARAMETER SetJavlibraryOwned
-        The setjavlibraryowned parameter lets you reference a path to a list of your JAV movies in line separated format in a flat text file to set as owned on JAVLibrary
-
-    .PARAMETER GetThumbs
-        The getthumbs parameter will fully update your R18 actress and thumbnail csv database file which will attempt to write unknown actress thumburls on sort.
-
-    .PARAMETER UpdateThumbs
-        The updatethumbs parameter will partially update your R18 actress and thumbnail csv database file with a specified number of R18.com pages.
-
-    .PARAMETER OpenThumbs
-        The openthumbs parameter will open your r18-thumbs.csv file for you to view and edit.
-
-    .PARAMETER SetEmbyActorThumbs
-        The setembyactorthumbs parameter will POST matching R18 actor images from `r18-thumbs.csv` to your Emby or Jellyfin instance.
-
-    .PARAMETER R18
-        The r18 parameter allows you to set your data source of R18 to true.
-
-    .PARAMETER R18Zh
-        The r18zh parameter allows you to set your data source of R18Zh to true.
-
-    .PARAMETER Dmm
-        The dmm parameter allows you to set your data source of DMM to true.
-
-    .PARAMETER Javlibrary
-        The javlibrary parameter allows you to set your data source of JAVLibrary to true.
-
-    .PARAMETER JavlibraryZh
-        The javlibraryzh parameter allows you to set your data source of JAVLibraryZh to true.
-
-    .Parameter JavlibraryJa
-        The javlibraryja parameter allows you to set your data source of JAVLibraryJa to true.
-
-    .Parameter Javbus
-        The javbus parameter allows you to set your data source of JAVLibraryJa to true.
-
-    .Parameter JavbusJa
-        The javbusja parameter allows you to set your data source of JAVLibraryJa to true.
-
-    .Parameter Jav321
-        The jav321 parameter allows you to set your data source of JAVLibraryJa to true.
-
-    .PARAMETER Force
-        The force parameter will attempt to force any new sorted files to be overwritten if it already exists.
-
-    .PARAMETER ScriptRoot
-        The scriptroot parameter sets the default Javinizer module directory. This should not be touched.
-
-
-    .EXAMPLE
-        PS> Javinizer -OpenSettings
-
-        Description
-        -----------
-        Opens your Javinizer settings.ini file in the root module directory.
-
-    .EXAMPLE
-        PS> Javinizer -Path C:\Downloads\Unsorted -Multi
-
-        Description
-        -----------
-        Performs a multi-threaded sort on C:\Downloads\Unsorted with settings specified in your settings.ini file.
-
-    .EXAMPLE
-        PS> Javinizer -Apply -Multi
-
-        Description
-        -----------
-        Performs a multi-threaded sort on your directories with settings specified in your settings.ini file.
-
-    .EXAMPLE
-        PS> Javinizer -Path C:\Downloads\Jav\Sorted -Recurse -MoveToFolder:$false -RenameFile:$false -Multi
-
-        Description
-        -----------
-        Performs a multi-threaded recursive sort on your directories while setting move-to-folder and rename-file false to refresh metadata within those directories.
-
-    .EXAMPLE
-        PS> Javinizer -Path C:\Downloads -ImportSettings C:\Downloads\settings-template1.ini -Multi
-
-        Description
-        -----------
-        Performs a multi-threaded sort on your directories while importing an external settings file.
-
-    .EXAMPLE
-        PS> Javinizer -Path C:\Downloads -DestinationPath C:\Downloads\Sorted -Recurse
-
-        Description
-        -----------
-        Performs a single-threaded recursive sort on your specified Path with other settings specified in your settings.ini file.
-
-    .EXAMPLE
-        PS> Javinizer -Path 'C:\Downloads\Jav\snis-620.mp4' -DestinationPath C:\Downloads\JAV\Sorted\' -Url 'http://www.javlibrary.com/en/?v=javlilljyy,https://www.r18.com/videos/vod/movies/detail/-/id=snis00620/?i3_ref=search&i3_ord=1,https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=snis00620/?i3_ref=search&i3_ord=4'
-
-        Description
-        -----------
-        Performs a single-threaded sort on your specified file using direct URLs to match the file.
-
-    .EXAMPLE
-        PS> Javinizer -Find SNIS-420
-
-        Description
-        -----------
-        Performs a console search of SNIS-420 for all data sources specified in your settings.ini file.
-
-    .EXAMPLE
-        PS> Javinizer -Find SNIS-420 -R18 -DMM -Aggregated
-
-        Description
-        -----------
-        Performs a console search of SNIS-420 for R18 and DMM and aggregates output to your settings specified in your settings.ini file.
-
-    .EXAMPLE
-        PS> Javinizer -Find 'https://www.r18.com/videos/vod/movies/detail/-/id=pred00200/?dmmref=video.movies.new&i3_ref=list&i3_ord=2'
-
-        Description
-        -----------
-        Performs a console search of PRED-200 using a direct url.
-
-    .EXAMPLE
-        PS> Javinizer -SetEmbyActorThumbs
-
-        Description
-        -----------
-        Writes actor thumbnails to your Emby/Jellyfin server instance from your r18-thumbs.csv file.
-
-    .EXAMPLE
-        PS> Javinizer -ViewLog List -Entries 5 -LogLevel Error
-
-        Description
-        -----------
-        Writes your latest 5 error log entries in list view to the console from your Javinizer log file.
-
-    .EXAMPLE
-        PS> Javinizer -ViewLog Object | Select-Object -First 10 | Sort-Object timestamp -Descending | Format-Table wrap
-
-        Description
-        -----------
-        Outputs your Javinizer log file to the console as a PowerShell object.
-
     #>
+
+
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
     param (
@@ -309,6 +116,8 @@ function Javinizer {
     )
 
     process {
+        Import-Module (Join-Path -Path (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'External') -ChildPath Logging -AdditionalChildPath Logging.psm1) -Verbose:$false
+
         try {
             if ($Settings) {
                 $settingsPath = $Settings
@@ -325,7 +134,7 @@ function Javinizer {
                 $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
             } else {
                 if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
-                    New-Item -LiteralPath $Settings.'admin.log.path'
+                    New-Item -Path $Settings.'admin.log.path' | Out-Null
                 }
                 $logPath = $Settings.'admin.log.path'
             }
@@ -342,7 +151,7 @@ function Javinizer {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'sort.metadata.thumbcsv.path' -PathType Leaf)) {
-                New-Item -LiteralPath $Settings.'sort.metadata.thumbcsv.path'
+                New-Item -Path $Settings.'sort.metadata.thumbcsv.path' | Out-Null
             }
             $thumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
         }
@@ -351,7 +160,7 @@ function Javinizer {
             $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'sort.metadata.genrecsv.path' -PathType Leaf)) {
-                New-Item -LiteralPath $Settings.'sort.metadata.genrecsv.path'
+                New-Item -Path $Settings.'sort.metadata.genrecsv.path' | Out-Null
             }
             $genreCsvPath = $Settings.'sort.metadata.genrecsv.path'
         }
