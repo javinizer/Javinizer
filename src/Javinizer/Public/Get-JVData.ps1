@@ -216,26 +216,32 @@ function Get-JVData {
                 } | Out-Null
             }
 
-            $jobId = @((Get-Job | Where-Object { $_.Name -notlike "Powershell*" } | Select-Object Id).Id)
+            $jobCount = (Get-Job | Where-Object { $_.Name -notlike 'PowerShell*' }).Count
+            $jobId = @((Get-Job | Where-Object { $_.Name -notlike "PowerShell*" } | Select-Object Id).Id)
             $jobName = @((Get-Job | Where-Object { $_.Name -notlike "PowerShell*" } | Select-Object Name).Name)
-            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"
-            # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
-            Wait-Job -Id $jobId | Out-Null
 
-            Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
-            $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
+            if ($jobCount -eq 0) {
+                Write-JVLog -Level Warning -Message "[$Id] No scrapers were run"
+                return
+            } else {
+                Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"
+                # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
+                Wait-Job -Id $jobId | Out-Null
 
-            $hasData = ($javinizerDataObject | Select-Object Source).Source
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
+                Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
+                $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
 
-            $dataObject = [PSCustomObject]@{
-                Data = $javinizerDataObject
+                $hasData = ($javinizerDataObject | Select-Object Source).Source
+                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
+
+                $dataObject = [PSCustomObject]@{
+                    Data = $javinizerDataObject
+                }
+
+                if ($null -ne $javinizerDataObject) {
+                    Write-Output $dataObject
+                }
             }
-
-            if ($null -ne $javinizerDataObject) {
-                Write-Output $dataObject
-            }
-
         } catch {
             Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
         } finally {
