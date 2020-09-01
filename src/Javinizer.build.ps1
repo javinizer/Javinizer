@@ -34,7 +34,7 @@ $ModuleName = (Split-Path -Path $BuildFile -Leaf).Split('.')[0]
 #Default Build
 $str = @()
 $str = 'Clean', 'ValidateRequirements'
-$str += 'FormattingCheck'
+#$str += 'FormattingCheck'
 $str += 'Analyze', 'Test', 'InfraTest'
 
 $str += 'Build', 'Archive'
@@ -173,7 +173,7 @@ Add-BuildTask FormattingCheck {
 
     if ($scriptAnalyzerResults) {
         $scriptAnalyzerResults | Format-Table
-        Write-Warning  '      PSScriptAnalyzer code formatting check did not adhere to {0} standards' -f $scriptAnalyzerParams.Setting
+        throw  '      PSScriptAnalyzer code formatting check did not adhere to {0} standards' -f $scriptAnalyzerParams.Setting
     } else {
         Write-Build Green '      ...Formatting Analyze Complete!'
     }
