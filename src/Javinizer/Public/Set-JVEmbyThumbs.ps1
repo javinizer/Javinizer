@@ -2,7 +2,7 @@
 #Requires -PSEdition Core
 
 function Set-JVEmbyThumbs {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
         [Alias('emby.url')]
@@ -22,6 +22,15 @@ function Set-JVEmbyThumbs {
         [Parameter()]
         [Switch]$ReplaceAll
     )
+
+    begin {
+        if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+            $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+        }
+        if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+            $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+        }
+    }
 
     process {
         if ($Url[-1] -eq '/') {
@@ -98,26 +107,27 @@ function Set-JVEmbyThumbs {
             }
 
             if ($null -ne $thumbUrl) {
-                Write-Debug "$thumbUrl not null"
-                $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey"
+                if ($PSCmdlet.ShouldProcess("[$($actress.Name)] => [$thumbUrl]")) {
+                    $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey"
 
-                try {
-                    Write-JVLog -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
-                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
-                } catch {
-                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
+                    try {
+                        Write-JVLog -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
+                        Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
+                    } catch {
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
+                    }
+
+                    $primaryPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey"
+
+                    try {
+                        Write-JVLog -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
+                        Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
+                    } catch {
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
+                    }
+
+                    Write-JVLog -Level Info -Message "Set [$($actress.Name)] => [$thumbUrl]"
                 }
-
-                $primaryPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey"
-
-                try {
-                    Write-JVLog -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
-                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
-                } catch {
-                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
-                }
-
-                Write-JVLog -Level Info -Message "Set [$($actress.Name)] => [$thumbUrl]"
             }
         }
     }
