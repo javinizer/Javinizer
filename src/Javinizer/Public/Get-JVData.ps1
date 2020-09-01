@@ -44,6 +44,10 @@ function Get-JVData {
         [Alias('scraper.movie.jav321')]
         [Boolean]$Jav321,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('javlibrary.baseurl')]
+        [String]$JavlibraryBaseUrl = 'http://www.javlibrary.com',
+
         [Parameter(ValueFromPipeline = $true)]
         [PSObject]$Settings
     )
@@ -63,7 +67,10 @@ function Get-JVData {
             $Javbus = $Settings.'scraper.movie.javbus'
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
+            $JavlibraryBaseUrl = $Settings.'javlibrary.baseurl'
         }
+
+        Write-Debug "BaseUrl: $JavlibraryBaseUrl"
 
         try {
             # You need to change this path if you're running the script from outside of the Javinizer module folder
@@ -89,7 +96,7 @@ function Get-JVData {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary]"
                 Start-ThreadJob -Name "$Id-Javlibrary" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -Language en | Get-JavlibraryData
+                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language en | Get-JavlibraryData
                 } | Out-Null
             }
 
@@ -97,7 +104,7 @@ function Get-JVData {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa]"
                 Start-ThreadJob -Name "$Id-JavlibraryJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -Language ja | Get-JavlibraryData
+                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language ja | Get-JavlibraryData
                 } | Out-Null
             }
 
@@ -105,7 +112,7 @@ function Get-JVData {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh]"
                 Start-ThreadJob -Name "$Id-JavlibraryZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    Get-JavlibraryUrl -Id $using:Id -Language zh | Get-JavlibraryData
+                    Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Language zh | Get-JavlibraryData
                 } | Out-Null
             }
 
