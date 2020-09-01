@@ -290,17 +290,20 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenThumbs,
 
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenGenres,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'Thumbs')]
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
         [PSObject]$Pages,
 
-        [Parameter(ParameterSetName = 'Version')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
         [Alias('v')]
         [Switch]$Version,
 
-        [Parameter(ParameterSetName = 'Help')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'Help')]
         [Alias('h')]
         [Switch]$Help
     )
@@ -350,7 +353,7 @@ function Javinizer {
             if (!(Test-Path -LiteralPath $Settings.'sort.metadata.genrecsv.path' -PathType Leaf)) {
                 New-Item -LiteralPath $Settings.'sort.metadata.genrecsv.path'
             }
-            $thumbCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            $genreCsvPath = $Settings.'sort.metadata.genrecsv.path'
         }
 
         switch ($PsCmdlet.ParameterSetName) {
@@ -420,8 +423,9 @@ function Javinizer {
             }
 
             'Settings' {
-                if ($OpenSettings.IsPresent) {
+                if ($OpenSettings) {
                     try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [SettingsPath - $settingsPath]"
                         Invoke-Item -LiteralPath $settingsPath
                     } catch {
                         Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$settingsPath]: $PSItem"
@@ -430,15 +434,26 @@ function Javinizer {
 
                 if ($OpenLog) {
                     try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [LogPath - $logPath]"
                         Invoke-Item -LiteralPath $logPath
                     } catch {
                         Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening log file [$logPath]: $PSItem"
                     }
                 }
 
-                elseif ($OpenThumbs) {
+                if ($OpenThumbs) {
                     try {
-                        Invoke-Item -LiteralPath (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [ThumbCsvPath - $thumbCsvPath]"
+                        Invoke-Item -LiteralPath $thumbCsvPath
+                    } catch {
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                    }
+                }
+
+                if ($OpenGenres) {
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
+                        Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
                         Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
