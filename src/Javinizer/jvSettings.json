@@ -31,7 +31,6 @@
     "match.regex.ptmatch": 2,
     "sort.movetofolder": 1,
     "sort.renamefile": 1,
-    "sort.maxpathlength": 255,
     "sort.maxtitlelength": 100,
     "sort.create.nfo": 1,
     "sort.create.nfoperfile": 0,
@@ -41,7 +40,7 @@
     "sort.download.screenshotimg": 0,
     "sort.download.trailervid": 0,
     "sort.format.file": "<ID>",
-    "sort.format.folder": "<ID> [<Studio>] - <TITLE> (<YEAR>)",
+    "sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
     "sort.format.posterimg": "folder",
     "sort.format.thumbimg": "fanart",
     "sort.format.trailervid": "<ID>-trailer",
@@ -49,6 +48,8 @@
     "sort.format.screenshotimg": "fanart",
     "sort.format.screenshotfolder": "extrafanart",
     "sort.format.actressimgfolder": ".actors",
+    "sort.metadata.nfo.translate": 0,
+    "sort.metadata.nfo.translate.language": "en",
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
     "sort.metadata.nfo.seriesastag": 1,
     "sort.metadata.nfo.firstnameorder": 0,
@@ -61,10 +62,9 @@
         "Hi-Def"
     ],
     "sort.metadata.requiredfield": [
-        "actress",
+        "id",
         "coverUrl",
         "genre",
-        "id",
         "maker",
         "releaseDate",
         "title"
@@ -138,7 +138,7 @@
     "javlibrary.request.interval": 15,
     "javlibrary.request.timeout": 90,
     "admin.log": 1,
-    "admin.log.path": "x:\\git\\projects\\jav-organizer\\src\\javinizer\\jvLog2.log",
+    "admin.log.path": "x:\\git\\projects\\jav-organizer\\src\\javinizer\\jvLog.log",
     "admin.log.level": "debug",
     "admin.update.check": 0
 }
