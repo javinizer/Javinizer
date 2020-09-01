@@ -209,6 +209,9 @@ function Javinizer {
             }
         }
 
+        # Validate the values in the settings file following all command-line transformations
+        $Settings = $Settings | Test-JVSettings
+
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 if ($Find -match 'https?:\/\/') {
