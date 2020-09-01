@@ -68,6 +68,7 @@ function Update-JVThumbCsv {
                 $groupedObject = ($actressObject + $actressObjectJa | Group-Object ThumbUrl) | Where-Object { $_.Count -eq 2 }
                 foreach ($actress in $groupedObject) {
                     $combinedActressObject += [PSCustomObject]@{
+                        FullName     = "$((($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[1]) $((($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[0])".Trim()
                         LastName     = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[1]
                         FirstName    = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[0]
                         JapaneseName = ($actress.Group[1].Name).Trim() -replace '（.*）', '' -replace '&amp;', '&'
@@ -80,12 +81,12 @@ function Update-JVThumbCsv {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JVLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
+                            Write-JVLog -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
                             $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JVLog -Level Info -Message "[Page $x] Actress [($actressString - $($actress.JapaneseName)] written to thumb csv"
+                        Write-JVLog -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
                         $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                     }
                 }
