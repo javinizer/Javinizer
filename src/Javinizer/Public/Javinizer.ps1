@@ -306,8 +306,6 @@ function Javinizer {
     )
 
     process {
-
-
         try {
             if ($Settings) {
                 $settingsPath = $Settings
@@ -344,6 +342,15 @@ function Javinizer {
                 New-Item -LiteralPath $Settings.'sort.metadata.thumbcsv.path'
             }
             $thumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
+        }
+
+        if ($Settings.'sort.metadata.genrecsv.path' -eq '') {
+            $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'sort.metadata.genrecsv.path' -PathType Leaf)) {
+                New-Item -LiteralPath $Settings.'sort.metadata.genrecsv.path'
+            }
+            $thumbCsvPath = $Settings.'sort.metadata.genrecsv.path'
         }
 
         switch ($PsCmdlet.ParameterSetName) {

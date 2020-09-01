@@ -92,6 +92,10 @@ function Get-JVAggregatedData {
         [Boolean]$ReplaceGenre,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.genrecsv.path')]
+        [Boolean]$GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'),
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genre.ignore')]
         [Array]$IgnoreGenre,
 
@@ -132,6 +136,16 @@ function Get-JVAggregatedData {
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $GenreCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            $ThumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
+        }
+
+        if ($ThumbCsvPath -eq '') {
+            $ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv')
+        }
+
+        if ($GenreCsvPath -eq '') {
+            $GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv')
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
@@ -288,12 +302,11 @@ function Get-JVAggregatedData {
         }
 
         if ($ReplaceGenre) {
-            $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
-            if (Test-Path -LiteralPath $genreCsvPath) {
+            if (Test-Path -LiteralPath $GenreCsvPath) {
                 try {
-                    $replaceGenres = Import-Csv -LiteralPath $genreCsvPath
+                    $replaceGenres = Import-Csv -LiteralPath $GenreCsvPath
                 } catch {
-                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$genreCsvPath]: $PSItem"
+                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$GenreCsvPath]: $PSItem"
                 }
 
                 $newGenres = $aggregatedDataObject.Genre
