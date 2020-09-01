@@ -180,6 +180,22 @@ function Javinizer {
             $genreCsvPath = $Settings.'sort.metadata.genrecsv.path'
         }
 
+        if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
+            if ($MoveToFolder -eq $true) {
+                $Settings.'sort.movetofolder' = 1
+            } elseif ($MoveToFolder -eq $false) {
+                $Settings.'sort.movetofolder' = 0
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('RenameFile')) {
+            if ($RenameFile -eq $true) {
+                $Settings.'sort.renamefile' = 1
+            } elseif ($RenameFile -eq $false) {
+                $Settings.'sort.renamefile' = 0
+            }
+        }
+
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 if ($Find -match 'https?:\/\/') {
