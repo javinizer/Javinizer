@@ -33,6 +33,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Position = 2)]
         [PSObject]$Settings,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Strict,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -168,43 +171,23 @@ function Javinizer {
                 if ($Find -match 'https?:\/\/') {
                     $urlObject = Get-JVUrlLocation -Url $Find
                     $data = foreach ($item in $urlObject) {
-                        if ($item.Source -eq 'dmm') {
+                        if ($item.Source -match 'dmm') {
                             $item.Url | Get-DmmData
                         }
 
-                        if ($item.Source -eq 'jav321') {
+                        if ($item.Source -match 'jav321') {
                             $item.Url | Get-Jav321Data
                         }
 
-                        if ($item.Source -eq 'javbus') {
+                        if ($item.Source -match 'javbus') {
                             $item.Url | Get-JavbusData
                         }
 
-                        if ($item.Source -eq 'javbusja') {
-                            $item.Url | Get-JavbusData
-                        }
-
-                        if ($item.Source -eq 'javbuszh') {
-                            $item.Url | Get-JavbusData
-                        }
-
-                        if ($item.Source -eq 'javlibrary') {
+                        if ($item.Source -match 'javlibrary') {
                             $item.Url | Get-JavlibraryData
                         }
 
-                        if ($item.Source -eq 'javlibraryja') {
-                            $item.Url | Get-JavlibraryData
-                        }
-
-                        if ($item.Source -eq 'javlibraryzh') {
-                            $item.Url | Get-JavlibraryData
-                        }
-
-                        if ($item.Source -eq 'r18') {
-                            $item.Url | Get-R18Data
-                        }
-
-                        if ($item.Source -eq 'r18zh') {
+                        if ($item.Source -match 'r18') {
                             $item.Url | Get-R18Data
                         }
                     }
