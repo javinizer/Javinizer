@@ -81,7 +81,7 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.thumbcsv.path')]
-        [Boolean]$ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
+        [System.IO.FileInfo]$ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.thumbcsv.convertalias')]
@@ -93,7 +93,7 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genrecsv.path')]
-        [Boolean]$GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'),
+        [System.IO.FileInfo]$GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'),
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.genre.ignore')]
@@ -136,16 +136,12 @@ function Get-JVAggregatedData {
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
-            $GenreCsvPath = $Settings.'sort.metadata.genrecsv.path'
-            $ThumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
-        }
-
-        if ($ThumbCsvPath -eq '') {
-            $ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv')
-        }
-
-        if ($GenreCsvPath -eq '') {
-            $GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv')
+            if ($Settings.'sort.metadata.genrecsv.path' -ne '') {
+                $GenreCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            }
+            if ($Settings.'sort.metadata.thumbcsv.path' -ne '') {
+                $ThumbCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            }
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
