@@ -217,6 +217,15 @@ function Javinizer {
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
     param (
+        [Parameter(ParameterSetName = 'Path', Position = 0)]
+        [System.IO.DirectoryInfo]$Path,
+
+        [Parameter(ParameterSetName = 'Path', Position = 1)]
+        [System.IO.DirectoryInfo]$DestinationPath,
+
+        [Parameter(ParameterSetName = 'Path', Position = 2)]
+        [PSObject]$Settings,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -257,119 +266,59 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321,
 
-        [Parameter(ParameterSetName = 'Path', Position = 0)]
-        [System.IO.DirectoryInfo]$Path,
-
-        [Parameter(ParameterSetName = 'Path', Position = 1)]
-        [System.IO.DirectoryInfo]$DestinationPath,
-
-        [Parameter(ParameterSetName = 'Path', Position = 2)]
-        [PSObject]$Settings,
-
         [Parameter(ParameterSetName = 'Path')]
         [PSObject]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
-        [Alias('m')]
-        [Switch]$Multi,
-
-        [Parameter(ParameterSetName = 'Path')]
-        [Parameter(ParameterSetName = 'JavLibrary')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Force,
 
-        [Parameter(ParameterSetName = 'Help')]
-        [Alias('h')]
-        [Switch]$Help,
+        [Parameter(ParameterSetName = 'Emby')]
+        [Switch]$SetEmbyThumbs,
 
-        [Parameter(ParameterSetName = 'Version')]
-        [Alias('v')]
-        [Switch]$Version,
+        [Parameter(ParameterSetName = 'Emby')]
+        [Switch]$ReplaceAll,
 
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenSettings,
 
         [Parameter(ParameterSetName = 'Settings')]
-        [String]$BackupSettings,
-
-        [Parameter(ParameterSetName = 'Settings')]
-        [String]$RestoreSettings,
-
-        [Parameter(ParameterSetName = 'Log')]
         [Switch]$OpenLog,
 
-        [Parameter(ParameterSetName = 'JavLibrary')]
-        [String]$SetJavlibraryOwned,
-
-        [Parameter(ParameterSetName = 'Thumbs')]
-        [Switch]$GetThumbs,
-
-        [Parameter(ParameterSetName = 'Thumbs')]
-        [Int]$UpdateThumbs,
-
-        [Parameter(ParameterSetName = 'Thumbs')]
+        [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenThumbs,
 
+        [Parameter(Mandatory = $true, ParameterSetName = 'Thumbs')]
+        [Switch]$UpdateThumbs,
+
         [Parameter(ParameterSetName = 'Thumbs')]
-        [Switch]$SetEmbyActorThumbs
+        [PSObject]$Pages,
+
+        [Parameter(ParameterSetName = 'Version')]
+        [Alias('v')]
+        [Switch]$Version,
+
+        [Parameter(ParameterSetName = 'Help')]
+        [Alias('h')]
+        [Switch]$Help
     )
 
-    begin {
-        if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-            $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-        }
-
-        if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-            $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-        }
-
-        if (!($Multi.IsPresent -or $GetThumbs.IsPresent -or $UpdateThumbs.IsPresent)) {
-            $ProgressPreference = 'SilentlyContinue'
-        }
-
-
-
-        <#         try {
-            # Allow user to update settings via commandline using a hashtable
-            # I.e $updateSettings = @{ "priority.actress" = @('r18', 'javlibrary', dmm'); "moveToFolder" = "true"}
-            # Javinizer -Path . -Settings $updateSettings
-            foreach ($setting in $Settings.GetEnumerator()) {
-                $nest = $setting.Key -split '\.'
-                if ($nest.Count -eq 1) {
-                    $root = $nest[0]
-                    $script:gSettings.$root = $setting.Value
-                } elseif ($nest.Count -eq 2) {
-                    $root = $nest[0]
-                    $key = $nest[1]
-                    $script:gSettings.$root.$key = $setting.Value
-                } elseif ($nest.Count -eq 3) {
-                    $root = $nest[0]
-                    $nestOne = $nest[1]
-                    $key = $nest[2]
-                    $script:gSettings.$root.$nestOne.$key = $setting.Value
-                } elseif ($nest.Count -eq 4) {
-                    $root = $nest[0]
-                    $nestOne = $nest[1]
-                    $nestTwo = $nest[2]
-                    $key = $nest[3]
-                    $script:gSettings.$root.$nestOne.$nestTwo.$key = $setting.Value
-                }
-            }
-        } catch {
-            Write-JVLog -Level Error -Message $_
-        } #>
-    }
-
     process {
-        if ($Settings) {
-            $settingsPath = $Settings
-        } else {
-            $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
-        }
 
-        $Settings = Get-Content -LiteralPath $settingsPath | ConvertFrom-Json -Depth 32
+
+        try {
+            if ($Settings) {
+                $settingsPath = $Settings
+            } else {
+                $settingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
+            }
+
+            $Settings = Get-Content -LiteralPath $settingsPath | ConvertFrom-Json -Depth 32
+        } catch {
+            Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when loading settings file [$settingsPath]: $PSItem" -ErrorAction Stop
+        }
 
         if ($Settings.'admin.log.path' -eq '') {
             $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
@@ -377,23 +326,8 @@ function Javinizer {
             if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
                 New-Item -LiteralPath $Settings.'admin.log.path'
             }
-
             $logPath = $Settings.'admin.log.path'
         }
-
-        # The user will be able import an external settings file via commandline
-        # by using the ImportSettings parameter
-        <#         try {
-            # TODO Change this path
-            $gSettingsPath = 'X:\git\Projects\JAV-Organizer\src\Javinizer\javinizerSettings.json'
-            if ($PSBoundParameters.ContainsKey('ImportSettings')) {
-                $script:gSettings = Get-Content -LiteralPath $ImportSettings | ConvertFrom-Json
-            } else {
-                $script:gSettings = Get-Content -LiteralPath $gSettingsPath | ConvertFrom-Json
-            }
-        } catch {
-            throw $_
-        } #>
 
         Add-LoggingTarget -Name File -Configuration @{
             Path     = $logPath
@@ -401,6 +335,15 @@ function Javinizer {
             Encoding = 'utf8'
             Level    = $Settings.'admin.log.level'
             Format   = '[%{timestamp}] [%{level:-7}] %{message}'
+        }
+
+        if ($Settings.'sort.metadata.thumbcsv.path' -eq '') {
+            $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'sort.metadata.thumbcsv.path' -PathType Leaf)) {
+                New-Item -LiteralPath $Settings.'sort.metadata.thumbcsv.path'
+            }
+            $thumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
         }
 
         switch ($PsCmdlet.ParameterSetName) {
@@ -469,104 +412,29 @@ function Javinizer {
                 }
             }
 
-            'Log' {
+            'Settings' {
+                if ($OpenSettings.IsPresent) {
+                    try {
+                        Invoke-Item -LiteralPath $settingsPath
+                    } catch {
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$settingsPath]: $PSItem"
+                    }
+                }
+
                 if ($OpenLog) {
                     try {
                         Invoke-Item -LiteralPath $logPath
                     } catch {
-                        Write-JVLog -Level Error -Message "Error occurred when opening log file [$logPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening log file [$logPath]: $PSItem"
                     }
                 }
-            }
 
-            'Settings' {
-                if ($OpenSettings.IsPresent) {
+                elseif ($OpenThumbs) {
                     try {
-                        Invoke-Item -Path $settingsPath
+                        Invoke-Item -LiteralPath (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
                     } catch {
-                        Write-JVLog -Level Error -Message "Error occurred when opening settings file [$settingsPath]: $PSItem"
+                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
-                }
-            }
-
-            'JavLibrary' {
-                # TODO Re-check without creating a cloudflare session
-                if (!($Session)) {
-                    New-CloudflareSession -ScriptRoot $ScriptRoot
-                }
-
-                try {
-                    Write-JVLog -Level Debug -Message "Getting owned movies on JAVLibrary"
-                    $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
-                        "method"                    = "GET"
-                        "authority"                 = "www.javlibrary.com"
-                        "scheme"                    = "https"
-                        "path"                      = "/en/mv_owned_print.php"
-                        "upgrade-insecure-requests" = "1"
-                        "user-agent"                = $session.UserAgent
-                        "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-                        "sec-fetch-site"            = "none"
-                        "sec-fetch-mode"            = "navigate"
-                        "sec-fetch-user"            = "?1"
-                        "sec-fetch-dest"            = "document"
-                        "accept-encoding"           = "gzip, deflate, br"
-                        "accept-language"           = "en-US,en;q=0.9"
-                        "cookie"                    = "__cfduid=$SessionCFDUID; timezone=420; over18=18; userid=$($Settings.JavLibrary.username); session=$($Settings.JavLibrary.'session-cookie')"
-                    }
-
-                    $javlibraryOwnedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
-                    $global:javlibraryOwnedMovies = $javlibraryOwnedMovies[2..($javlibraryOwnedMovies.Length - 1)]
-                } catch {
-                    Write-JVLog -Level Error -Message "Error getting existing owned movies on JAVLibrary: $PSItem"
-                    return
-                }
-
-                if ($null -ne $global:javlibraryOwnedMovies) {
-                    if ($global:javlibraryOwnedMovies.Count -gt 1) {
-                        if ($javlibraryOwnedMovies[0].Length -le 1) {
-                            Write-JVLog -Level Error -Message "Error authenticating to JAVLibrary to set owned movies, check that your username and sessionCookie are valid"
-                        }
-                    }
-                }
-
-                try {
-                    if (Test-Path -Path $SetJavLibraryOwned -PathType Leaf) {
-                        $movieList = Get-Content -LiteralPath $SetJavLibraryOwned
-                    } else {
-                        $movieList = (Convert-JavTitle -Path $SetJavLibraryOwned -Recurse:$Recurse -Settings $Settings -Strict:$Strict).Id
-                    }
-                } catch {
-                    Write-JVLog -Level Error -Message "Error getting movies from [$SetJavLibraryOwned]: $PSItem"
-                }
-
-                # Validate which movies in the current path are unowned
-                # This will avoid trying to re-add currently existing movies on JAVLibrary
-                $unowned = @()
-                foreach ($movie in $movieList) {
-                    if (!($javlibraryOwnedMovies -match $movie)) {
-                        $unowned += $movie
-                    }
-                }
-
-                Write-JVLog -Level Info -Message "[$($unowned.Count)] movies to add"
-
-                if ($unowned.Count -ge 1) {
-                    $index = 1
-                    foreach ($movie in $unowned) {
-                        Write-JVLog -Level Info -Message "($index of $($unowned.Count)) Setting [$movie] as owned on JAVLibrary"
-                        $javlibObject = Get-JavlibraryData -Name $movie
-                        if ($null -ne $javlibObject) {
-                            $ajaxId = $javlibObject.AjaxId
-                            $url = $javlibObject.Url
-                            Set-JavlibraryOwned -AjaxId $ajaxId -JavlibraryUrl $url -Settings $settings
-                            Start-Sleep -Seconds $Settings.JavLibrary.'request-interval-sec'
-                        } else {
-                            Write-JVLog -Level Warning -Message "Skipping [$movie] -- not matched on JAVLibrary"
-                        }
-                        $index++
-                    }
-                } else {
-                    Write-JVLog -Level Warning -Message "Exiting -- no new movies detected in [$SetJavLibraryOwned]"
                 }
             }
 
@@ -578,19 +446,15 @@ function Javinizer {
                 Get-InstalledModule -Name Javinizer
             }
 
+            'Emby' {
+                $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+            }
+
             'Thumbs' {
-                if ($GetThumbs.IsPresent) {
-                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -Settings $settings -Force:$Force
-                } elseif ($OpenThumbs.IsPresent) {
-                    try {
-                        Invoke-Item -Path (Join-Path $ScriptRoot -ChildPath 'r18-thumbs.csv')
-                    } catch {
-                        Write-JVLog -Level Error -Message "Error opening thumb csv: $PSItem"
-                    }
-                } elseif ($PSBoundParameters.ContainsKey('UpdateThumbs')) {
-                    Get-R18ThumbCsv -ScriptRoot $ScriptRoot -NewPages $UpdateThumbs -Force:$Force
-                } elseif ($SetEmbyActorThumbs.IsPresent) {
-                    Set-EmbyActors -Settings $settings -ScriptRoot $ScriptRoot
+                if ($Pages) {
+                    Update-JVThumbs -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
+                } else {
+                    Update-JVThumbs -ThumbCsvPath $thumbCsvPath
                 }
             }
 
@@ -610,10 +474,6 @@ function Javinizer {
                     $DestinationPath = $Settings.'location.output'
                 }
 
-                if ($Url) {
-
-                }
-
                 # This will check that the DestinationPath is a valid directory
                 if (Test-Path -LiteralPath $DestinationPath -PathType Leaf) {
                     Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
@@ -623,24 +483,32 @@ function Javinizer {
                     $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
                     Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
-                    Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- no movies detected in [$Path]"
+                    Write-JVLog -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
                 }
 
-                $index = 1
-                foreach ($movie in $javMovies) {
-                    Write-Host "[$index of $($javMovies.Count)] Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                    $index++
-                    $javData = Get-JVData -Settings $Settings -Id $movie.Id
-                    if ($null -ne $javData) {
-                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                        if ($null -ne $javAggregatedData) {
-                            $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber
+                if ($Url) {
+                    if (Test-Path -LiteralPath $Path -PathType Leaf) {
+                        Write-JVLog -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Exiting -- [$Path] is not a valid file path"
+                    }
+
+
+                } else {
+                    $index = 1
+                    foreach ($movie in $javMovies) {
+                        Write-Host "[$index of $($javMovies.Count)] Sorting [$($movie.FileName)] as [$($movie.Id)]"
+                        $index++
+                        $javData = Get-JVData -Settings $Settings -Id $movie.Id
+                        if ($null -ne $javData) {
+                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                            if ($null -ne $javAggregatedData) {
+                                $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
+                            } else {
+                                Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                                return
+                            }
                         } else {
-                            Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
-                            return
+                            Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
                         }
-                    } else {
-                        Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
                     }
                 }
             }

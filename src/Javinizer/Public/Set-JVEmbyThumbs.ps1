@@ -14,7 +14,7 @@ function Set-JVEmbyThumbs {
         [Boolean]$FirstNameOrder,
 
         [Parameter()]
-        [System.IO.FileInfo]$Path = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
+        [System.IO.FileInfo]$ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
 
         [Parameter()]
         [Switch]$ReplaceAll
@@ -35,10 +35,10 @@ function Set-JVEmbyThumbs {
         }
 
         try {
-            Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [ActressCsv - $Path] imported"
-            $actressCsv = Import-Csv -LiteralPath $Path -ErrorAction Stop
+            Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [ActressCsv - $ThumbCsvPath] imported"
+            $actressCsv = Import-Csv -LiteralPath $ThumbCsvPath -ErrorAction Stop
         } catch {
-            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$Path]: $PSItem"
+            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$ThumbCsvPath]: $PSItem"
         }
 
         if ($ReplaceAll) {

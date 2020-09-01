@@ -80,11 +80,15 @@ function Get-JVAggregatedData {
         [Boolean]$ThumbCsv,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.thumbcsv.path')]
+        [Boolean]$ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.thumbcsv.convertalias')]
         [Boolean]$ThumbCsvAlias,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.genre.replace')]
+        [Alias('sort.metadata.genrecsv')]
         [Boolean]$ReplaceGenre,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -124,7 +128,7 @@ function Get-JVAggregatedData {
             $DisplayNameFormat = $Settings.'sort.metadata.nfo.displayname'
             $ThumbCsv = $Settings.'sort.metadata.thumbcsv'
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
-            $ReplaceGenre = $Settings.'sort.metadata.genre.replace'
+            $ReplaceGenre = $Settings.'sort.metadata.genrecsv'
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
@@ -187,8 +191,7 @@ function Get-JVAggregatedData {
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat
 
         if ($ThumbCsv) {
-            $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
-            if (Test-Path -LiteralPath $thumbCsvPath) {
+            if (Test-Path -LiteralPath $ThumbCsvPath) {
                 try {
                     $actressCsv = Import-Csv -LiteralPath $thumbCsvPath
                 } catch {
