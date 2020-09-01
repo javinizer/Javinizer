@@ -70,7 +70,10 @@ function Get-JVData {
             $JavlibraryBaseUrl = $Settings.'javlibrary.baseurl'
         }
 
-        Write-Debug "BaseUrl: $JavlibraryBaseUrl"
+        if ($JavlibraryBaseUrl[-1] -eq '/') {
+            # Remove the trailing slash if it is included to create the valid searchUrl
+            $JavlibraryBaseUrl = $JavlibraryBaseUrl[0..($JavlibraryBaseUrl.Length - 1)] -join ''
+        }
 
         try {
             # You need to change this path if you're running the script from outside of the Javinizer module folder
