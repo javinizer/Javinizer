@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '1.7.3'
+    ModuleVersion     = '2.0.0-alpha1'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -70,7 +70,26 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @('Javinizer')
+    FunctionsToExport = @(
+        'Javinizer',
+        'Get-DmmData',
+        'Get-DmmUrl',
+        'Get-Jav321Data',
+        'Get-Jav321Url',
+        'Get-JavBusData',
+        'Get-JavbusUrl',
+        'Get-JavlibraryData',
+        'Get-JavlibraryUrl',
+        'Get-JVAggregatedData',
+        'Get-JVData',
+        'Get-JVItem',
+        'Get-JVNfo',
+        'Get-R18Data',
+        'Get-R18Url',
+        'Set-JVEmbyThumbs',
+        'Set-JVMovie',
+        'Update-JVThumbs'
+    )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = '*'
@@ -130,5 +149,3 @@
     # DefaultCommandPrefix = ''
 
 }
-
-
