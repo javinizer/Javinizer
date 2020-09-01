@@ -52,7 +52,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules      = @(@{ModuleName = 'Logging'; ModuleVersion = '4.4.0'; GUID = '25a60f1d-85dd-4ad6-9efc-35fd3894f6c1' })
+    # RequiredModules      = @()
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
