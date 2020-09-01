@@ -1,48 +1,65 @@
 function Set-JVEmbyThumbs {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true)]
         [Alias('emby.url')]
         [String]$Url,
 
-        [Parameter(Mandatory = $true, Position = 1)]
+        [Parameter(Mandatory = $true, Position = 1, ValueFromPipelineByPropertyName = $true)]
         [Alias('emby.apikey')]
         [String]$ApiKey,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.firstnameorder')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$FirstNameOrder,
 
         [Parameter()]
-        [System.IO.FileInfo]$Path = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv')
+        [System.IO.FileInfo]$Path = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
+
+        [Parameter()]
+        [Switch]$ReplaceAll
     )
 
     process {
+        if ($Url[-1] -eq '/') {
+            # Remove the trailing slash if it is included to create the valid searchUrl
+            $Url = $BaseUrl[0..($BaseUrl.Length - 1)] -join ''
+        }
+
         try {
             $actressUrl = "$Url/emby/Persons/?api_key=$ApiKey"
             Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$actressUrl]"
-            $embyActresses = (Invoke-RestMethod -Method Get -Uri "$Url/emby/Persons/?api_key=$ApiKey" -ErrorAction Stop -Verbose:$false).Items | Select-Object Name, Id, ImageTags
+            $embyActress = (Invoke-RestMethod -Method Get -Uri $actressUrl -ErrorAction Stop -Verbose:$false).Items | Select-Object Name, Id, ImageTags
         } catch {
             Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting actresses from Emby: $PSItem"
         }
 
         try {
+            Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [ActressCsv - $Path] imported"
             $actressCsv = Import-Csv -LiteralPath $Path -ErrorAction Stop
         } catch {
-            Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$genreCsvPath]: $PSItem"
+            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$Path]: $PSItem"
         }
 
+        if ($ReplaceAll) {
+            $toDoActress = $embyActress
+        } else {
+            $toDoActress = ($embyActress | Where-Object { $null -eq $_.ImageTags.Thumb -and $null -eq $_.ImageTags.Primary })
+        }
+        Write-Host "[$($MyInvocation.MyCommand.Name)] [Url - $Url] [Actress without thumbs - $($toDoActress.Count)]"
+        foreach ($actress in $toDoActress) {
+            $matched = $null
+            $thumbUrl = $null
 
-        foreach ($actress in ($embyActresses | Where-Object { $null -eq $_.ImageTags })) {
             if ($actress.Name -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 $actressObject = [PSCustomObject]@{
                     JapaneseName = $actress.Name
                 }
 
                 if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName')) {
-                    if ($matchedCount -eq 1) {
+                    if ($matched.Count -eq 1) {
                         $thumbUrl = $matched.ThumbUrl
-                    } elseif ($matchedCount -gt 1) {
+                    } elseif ($matched.Count -gt 1) {
                         $thumbUrl = $matched[0].ThumbUrl
                     }
                 }
@@ -55,9 +72,9 @@ function Set-JVEmbyThumbs {
                     }
 
                     if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
-                        if ($matchedCount -eq 1) {
+                        if ($matched.Count -eq 1) {
                             $thumbUrl = $matched.ThumbUrl
-                        } elseif ($matchedCount -gt 1) {
+                        } elseif ($matched.Count -gt 1) {
                             $thumbUrl = $matched[0].ThumbUrl
                         }
                     }
@@ -68,9 +85,9 @@ function Set-JVEmbyThumbs {
                     }
 
                     if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
-                        if ($matchedCount -eq 1) {
+                        if ($matched.Count -eq 1) {
                             $thumbUrl = $matched.ThumbUrl
-                        } elseif ($matchedCount -gt 1) {
+                        } elseif ($matched.Count -gt 1) {
                             $thumbUrl = $matched[0].ThumbUrl
                         }
                     }
@@ -78,11 +95,12 @@ function Set-JVEmbyThumbs {
             }
 
             if ($null -ne $thumbUrl) {
+                Write-Debug "$thumbUrl not null"
                 $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey"
 
                 try {
                     Write-JVLog -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
-                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false
+                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
                 } catch {
                     Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
                 }
@@ -91,7 +109,7 @@ function Set-JVEmbyThumbs {
 
                 try {
                     Write-JVLog -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
-                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false
+                    Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
                 } catch {
                     Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
                 }
