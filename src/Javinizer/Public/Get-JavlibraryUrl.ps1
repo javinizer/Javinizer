@@ -6,11 +6,19 @@ function Get-JavlibraryUrl {
 
         [Parameter(Mandatory = $true, Position = 1)]
         [ValidateSet('en', 'ja', 'zh')]
-        [String]$Language
+        [String]$Language,
+
+        [Parameter(Position = 2)]
+        [String]$BaseUrl = 'http://www.javlibrary.com'
     )
 
     process {
-        $searchUrl = "http://www.javlibrary.com/en/vl_searchbyid.php?keyword=$Id"
+        if ($BaseUrl[-1] -eq '/') {
+            # Remove the trailing slash if it is included to create the valid searchUrl
+            $BaseUrl = $BaseUrl[0..($BaseUrl.Length - 1)] -join ''
+        }
+
+        $searchUrl = "$BaseUrl/en/vl_searchbyid.php?keyword=$Id"
 
         try {
             Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
@@ -22,7 +30,7 @@ function Get-JavlibraryUrl {
         # Check if the search uniquely matched a video page
         # If not, we will check the search results and check a few for if they are a match
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
-        if ($searchResultUrl -match 'http:\/\/www\.javlibrary\.com\/en\/\?v=') {
+        if ($searchResultUrl -match "$BaseUrl?v=") {
             try {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
@@ -50,7 +58,7 @@ function Get-JavlibraryUrl {
                 $count = 1
                 foreach ($result in $searchResults) {
                     $videoId = ($result -split '=')[1]
-                    $directUrl = "http://www.javlibrary.com/en/?v=$videoId"
+                    $directUrl = "$BaseUrl/en/?v=$videoId"
 
                     try {
                         Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
