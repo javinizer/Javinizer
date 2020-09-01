@@ -145,13 +145,13 @@ function Javinizer {
         }
 
         if ($Settings.'admin.log' -eq '1') {
-            if ($Settings.'admin.log.path' -eq '') {
+            if ($Settings.'location.log' -eq '') {
                 $logPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
             } else {
-                if (!(Test-Path -LiteralPath $Settings.'admin.log.path' -PathType Leaf)) {
-                    New-Item -Path $Settings.'admin.log.path' | Out-Null
+                if (!(Test-Path -LiteralPath $Settings.'location.log' -PathType Leaf)) {
+                    New-Item -Path $Settings.'location.log' | Out-Null
                 }
-                $logPath = $Settings.'admin.log.path'
+                $logPath = $Settings.'location.log'
             }
             Add-LoggingTarget -Name File -Configuration @{
                 Path     = $logPath
@@ -162,22 +162,22 @@ function Javinizer {
             }
         }
 
-        if ($Settings.'sort.metadata.thumbcsv.path' -eq '') {
+        if ($Settings.'location.thumbcsv' -eq '') {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         } else {
-            if (!(Test-Path -LiteralPath $Settings.'sort.metadata.thumbcsv.path' -PathType Leaf)) {
-                New-Item -Path $Settings.'sort.metadata.thumbcsv.path' | Out-Null
+            if (!(Test-Path -LiteralPath $Settings.'location.thumbcsv' -PathType Leaf)) {
+                New-Item -Path $Settings.'location.thumbcsv' | Out-Null
             }
-            $thumbCsvPath = $Settings.'sort.metadata.thumbcsv.path'
+            $thumbCsvPath = $Settings.'location.thumbcsv'
         }
 
-        if ($Settings.'sort.metadata.genrecsv.path' -eq '') {
+        if ($Settings.'location.genrecsv' -eq '') {
             $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
         } else {
-            if (!(Test-Path -LiteralPath $Settings.'sort.metadata.genrecsv.path' -PathType Leaf)) {
-                New-Item -Path $Settings.'sort.metadata.genrecsv.path' | Out-Null
+            if (!(Test-Path -LiteralPath $Settings.'location.genrecsv' -PathType Leaf)) {
+                New-Item -Path $Settings.'location.genrecsv' | Out-Null
             }
-            $genreCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            $genreCsvPath = $Settings.'location.genrecsv'
         }
 
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {

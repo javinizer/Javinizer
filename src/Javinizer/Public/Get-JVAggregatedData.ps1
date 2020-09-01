@@ -83,7 +83,7 @@ function Get-JVAggregatedData {
         [Boolean]$ThumbCsv,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.thumbcsv.path')]
+        [Alias('location.thumbcsv')]
         [System.IO.FileInfo]$ThumbCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'),
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -95,7 +95,7 @@ function Get-JVAggregatedData {
         [Boolean]$ReplaceGenre,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.genrecsv.path')]
+        [Alias('location.genrecsv')]
         [System.IO.FileInfo]$GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'),
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -139,11 +139,11 @@ function Get-JVAggregatedData {
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
-            if ($Settings.'sort.metadata.genrecsv.path' -ne '') {
-                $GenreCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            if ($Settings.'location.genrecsv' -ne '') {
+                $GenreCsvPath = $Settings.'location.genrecsv'
             }
-            if ($Settings.'sort.metadata.thumbcsv.path' -ne '') {
-                $ThumbCsvPath = $Settings.'sort.metadata.genrecsv.path'
+            if ($Settings.'location.thumbcsv' -ne '') {
+                $ThumbCsvPath = $Settings.'location.genrecsv'
             }
         }
 

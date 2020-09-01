@@ -1,6 +1,9 @@
 {
     "location.input": "C:\\Downloads\\Unsorted",
     "location.output": "C:\\Downloads\\Sorted",
+    "location.thumbcsv": "",
+    "location.genrecsv": "",
+    "location.log": "",
     "scraper.movie.dmm": 1,
     "scraper.movie.jav321": 0,
     "scraper.movie.javbus": 0,
@@ -57,10 +60,8 @@
     "sort.metadata.nfo.firstnameorder": 0,
     "sort.metadata.nfo.actresslanguageja": 0,
     "sort.metadata.thumbcsv": 1,
-    "sort.metadata.thumbcsv.path": "",
     "sort.metadata.thumbcsv.convertalias": 1,
     "sort.metadata.genrecsv": 1,
-    "sort.metadata.genrecsv.path": "",
     "sort.metadata.genre.ignore": [
         "Featured Actress",
         "Hi-Def"
@@ -120,7 +121,7 @@
         "r18",
         "r18zh"
     ],
-    "sort.metadata.priority.screenshotUrl": [
+    "sort.metadata.priority.screenshoturl": [
         "r18",
         "dmm"
     ],
@@ -128,7 +129,7 @@
         "r18",
         "javlibrary"
     ],
-    "sort.metadata.priority.trailerUrl": [
+    "sort.metadata.priority.trailerurl": [
         "r18"
     ],
     "emby.url": "http:\/\/192.168.0.1:8096",
@@ -139,6 +140,5 @@
     "javlibrary.request.interval": 15,
     "javlibrary.request.timeout": 90,
     "admin.log": 1,
-    "admin.log.path": "",
     "admin.log.level": "info"
 }
