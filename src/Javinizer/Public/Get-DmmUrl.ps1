@@ -66,7 +66,7 @@ function Get-DmmUrl {
         }
 
         if ($null -eq $directUrl) {
-            Write-JVLog -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on DMM"
+            Write-JVLog -Level Warning -Message "[$Id] not matched on DMM"
             return
         } else {
             $urlObject = [PSCustomObject]@{

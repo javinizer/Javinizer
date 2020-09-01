@@ -1,6 +1,6 @@
 function Get-JVUrlLocation {
     [CmdletBinding()]
-    param(
+    param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [PSObject]$Url
     )
