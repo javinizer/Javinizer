@@ -34,7 +34,7 @@
     Description          = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion    = '6'
+    # PowerShellVersion    = '6'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
