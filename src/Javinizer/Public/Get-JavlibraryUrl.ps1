@@ -24,10 +24,10 @@ function Get-JavlibraryUrl {
         $searchUrl = "$BaseUrl/en/vl_searchbyid.php?keyword=$Id"
 
         try {
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
         } catch {
-            Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
         }
 
         # Check if the search uniquely matched a video page
@@ -35,14 +35,14 @@ function Get-JavlibraryUrl {
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match "$BaseUrl?v=") {
             try {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                 $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
             } catch {
-                Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
             }
 
             $resultId = Get-JavlibraryId -WebRequest $webRequest
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
             if ($resultId -eq $Id) {
                 $javlibraryUrl = $searchResultUrl
             }
@@ -64,14 +64,14 @@ function Get-JavlibraryUrl {
                     $directUrl = "$BaseUrl/en/?v=$videoId"
 
                     try {
-                        Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
                         $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
                     } catch {
-                        Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
                     }
 
                     $resultId = Get-JavlibraryId -WebRequest $webRequest
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
                     if ($resultId -eq $Id) {
                         $javlibraryUrl = (Get-JVUrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
@@ -88,7 +88,7 @@ function Get-JavlibraryUrl {
         }
 
         if ($null -eq $javlibraryUrl) {
-            Write-JVLog -Level Warning -Message "[$Id] not matched on JavLibrary"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
             return
         } else {
             if ($Language -eq 'ja') {

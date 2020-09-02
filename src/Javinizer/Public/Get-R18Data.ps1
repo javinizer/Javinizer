@@ -60,10 +60,10 @@ function Get-R18Data {
         }
 
         try {
-            Write-JVLog -Level Debug -Message "Performing [GET] on URL [$Url]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$Url]"
             $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
         } catch {
-            Write-JVLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
         $movieDataObject = [PSCustomObject]@{
@@ -88,7 +88,7 @@ function Get-R18Data {
             TrailerUrl    = Get-R18TrailerUrl -WebRequest $webRequest
         }
 
-        Write-JVLog -Level Debug -Message "R18 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
+        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "R18 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
 }

@@ -15,7 +15,7 @@ function Get-DmmUrl {
         if ($r18Url) {
             $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
             $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$r18Id"
-            Write-JVLog -Level Debug -Message "Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
         } else {
             # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
             if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
@@ -26,10 +26,10 @@ function Get-DmmUrl {
             $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
 
             try {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
-                Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem"
             }
 
             $retryCount = 3
@@ -41,19 +41,19 @@ function Get-DmmUrl {
             }
 
             if ($numResults -ge 1) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
                 $count = 1
                 foreach ($result in $searchResults) {
                     try {
-                        Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                         $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                     } catch {
-                        Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
                     }
 
                     $resultId = Get-DmmContentId -WebRequest $webRequest
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                     if ($resultId -match $Id) {
                         $directUrl = $result
                         break
@@ -69,7 +69,7 @@ function Get-DmmUrl {
         }
 
         if ($null -eq $directUrl) {
-            Write-JVLog -Level Warning -Message "[$Id] not matched on DMM"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on DMM"
             return
         } else {
             $urlObject = [PSCustomObject]@{

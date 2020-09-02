@@ -40,17 +40,17 @@ function Set-JVEmbyThumbs {
 
         try {
             $actressUrl = "$Url/emby/Persons/?api_key=$ApiKey"
-            Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$actressUrl]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$actressUrl]"
             $embyActress = (Invoke-RestMethod -Method Get -Uri $actressUrl -ErrorAction Stop -Verbose:$false).Items | Select-Object Name, Id, ImageTags
         } catch {
-            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting actresses from Emby: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting actresses from Emby: $PSItem"
         }
 
         try {
-            Write-JVLog -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [ActressCsv - $ThumbCsvPath] imported"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [ActressCsv - $ThumbCsvPath] imported"
             $actressCsv = Import-Csv -LiteralPath $ThumbCsvPath -ErrorAction Stop
         } catch {
-            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$ThumbCsvPath]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$ThumbCsvPath]: $PSItem"
         }
 
         if ($ReplaceAll) {
@@ -111,22 +111,22 @@ function Set-JVEmbyThumbs {
                     $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey"
 
                     try {
-                        Write-JVLog -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
                         Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
                     } catch {
-                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
                     }
 
                     $primaryPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey"
 
                     try {
-                        Write-JVLog -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
                         Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
                     } catch {
-                        Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
                     }
 
-                    Write-JVLog -Level Info -Message "Set [$($actress.Name)] => [$thumbUrl]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "Set [$($actress.Name)] => [$thumbUrl]"
                 }
             }
         }

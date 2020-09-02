@@ -223,10 +223,10 @@ function Get-R18Series {
 
             if ($series -like '*...') {
                 try {
-                    Write-JVLog -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
                     $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
                 } catch {
-                    Write-JVLog -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
                 }
                 $series = (Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]) -replace "`t", ''
             }

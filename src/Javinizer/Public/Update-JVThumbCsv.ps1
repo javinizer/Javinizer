@@ -81,18 +81,18 @@ function Update-JVThumbCsv {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JVLog -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
                             $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JVLog -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[Page $x] Actress [$actressString - $($actress.JapaneseName)] written to thumb csv"
                         $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                     }
                 }
             }
         } catch {
-            Write-JVLog -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$ThumbCsvPath]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$ThumbCsvPath]: $PSItem"
         }
     }
 }

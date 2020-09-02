@@ -97,7 +97,7 @@ function Get-JVData {
             }
 
             if ($R18) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-R18" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18Url) {
@@ -109,7 +109,7 @@ function Get-JVData {
             }
 
             if ($R18Zh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-R18Zh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18ZhUrl) {
@@ -121,7 +121,7 @@ function Get-JVData {
             }
 
             if ($Javlibrary) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Javlibrary" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryUrl) {
@@ -133,7 +133,7 @@ function Get-JVData {
             }
 
             if ($JavlibraryJa) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa] [Url - $JavlibraryJaUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa] [Url - $JavlibraryJaUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavlibraryJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryJaUrl) {
@@ -145,7 +145,7 @@ function Get-JVData {
             }
 
             if ($JavlibraryZh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh] [Url - $JavlibraryZhUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh] [Url - $JavlibraryZhUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavlibraryZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryZhUrl) {
@@ -157,7 +157,7 @@ function Get-JVData {
             }
 
             if ($Dmm) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Dmm" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:DmmUrl) {
@@ -169,7 +169,7 @@ function Get-JVData {
             }
 
             if ($Javbus) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Javbus" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusUrl) {
@@ -181,7 +181,7 @@ function Get-JVData {
             }
 
             if ($JavbusJa) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavbusJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusJaUrl) {
@@ -193,7 +193,7 @@ function Get-JVData {
             }
 
             if ($JavbusZh) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh] [Url - $JavbusZhUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh] [Url - $JavbusZhUrl]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavbusZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusZhUrl) {
@@ -205,7 +205,7 @@ function Get-JVData {
             }
 
             if ($Jav321) {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
                 Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Jav321" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:Jav321Url) {
@@ -221,18 +221,18 @@ function Get-JVData {
             $jobName = @((Get-Job | Where-Object { $_.Name -like "jvdata-*" } | Select-Object Name).Name)
 
             if ($jobCount -eq 0) {
-                Write-JVLog -Level Warning -Message "[$Id] No scrapers were run"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] No scrapers were run"
                 return
             } else {
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"
                 # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
-                Wait-Job -Id $jobId
+                Wait-Job -Id $jobId | Out-Null
 
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
                 $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
 
                 $hasData = ($javinizerDataObject | Select-Object Source).Source
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
 
                 $dataObject = [PSCustomObject]@{
                     Data = $javinizerDataObject
@@ -243,11 +243,11 @@ function Get-JVData {
                 }
             }
         } catch {
-            Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
         } finally {
             # Remove all completed or running jobs before exiting this script
             # If jobs remain after closure, it may cause issues in concurrent runs
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Removed - Scraper jobs]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Removed - Scraper jobs]"
             Get-Job | Remove-Job -Force
         }
     }

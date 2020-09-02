@@ -12,10 +12,10 @@ function Get-Jav321Data {
         $movieDataObject = @()
 
         try {
-            Write-JVLog -Level Debug -Message "Performing [GET] on URL [$Url]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$Url]"
             $webRequest = Invoke-RestMethod -Uri $Url -Verbose:$false
         } catch {
-            Write-JVLog -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Error [GET] on URL [$Url]: $PSItem"
         }
 
         $movieDataObject = [PSCustomObject]@{
@@ -34,7 +34,7 @@ function Get-Jav321Data {
             ScreenshotUrl   = Get-Jav321ScreenshotUrl -WebRequest $webRequest
         }
 
-        Write-JVLog -Level Debug -Message "Jav321 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
+        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Jav321 data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
         Write-Output $movieDataObject
     }
 }

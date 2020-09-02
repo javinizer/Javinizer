@@ -20,41 +20,39 @@ function Test-JVSettings {
                 [String]$Type
             )
 
-            process {
-                foreach ($setting in $SettingsGroup) {
-                    $settingValue = $Settings.($setting)
+            foreach ($setting in $SettingsGroup) {
+                $settingValue = $Settings.($setting)
 
-                    if ($Type -eq 'Path') {
-                        if ($settingValue -ne '') {
-                            if (!(Test-Path -Path $settingValue -IsValid)) {
-                                Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a Path"
-                            }
+                if ($Type -eq 'Path') {
+                    if ($settingValue -ne '') {
+                        if (!(Test-Path -Path $settingValue)) {
+                            Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a path"
                         }
                     }
+                }
 
-                    if ($Type -eq 'Boolean') {
-                        if ($settingValue -ne 0 -and $settingValue -ne 1 -and $settingValue.GetType() -ne 'System.ValueType') {
-                            Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a Boolean"
-                        }
+                if ($Type -eq 'Boolean') {
+                    if ($settingValue -ne 0 -and $settingValue -ne 1) {
+                        Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a boolean"
+                    }
+                }
+
+                if ($Type -eq 'Integer') {
+                    if ($settingValue.GetType().BaseType -ne 'System.ValueType' -and $settingValue.GetType().Name -notlike 'int*') {
+                        Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as an integer"
                     }
 
-                    if ($Type -eq 'Integer') {
-                        if ($settingValue.GetType().BaseType -ne 'System.ValueType' -and $settingValue.GetType().Name -notlike 'int*') {
-                            Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a Integer"
-                        }
+                }
 
+                if ($Type -eq 'String') {
+                    if ($settingValue.GetType().BaseType -ne 'System.Object' -and $settingValue.GetType().Name -ne 'String') {
+                        Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a string"
                     }
+                }
 
-                    if ($Type -eq 'String') {
-                        if ($settingValue.GetType().BaseType -ne 'System.Object' -and $settingValue.GetType().Name -ne 'String') {
-                            Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a String"
-                        }
-                    }
-
-                    if ($Type -eq 'Array') {
-                        if ($settingValue.GetType().Name -notlike '*Object*') {
-                            Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as a Array"
-                        }
+                if ($Type -eq 'Array') {
+                    if ($settingValue.GetType().BaseType -notlike '*array*' -and $settingValue.GetType().BaseType -notlike '*object*') {
+                        Write-JVLog -Level Error -Message "Error occurred when validating setting [$setting] with value [$settingValue] as an array"
                     }
                 }
             }
@@ -70,6 +68,8 @@ function Test-JVSettings {
 
         $booleanSettings = @(
             'admin.log',
+            'javlibrary.request.interval',
+            'javlibrary.request.timeout',
             'match.regex',
             'scraper.movie.dmm',
             'scraper.movie.jav321',
@@ -100,8 +100,6 @@ function Test-JVSettings {
         ) | Test-JVSettingsGroup -Settings $Settings -Type Boolean
 
         $integerSettings = @(
-            'javlibrary.request.interval',
-            'javlibrary.request.timeout',
             'match.minimumfilesize',
             'match.regex.idmatch',
             'match.regex.ptmatch',
@@ -147,7 +145,7 @@ function Test-JVSettings {
             'sort.metadata.priority.screenshoturl',
             'sort.metadata.priority.series',
             'sort.metadata.priority.title',
-            'sort.metadata.priority.trailerurl'
+            'sort.metadata.priority.trailerurl',
             'sort.metadata.requiredfield'
         ) | Test-JVSettingsGroup -Settings $Settings -Type Array
 

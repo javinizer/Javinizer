@@ -19,7 +19,7 @@ function Get-R18Url {
 
         # If contentId is given, convert it back to standard movie ID to validate
         if ($Id -match '(?:\d{1,5})?([a-zA-Z]{2,10}|[tT]28|[rR]18)(\d{1,5})') {
-            Write-JVLog -Level Debug -Message "Content ID [$Id] detected"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Content ID [$Id] detected"
             $splitId = $Id | Select-String -Pattern '([a-zA-Z|tT28|rR18]{1,10})(\d{1,5})'
             $studioName = $splitId.Matches.Groups[1].Value
             $rawStudioId = $splitId.Matches.Groups[2].Value
@@ -37,10 +37,10 @@ function Get-R18Url {
 
         # Try matching the video with Video ID
         try {
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
-            Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
         }
 
         $retryCount = 3
@@ -52,19 +52,19 @@ function Get-R18Url {
         }
 
         if ($numResults -ge 1) {
-            Write-JVLog -Level Debug -Message "Searching [$retryCount] of [$numResults] results for [$Id]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Searching [$retryCount] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
                 try {
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Result [$count] is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $result
                     break
@@ -83,10 +83,10 @@ function Get-R18Url {
             $searchUrl = "https://www.r18.com/common/search/searchword=$contentId/"
 
             try {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
-                Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem"
             }
 
             $retryCount = 5
@@ -100,14 +100,14 @@ function Get-R18Url {
             $count = 1
             foreach ($result in $altSearchResults) {
                 try {
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem"
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Result [$count] is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $result
                     break
@@ -126,7 +126,7 @@ function Get-R18Url {
             $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$contentId/"
 
             try {
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
                 $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false
             } catch {
                 $webRequest = $null
@@ -134,7 +134,7 @@ function Get-R18Url {
 
             if ($null -ne $webRequest) {
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $testUrl
                 }
@@ -142,7 +142,7 @@ function Get-R18Url {
         }
 
         if ($null -eq $directUrl) {
-            Write-JVLog -Level Warning -Message "[$Id] not matched on R18"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on R18"
             return
         } else {
             if ($Language -eq 'zh') {

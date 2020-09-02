@@ -195,7 +195,7 @@ function Get-JVAggregatedData {
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
-                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
                 }
             }
         }
@@ -208,7 +208,7 @@ function Get-JVAggregatedData {
                 try {
                     $actressCsv = Import-Csv -LiteralPath $thumbCsvPath
                 } catch {
-                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$genreCsvPath]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing thumbnail csv [$genreCsvPath]: $PSItem"
                 }
 
                 for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
@@ -241,7 +241,7 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
                             }
 
-                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
                         }
                     }
 
@@ -258,7 +258,7 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
                             $actressString = "$($aggregatedDataObject.Actress[$x].LastName) $($aggregatedDataObject.Actress[$x].FirstName)".Trim()
-                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                         # Check if JapaneseName matches the thumb csv
                     } elseif ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName')) {
@@ -274,7 +274,7 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].LastName = $matchedActress.LastName
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $actressString = "$($aggregatedDataObject.Actress[$x].JapaneseName)".Trim()
-                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                         # Check if FirstName matches the thumb csv for single-word names
                     } elseif ($null -eq $aggregatedDataObject.Actress[$x].LastName -and $null -ne $aggregatedDataObject.Actress[$x].FirstName) {
@@ -291,12 +291,12 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             $aggregatedDataObject.Actress[$x].JapaneseName = $matchedActress.JapaneseName
                             $actressString = "$($aggregatedDataObject.Actress[$x].FirstName)".Trim()
-                            Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [ThumbUrl - $($matchedActress.ThumbUrl)] added to actress [$actressString]"
                         }
                     }
                 }
             } else {
-                Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
             }
         }
 
@@ -305,20 +305,20 @@ function Get-JVAggregatedData {
                 try {
                     $replaceGenres = Import-Csv -LiteralPath $GenreCsvPath
                 } catch {
-                    Write-JVLog -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$GenreCsvPath]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$GenreCsvPath]: $PSItem"
                 }
 
                 $newGenres = $aggregatedDataObject.Genre
                 foreach ($genrePair in $replaceGenres) {
                     if ($($genrePair.Original -in $newGenres)) {
                         $newGenres = $newGenres -replace "$($genrePair.Original)", "$($genrePair.Replacement)"
-                        Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
                     }
                 }
 
                 $aggregatedDataObject.Genre = $newGenres
             } else {
-                Write-JVLog -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
             }
 
         }
@@ -328,7 +328,7 @@ function Get-JVAggregatedData {
             foreach ($genre in $IgnoreGenre) {
                 if ($genre -in $newGenres) {
                     $newGenres = $newGenres -replace "$genre", $null
-                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
                 }
             }
             $aggregatedDataObject.Genre = $newGenres | Where-Object { $_ -ne '' }
@@ -341,10 +341,10 @@ function Get-JVAggregatedData {
 
                 if ($null -ne $translatedDescription -or $translatedDescription -ne '') {
                     $aggregatedDataObject.Description = $translatedDescription
-                    Write-JVLog -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
                 }
             } else {
-                Write-JVLog -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
             }
         }
 

@@ -86,7 +86,7 @@ function Convert-JVTitle {
                     $id = ($file | Select-String $RegexString).Matches.Groups[$RegexIdMatch].Value
                     $partNum = ($file | Select-String $RegexString).Matches.Groups[$RegexPtMatch].Value
                 } catch {
-                    Write-JVLog -Level Debug -Message "File [$file] not matched by regex"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "File [$file] not matched by regex"
                     break
                 }
                 if ($fileBaseNameUpper -eq 1) {
@@ -198,7 +198,7 @@ function Convert-JVTitle {
             <#
                 #Match ID-###-A, ID-###-B, etc.
                 elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}[-][a-iA-I]$") {
-                    Write-JVLog -Level Debug -Message "Match 3"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Match 3"
                     $fileP1, $fileP2, $fileP3, $fileP4 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6})[-]([a-zA-Z])"
                     $fileBaseNameUpperCleaned += $fileP1 + $fileP2 + $fileP3
                 }

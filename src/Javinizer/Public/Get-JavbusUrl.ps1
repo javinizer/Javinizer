@@ -16,20 +16,20 @@ function Get-JavbusUrl {
         $searchUrl = "https://www.javbus.com/search/$Id&type=0&parent=uc"
 
         try {
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             try {
                 $searchUrl = "https://www.javbus.com/uncensored/search/$Id&type=0&parent=uc"
-                Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
                 try {
                     $searchUrl = "https://www.javbus.org/search/$Id&type=0&parent=uc"
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                     $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
                 } catch {
-                    Write-JVLog -Level Warning -Message "[$Id] not matched on JavBus"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavBus"
                     return
                 }
             }
@@ -49,15 +49,15 @@ function Get-JavbusUrl {
         }
 
         if ($numResults -ge 1) {
-            Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
                 try {
-                    Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                     $webRequest = Invoke-RestMethod -Uri $result -Method Get -Verbose:$false
                 } catch {
-                    Write-JVLog -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
                 }
                 $resultId = Get-JavbusId -WebRequest $webRequest
                 if ($resultId -eq $Id) {
@@ -69,7 +69,7 @@ function Get-JavbusUrl {
                     break
                 }
 
-                Write-JVLog -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Result [$count] is [$resultId]"
 
                 if ($count -eq $Tries) {
                     break
@@ -79,7 +79,7 @@ function Get-JavbusUrl {
             }
 
             if ($null -eq $directUrl) {
-                Write-JVLog -Level Warning -Message "[$Id] not matched on JavBus"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavBus"
                 return
             } else {
                 $urlObject = [PSCustomObject]@{

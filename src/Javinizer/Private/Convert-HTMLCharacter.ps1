@@ -19,7 +19,6 @@ function Convert-HTMLCharacter {
             -replace '&#039', ''
 
         $newString = $String.Trim()
-        # Write-JVLog -Level Debug -Message "Begin String: [$String]; End string: [$newString]"
         Write-Output $newString
     }
 }
