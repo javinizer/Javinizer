@@ -136,10 +136,6 @@
     "emby.url": "http:\/\/192.168.0.1:8096",
     "emby.apikey": "",
     "javlibrary.baseurl": "http:\/\/www.javlibrary.com",
-    "javlibrary.username": "",
-    "javlibrary.sessioncookie": "",
-    "javlibrary.request.interval": 15,
-    "javlibrary.request.timeout": 90,
     "admin.log": 1,
     "admin.log.level": "info"
 }
