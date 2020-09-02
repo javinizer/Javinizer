@@ -40,6 +40,11 @@ function Javinizer {
         [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
+        [ValidateRange(1, 10)]
+        [AllowEmptyString()]
+        [Int]$Multi,
+
+        [Parameter(ParameterSetName = 'Path')]
         [System.IO.FileInfo]$SettingsPath,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -346,7 +351,7 @@ function Javinizer {
 
                 try {
                     $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
-                    Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
+                    # Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JVLog -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
                     return
@@ -366,21 +371,65 @@ function Javinizer {
                         }
                     }
                 } else {
-                    $index = 1
-                    foreach ($movie in $javMovies) {
-                        Write-Host "[$index of $($javMovies.Count)] Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                        $index++
-                        $javData = Get-JVData  -Id $movie.Id -Settings $Settings
-                        if ($null -ne $javData) {
-                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                            if ($null -ne $javAggregatedData) {
-                                $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
-                            } else {
-                                Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
-                                return
+
+                    if ($PSBoundParameters.ContainsKey('Multi')) {
+                        try {
+                            $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
+                            foreach ($movie in $javMovies) {
+                                Start-ThreadJob -Name "javinizer-$($movie.BaseName)" -ThrottleLimit $Multi -ScriptBlock {
+                                    Import-Module $using:jvModulePath
+                                    $jvMovie = $using:movie
+                                    Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                } -StreamingHost $Host | Out-Null
                             }
-                        } else {
-                            Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+
+                            $waitJobs = Get-Job -IncludeChildJob | Where-Object { $_.PSJobTypeName -eq 'ThreadJob' -and $_.Name -like 'javinizer-*' }
+                            $totalJobs = $waitJobs.Count
+                            $completed = 0
+                            while ($waitJobs.Count -ne 0) {
+                                $runningJobs = @()
+                                $completedJobs = @()
+                                $otherJobs = @()
+
+                                foreach ($job in $waitJobs) {
+                                    if ($job.State -eq 'Completed') {
+                                        $completedJobs += $job
+                                    } elseif ($job.State -eq 'Running') {
+                                        $runningJobs += $job
+                                    } else {
+                                        $otherJobs += $job
+                                    }
+                                }
+
+                                Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($waitjobs.Count)" -PercentComplete (($completed / $totalJobs) * 100)
+                                Write-Progress -ParentId 1 -Id 2 -Activity "Max threads: [$Multi]" -Status "Sorting: $($runningJobs.Name -replace 'javinizer-', '' -join ', ')"
+
+                                $waitJobs = $runningJobs + $otherJobs
+                                $completed += $completedJobs.Count
+                            }
+                        } catch {
+                            Write-Error "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]: $PSItem"
+                        } finally {
+                            # Stop all running jobs if script is stopped by user input
+                            Get-Job | Remove-Job -Force
+                        }
+                    } else {
+                        $index = 1
+                        foreach ($movie in $javMovies) {
+                            # Write-Host "Sorting [$($movie.FileName)] as [$($movie.Id)]"
+                            $index++
+                            $javData = Get-JVData  -Id $movie.Id -Settings $Settings
+                            if ($null -ne $javData) {
+                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                if ($null -ne $javAggregatedData) {
+                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
+                                } else {
+                                    Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                                    return
+                                }
+                            } else {
+                                Write-JVLog -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                            }
                         }
                     }
                 }

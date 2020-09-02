@@ -327,7 +327,7 @@ function Set-JVMovie {
                     $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                         Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                        Write-JVLog -Level Info "[$($Data.Id)] Completed [$Path] => [$filePath]"
+                        Write-JVLog -Level Info "Completed [$Path] => [$filePath]"
                     }
                 } catch {
                     Write-JVLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
@@ -337,7 +337,7 @@ function Set-JVMovie {
                     $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                         Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                        Write-JVLog -Level Info "[$($Data.Id)] Completed [$Path] => [$filePath]"
+                        Write-JVLog -Level Info "Completed [$Path] => [$filePath]"
 
                     }
                 } catch {

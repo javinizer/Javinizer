@@ -98,7 +98,7 @@ function Get-JVData {
 
             if ($R18) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
-                Start-ThreadJob -Name "R18" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-R18" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18Url) {
                         $using:R18Url | Get-R18Data
@@ -110,7 +110,7 @@ function Get-JVData {
 
             if ($R18Zh) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
-                Start-ThreadJob -Name "R18Zh" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-R18Zh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18ZhUrl) {
                         $using:R18ZhUrl | Get-R18Data
@@ -122,7 +122,7 @@ function Get-JVData {
 
             if ($Javlibrary) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
-                Start-ThreadJob -Name "Javlibrary" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Javlibrary" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryUrl) {
                         $using:JavlibraryUrl | Get-JavlibraryData
@@ -134,7 +134,7 @@ function Get-JVData {
 
             if ($JavlibraryJa) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa] [Url - $JavlibraryJaUrl]"
-                Start-ThreadJob -Name "JavlibraryJa" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavlibraryJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryJaUrl) {
                         $using:JavlibraryJaUrl | Get-JavlibraryData
@@ -146,7 +146,7 @@ function Get-JVData {
 
             if ($JavlibraryZh) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh] [Url - $JavlibraryZhUrl]"
-                Start-ThreadJob -Name "JavlibraryZh" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavlibraryZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryZhUrl) {
                         $using:JavlibraryZhUrl | Get-JavlibraryData
@@ -158,7 +158,7 @@ function Get-JVData {
 
             if ($Dmm) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
-                Start-ThreadJob -Name "Dmm" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Dmm" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:DmmUrl) {
                         $using:DmmUrl | Get-DmmData
@@ -170,7 +170,7 @@ function Get-JVData {
 
             if ($Javbus) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
-                Start-ThreadJob -Name "Javbus" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Javbus" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusUrl) {
                         $using:JavbusUrl | Get-JavbusData
@@ -182,7 +182,7 @@ function Get-JVData {
 
             if ($JavbusJa) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
-                Start-ThreadJob -Name "JavbusJa" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavbusJa" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusJaUrl) {
                         $using:JavbusJaUrl | Get-JavbusData
@@ -194,7 +194,7 @@ function Get-JVData {
 
             if ($JavbusZh) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh] [Url - $JavbusZhUrl]"
-                Start-ThreadJob -Name "JavbusZh" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-JavbusZh" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusZhUrl) {
                         $using:JavbusZhUrl | Get-JavbusData
@@ -206,7 +206,7 @@ function Get-JVData {
 
             if ($Jav321) {
                 Write-JVLog -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
-                Start-ThreadJob -Name "Jav321" -ScriptBlock {
+                Start-ThreadJob -ThrottleLimit 150 -Name "jvdata-Jav321" -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:Jav321Url) {
                         $using:Jav321Url | Get-Jav321Data
@@ -216,9 +216,9 @@ function Get-JVData {
                 } | Out-Null
             }
 
-            $jobCount = (Get-Job | Where-Object { $_.Name -notlike 'PowerShell*' }).Count
-            $jobId = @((Get-Job | Where-Object { $_.Name -notlike "PowerShell*" } | Select-Object Id).Id)
-            $jobName = @((Get-Job | Where-Object { $_.Name -notlike "PowerShell*" } | Select-Object Name).Name)
+            $jobCount = (Get-Job | Where-Object { $_.Name -like 'jvdata-*' }).Count
+            $jobId = @((Get-Job | Where-Object { $_.Name -like "jvdata-*" } | Select-Object Id).Id)
+            $jobName = @((Get-Job | Where-Object { $_.Name -like "jvdata-*" } | Select-Object Name).Name)
 
             if ($jobCount -eq 0) {
                 Write-JVLog -Level Warning -Message "[$Id] No scrapers were run"
@@ -226,7 +226,7 @@ function Get-JVData {
             } else {
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"
                 # Wait-Job is used separately rather than in a pipeline due to the PowerShell.Exit job that is being created during the first-run of this function
-                Wait-Job -Id $jobId | Out-Null
+                Wait-Job -Id $jobId
 
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
                 $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
