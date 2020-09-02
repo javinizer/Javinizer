@@ -40,9 +40,8 @@ function Javinizer {
         [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
-        [ValidateRange(1, 10)]
-        [AllowEmptyString()]
-        [Int]$Multi,
+        [Alias('m')]
+        [Switch]$Multi,
 
         [Parameter(ParameterSetName = 'Path')]
         [System.IO.FileInfo]$SettingsPath,
@@ -58,6 +57,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$Force,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$HideProgress,
 
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
@@ -140,6 +142,10 @@ function Javinizer {
     )
 
     process {
+        if ($HideProgress) {
+            $ProgressPreference = 'SilentlyContinue'
+        }
+
         try {
             if (!($SettingsPath)) {
                 $SettingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
@@ -186,20 +192,20 @@ function Javinizer {
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
             if ($MoveToFolder -eq $true) {
                 $Settings.'sort.movetofolder' = 1
-                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             } elseif ($MoveToFolder -eq $false) {
                 $Settings.'sort.movetofolder' = 0
-                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             }
         }
 
         if ($PSBoundParameters.ContainsKey('RenameFile')) {
             if ($RenameFile -eq $true) {
                 $Settings.'sort.renamefile' = 1
-                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [1]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [1]"
             } elseif ($RenameFile -eq $false) {
                 $Settings.'sort.renamefile' = 0
-                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [0]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [0]"
             }
         }
 
@@ -208,11 +214,9 @@ function Javinizer {
                 $settingName = $item.Key
                 $settingValue = $item.Value
                 $Settings."$($item.Key)" = $item.Value
-                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
             }
         }
-
-
 
         # Validate the values in the settings file following all command-line transformations
         $Settings = $Settings | Test-JVSettings
@@ -269,16 +273,16 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [SettingsPath - $SettingsPath]"
                         Invoke-Item -LiteralPath $SettingsPath
                     } catch {
-                        Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$SettingsPath]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening settings file [$SettingsPath]: $PSItem"
                     }
                 }
 
                 if ($OpenLog) {
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] [LogPath - $JVLogPath]"
-                        Invoke-Item -LiteralPath $JVLogPath
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [LogPath - $script:JVLogPath]"
+                        Invoke-Item -LiteralPath $script:JVLogPath
                     } catch {
-                        Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening log file [$JVLogPath]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening log file [$script:JVLogPath]: $PSItem"
                     }
                 }
 
@@ -287,7 +291,7 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [ThumbCsvPath - $thumbCsvPath]"
                         Invoke-Item -LiteralPath $thumbCsvPath
                     } catch {
-                        Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
                 }
 
@@ -296,7 +300,7 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
                         Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
-                        Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
                 }
             }
@@ -336,7 +340,7 @@ function Javinizer {
 
                 # This will check that the Path is valid
                 if (!(Test-Path -LiteralPath $Path)) {
-                    Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Path [$Path] is not a valid path"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Path [$Path] is not a valid path"
                 }
 
                 # Default destination path to location.output in settings if not specified
@@ -346,20 +350,24 @@ function Javinizer {
 
                 # This will check that the DestinationPath is a valid directory
                 if (Test-Path -LiteralPath $DestinationPath -PathType Leaf) {
-                    Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
                 }
 
                 try {
                     $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
                     # Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
-                    Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting local movies in [$Path]: $PSItem"
                     return
+                }
+
+                if ($null -eq $javMovies) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
                 }
 
                 if ($Url) {
                     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
-                        Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Warning -Message "Exiting -- [$Path] is not a valid single file path"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exiting -- [$Path] is not a valid single file path"
                         return
                     }
 
@@ -371,12 +379,14 @@ function Javinizer {
                         }
                     }
                 } else {
-
+                    if ($Settings.'scraper.throttlelimit' -lt 1 -or $Settings.'scraper.throttlelimit' -gt 5) {
+                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
+                    }
                     if ($PSBoundParameters.ContainsKey('Multi')) {
                         try {
                             $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                             foreach ($movie in $javMovies) {
-                                Start-ThreadJob -Name "javinizer-$($movie.BaseName)" -ThrottleLimit $Multi -ScriptBlock {
+                                Start-ThreadJob -Name "javinizer-$($movie.BaseName)" -ThrottleLimit $Settings.'scraper.throttlelimit' -ScriptBlock {
                                     Import-Module $using:jvModulePath
                                     $jvMovie = $using:movie
                                     Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
@@ -402,13 +412,13 @@ function Javinizer {
                                 }
 
                                 Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($waitjobs.Count)" -PercentComplete (($completed / $totalJobs) * 100)
-                                Write-Progress -ParentId 1 -Id 2 -Activity "Max threads: [$Multi]" -Status "Sorting: $($runningJobs.Name -replace 'javinizer-', '' -join ', ')"
+                                Write-Progress -ParentId 1 -Id 2 -Activity "Threads: [$Multi]" -Status "Sorting: $($runningJobs.Name -replace 'javinizer-', '' -join ', ')"
 
                                 $waitJobs = $runningJobs + $otherJobs
                                 $completed += $completedJobs.Count
                             }
                         } catch {
-                            Write-Error "[$($MyInvocation.MyCommand.Name)] There was an error starting multi sort for path: [$($getPath.FullName)] with destinationpath: [$DestinationPath] and threads: [$throttleCount]: $PSItem"
+                            Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
                         } finally {
                             # Stop all running jobs if script is stopped by user input
                             Get-Job | Remove-Job -Force
@@ -417,6 +427,8 @@ function Javinizer {
                         $index = 1
                         foreach ($movie in $javMovies) {
                             # Write-Host "Sorting [$($movie.FileName)] as [$($movie.Id)]"
+                            Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($javMovies.Count + 1 - $index)" -PercentComplete ($index / $($javMovies.Count) * 100)
+                            Write-Progress -ParentId 1 -Id 2 -Activity "Threads: [1]" -Status "Sorting: $($movie.Id)"
                             $index++
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
@@ -424,11 +436,11 @@ function Javinizer {
                                 if ($null -ne $javAggregatedData) {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                                 } else {
-                                    Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
                                     return
                                 }
                             } else {
-                                Write-JVLog -Write:$JVLogWrite -LogPath $JVLogPath -WriteLevel $JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
                             }
                         }
                     }

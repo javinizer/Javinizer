@@ -4,6 +4,7 @@
     "location.thumbcsv": "",
     "location.genrecsv": "",
     "location.log": "",
+    "scraper.throttlelimit": 3,
     "scraper.movie.dmm": 1,
     "scraper.movie.jav321": 0,
     "scraper.movie.javbus": 0,
