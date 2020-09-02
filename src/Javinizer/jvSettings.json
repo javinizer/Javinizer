@@ -61,7 +61,7 @@
     "sort.metadata.nfo.actresslanguageja": 0,
     "sort.metadata.thumbcsv": 1,
     "sort.metadata.thumbcsv.convertalias": 1,
-    "sort.metadata.genrecsv": 1,
+    "sort.metadata.genrecsv": 0,
     "sort.metadata.genre.ignore": [
         "Featured Actress",
         "Hi-Def"
