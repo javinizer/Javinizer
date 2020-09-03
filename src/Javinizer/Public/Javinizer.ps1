@@ -581,14 +581,11 @@ function Javinizer {
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
-                        try {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
-                                Import-Module $using:jvModulePath
-                                $jvMovie = $_
-                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
-                            }
-                        } catch {
-                            Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
+                        $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            Import-Module $using:jvModulePath
+                            $jvMovie = $_
+                            $Settings = $using:Settings
+                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                         }
                     }
 
