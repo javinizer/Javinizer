@@ -51,6 +51,16 @@ function Write-JVLog {
     if ($Level -eq 'Error') {
         if ($writeLevel -eq 'Debug' -or $WriteLevel -eq 'Info' -or $WriteLevel -eq 'Warning' -or $WriteLevel -eq 'Error') {
             $formattedMessage = "[$timeStamp][ERROR] $Message"
+            if ($LogPath -ne '' -and $null -ne $LogPath) {
+                if ($formattedMessage -ne '' -and $null -ne $formattedMessage) {
+                    if ($Write -eq 1) {
+                        $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
+                        $LogMutex.WaitOne() | Out-Null
+                        $formattedMessage | Out-File -FilePath $LogPath -Append
+                        $LogMutex.ReleaseMutex() | Out-Null
+                    }
+                }
+            }
         }
         Write-Error -Message $Message -ErrorAction $Action
     }
