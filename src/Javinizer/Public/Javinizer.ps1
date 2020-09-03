@@ -383,39 +383,12 @@ function Javinizer {
                         Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
                     }
                     if ($PSBoundParameters.ContainsKey('Multi')) {
+                        $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         try {
-                            $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
-                            foreach ($movie in $javMovies) {
-                                Start-ThreadJob -Name "javinizer-$($movie.BaseName)" -ThrottleLimit $Settings.'scraper.throttlelimit' -ScriptBlock {
-                                    Import-Module $using:jvModulePath
-                                    $jvMovie = $using:movie
-                                    Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
-                                } -StreamingHost $Host | Out-Null
-                            }
-
-                            $waitJobs = Get-Job -IncludeChildJob | Where-Object { $_.PSJobTypeName -eq 'ThreadJob' -and $_.Name -like 'javinizer-*' }
-                            $totalJobs = $waitJobs.Count
-                            $completed = 0
-                            while ($waitJobs.Count -ne 0) {
-                                $runningJobs = @()
-                                $completedJobs = @()
-                                $otherJobs = @()
-
-                                foreach ($job in $waitJobs) {
-                                    if ($job.State -eq 'Completed') {
-                                        $completedJobs += $job
-                                    } elseif ($job.State -eq 'Running') {
-                                        $runningJobs += $job
-                                    } else {
-                                        $otherJobs += $job
-                                    }
-                                }
-
-                                Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($waitjobs.Count)" -PercentComplete (($completed / $totalJobs) * 100)
-                                Write-Progress -ParentId 1 -Id 2 -Activity "Threads: [$Multi]" -Status "Sorting: $($runningJobs.Name -replace 'javinizer-', '' -join ', ')"
-
-                                $waitJobs = $runningJobs + $otherJobs
-                                $completed += $completedJobs.Count
+                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'scraper.throttlelimit' -Throttle $Settings.'scraper.throttlelimit' -ScriptBlock {
+                                Import-Module $using:jvModulePath
+                                $jvMovie = $_
+                                Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                             }
                         } catch {
                             Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
@@ -427,8 +400,8 @@ function Javinizer {
                         $index = 1
                         foreach ($movie in $javMovies) {
                             # Write-Host "Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                            Write-Progress -Id 1 -Activity 'Javinizer' -Status "Remaining Jobs: $($javMovies.Count + 1 - $index)" -PercentComplete ($index / $($javMovies.Count) * 100)
-                            Write-Progress -ParentId 1 -Id 2 -Activity "Threads: [1]" -Status "Sorting: $($movie.Id)"
+                            $randomId = Get-Random -Maximum 500 -Minimum 10
+                            Write-Progress -Id $randomId -Activity 'Javinizer' -Status "Sorting: $($movie.FullName)" -PercentComplete ($index / $($javMovies.Count) * 100)
                             $index++
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
@@ -443,6 +416,7 @@ function Javinizer {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
                             }
                         }
+                        Write-Progress -Activity 'Javinizer' -Completed
                     }
                 }
             }

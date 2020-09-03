@@ -98,7 +98,7 @@ function Get-JVData {
 
             if ($R18) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-R18" -ScriptBlock {
+                Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18Url) {
                         $using:R18Url | Get-R18Data
@@ -110,7 +110,7 @@ function Get-JVData {
 
             if ($R18Zh) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-R18Zh" -ScriptBlock {
+                Start-ThreadJob -Name "jvdata-R18Zh" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:R18ZhUrl) {
                         $using:R18ZhUrl | Get-R18Data
@@ -122,7 +122,7 @@ function Get-JVData {
 
             if ($Javlibrary) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-Javlibrary" -ScriptBlock {
+                Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryUrl) {
                         $using:JavlibraryUrl | Get-JavlibraryData
@@ -134,7 +134,7 @@ function Get-JVData {
 
             if ($JavlibraryJa) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryJa] [Url - $JavlibraryJaUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-JavlibraryJa" -ScriptBlock {
+                Start-ThreadJob -Name "jvdata-JavlibraryJa" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryJaUrl) {
                         $using:JavlibraryJaUrl | Get-JavlibraryData
@@ -146,7 +146,7 @@ function Get-JVData {
 
             if ($JavlibraryZh) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavlibraryZh] [Url - $JavlibraryZhUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-JavlibraryZh" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-JavlibraryZh" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavlibraryZhUrl) {
                         $using:JavlibraryZhUrl | Get-JavlibraryData
@@ -158,7 +158,7 @@ function Get-JVData {
 
             if ($Dmm) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-Dmm" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-Dmm" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:DmmUrl) {
                         $using:DmmUrl | Get-DmmData
@@ -170,7 +170,7 @@ function Get-JVData {
 
             if ($Javbus) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-Javbus" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-Javbus" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusUrl) {
                         $using:JavbusUrl | Get-JavbusData
@@ -182,7 +182,7 @@ function Get-JVData {
 
             if ($JavbusJa) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-JavbusJa" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-JavbusJa" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusJaUrl) {
                         $using:JavbusJaUrl | Get-JavbusData
@@ -194,7 +194,7 @@ function Get-JVData {
 
             if ($JavbusZh) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusZh] [Url - $JavbusZhUrl]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-JavbusZh" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-JavbusZh" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:JavbusZhUrl) {
                         $using:JavbusZhUrl | Get-JavbusData
@@ -206,7 +206,7 @@ function Get-JVData {
 
             if ($Jav321) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
-                Start-ThreadJob -ThrottleLimit 100 -Name "jvdata-Jav321" -ScriptBlock {
+                Start-ThreadJob  -Name "jvdata-Jav321" -ThrottleLimit 25 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:Jav321Url) {
                         $using:Jav321Url | Get-Jav321Data
