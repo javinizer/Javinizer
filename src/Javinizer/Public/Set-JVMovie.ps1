@@ -326,12 +326,15 @@ function Set-JVMovie {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if (!(Test-Path -LiteralPath $filePath)) {
-                            Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
+                        if ((Get-Item -LiteralPath $Path).FullName -ne (Get-Item -LiteralPath $filePath).FullName) {
+                            if (!(Test-Path -LiteralPath $filePath)) {
+                                Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
+                            } else {
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Completed [$Path] but did not move as the destination file already exists"
+                            }
                         } else {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Completed [$Path] => [$filePath] but did not move as the file already exists"
-                            return
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Updated [$Path]"
                         }
                     }
                 } catch {
@@ -341,11 +344,15 @@ function Set-JVMovie {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if (!(Test-Path -LiteralPath $filePath)) {
-                            Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
+                        if ((Get-Item -LiteralPath $Path).FullName -ne (Get-Item -LiteralPath $filePath).FullName) {
+                            if (!(Test-Path -LiteralPath $filePath)) {
+                                Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
+                            } else {
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Completed [$Path] but did not move as the destination file already exists"
+                            }
                         } else {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Completed [$Path] => [$filePath] but did not move as the file already exists"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Updated [$Path]"
                         }
                     }
                 } catch {
