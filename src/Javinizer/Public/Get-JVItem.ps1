@@ -50,9 +50,9 @@ function Get-JVItem {
     process {
         $fileObject = @()
         if ($Settings) {
-            $MinimumFileSize = $Settings.'match.mninimumfilesize'
+            $MinimumFileSize = $Settings.'match.minimumfilesize'
             $ExcludedStrings = $Settings.'match.excludedfilestring'
-            $IncludedExtensions = $Settings.'includedfileextension'
+            $IncludedExtensions = $Settings.'match.includedfileextension'
             $RegexEnabled = $Settings.'match.regex'
             $RegexString = $Settings.'match.regex.string'
             $RegexIdMatch = $Settings.'match.regex.idmatch'
@@ -63,12 +63,12 @@ function Get-JVItem {
             if ($Depth) {
                 $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth -Exclude:$ExcludedStrings | Where-Object {
                     $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($FileSize * 1MB)
+                        -and $_.Length -ge ($MinimumFileSize * 1MB)
                 }
             } else {
                 $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
                     $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($FileSize * 1MB)
+                        -and $_.Length -ge ($MinimumFileSize * 1MB)
                 }
             }
 
@@ -76,12 +76,12 @@ function Get-JVItem {
             if ($Depth) {
                 $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
                     $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($FileSize * 1MB)
+                        -and $_.Length -ge ($MinimumFileSize * 1MB)
                 }
             } else {
                 $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
                     $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($FileSize * 1MB)
+                        -and $_.Length -ge ($MinimumFileSize * 1MB)
                 }
             }
         }
