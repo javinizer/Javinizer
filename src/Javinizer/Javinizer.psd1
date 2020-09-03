@@ -130,7 +130,7 @@
             ReleaseNotes             = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
-            Prerelease               = 'alpha2'
+            Prerelease               = 'alpha3'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
