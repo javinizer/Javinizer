@@ -380,28 +380,25 @@ function Javinizer {
                     }
                 } else {
                     if ($Settings.'scraper.throttlelimit' -lt 1 -or $Settings.'scraper.throttlelimit' -gt 5) {
-                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
+                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
                     if ($PSBoundParameters.ContainsKey('Multi')) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         try {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'scraper.throttlelimit' -Throttle $Settings.'scraper.throttlelimit' -ScriptBlock {
+                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'scraper.throttlelimit' -Throttle $Settings.'scraper.throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                             }
                         } catch {
                             Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
-                        } finally {
-                            # Stop all running jobs if script is stopped by user input
-                            Get-Job | Remove-Job -Force
                         }
                     } else {
                         $index = 1
                         foreach ($movie in $javMovies) {
                             # Write-Host "Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                            $randomId = Get-Random -Maximum 500 -Minimum 10
-                            Write-Progress -Id $randomId -Activity 'Javinizer' -Status "Sorting: $($movie.FullName)" -PercentComplete ($index / $($javMovies.Count) * 100)
+                            #$script:JVProgressId = Get-Random
+                            #Write-Progress -Id $script:JVProgressId -Activity 'Javinizer' -Status "Sorting: $($movie.FullName)" -PercentComplete (1 / $script:JVProgress * 100)
                             $index++
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
@@ -416,7 +413,6 @@ function Javinizer {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
                             }
                         }
-                        Write-Progress -Activity 'Javinizer' -Completed
                     }
                 }
             }
