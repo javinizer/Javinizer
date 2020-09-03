@@ -189,7 +189,7 @@ function Invoke-Parallel {
             $script:MaxQueue = $MaxQueue
         }
         $ProgressId = Get-Random
-        Write-Verbose "Throttle: '$throttle' SleepTimer '$sleepTimer' runSpaceTimeout '$runspaceTimeout' maxQueue '$maxQueue' logFile '$logFile'"
+        #Write-Verbose "Throttle: '$throttle' SleepTimer '$sleepTimer' runSpaceTimeout '$runspaceTimeout' maxQueue '$maxQueue' logFile '$logFile'"
 
         #If they want to import variables or modules, create a clean runspace, get loaded items, use those to exclude items
         if ($ImportVariables -or $ImportModules -or $ImportFunctions) {
@@ -197,7 +197,7 @@ function Invoke-Parallel {
 
                     #Get modules, snapins, functions in this clean runspace
                     $Modules = Get-Module | Select-Object -ExpandProperty Name
-                    $Snapins = Get-PSSnapin | Select-Object -ExpandProperty Name
+                    #$Snapins = Get-PSSnapin | Select-Object -ExpandProperty Name
                     $Functions = Get-ChildItem function:\ | Select-Object -ExpandProperty Name
 
                     #Get variables in this clean runspace
@@ -228,7 +228,7 @@ function Invoke-Parallel {
             }
             if ($ImportModules) {
                 $UserModules = @( Get-Module | Where-Object { $StandardUserEnv.Modules -notcontains $_.Name -and (Test-Path $_.Path -ErrorAction SilentlyContinue) } | Select-Object -ExpandProperty Path )
-                $UserSnapins = @( Get-PSSnapin | Select-Object -ExpandProperty Name | Where-Object { $StandardUserEnv.Snapins -notcontains $_ } )
+                #$UserSnapins = @( Get-PSSnapin | Select-Object -ExpandProperty Name | Where-Object { $StandardUserEnv.Snapins -notcontains $_ } )
             }
             if ($ImportFunctions) {
                 $UserFunctions = @( Get-ChildItem function:\ | Where-Object { $StandardUserEnv.Functions -notcontains $_.Name } )
