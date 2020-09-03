@@ -5,6 +5,62 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0-alpha3]
+### Added
+- Javinizer now runs multi-threaded by default by use of Invoke-Parallel (Allowed up to 10 threads)
+- `-Depth` parameter to specify `-Recurse` depth
+- `-Set` parameter to update any setting from the commandline via a hashtable
+- `-SettingsPath` parameter to specify an external settings file
+- `-HideProgress` parameter to hide the progress bar when sorting
+- PSEdition Core requirement added to all public functions
+- Settings validation function
+- Re-added `-MoveToFolder` and `-RenameFile` parameters
+- Re-added `-Strict` parameter
+
+### Changed
+- `FullName` column added to thumbnail csv - Not required if adding actress manually
+- Changed function name `Update-JVThumbs` -> `Update-JVThumbCsv`
+- Setting name `sort.metadata.thumbcsv.path` -> `location.thumbcsv`
+- Setting name `sort.metadata.genrecsv.path` -> 'location.genrecsv`
+- Setting name `admin.log.path` -> `location.log`
+- `-Version` parameter output
+- Url matches using `-Find` are more intuitive
+
+### Fixed
+- Missing setting `scraper.movie.javbuzh` added to jvSettings.json file
+- Encoding errors where `sort.metadata.nfo.translate` is enabled
+- Error when running `-Find` without any scrapers enabled
+
+### Removed
+- `Logging` module dependency
+
+
+## [2.0.0-alpha1]
+### Added
+- Site scrapers now run in asynchronous threads
+- Scraping a single movie with -Url now works more intuitively
+- Thumbnail csv is improved with both English/Japanese names
+- Thumbnail csv now supports multiple actress aliases with '|' delimiter in the Alias      column
+- Thumbnail csv now better matches actresses
+- Allow to prefer English or Japanese actress names in metadata
+  - If a Japanese name is found from site metadata, thumbnail csv will automatically be used to try to match it to its English name and vice-versa
+- User definable genre csv path
+- User definable thumbnail csv path
+- User definable javlibrary baseUrl - some reports of cloudflare issues
+- Improved logging
+- Functions now public for power users
+
+### Changed:
+- Settings file changed from .ini to .json format
+- Path/DestinationPath now work a bit differently.
+  - Running Javinizer -Path $Path used to automatically set the DestinationPath as $Path. Now it is either required to be set in the command line or it will default to the path in the settings file
+
+### Removed
+- \<year> data in nfo
+- \<rating> data in nfo
+
+
+
 ## [1.7.3]
 ### Changed
 - Restored some scraper settings defaults
@@ -459,4 +515,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Initial functionality release
 - Web searching with `-Find`
 - File and directory sort with `-Path` and `-Apply`
-

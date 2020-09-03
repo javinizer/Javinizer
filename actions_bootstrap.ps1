@@ -30,6 +30,11 @@ $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleVersion = '0.12.0'
         }))
 
+$null = $modulesToInstall.Add(([PSCustomObject]@{
+            ModuleName    = 'Logging'
+            ModuleVersion = '4.4.0'
+        }))
+
 'Installing PowerShell Modules'
 foreach ($module in $modulesToInstall) {
     $installSplat = @{
@@ -43,8 +48,7 @@ foreach ($module in $modulesToInstall) {
         Install-Module @installSplat
         Import-Module -Name $module.ModuleName -ErrorAction Stop
         '  - Successfully installed {0}' -f $module.ModuleName
-    }
-    catch {
+    } catch {
         $message = 'Failed to install {0}' -f $module.ModuleName
         "  - $message"
         throw $message

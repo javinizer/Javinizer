@@ -13,10 +13,10 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '1.7.3'
+    ModuleVersion     = '2.0.0'
 
     # Supported PSEditions
-    # CompatiblePSEditions = @()
+    # CompatiblePSEditions = @('Core')
 
     # ID used to uniquely identify this module
     GUID              = '31b44904-fe6e-4bfe-8c6f-99dfb294a164'
@@ -34,7 +34,7 @@
     Description       = 'A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files'
 
     # Minimum version of the PowerShell engine required by this module
-    # PowerShellVersion = ''
+    # PowerShellVersion    = '6'
 
     # Name of the PowerShell host required by this module
     # PowerShellHostName = ''
@@ -52,7 +52,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    # RequiredModules = @()
+    # RequiredModules      = @()
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -70,7 +70,26 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @('Javinizer')
+    FunctionsToExport = @(
+        'Javinizer',
+        'Get-DmmData',
+        'Get-DmmUrl',
+        'Get-Jav321Data',
+        'Get-Jav321Url',
+        'Get-JavBusData',
+        'Get-JavbusUrl',
+        'Get-JavlibraryData',
+        'Get-JavlibraryUrl',
+        'Get-JVAggregatedData',
+        'Get-JVData',
+        'Get-JVItem',
+        'Get-JVNfo',
+        'Get-R18Data',
+        'Get-R18Url',
+        'Set-JVEmbyThumbs',
+        'Set-JVMovie',
+        'Update-JVThumbCsv'
+    )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = '*'
@@ -96,10 +115,10 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags                     = @('JAV', 'Scraper')
 
             # A URL to the license for this module.
-            # LicenseUri = ''
+            LicenseUri               = 'https://github.com/jvlflame/Javinizer/blob/master/LICENSE'
 
             # A URL to the main website for this project.
             ProjectUri               = 'https://github.com/jvlflame/Javinizer'
@@ -111,7 +130,7 @@
             ReleaseNotes             = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
-            # Prerelease               = ''
+            Prerelease               = 'alpha3'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
@@ -130,5 +149,3 @@
     # DefaultCommandPrefix = ''
 
 }
-
-

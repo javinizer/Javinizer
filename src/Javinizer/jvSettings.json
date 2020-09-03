@@ -1,0 +1,141 @@
+{
+    "throttlelimit": 3,
+    "location.input": "C:\\Downloads\\Unsorted",
+    "location.output": "C:\\Downloads\\Sorted",
+    "location.thumbcsv": "",
+    "location.genrecsv": "",
+    "location.log": "",
+    "scraper.movie.dmm": 1,
+    "scraper.movie.jav321": 0,
+    "scraper.movie.javbus": 0,
+    "scraper.movie.javbusja": 0,
+    "scraper.movie.javbuszh": 0,
+    "scraper.movie.javlibrary": 1,
+    "scraper.movie.javlibraryja": 0,
+    "scraper.movie.javlibraryzh": 0,
+    "scraper.movie.r18": 1,
+    "scraper.movie.r18zh": 0,
+    "match.minimumfilesize": 0,
+    "match.includedfileextension": [
+        ".asf",
+        ".avi",
+        ".flv",
+        ".m4v",
+        ".mkv",
+        ".mp4",
+        ".mov",
+        ".rmvb",
+        ".wmv"
+    ],
+    "match.excludedfilestring": [
+        "*-trailer.*",
+        "*-5.*"
+    ],
+    "match.regex": 0,
+    "match.regex.string": "([a-zA-Z|tT28]+-\\d+z{0,1}Z{0,1}e{0,1}E{0,1})(?:-pt){0,1}(\\d{1,2})?",
+    "match.regex.idmatch": 1,
+    "match.regex.ptmatch": 2,
+    "sort.movetofolder": 1,
+    "sort.renamefile": 1,
+    "sort.maxtitlelength": 100,
+    "sort.create.nfo": 1,
+    "sort.create.nfoperfile": 1,
+    "sort.download.actressimg": 0,
+    "sort.download.thumbimg": 1,
+    "sort.download.posterimg": 1,
+    "sort.download.screenshotimg": 0,
+    "sort.download.trailervid": 0,
+    "sort.format.file": "<ID>",
+    "sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
+    "sort.format.posterimg": "folder",
+    "sort.format.thumbimg": "fanart",
+    "sort.format.trailervid": "<ID>-trailer",
+    "sort.format.nfo": "<ID>",
+    "sort.format.screenshotimg": "fanart",
+    "sort.format.screenshotfolder": "extrafanart",
+    "sort.format.actressimgfolder": ".actors",
+    "sort.metadata.nfo.translate": 0,
+    "sort.metadata.nfo.translate.language": "en",
+    "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
+    "sort.metadata.nfo.seriesastag": 1,
+    "sort.metadata.nfo.firstnameorder": 0,
+    "sort.metadata.nfo.actresslanguageja": 0,
+    "sort.metadata.thumbcsv": 1,
+    "sort.metadata.thumbcsv.convertalias": 1,
+    "sort.metadata.genrecsv": 0,
+    "sort.metadata.genre.ignore": [
+        "Featured Actress",
+        "Hi-Def"
+    ],
+    "sort.metadata.requiredfield": [
+        "id",
+        "coverUrl",
+        "genre",
+        "maker",
+        "releaseDate",
+        "title"
+    ],
+    "sort.metadata.priority.actress": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.alternatetitle": [
+        "dmm"
+    ],
+    "sort.metadata.priority.coverurl": [
+        "r18",
+        "dmm",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.description": [
+        "dmm"
+    ],
+    "sort.metadata.priority.director": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.genre": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.id": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.label": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.maker": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.releasedate": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.runtime": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.series": [
+        "r18",
+        "r18zh"
+    ],
+    "sort.metadata.priority.screenshoturl": [
+        "r18",
+        "dmm"
+    ],
+    "sort.metadata.priority.title": [
+        "r18",
+        "javlibrary"
+    ],
+    "sort.metadata.priority.trailerurl": [
+        "r18"
+    ],
+    "emby.url": "http:\/\/192.168.0.1:8096",
+    "emby.apikey": "",
+    "javlibrary.baseurl": "http:\/\/www.javlibrary.com",
+    "admin.log": 1,
+    "admin.log.level": "info"
+}

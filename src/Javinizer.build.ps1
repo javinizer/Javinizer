@@ -173,7 +173,7 @@ Add-BuildTask FormattingCheck {
 
     if ($scriptAnalyzerResults) {
         $scriptAnalyzerResults | Format-Table
-        throw '      PSScriptAnalyzer code formatting check did not adhere to {0} standards' -f $scriptAnalyzerParams.Setting
+        throw  '      PSScriptAnalyzer code formatting check did not adhere to {0} standards' -f $scriptAnalyzerParams.Setting
     } else {
         Write-Build Green '      ...Formatting Analyze Complete!'
     }
