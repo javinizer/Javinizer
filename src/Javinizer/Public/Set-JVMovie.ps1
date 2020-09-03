@@ -209,6 +209,9 @@ function Set-JVMovie {
                         $webClient = New-Object System.Net.WebClient
                         $thumbPath = Join-Path -Path $folderPath -ChildPath "$thumbName.jpg"
                         if ($Force) {
+                            if (Test-Path -LiteralPath $thumbPath) {
+                                Remove-Item -LiteralPath $thumbPath -Force
+                            }
                             $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
                         } elseif ((!(Test-Path -LiteralPath $thumbPath))) {
                             $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
@@ -227,6 +230,9 @@ function Set-JVMovie {
                                 $pythonPosterPath = $posterPath -replace '\\', '/'
 
                                 if ($Force) {
+                                    if (Test-Path -LiteralPath $posterPath) {
+                                        Remove-Item -LiteralPath $posterPath -Force
+                                    }
                                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                         python $cropScriptPath $pythonThumbPath $pythonPosterPath
                                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
@@ -266,6 +272,9 @@ function Set-JVMovie {
                                 $actressThumbPath = Join-Path -Path $actorFolderPath -ChildPath "$newName.jpg"
 
                                 if ($Force) {
+                                    if (Test-Path -LiteralPath $actressThumbPath) {
+                                        Remove-Item -LiteralPath $actressThumbPath -Force
+                                    }
                                     $webClient.DownloadFile($actress.thumb, $actressThumbPath)
                                 } elseif (!(Test-Path -LiteralPath $actressThumbPath)) {
                                     $webClient.DownloadFile($actress.thumb, $actressThumbPath)
@@ -292,6 +301,9 @@ function Set-JVMovie {
                         foreach ($screenshot in $Data.ScreenshotUrl) {
                             $screenshotPath = Join-Path -Path $screenshotFolderPath -ChildPath "$screenshotImgName$index.jpg"
                             if ($Force.IsPresent) {
+                                if (Test-Path -LiteralPath $screenshotPath) {
+                                    Remove-Item -LiteralPath $screenshotPath -Force
+                                }
                                 $webClient.DownloadFile($screenshot, $screenshotPath)
                             } elseif (!(Test-Path -LiteralPath $screenshotPath)) {
                                 $webClient.DownloadFile($screenshot, $screenshotPath)
@@ -310,6 +322,9 @@ function Set-JVMovie {
                     try {
                         $trailerPath = Join-Path -Path $folderPath -ChildPath "$trailerName.mp4"
                         if ($Force.IsPresent) {
+                            if (Test-Path -LiteralPath $trailerPath) {
+                                Remove-Item -LiteralPath $trailerPath
+                            }
                             $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
                         } elseif (!(Test-Path -LiteralPath $trailerPath)) {
                             $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
@@ -325,7 +340,7 @@ function Set-JVMovie {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne (Get-Item -LiteralPath $filePath).FullName) {
+                        if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
                             if (!(Test-Path -LiteralPath $filePath)) {
                                 Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
@@ -343,7 +358,7 @@ function Set-JVMovie {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne (Get-Item -LiteralPath $filePath).FullName) {
+                        if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
                             if (!(Test-Path -LiteralPath $filePath)) {
                                 Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "Completed [$Path] => [$filePath]"
