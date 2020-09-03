@@ -210,11 +210,15 @@ function Javinizer {
         }
 
         if ($Set) {
-            foreach ($item in $Set.GetEnumerator()) {
-                $settingName = $item.Key
-                $settingValue = $item.Value
-                $Settings."$($item.Key)" = $item.Value
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
+            try {
+                foreach ($item in $Set.GetEnumerator()) {
+                    $settingName = $item.Key
+                    $settingValue = $item.Value
+                    $Settings."$($item.Key)" = $item.Value
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
+                }
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when defining settings using -Set: $PSItem"
             }
         }
 
@@ -379,13 +383,13 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'scraper.throttlelimit' -lt 1 -or $Settings.'scraper.throttlelimit' -gt 5) {
-                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 5) {
+                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
                     if ($PSBoundParameters.ContainsKey('Multi')) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         try {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'scraper.throttlelimit' -Throttle $Settings.'scraper.throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
