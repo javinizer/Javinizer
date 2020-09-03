@@ -1,10 +1,10 @@
 {
+    "throttlelimit": 3,
     "location.input": "C:\\Downloads\\Unsorted",
     "location.output": "C:\\Downloads\\Sorted",
     "location.thumbcsv": "",
     "location.genrecsv": "",
     "location.log": "",
-    "scraper.throttlelimit": 3,
     "scraper.movie.dmm": 1,
     "scraper.movie.jav321": 0,
     "scraper.movie.javbus": 0,

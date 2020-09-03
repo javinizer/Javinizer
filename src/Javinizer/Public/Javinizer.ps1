@@ -8,7 +8,7 @@ function Javinizer {
         A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
 
     .DESCRIPTION
-        Javinizer is used to pull data from online data sources such as JAVLibrary, DMM, and R18 to aggregate data into a CMS (Plex,Emby,Jellyfin) parseable format.
+        Javinizer detects your local JAV files and sorts them into a CMS-readable
 
     .PARAMETER Find
         The find parameter will output a list-formatted data output from the data sources specified using a movie ID, file path, or URL.
@@ -60,6 +60,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$HideProgress,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$IsThread,
 
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
@@ -383,27 +386,25 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 5) {
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
                         Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
-                    if ($PSBoundParameters.ContainsKey('Multi')) {
+
+                    if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         try {
                             $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
-                                Javinizer -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                             }
                         } catch {
                             Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
                         }
-                    } else {
-                        $index = 1
+                    }
+
+                    if ($PSboundParameters.ContainsKey('IsThread')) {
                         foreach ($movie in $javMovies) {
-                            # Write-Host "Sorting [$($movie.FileName)] as [$($movie.Id)]"
-                            #$script:JVProgressId = Get-Random
-                            #Write-Progress -Id $script:JVProgressId -Activity 'Javinizer' -Status "Sorting: $($movie.FullName)" -PercentComplete (1 / $script:JVProgress * 100)
-                            $index++
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
