@@ -11,6 +11,9 @@ function Get-JVItem {
         [Switch]$Recurse,
 
         [Parameter()]
+        [Int]$Depth,
+
+        [Parameter()]
         [Switch]$Strict,
 
         [Parameter()]
@@ -58,14 +61,29 @@ function Get-JVItem {
         }
 
         if ($ExcludedStrings) {
-            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
-                $_.Extension -in $IncludedExtensions `
-                    -and $_.Length -ge ($FileSize * 1MB)
+            if ($Depth) {
+                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth -Exclude:$ExcludedStrings | Where-Object {
+                    $_.Extension -in $IncludedExtensions `
+                        -and $_.Length -ge ($FileSize * 1MB)
+                }
+            } else {
+                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
+                    $_.Extension -in $IncludedExtensions `
+                        -and $_.Length -ge ($FileSize * 1MB)
+                }
             }
+
         } else {
-            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse | Where-Object {
-                $_.Extension -in $IncludedExtensions `
-                    -and $_.Length -ge ($FileSize * 1MB)
+            if ($Depth) {
+                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
+                    $_.Extension -in $IncludedExtensions `
+                        -and $_.Length -ge ($FileSize * 1MB)
+                }
+            } else {
+                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
+                    $_.Extension -in $IncludedExtensions `
+                        -and $_.Length -ge ($FileSize * 1MB)
+                }
             }
         }
 

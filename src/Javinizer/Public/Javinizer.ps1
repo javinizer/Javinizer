@@ -5,28 +5,218 @@ function Javinizer {
 
     <#
     .SYNOPSIS
-        A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files
+        A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
     .DESCRIPTION
-        Javinizer detects your local JAV files and sorts them into a CMS-readable
-
-    .PARAMETER Find
-        The find parameter will output a list-formatted data output from the data sources specified using a movie ID, file path, or URL.
-
-    .PARAMETER Aggregated
-        The aggregated parameter will create an aggregated list-formatted data output from the data sources specified as well as metadata priorities in your settings.ini file.
+        Javinizer detects your local JAV files and structures them into media library compatible
+        formats. A metadata nfo file is created per file to be read by the media library.
 
     .PARAMETER Path
-        The path parameter sets the file or directory path that Javinizer will search and sort files in.
+        Specifies the file or directory path to JAV files. Defaults to 'location.input' in the settings file.
 
     .PARAMETER DestinationPath
-        The destinationpath parameter sets the directory path that Javinizer will send sorted files to.
+        Specifies the directory path to output sorted JAV files. Defaults to 'location.output' in the settings file.
+
+    .PARAMETER Recurse
+        Specifies to search sub-directories in your Path.
+
+    .PARAMETER Depth
+        Specifies the depth of sub-directories to search when using -Recurse.
+
+    .PARAMETER Url
+        Specifies a url or an array of urls to sort a single JAV file.
+
+    .PARAMETER SettingsPath
+        Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
+
+    .PARAMETER Strict
+        Specifies to not automatically try to match filenames to the movie ID. Can be useful for movies like T28- and R18-.
+
+    .PARAMETER MoveToFolder
+        Specifies whether or not to move sorted files to its own folder. Defaults to 'sort.movetofolder' in the settings file.
+
+    .PARAMETER RenameFile
+        Specifies whether or not to rename sorted files. Defaults to 'sort.renamefile' in the settings file.
+
+    .PARAMETER Force
+        Specifies to replace all sort files (nfo, images, trailers, etc.) if they already exist. Without -Force,
+        only the nfo file will be replaced if it already exists.
+
+    .PARAMETER HideProgress
+        Specifies to hide the progress bar during sort.
+
+    .PARAMETER IsThread
+        Specifies that the current running Javinizer instance is a thread. This is for internal purposes only.
+
+    .PARAMETER Find
+        Specifies an ID or an array of URLs to search metadata for.
+
+    .PARAMETER Aggregated
+        Specifies to aggregate the data from -Find according to your settings.
+
+    .PARAMETER Nfo
+        Specifies to output the nfo contents from -Find.
+
+    .PARAMETER R18
+        Specifies to search R18 when using -Find.
+
+    .PARAMETER R18Zh
+        Specifies to search R18-Chinese when using -Find.
+
+    .PARAMETER Dmm
+        Specifies to search R18 when using -Find.
+
+    .PARAMETER Javlibrary
+        Specifies to search Javlibrary when using -Find.
+
+    .PARAMETER JavlibraryZh
+        Specifies to search Javlibrary-Chinese when using -Find.
+
+    .PARAMETER JavlibraryJa
+        Specifies to search Javlibrary-Japanese when using -Find.
+
+    .PARAMETER Javbus
+        Specifies to search Javbus when using -Find.
+
+    .PARAMETER JavbusJa
+        Specifies to search Javbus-Japanese when using -Find.
+
+    .PARAMETER JavbusZh
+        Specifies to search Javbus-Chinese when using -Find.
+
+    .PARAMETER Jav321
+        Specifies to search Jav321 when using -Find.
+
+    .PARAMETER SetEmbyThumbs
+        Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
+        it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
+
+    .PARAMETER ReplaceAll
+        Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
+
+    .PARAMETER OpenSettings
+        Specifies to open the settings file.
+
+    .PARAMETER OpenLog
+        Specifies to open the log file.
+
+    .PARAMETER OpenThumbs
+        Specifies to open the actress thumbnails file.
+
+    .PARAMETER OpenGenres
+        Specifies to open the genre replacements file.
+
+    .PARAMETER UpdateThumbs
+        Specifies to update the actress thumbnails file.
+
+    .PARAMETER Pages
+        Specifies an array as a range of pages to search for and update the actress thumbnails file.
+
+    .PARAMETER Set
+        Specifies a hashtable to update specific settings on the command-line.
+
+    .PARAMETER Version
+        Specifies to display the Javinizer module version.
+
+    .PARAMETER Help
+        Specifies to display the Javinizer help.
+
+    .EXAMPLE
+    Javinizer
+
+    Description
+    -----------
+    Sorts a path of files using 'location.input' and 'location.output' from your settings file.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -DestinationPath 'C:\JAV\Sorted'
+
+    Description
+    -----------
+    Sorts a single file and move it to the destination path.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -Url 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/'
+
+    Description
+    -----------
+    Sorts a single file using specific urls.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Unsorted' -Strict
+
+    Description
+    -----------
+    Sorts a path of JAV files without attemping automatic filename cleaning.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
+
+    Description
+    -----------
+    Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID> - <TITLE>'}
+
+    Description
+    -----------
+    Sorts files from a path and specify updated settings from the commmand-line using a hashtable.
+
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -SettingsPath 'C:\JAV\alternateSettings.json'
+
+    Description
+    -----------
+    Sorts files from a path and specify an external settings file to use.
+
+    .EXAMPLE
+    Javinizer -Find 'ABP-420' -R18 -Dmm
+
+    Description
+    -----------
+    Find a movie metadata on R18 and DMM by specifying its id.
+
+    .EXAMPLE
+    Javinizer -Find 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/' -Aggregated
+
+    Description
+    -----------
+    Find an array of urls metadata and aggregates them according to your settings file.
+
+    .EXAMPLE
+    Javinizer -Find 'ABP-420' -R18 -Javlibrary -Dmm -Aggregated -Nfo
+
+    Description
+    -----------
+    Find a movie metadata on R18 and DMM by specifying its id, aggrregates the data, and outputs the corresponding nfo contents.
+
+    .EXAMPLE
+    Javinizer -SetEmbyThumbs
+
+    Description
+    -----------
+    Sets missing Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
+
+    .EXAMPLE
+    Javinizer -SetEmbyThumbs -ReplaceAll
+
+    Description
+    -----------
+    Sets/replaces all Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
+
+    .EXAMPLE
+    Javinizer -OpenSettings
+
+    Description
+    -----------
+    Opens the settings file.
+
     #>
-
-
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
     param (
+
         [Parameter(ParameterSetName = 'Path', Position = 0)]
         [System.IO.DirectoryInfo]$Path,
 
@@ -37,11 +227,10 @@ function Javinizer {
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
-        [Array]$Url,
+        [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
-        [Alias('m')]
-        [Switch]$Multi,
+        [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
         [System.IO.FileInfo]$SettingsPath,
@@ -361,7 +550,7 @@ function Javinizer {
                 }
 
                 try {
-                    $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Strict:$Strict
+                    $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
                     # Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting local movies in [$Path]: $PSItem"
@@ -370,6 +559,7 @@ function Javinizer {
 
                 if ($null -eq $javMovies) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
+                    return
                 }
 
                 if ($Url) {
