@@ -215,7 +215,7 @@ function Invoke-Parallel {
 
             if ($ImportVariables) {
                 #Exclude common parameters, bound parameters, and automatic variables
-                Function _temp { [cmdletbinding(SupportsShouldProcess = $True)] param() }
+                Function _temp { [cmdletbinding()] param() }
                 $VariablesToExclude = @( (Get-Command _temp | Select-Object -ExpandProperty parameters).Keys + $PSBoundParameters.Keys + $StandardUserEnv.Variables )
                 #Write-Verbose "Excluding variables $( ($VariablesToExclude | Sort-Object ) -join ", ")"
 
@@ -247,9 +247,10 @@ function Invoke-Parallel {
 
                 #Progress bar if we have inputobject count (bound parameter)
                 if (-not $Quiet) {
-                    Write-Progress -Id $ProgressId -Activity "Running Query" -Status "Starting threads"`
-                        -CurrentOperation "$startedCount threads defined - $totalCount input objects - $script:completedCount input objects processed"`
+                    Write-Progress -Id $ProgressId -Activity "Javinizer" -Status "Remaining jobs: $($totalCount - $script:completedCount)"`
                         -PercentComplete $( Try { $script:completedCount / $totalCount * 100 } Catch { 0 } )
+                    #-CurrentOperation "$startedCount threads defined - $totalCount input objects - $script:completedCount input objects processed"
+                    Write-Progress -Id 2 -ParentId $ProgressId -Activity "Max threads: [$Throttle]" -Status "Sorting: $($runspaces.object.FileName -join ', ')"
                 }
 
                 #run through each runspace.
@@ -309,7 +310,7 @@ function Invoke-Parallel {
                     }
 
                     #If runspace isn't null set more to true
-                    ElseIf ($runspace.Runspace -ne $null ) {
+                    ElseIf ($null -ne $runspace.Runspace ) {
                         $log = $null
                         $more = $true
                     }
@@ -322,7 +323,7 @@ function Invoke-Parallel {
 
                 #Clean out unused runspace jobs
                 $temphash = $runspaces.clone()
-                $temphash | Where-Object { $_.runspace -eq $Null } | ForEach-Object {
+                $temphash | Where-Object { $null -eq $_.runspace } | ForEach-Object {
                     $Runspaces.remove($_)
                 }
 
@@ -398,7 +399,7 @@ function Invoke-Parallel {
             Throw "Must provide ScriptBlock or ScriptFile"; Break
         }
 
-        Write-Debug "`$ScriptBlock: $($ScriptBlock | Out-String)"
+        #Write-Debug "`$ScriptBlock: $($ScriptBlock | Out-String)"
         #Write-Verbose "Creating runspace pool and session states"
 
         #If specified, add variables and modules/snapins to session state
@@ -431,7 +432,7 @@ function Invoke-Parallel {
         $runspacepool.Open()
 
         #Write-Verbose "Creating empty collection to hold runspace jobs"
-        $Script:runspaces = New-Object System.Collections.ArrayList
+        $runspaces = New-Object System.Collections.ArrayList
 
         #If inputObject is bound get a total count and set bound to true
         $bound = $PSBoundParameters.keys -contains "InputObject"
@@ -479,9 +480,9 @@ function Invoke-Parallel {
                 #Create the powershell instance, set verbose if needed, supply the scriptblock and parameters
                 $powershell = [powershell]::Create()
 
-                if ($VerbosePreference -eq 'Continue') {
+                <#                 if ($VerbosePreference -eq 'Continue') {
                     [void]$PowerShell.AddScript( { $VerbosePreference = 'Continue' })
-                }
+                } #>
 
                 [void]$PowerShell.AddScript($ScriptBlock).AddArgument($object)
 
@@ -492,7 +493,7 @@ function Invoke-Parallel {
                 # $Using support from Boe Prox
                 if ($UsingVariableData) {
                     Foreach ($UsingVariable in $UsingVariableData) {
-                        Write-Verbose "Adding $($UsingVariable.Name) with value: $($UsingVariable.Value)"
+                        #Write-Verbose "Adding $($UsingVariable.Name) with value: $($UsingVariable.Value)"
                         [void]$PowerShell.AddArgument($UsingVariable.Value)
                     }
                 }
@@ -533,11 +534,11 @@ function Invoke-Parallel {
                 }
                 #endregion add scripts to runspace pool
             }
-            Write-Verbose ( "Finish processing the remaining runspace jobs: {0}" -f ( @($runspaces | Where-Object { $_.Runspace -ne $Null }).Count) )
+            #Write-Verbose ( "Finish processing the remaining runspace jobs: {0}" -f ( @($runspaces | Where-Object { $null -ne $_.Runspace }).Count) )
 
             Get-RunspaceData -wait
             if (-not $quiet) {
-                Write-Progress -Id $ProgressId -Activity "Running Query" -Status "Starting threads" -Completed
+                Write-Progress -Id $ProgressId -Activity "Javinizer" -Status "Starting threads" -Completed
             }
         } finally {
             #Close the runspace pool, unless we specified no close on timeout and something timed out
