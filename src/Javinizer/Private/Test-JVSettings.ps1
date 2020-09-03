@@ -103,7 +103,8 @@ function Test-JVSettings {
             'match.minimumfilesize',
             'match.regex.idmatch',
             'match.regex.ptmatch',
-            'sort.maxtitlelength'
+            'sort.maxtitlelength',
+            'throttlelimit'
         ) | Test-JVSettingsGroup -Settings $Settings -Type Integer
 
         $stringSettings = @(
