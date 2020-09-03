@@ -1,4 +1,3 @@
-#Requires -Modules @{ ModuleName="Logging"; RequiredVersion="4.4.0" }
 #Requires -PSEdition Core
 
 function Get-R18Data {
