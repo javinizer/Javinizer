@@ -215,14 +215,17 @@ function Set-JVMovie {
                                 }
                                 $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
-                            } elseif ((!(Test-Path -LiteralPath $thumbPath))) {
+                            } elseif (!(Test-Path -LiteralPath $thumbPath)) {
                                 $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
                             }
                         } else {
-                            if ((!(Test-Path -LiteralPath $thumbPath))) {
-                                $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
+                            if (!(Test-Path -LiteralPath $thumbPath)) {
+                                Start-Sleep -Seconds 2
+                                if (!(Test-Path -LiteralPath $thumbPath)) {
+                                    $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
+                                }
                             }
                         }
                     } catch {
@@ -260,12 +263,15 @@ function Set-JVMovie {
                                     }
                                 } else {
                                     if (!(Test-Path -LiteralPath $posterPath)) {
-                                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                            python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-                                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                            python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                        Start-Sleep -Seconds 2
+                                        if (!(Test-Path -LiteralPath $posterPath)) {
+                                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                                python $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                                python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                            }
                                         }
                                     }
                                 }
@@ -307,8 +313,11 @@ function Set-JVMovie {
                                     }
                                 } else {
                                     if (!(Test-Path -LiteralPath $actressThumbPath)) {
-                                        $webClient.DownloadFile($actress.thumb, $actressThumbPath)
-                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
+                                        Start-Sleep -Seconds 2
+                                        if (!(Test-Path -LiteralPath $actressThumbPath)) {
+                                            $webClient.DownloadFile($actress.thumb, $actressThumbPath)
+                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
+                                        }
                                     }
                                 }
                             }
@@ -346,8 +355,11 @@ function Set-JVMovie {
                                 $index++
                             } else {
                                 if (!(Test-Path -LiteralPath $screenshotPath)) {
-                                    $webClient.DownloadFile($screenshot, $screenshotPath)
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ScreenshotImg - $screenshot] downloaded to path [$screenshotPath]"
+                                    Start-Sleep -Seconds 2
+                                    if (!(Test-Path -LiteralPath $screenshotPath)) {
+                                        $webClient.DownloadFile($screenshot, $screenshotPath)
+                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ScreenshotImg - $screenshot] downloaded to path [$screenshotPath]"
+                                    }
                                 }
                             }
                         }
@@ -375,8 +387,11 @@ function Set-JVMovie {
                             }
                         } else {
                             if (!(Test-Path -LiteralPath $trailerPath)) {
-                                $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$trailerPath]"
+                                Start-Sleep -Seconds 2
+                                if (!(Test-Path -LiteralPath $trailerPath)) {
+                                    $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$trailerPath]"
+                                }
                             }
                         }
                     } catch {
