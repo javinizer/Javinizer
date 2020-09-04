@@ -18,6 +18,7 @@ Javinizer detects your local JAV files and structures them into media library co
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
 
 [View changelog](.github/CHANGELOG.md)
+[View v1.x.x docs](https://github.com/jvlflame/Javinizer/blob/release/1.7.3/README.md)
 
 ## Installation
 
@@ -366,6 +367,8 @@ PARAMETERS
     Description
     -----------
     Opens the settings file.
+    
+    
 ```
 
 ## Content Management System (CMS) Setup
