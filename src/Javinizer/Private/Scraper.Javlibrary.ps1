@@ -218,7 +218,14 @@ function Get-JavlibraryCoverUrl {
     process {
         $coverUrl = (($Webrequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
         if ($coverUrl -like '*pixhost*') {
-            $coverUrl = 'http:' + $coverUrl
+            try {
+                $testConnection = Invoke-WebRequest -Uri "http:$coverUrl" -ErrorAction 'SilentlyContinue' -Verbose:$false
+            } catch {
+                $coverUrl = $null
+            }
+            if ($null -ne $testConnection) {
+                $coverUrl = 'http:' + $coverUrl
+            }
         } else {
             $coverUrl = 'https:' + $coverUrl
         }
