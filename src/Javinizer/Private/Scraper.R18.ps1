@@ -215,7 +215,7 @@ function Get-R18Series {
     process {
         $series = ((($Webrequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
         if ($null -ne $series) {
-            $series = Convert-HtmlCharacter -String $series | Out-Null
+            $series = Convert-HtmlCharacter -String $series
             $series = $series -replace '\n', ' ' -replace "`t", ''
 
             $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
