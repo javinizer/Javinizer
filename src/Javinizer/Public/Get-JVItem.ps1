@@ -59,30 +59,20 @@ function Get-JVItem {
             $RegexPtMatch = $Settings.'match.regex.ptmatch'
         }
 
-        if ($ExcludedStrings) {
-            if ($Depth) {
-                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth -Exclude:$ExcludedStrings | Where-Object {
-                    $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($MinimumFileSize * 1MB)
-                }
-            } else {
-                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Exclude:$ExcludedStrings | Where-Object {
-                    $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($MinimumFileSize * 1MB)
-                }
-            }
+        $extensions = @()
+        $ExcludedStrings = $ExcludedStrings -join '|'
 
+        if ($Depth) {
+            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
+                $_.Extension -in $IncludedExtensions `
+                    -and $_.Length -ge ($MinimumFileSize * 1MB) `
+                    -and $_.Name -notmatch $ExcludedStrings
+            }
         } else {
-            if ($Depth) {
-                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
-                    $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($MinimumFileSize * 1MB)
-                }
-            } else {
-                $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
-                    $_.Extension -in $IncludedExtensions `
-                        -and $_.Length -ge ($MinimumFileSize * 1MB)
-                }
+            $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse | Where-Object {
+                $_.Extension -in $IncludedExtensions `
+                    -and $_.Length -ge ($MinimumFileSize * 1MB) `
+                    -and $_.Name -notmatch $ExcludedStrings
             }
         }
 
