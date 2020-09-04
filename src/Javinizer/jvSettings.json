@@ -28,8 +28,8 @@
         ".wmv"
     ],
     "match.excludedfilestring": [
-        "*-trailer.*",
-        "*-5.*"
+        "^.*-trailer*",
+        "^.*-5\\."
     ],
     "match.regex": 0,
     "match.regex.string": "([a-zA-Z|tT28]+-\\d+z{0,1}Z{0,1}e{0,1}E{0,1})(?:-pt){0,1}(\\d{1,2})?",
@@ -69,7 +69,7 @@
     ],
     "sort.metadata.requiredfield": [
         "id",
-        "coverUrl",
+        "coverurl",
         "genre",
         "maker",
         "releaseDate",
