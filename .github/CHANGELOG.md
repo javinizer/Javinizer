@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0-alpha4]
+### Changed
+- Greatly improved performance when performing the Javinizer directory search
+- Output missing required fields when sort fails
+
+### Fixed
+- Series not being set properly in R18 scraper
+- Error output during sort caused by invalid path validation during file move
+- Resolved errors when downloading metadata files for multi-part videos concurrently
+- Properly set the description even if the translation fails when `sort.metadata.nfo.translate: 1`
+- Javlibrary scraper now properly sets coverurl to null if the image is invalid
+- Setting `regex.match` now applies properly
+- Setting `match.minimumfilesize` now applies properly
+- `-RenameFile` now applies to `sort.renamefile` properly
+- `-MoveToFolder` now applies to `sort.movetofolder` properly
+- `-Force` fixed to correctly replace metadata files
+
 ## [2.0.0-alpha3]
 ### Added
 - Javinizer now runs multi-threaded by default by use of Invoke-Parallel (Allowed up to 10 threads)
@@ -21,7 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `FullName` column added to thumbnail csv - Not required if adding actress manually
 - Changed function name `Update-JVThumbs` -> `Update-JVThumbCsv`
 - Setting name `sort.metadata.thumbcsv.path` -> `location.thumbcsv`
-- Setting name `sort.metadata.genrecsv.path` -> 'location.genrecsv`
+- Setting name `sort.metadata.genrecsv.path` -> `location.genrecsv`
 - Setting name `admin.log.path` -> `location.log`
 - `-Version` parameter output
 - Url matches using `-Find` are more intuitive
@@ -40,7 +57,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Site scrapers now run in asynchronous threads
 - Scraping a single movie with -Url now works more intuitively
 - Thumbnail csv is improved with both English/Japanese names
-- Thumbnail csv now supports multiple actress aliases with '|' delimiter in the Alias      column
+- Thumbnail csv now supports multiple actress aliases with '|' delimiter in the Alias column
 - Thumbnail csv now better matches actresses
 - Allow to prefer English or Japanese actress names in metadata
   - If a Japanese name is found from site metadata, thumbnail csv will automatically be used to try to match it to its English name and vice-versa
