@@ -567,7 +567,7 @@ function Javinizer {
                         return
                     }
 
-                    $javData = Get-JVData  -Url $Url -Settings $Settings
+                    $javData = Get-JVData -Url $Url -Settings $Settings
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
@@ -594,10 +594,10 @@ function Javinizer {
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                if ($null -ne $javAggregatedData) {
+                                if ($javAggregatedData.NullFields -eq '') {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                                 } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return
                                 }
                             } else {
