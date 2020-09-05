@@ -219,10 +219,21 @@ function Get-JVAggregatedData {
                             $index = [Array]::IndexOf($csvAlias, $alias)
                             $aliases = $alias -split '\|'
                             foreach ($alias in $aliases) {
-                                $aliasObject += [PSCustomObject]@{
-                                    LastName  = ($alias -split ' ')[0]
-                                    FirstName = ($alias -split ' ')[1]
-                                    Index     = $index
+                                # Match if the name contains Japanese characters
+                                if ($alias -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                                    $aliasObject += [PSCustomObject]@{
+                                        LastName     = $null
+                                        FirstName    = $null
+                                        JapaneseName = $alias
+                                        Index        = $index
+                                    }
+                                } else {
+                                    $aliasObject += [PSCustomObject]@{
+                                        LastName     = ($alias -split ' ')[0]
+                                        FirstName    = ($alias -split ' ')[1]
+                                        JapaneseName = $null
+                                        Index        = $index
+                                    }
                                 }
                             }
                         }
@@ -230,16 +241,30 @@ function Get-JVAggregatedData {
                         if ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
                             $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
                             $actressString = "$($actressCsv[$matched.Index].LastName) $($actressCsv[$matched.Index].FirstName)".Trim()
-
                             if ($matched.Count -eq 1) {
                                 $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
+                                $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
                             } elseif ($matched.Count -gt 1) {
                                 # Automatically select the first match if multiple actresses with identical names are found
-                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched[0].Index].FirstName
-                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
+                                $aggregatedDataObject.Actress[0].FirstName = $actressCsv[$matched[0].Index].FirstName
+                                $aggregatedDataObject.Actress[0].LastName = $actressCsv[$matched[0].Index].LastName
+                                $aggregatedDataObject.Actress[0].JapaneseName = $actressCsv[$matched.Index].JapaneseName
                             }
-
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
+                        } elseif ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName')) {
+                            $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
+                            $actressString = "$($actressCsv[$matched.Index].LastName) $($actressCsv[$matched.Index].FirstName)".Trim()
+                            if ($matched.Count -eq 1) {
+                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
+                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
+                                $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
+                            } elseif ($matched.Count -gt 1) {
+                                # Automatically select the first match if multiple actresses with identical names are found
+                                $aggregatedDataObject.Actress[0].FirstName = $actressCsv[$matched[0].Index].FirstName
+                                $aggregatedDataObject.Actress[0].LastName = $actressCsv[$matched[0].Index].LastName
+                                $aggregatedDataObject.Actress[0].JapaneseName = $actressCsv[$matched.Index].JapaneseName
+                            }
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] replaced by [$actressString]"
                         }
                     }
