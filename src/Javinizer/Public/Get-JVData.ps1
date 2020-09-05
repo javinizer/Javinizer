@@ -161,7 +161,7 @@ function Get-JVData {
                             $using:JavlibraryZhUrl | Get-JavlibraryData
                         } else {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
-                            $jvJavlibrary.Zh | Get-JavlibraryData
+                            $jvJavlibraryUrl.Zh | Get-JavlibraryData
                         }
                     } | Out-Null
                 }
