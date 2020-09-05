@@ -45,6 +45,7 @@
     "sort.download.posterimg": 1,
     "sort.download.screenshotimg": 0,
     "sort.download.trailervid": 0,
+    "sort.format.delimiter": ", ",
     "sort.format.file": "<ID>",
     "sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
     "sort.format.posterimg": "folder",
