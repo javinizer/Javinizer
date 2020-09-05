@@ -4,11 +4,8 @@ function Get-R18Url {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [String]$Id,
+        [String]$Id
 
-        [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateSet('en', 'zh')]
-        [String]$Language
     )
 
     process {
@@ -144,13 +141,10 @@ function Get-R18Url {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on R18"
             return
         } else {
-            if ($Language -eq 'zh') {
-                $directUrl = $directUrl + '&lg=zh'
-            }
-
+            $directUrlZh = $directUrl + '&lg=zh'
             $urlObject = [PSCustomObject]@{
-                Url      = $directUrl
-                Language = $Language
+                En = $directUrl
+                Zh = $directUrlZh
             }
 
             Write-Output $urlObject

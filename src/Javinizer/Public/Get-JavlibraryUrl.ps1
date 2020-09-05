@@ -6,11 +6,7 @@ function Get-JavlibraryUrl {
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [String]$Id,
 
-        [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateSet('en', 'ja', 'zh')]
-        [String]$Language,
-
-        [Parameter(Position = 2)]
+        [Parameter(Position = 1)]
         [String]$BaseUrl = 'http://www.javlibrary.com'
     )
 
@@ -90,15 +86,13 @@ function Get-JavlibraryUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
             return
         } else {
-            if ($Language -eq 'ja') {
-                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/ja/'
-            } elseif ($Language -eq 'zh') {
-                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/cn/'
-            }
+            $javlibraryUrlJa = $javlibraryUrl -replace '/en/', '/ja/'
+            $javlibraryUrlZh = $javlibraryUrl -replace '/en/', '/cn/'
 
             $urlObject = [PSCustomObject]@{
-                Url      = $javlibraryUrl
-                Language = $Language
+                En = $javlibraryUrl
+                Ja = $javlibraryUrlJa
+                Zh = $javlibraryUrlZh
             }
 
             Write-Output $urlObject
