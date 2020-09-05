@@ -107,7 +107,15 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.firstnameorder')]
-        [Boolean]$NameOrder
+        [Boolean]$FirstNameOrder,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.format.delimiter')]
+        [String]$DelimiterFormat,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.actresslanguageja')]
+        [Boolean]$ActressLanguageJa
     )
 
     begin {
@@ -142,20 +150,22 @@ function Set-JVMovie {
             $ActorFolderFormat = $Settings.'sort.format.actressimgfolder'
             $DisplayName = $Settings.'sort.metadata.nfo.displayname'
             $AddTag = $Settings.'sort.metadata.nfo.seriesastag'
-            $NameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
+            $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
+            $DelimiterFormat = $Settings.'sort.format.delimiter'
+            $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
         }
 
-        $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength
-        $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength
-        $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength
-        $posterName = Convert-JVString -Data $Data -Format $PosterFormat -MaxTitleLength $MaxTitleLength
-        $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength
-        $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat -MaxTitleLength $MaxTitleLength
-        $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat -MaxTitleLength $MaxTitleLength
-        $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat -MaxTitleLength $MaxTitleLength
+        $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $posterName = Convert-JVString -Data $Data -Format $PosterFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
 
         if ($CreateNfo) {
-            $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength
+            $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
             if ($CreateNfoPerFile) {
                 $nfoName = $fileName
             }
@@ -195,7 +205,7 @@ function Set-JVMovie {
             if ($CreateNfo) {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    $nfoContents = $Data | Get-JVNfo -NameOrder $NameOrder -AddTag $AddTag
+                    $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -AddTag $AddTag
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
                 } catch {

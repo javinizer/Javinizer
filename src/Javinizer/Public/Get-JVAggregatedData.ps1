@@ -70,11 +70,11 @@ function Get-JVAggregatedData {
         [Array]$TrailerUrlPriority,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.displayname')]
+        [Alias('sort.metadata.nfo.displayname')]
         [String]$DisplayNameFormat,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.firstnameorder')]
+        [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$FirstNameOrder,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -111,7 +111,15 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.language')]
-        [String]$TranslateLanguage
+        [String]$TranslateLanguage,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.format.delimiter')]
+        [String]$DelimiterFormat,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.actresslanguageja')]
+        [Boolean]$ActressLanguageJa
     )
 
     process {
@@ -138,6 +146,8 @@ function Get-JVAggregatedData {
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $DelimiterFormat = $Settings.'sort.format.delimiter'
+            $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -200,7 +210,7 @@ function Get-JVAggregatedData {
         }
 
         # The displayname value is updated after the previous fields have already been scraped
-        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat
+        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
 
         if ($ThumbCsv) {
             if (Test-Path -LiteralPath $ThumbCsvPath) {
