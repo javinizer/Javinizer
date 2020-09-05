@@ -105,7 +105,9 @@ function Get-JVData {
                             $using:R18Url | Get-R18Data
                         } else {
                             $jvR18Url = $using:jvR18Url
-                            $jvR18Url.En | Get-R18Data
+                            if ($jvR18Url) {
+                                $jvR18Url.En | Get-R18Data
+                            }
                         }
                     } | Out-Null
 
@@ -119,7 +121,9 @@ function Get-JVData {
                             $using:R18ZhUrl | Get-R18Data
                         } else {
                             $jvR18Url = $using:jvR18Url
-                            $jvR18Url.Zh | Get-R18Data
+                            if ($jvR18Url) {
+                                $jvR18Url.Zh | Get-R18Data
+                            }
                         }
                     } | Out-Null
                 }
@@ -135,7 +139,9 @@ function Get-JVData {
                             $using:JavlibraryUrl | Get-JavlibraryData
                         } else {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
-                            $jvJavlibraryUrl.En | Get-JavlibraryData
+                            if ($jvJavlibraryUrl) {
+                                $jvJavlibraryUrl.En | Get-JavlibraryData
+                            }
                         }
                     } | Out-Null
                 }
@@ -148,7 +154,9 @@ function Get-JVData {
                             $using:JavlibraryJaUrl | Get-JavlibraryData
                         } else {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
-                            $jvJavlibraryUrl.Ja | Get-JavlibraryData
+                            if ($jvJavlibraryUrl) {
+                                $jvJavlibraryUrl.Ja | Get-JavlibraryData
+                            }
                         }
                     } | Out-Null
                 }
@@ -161,7 +169,9 @@ function Get-JVData {
                             $using:JavlibraryZhUrl | Get-JavlibraryData
                         } else {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
-                            $jvJavlibraryUrl.Zh | Get-JavlibraryData
+                            if ($jvJavlibraryUrl) {
+                                $jvJavlibraryUrl.Zh | Get-JavlibraryData
+                            }
                         }
                     } | Out-Null
                 }
@@ -189,7 +199,9 @@ function Get-JVData {
                         $using:JavbusUrl | Get-JavbusData
                     } else {
                         $jvJavbusUrl = $using:jvJavbusUrl
-                        $jvJavbusUrl.En | Get-JavbusData
+                        if ($jvJavbusUrl) {
+                            $jvJavbusUrl.En | Get-JavbusData
+                        }
                     }
                 } | Out-Null
 
@@ -201,7 +213,9 @@ function Get-JVData {
                             $using:JavbusJaUrl | Get-JavbusData
                         } else {
                             $jvJavbusUrl = $using:jvJavbusUrl
-                            $jvJavbusUrl.Ja | Get-JavbusData
+                            if ($jvJavbusUrl) {
+                                $jvJavbusUrl.Ja | Get-JavbusData
+                            }
                         }
                     } | Out-Null
                 }
@@ -214,7 +228,9 @@ function Get-JVData {
                             $using:JavbusZhUrl | Get-JavbusData
                         } else {
                             $jvJavbusUrl = $using:jvJavbusUrl
-                            $jvJavbusUrl.Zh | Get-JavbusData
+                            if ($jvJavbusUrl) {
+                                $jvJavbusUrl.Zh | Get-JavbusData
+                            }
                         }
                     } | Out-Null
                 }
