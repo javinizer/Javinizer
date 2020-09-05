@@ -335,12 +335,15 @@ function Get-JVAggregatedData {
 
         if ($Translate) {
             if ($TranslateLanguage) {
-                $translatedDescription = Get-TranslatedString -String $descriptionTemp -Language $TranslateLanguage
-
-                if ($null -ne $translatedDescription -and $translatedDescription -ne '') {
+                $originalDescription = $aggregatedDataObject.Description
+                $translatedDescription = Get-TranslatedString -String $originalDescription -Language $TranslateLanguage
+                if ($null -eq $translatedDescription -or $translatedDescription -eq '') {
+                    $aggregatedDataObject.Description = $originalDescription
+                } else {
                     $aggregatedDataObject.Description = $translatedDescription
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
                 }
+
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
             }
