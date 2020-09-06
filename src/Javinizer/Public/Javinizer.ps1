@@ -205,6 +205,13 @@ function Javinizer {
     Sets/replaces all Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
 
     .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -Recurse -UpdateNfo
+
+    Description
+    -----------
+    Updates existing sorted nfo files from a path with updated aliases, thumburls, and names according to the settings.
+
+    .EXAMPLE
     Javinizer -OpenSettings
 
     Description
@@ -217,15 +224,18 @@ function Javinizer {
     param (
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
+        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true, Position = 0)]
         [System.IO.DirectoryInfo]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [System.IO.DirectoryInfo]$DestinationPath,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -310,7 +320,10 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenGenres,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Thumbs')]
+        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
+        [Switch]$UpdateNfo,
+
+        [Parameter(ParameterSetName = 'Thumbs', Mandatory = $true)]
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -323,11 +336,11 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Thumbs')]
         [Hashtable]$Set,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
+        [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
         [Alias('v')]
         [Switch]$Version,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Help')]
+        [Parameter(ParameterSetName = 'Help', Mandatory = $true)]
         [Alias('h')]
         [Switch]$Help
     )
@@ -517,6 +530,10 @@ function Javinizer {
 
             'Emby' {
                 $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+            }
+
+            'Nfo' {
+                Update-JVNfo -Path $Path -Recurse:$Recurse -Depth:$Depth -FirstNameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -ThumbCsvAlias:$Settings.'sort.metadata.thumbcsv.convertalias'
             }
 
             'Thumbs' {
