@@ -101,154 +101,154 @@ ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 PS> help Javinizer
 
 NAME
-    Javinizer
+Javinizer
 
 SYNOPSIS
-    A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
+A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
 
 SYNTAX
-    Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath
-    <FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
-    [<CommonParameters>]
+Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath
+<FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
+[<CommonParameters>]
 
-    Javinizer [-Path] <DirectoryInfo> [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
+Javinizer [-Path] <DirectoryInfo> [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
 
-    Javinizer [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus]
-    [-JavbusJa] [-JavbusZh] [-Jav321] [-Set <Hashtable>] [<CommonParameters>]
+Javinizer [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus]
+[-JavbusJa] [-JavbusZh] [-Jav321] [-Set <Hashtable>] [<CommonParameters>]
 
-    Javinizer [-SetEmbyThumbs] [-ReplaceAll] [-Set <Hashtable>] [<CommonParameters>]
+Javinizer [-SetEmbyThumbs] [-ReplaceAll] [-Set <Hashtable>] [<CommonParameters>]
 
-    Javinizer [-OpenSettings] [-OpenLog] [-OpenThumbs] [-OpenGenres] [-Set <Hashtable>] [<CommonParameters>]
+Javinizer [-OpenSettings] [-OpenLog] [-OpenThumbs] [-OpenGenres] [-Set <Hashtable>] [<CommonParameters>]
 
-    Javinizer -UpdateThumbs [-Pages <Array>] [-Set <Hashtable>] [<CommonParameters>]
+Javinizer -UpdateThumbs [-Pages <Array>] [-Set <Hashtable>] [<CommonParameters>]
 
-    Javinizer -Version [<CommonParameters>]
+Javinizer -Version [<CommonParameters>]
 
-    Javinizer -Help [<CommonParameters>]
+Javinizer -Help [<CommonParameters>]
 
 
 DESCRIPTION
-    Javinizer detects your local JAV files and structures them into self-hosted media player compatible
-    formats. A metadata nfo file is created per file to be read by the media player library.
+Javinizer detects your local JAV files and structures them into self-hosted media player compatible
+formats. A metadata nfo file is created per file to be read by the media player library.
 
 
 PARAMETERS
-    -Path <DirectoryInfo>
-        Specifies the file or directory path to JAV files. Defaults to 'location.input' in the settings file.
+-Path <DirectoryInfo>
+    Specifies the file or directory path to JAV files. Defaults to 'location.input' in the settings file.
 
-    -DestinationPath <DirectoryInfo>
-        Specifies the directory path to output sorted JAV files. Defaults to 'location.output' in the settings file.
+-DestinationPath <DirectoryInfo>
+    Specifies the directory path to output sorted JAV files. Defaults to 'location.output' in the settings file.
 
-    -Recurse [<SwitchParameter>]
-        Specifies to search sub-directories in your Path.
+-Recurse [<SwitchParameter>]
+    Specifies to search sub-directories in your Path.
 
-    -Depth <Int32>
-        Specifies the depth of sub-directories to search when using -Recurse.
+-Depth <Int32>
+    Specifies the depth of sub-directories to search when using -Recurse.
 
-    -Url <Array>
-        Specifies a url or an array of urls to sort a single JAV file.
+-Url <Array>
+    Specifies a url or an array of urls to sort a single JAV file.
 
-    -SettingsPath <FileInfo>
-        Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
+-SettingsPath <FileInfo>
+    Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
 
-    -Strict [<SwitchParameter>]
-        Specifies to not automatically try to match filenames to the movie ID. Can be useful for movies like T28- and R18-.
+-Strict [<SwitchParameter>]
+    Specifies to not automatically try to match filenames to the movie ID. Can be useful for movies like T28- and R18-.
 
-    -MoveToFolder <Boolean>
-        Specifies whether or not to move sorted files to its own folder. Defaults to 'sort.movetofolder' in the settings file.
+-MoveToFolder <Boolean>
+    Specifies whether or not to move sorted files to its own folder. Defaults to 'sort.movetofolder' in the settings file.
 
-    -RenameFile <Boolean>
-        Specifies whether or not to rename sorted files. Defaults to 'sort.renamefile' in the settings file.
+-RenameFile <Boolean>
+    Specifies whether or not to rename sorted files. Defaults to 'sort.renamefile' in the settings file.
 
-    -Force [<SwitchParameter>]
-        Specifies to replace all sort files (nfo, images, trailers, etc.) if they already exist. Without -Force,
-        only the nfo file will be replaced if it already exists.
+-Force [<SwitchParameter>]
+    Specifies to replace all sort files (nfo, images, trailers, etc.) if they already exist. Without -Force,
+    only the nfo file will be replaced if it already exists.
 
-    -HideProgress [<SwitchParameter>]
-        Specifies to hide the progress bar during sort.
+-HideProgress [<SwitchParameter>]
+    Specifies to hide the progress bar during sort.
 
-    -IsThread [<SwitchParameter>]
-        Specifies that the current running Javinizer instance is a thread. This is for internal purposes only.
+-IsThread [<SwitchParameter>]
+    Specifies that the current running Javinizer instance is a thread. This is for internal purposes only.
 
-    -Find <PSObject>
-        Specifies an ID or an array of URLs to search metadata for.
+-Find <PSObject>
+    Specifies an ID or an array of URLs to search metadata for.
 
-    -Aggregated [<SwitchParameter>]
-        Specifies to aggregate the data from -Find according to your settings.
+-Aggregated [<SwitchParameter>]
+    Specifies to aggregate the data from -Find according to your settings.
 
-    -Nfo [<SwitchParameter>]
-        Specifies to output the nfo contents from -Find.
+-Nfo [<SwitchParameter>]
+    Specifies to output the nfo contents from -Find.
 
-    -R18 [<SwitchParameter>]
-        Specifies to search R18 when using -Find.
+-R18 [<SwitchParameter>]
+    Specifies to search R18 when using -Find.
 
-    -R18Zh [<SwitchParameter>]
-        Specifies to search R18-Chinese when using -Find.
+-R18Zh [<SwitchParameter>]
+    Specifies to search R18-Chinese when using -Find.
 
-    -Dmm [<SwitchParameter>]
-        Specifies to search R18 when using -Find.
+-Dmm [<SwitchParameter>]
+    Specifies to search R18 when using -Find.
 
-    -Javlibrary [<SwitchParameter>]
-        Specifies to search Javlibrary when using -Find.
+-Javlibrary [<SwitchParameter>]
+    Specifies to search Javlibrary when using -Find.
 
-    -JavlibraryZh [<SwitchParameter>]
-        Specifies to search Javlibrary-Chinese when using -Find.
+-JavlibraryZh [<SwitchParameter>]
+    Specifies to search Javlibrary-Chinese when using -Find.
 
-    -JavlibraryJa [<SwitchParameter>]
-        Specifies to search Javlibrary-Japanese when using -Find.
+-JavlibraryJa [<SwitchParameter>]
+    Specifies to search Javlibrary-Japanese when using -Find.
 
-    -Javbus [<SwitchParameter>]
-        Specifies to search Javbus when using -Find.
+-Javbus [<SwitchParameter>]
+    Specifies to search Javbus when using -Find.
 
-    -JavbusJa [<SwitchParameter>]
-        Specifies to search Javbus-Japanese when using -Find.
+-JavbusJa [<SwitchParameter>]
+    Specifies to search Javbus-Japanese when using -Find.
 
-    -JavbusZh [<SwitchParameter>]
-        Specifies to search Javbus-Chinese when using -Find.
+-JavbusZh [<SwitchParameter>]
+    Specifies to search Javbus-Chinese when using -Find.
 
-    -Jav321 [<SwitchParameter>]
-        Specifies to search Jav321 when using -Find.
+-Jav321 [<SwitchParameter>]
+    Specifies to search Jav321 when using -Find.
 
-    -SetEmbyThumbs [<SwitchParameter>]
-        Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
-        it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
+-SetEmbyThumbs [<SwitchParameter>]
+    Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
+    it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
 
-    -ReplaceAll [<SwitchParameter>]
-        Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
+-ReplaceAll [<SwitchParameter>]
+    Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
 
-    -OpenSettings [<SwitchParameter>]
-        Specifies to open the settings file.
+-OpenSettings [<SwitchParameter>]
+    Specifies to open the settings file.
 
-    -OpenLog [<SwitchParameter>]
-        Specifies to open the log file.
+-OpenLog [<SwitchParameter>]
+    Specifies to open the log file.
 
-    -OpenThumbs [<SwitchParameter>]
-        Specifies to open the actress thumbnails file.
+-OpenThumbs [<SwitchParameter>]
+    Specifies to open the actress thumbnails file.
 
-    -OpenGenres [<SwitchParameter>]
-        Specifies to open the genre replacements file.
+-OpenGenres [<SwitchParameter>]
+    Specifies to open the genre replacements file.
 
-    -UpdateThumbs [<SwitchParameter>]
-        Specifies to update the actress thumbnails file.
+-UpdateThumbs [<SwitchParameter>]
+    Specifies to update the actress thumbnails file.
 
-    -Pages <Array>
-        Specifies an array as a range of pages to search for and update the actress thumbnails file.
+-Pages <Array>
+    Specifies an array as a range of pages to search for and update the actress thumbnails file.
 
-    -Set <Hashtable>
-        Specifies a hashtable to update specific settings on the command-line.
+-Set <Hashtable>
+    Specifies a hashtable to update specific settings on the command-line.
 
-    -Version [<SwitchParameter>]
-        Specifies to display the Javinizer module version.
+-Version [<SwitchParameter>]
+    Specifies to display the Javinizer module version.
 
-    -Help [<SwitchParameter>]
-        Specifies to display the Javinizer help.
+-Help [<SwitchParameter>]
+    Specifies to display the Javinizer help.
 
-    <CommonParameters>
-        This cmdlet supports the common parameters: Verbose, Debug,
-        ErrorAction, ErrorVariable, WarningAction, WarningVariable,
-        OutBuffer, PipelineVariable, and OutVariable. For more information, see
-        about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
+<CommonParameters>
+    This cmdlet supports the common parameters: Verbose, Debug,
+    ErrorAction, ErrorVariable, WarningAction, WarningVariable,
+    OutBuffer, PipelineVariable, and OutVariable. For more information, see
+    about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
 
 
 ```
@@ -258,129 +258,115 @@ PARAMETERS
 ```
 -------------------------- EXAMPLE 1 --------------------------
 
-    PS > Javinizer
+PS > Javinizer
 
-    Description
-    -----------
-    Sorts a path of files using 'location.input' and 'location.output' from your settings file.
+Description
+-----------
+Sorts a path of files using 'location.input' and 'location.output' from your settings file.
 
+-------------------------- EXAMPLE 2 --------------------------
 
-    -------------------------- EXAMPLE 2 --------------------------
+PS > Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -DestinationPath 'C:\JAV\Sorted'
 
-    PS > Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -DestinationPath 'C:\JAV\Sorted'
+Description
+-----------
+Sorts a single file and move it to the destination path.
 
-    Description
-    -----------
-    Sorts a single file and move it to the destination path.
+-------------------------- EXAMPLE 3 --------------------------
 
+PS > Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -Url 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/'
 
-    -------------------------- EXAMPLE 3 --------------------------
+Description
+-----------
+Sorts a single file using specific urls.
 
-    PS > Javinizer -Path 'C:\JAV\Unsorted\ABP-420.mp4' -Url 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/'
+-------------------------- EXAMPLE 4 --------------------------
 
-    Description
-    -----------
-    Sorts a single file using specific urls.
+PS > Javinizer -Path 'C:\JAV\Unsorted' -Strict
 
+Description
+-----------
+Sorts a path of JAV files without attemping automatic filename cleaning.
 
-    -------------------------- EXAMPLE 4 --------------------------
+-------------------------- EXAMPLE 5 --------------------------
 
-    PS > Javinizer -Path 'C:\JAV\Unsorted' -Strict
+PS > Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
 
-    Description
-    -----------
-    Sorts a path of JAV files without attemping automatic filename cleaning.
+Description
+-----------
+Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
 
+-------------------------- EXAMPLE 6 --------------------------
 
-    -------------------------- EXAMPLE 5 --------------------------
+Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID>- <TITLE>'}
 
-    PS > Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
+Description
+-----------
+Sorts files from a path and specify updated settings from the commmand-line using a hashtable.
 
-    Description
-    -----------
-    Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
+-------------------------- EXAMPLE 7 --------------------------
 
+PS > Javinizer -Path 'C:\JAV\Sorted' -SettingsPath 'C:\JAV\alternateSettings.json'
 
-    -------------------------- EXAMPLE 6 --------------------------
+Description
+-----------
+Sorts files from a path and specify an external settings file to use.
 
-    Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID>- <TITLE>'}
+-------------------------- EXAMPLE 8 --------------------------
 
-    Description
-    -----------
-    Sorts files from a path and specify updated settings from the commmand-line using a hashtable.
+PS > Javinizer -Find 'ABP-420' -R18 -Dmm
 
+Description
+-----------
+Find a movie metadata on R18 and DMM by specifying its id.
 
-    -------------------------- EXAMPLE 7 --------------------------
+-------------------------- EXAMPLE 9 --------------------------
 
-    PS > Javinizer -Path 'C:\JAV\Sorted' -SettingsPath 'C:\JAV\alternateSettings.json'
+PS > Javinizer -Find 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/' -Aggregated
 
-    Description
-    -----------
-    Sorts files from a path and specify an external settings file to use.
+Description
+-----------
+Find an array of urls metadata and aggregates them according to your settings file.
 
+-------------------------- EXAMPLE 10 --------------------------
 
-    -------------------------- EXAMPLE 8 --------------------------
+PS > Javinizer -Find 'ABP-420' -R18 -Javlibrary -Dmm -Aggregated -Nfo
 
-    PS > Javinizer -Find 'ABP-420' -R18 -Dmm
+Description
+-----------
+Find a movie metadata on R18 and DMM by specifying its id, aggrregates the data, and outputs the corresponding nfo contents.
 
-    Description
-    -----------
-    Find a movie metadata on R18 and DMM by specifying its id.
+-------------------------- EXAMPLE 11 --------------------------
 
+PS > Javinizer -SetEmbyThumbs
 
-    -------------------------- EXAMPLE 9 --------------------------
+Description
+-----------
+Sets missing Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
 
-    PS > Javinizer -Find 'http://www.javlibrary.com/en/?v=javlilb54i', 'https://www.r18.com/[..]/id=118abp00420/' -Aggregated
+-------------------------- EXAMPLE 12 --------------------------
 
-    Description
-    -----------
-    Find an array of urls metadata and aggregates them according to your settings file.
+PS > Javinizer -SetEmbyThumbs -ReplaceAll
 
+Description
+-----------
+Sets/replaces all Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
 
-    -------------------------- EXAMPLE 10 --------------------------
+-------------------------- EXAMPLE 13 --------------------------
 
-    PS > Javinizer -Find 'ABP-420' -R18 -Javlibrary -Dmm -Aggregated -Nfo
+PS > Javinizer -Path 'C:\JAV\Sorted' -Recurse -UpdateNfo -Verbose
 
-    Description
-    -----------
-    Find a movie metadata on R18 and DMM by specifying its id, aggrregates the data, and outputs the corresponding nfo contents.
+Description
+-----------
+Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
 
+-------------------------- EXAMPLE 14 --------------------------
 
-    -------------------------- EXAMPLE 11 --------------------------
+PS > Javinizer -OpenSettings
 
-    PS > Javinizer -SetEmbyThumbs
-
-    Description
-    -----------
-    Sets missing Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
-
-
-    -------------------------- EXAMPLE 12 --------------------------
-
-    PS > Javinizer -SetEmbyThumbs -ReplaceAll
-
-    Description
-    -----------
-    Sets/replaces all Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
-
-
-    -------------------------- EXAMPLE 13 --------------------------
-
-    PS > Javinizer -Path 'C:\JAV\Sorted' -Recurse -UpdateNfo -Verbose
-
-    Description
-    -----------
-    Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
-
-
-    -------------------------- EXAMPLE 14 --------------------------
-
-    PS > Javinizer -OpenSettings
-
-    Description
-    -----------
-    Opens the settings file.
-
+Description
+-----------
+Opens the settings file.
 
 ```
 
