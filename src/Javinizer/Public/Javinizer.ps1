@@ -209,7 +209,7 @@ function Javinizer {
 
     Description
     -----------
-    Updates existing sorted nfo files from a path with updated aliases, thumburls, and names according to the settings.
+    Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
 
     .EXAMPLE
     Javinizer -OpenSettings

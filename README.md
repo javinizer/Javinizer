@@ -18,6 +18,7 @@ Javinizer detects your local JAV files and structures them into media library co
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
 
 [View changelog](.github/CHANGELOG.md)
+
 [View v1.x.x docs](https://github.com/jvlflame/Javinizer/blob/release/1.7.3/README.md)
 
 ## Installation
@@ -107,11 +108,14 @@ SYNOPSIS
 
 
 SYNTAX
-    Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath <FileInfo>] [-Strict] [-MoveToFolder <Boolean>]
-    [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>] [<CommonParameters>]
-
-    Javinizer [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus] [-JavbusJa] [-JavbusZh] [-Jav321] [-Set <Hashtable>]
+    Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath
+    <FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
     [<CommonParameters>]
+
+    Javinizer [-Path] <DirectoryInfo> [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
+
+    Javinizer [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus]
+    [-JavbusJa] [-JavbusZh] [-Jav321] [-Set <Hashtable>] [<CommonParameters>]
 
     Javinizer [-SetEmbyThumbs] [-ReplaceAll] [-Set <Hashtable>] [<CommonParameters>]
 
@@ -362,23 +366,106 @@ PARAMETERS
 
     -------------------------- EXAMPLE 13 --------------------------
 
+    PS > Javinizer -Path 'C:\JAV\Sorted' -Recurse -UpdateNfo -Verbose
+
+    Description
+    -----------
+    Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
+
+
+    -------------------------- EXAMPLE 14 --------------------------
+
     PS > Javinizer -OpenSettings
 
     Description
     -----------
     Opens the settings file.
-    
-    
+
+
 ```
 
-## Content Management System (CMS) Setup
+## Settings Information
+
+| Setting | Description | Accepted or Example Value |
+| ------------- | ------------- | ------------- |
+| `throttlelimit` | Specifies the limit Javinizer will run video sorting threads. | 1-10
+| `location.input` | Specifies the default -Path that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
+| `location.output` | Specifies the default -DestinationPath that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
+| `location.thumbcsv` | Specifies the location of the thumbnail csv that is used to better match actresses. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvThumbs.csv
+| `location.genrecsv` | Specifies the location of the genre replacement csv that is used to do a string replacement of genres of your choice. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\jvGenres.csv
+| `location.log` | Specifies the location of the log file. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvLogs.log
+| `scraper.movie.dmm` | Specifies whether the dmm.com scraper is on/off. | 0, 1
+| `scraper.movie.jav321` | Specifies whether the jav321.com scraper is on/off. | 0, 1
+| `scraper.movie.javbus` | Specifies whether the javbus.com scraper is on/off. | 0, 1
+| `scraper.movie.javbusja` | Specifies whether the javbus.com japanese scraper is on/off. | 0, 1
+| `scraper.movie.javbuszh` | Specifies whether the javbus.com chinese scraper is on/off. | 0, 1
+| `scraper.movie.javlibrary` | Specfies whether the javlibrary.com scraper is on/off. | 0, 1
+| `scraper.movie.javlibraryja` | Specifies whether the javlibrary.com japanese scraper is on/off. | 0, 1
+| `scraper.movie.javlibraryzh` | Specifies whether the javlibrary.com chinese scraper is on/off. | 0, 1
+| `scraper.movie.r18` | Specifies whether the r18.com scraper is on/off. | 0, 1
+| `scraper.movie.r18zh` | Specifies whether the r18.com chinese scraper is on/off. | 0, 1
+| `match.minimumfilesize` | Specifies the minimum filesize that Javinizer will find when performing a directory search in MB. | Any number
+| `match.includedfileextension` | Specifies the extensions that Javinizer will find when performing a directory search. | ".ext"
+| `match.excludedfilestring` | Specifies the file strings that Javinizer will ignore when performing a directory search using regex | "^.*-trailer*"
+| `match.regex` | Specifies that Javinizer will perform the directory search using regex rather than the default matcher | 0, 1
+| `match.regex.string` | Specifies the regex string that Javinizer will use to perform the directory search. | Regex string
+| `match.regex.idmatch` | Specifies the regex match of the movie's ID of the regex string. | Any number
+| `match.regex.ptmatch` | Specifies the regex match of the movie's part number of the regex string. | Any number
+| `sort.movetofolder` | Specifies to move the movie to its own folder after being sorted. | 0, 1
+| `sort.renamefile` | Specifies to rename the movie file after being sorted. | 0, 1
+| `sort.maxtitlelength` | Specifies the max metadata title length when using it in a format string. | Any number
+| `sort.create.nfo` | Specifies to create the nfo file when sorting a movie. | 0, 1
+| `sort.create.nfoperfile` | Specifies to create a nfo file per part when sorting a movie. This will override any renaming done on the nfo file and instead use the filename. | 0, 1
+| `sort.download.actressimg` | Specifies to download actress images when sorting a movie. | 0, 1
+| `sort.download.thumbimg` | Specifies to download the thumbnail image when sorting a movie. | 0, 1
+| `sort.download.posterimg` | Specifies to create the poster image when sorting a movie. Sort.download.thumbimg is required for this to function. | 0, 1
+| `sort.download.screenshotimg` | Specifies to download screenshot images when sorting a movie. | 0, 1
+| `sort.download.trailervid` | Specifies to download the trailer video when sorting a movie. | 0, 1
+| `sort.format.delimiter` | Specifies the delimiter between actresses when using \<ACTORS> in the format string. | Any string value
+| `sort.format.file` | Specifies the format string when renaming a file. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.folder` | Specifies the format string when creating the folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.posterimg` | Specifies an array of format string when creating the poster image. Multiple strings will allow you to create multiple poster image files. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.trailervid` | Specifies the format string when creating the trailer video. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.nfo` | Specifies the format string when creating the nfo. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.screenshotimg` | Specifies the format string when creating the screenshot images. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.screenshotfolder` | Specifies the format string when creating the screenshot images folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.format.actressimgfolder` | Specifies the format string when creating the actress image folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.metadata.nfo.translatedescription` | Specifies to translate the description | 0, 1
+| `sort.metadata.nfo.translatedescription.language` | Specifies which language to translate to.  | Check [here](https://developers.google.com/admin-sdk/directory/v1/languages) for language codes
+| `sort.metadata.nfo.displayname` | Specifies the format string of the displayname in the metadata nfo file. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.metadata.nfo.seriesastag` | Specifies to add the <\SET> metadata as <\TAG> as well for Emby/Jellyfin support | 0, 1
+| `sort.metadata.nfo.actresslanguageja` | Specifies to prefer Japanese names when creating the metadata nfo. | 0, 1
+| `sort.metadata.thumbcsv` | Specifies to use the thumbnail csv when aggregating metadata. | 0, 1
+| `sort.metadata.thumbcsv.convertalias` | Specifies to use the thumbnail csv alias field to replace actresses in the metadata. | 0, 1
+| `sort.metadata.genrecsv` | Specifies to use the genre csv to replace genres in the metadata. | 0, 1
+| `sort.metadata.genre.ignore` | Specifies an array of genres to ignore in the metadata. | Array of string values
+| `sort.metadata.requiredfield` | Specifies the required metadata fields which will constitute a successful sort. | Array of string metadata field names
+| `sort.metadata.priority.actress` | Specifies the array of scrapers to prioritize the actress metadata. | Array of string metadata field names
+| `sort.metadata.priority.alternatetitle` | Specifies the array of scrapers to prioritize the alternatetitle metadata. | Array of string metadata field names
+| `sort.metadata.priority.coverurl` | Specifies the array of scrapers to prioritize the coverurl metadata. | Array of string metadata field names
+| `sort.metadata.priority.description` | Specifies the array of scrapers to prioritize the description metadata. | Array of string metadata field names
+| `sort.metadata.priority.director` | Specifies the array of scrapers to prioritize the director metadata. | Array of string metadata field names
+| `sort.metadata.priority.genre` | Specifies the array of scrapers to prioritize the genre metadata. | Array of string metadata field names
+| `sort.metadata.priority.id` | Specifies the array of scrapers to prioritize the ID metadata. | Array of string metadata field names
+| `sort.metadata.priority.label` | Specifies the array of scrapers to prioritize the label metadata. | Array of string metadata field names
+| `sort.metadata.priority.maker` | Specifies the array of scrapers to prioritize the maker metadata. | Array of string metadata field names
+| `sort.metadata.priority.releasedate` | Specifies the array of scrapers to prioritize the releasedate metadata. | Array of string metadata field names
+| `sort.metadata.priority.runtime` | Specifies the array of scrapers to prioritize the runtime metadata. | Array of string metadata field names
+| `sort.metadata.priority.series` | Specifies the array of scrapers to prioritize the series metadata. | Array of string metadata field names
+| `sort.metadata.priority.screenshoturl` | Specifies the array of scrapers to prioritize the screenshoturl metadata. | Array of string metadata field names
+| `sort.metadata.priority.title` | Specifies the array of scrapers to prioritize the title metadata. | Array of string metadata field names
+| `sort.metadata.priority.trailerurl` | Specifies the array of scrapers to prioritize the trailerurl metadata. | Array of string metadata field names
+| `emby.url` | Specifies the base URL of your Emby/Jellyfin instance to add actress images. | http:\\/\\/192.168.0.1:8096
+| `emby.apikey` | Specifies the API key of your Emby/Jellyfin instance. | API Key string
+| `javlibrary.baseurl` | Specifies the base URL of the Javlibrary instance you want to scrape. This is useful if you are running into CloudFlare errors on the main site and want to use a mirror. | http:\\/\\/javlibrary.com
+| `admin.log` | Specifies to write debug, warning, error, and verbose messages to the log file. | 0, 1
+| `admin.log.level` | Specifies the level of logs that will be written to the log file. | Debug, Info, Warning, Error
+
+## Media Library Setup
 
 | CMS | How to use |
 | ------------- | ------------- |
 | Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating Collections from tags` and `Use plot instead of outline`   |
 | Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
 | Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
-
-## Settings Information
-
-To do
