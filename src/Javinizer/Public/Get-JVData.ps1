@@ -59,6 +59,7 @@ function Get-JVData {
     )
 
     process {
+        $ProgressPreference = 'SilentlyContinue'
         $javinizerDataObject = @()
         $Id = $Id.ToUpper()
 
