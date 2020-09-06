@@ -71,7 +71,7 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.posterimg')]
-        [String]$PosterFormat,
+        [Array]$PosterFormat,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.thumbimg')]
@@ -158,11 +158,15 @@ function Set-JVMovie {
         $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
-        $posterName = Convert-JVString -Data $Data -Format $PosterFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+
+        $posterName = @()
+        foreach ($format in $PosterFormat) {
+            $posterName += Convert-JVString -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        }
 
         if ($CreateNfo) {
             $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
@@ -246,35 +250,15 @@ function Set-JVMovie {
                         try {
                             $cropScriptPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'crop.py'
                             if (Test-Path -LiteralPath $cropScriptPath) {
-                                $posterPath = Join-Path $folderPath -ChildPath "$posterName.jpg"
-                                $pythonThumbPath = $thumbPath -replace '\\', '/'
-                                $pythonPosterPath = $posterPath -replace '\\', '/'
-                                if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
-                                    if ($Force) {
-                                        if (Test-Path -LiteralPath $posterPath) {
-                                            Remove-Item -LiteralPath $posterPath -Force
-                                        }
-                                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                            python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-                                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                            python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-                                        }
-                                    } elseif (!(Test-Path -LiteralPath $posterPath)) {
-                                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                            python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-                                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                            python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-
-                                        }
-                                    }
-                                } else {
-                                    if (!(Test-Path -LiteralPath $posterPath)) {
-                                        Start-Sleep -Seconds 2
-                                        if (!(Test-Path -LiteralPath $posterPath)) {
+                                foreach ($poster in $posterName) {
+                                    $posterPath = Join-Path $folderPath -ChildPath "$poster.jpg"
+                                    $pythonThumbPath = $thumbPath -replace '\\', '/'
+                                    $pythonPosterPath = $posterPath -replace '\\', '/'
+                                    if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                                        if ($Force) {
+                                            if (Test-Path -LiteralPath $posterPath) {
+                                                Remove-Item -LiteralPath $posterPath -Force
+                                            }
                                             if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                                 python $cropScriptPath $pythonThumbPath $pythonPosterPath
                                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
@@ -282,9 +266,32 @@ function Set-JVMovie {
                                                 python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
                                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
                                             }
+                                        } elseif (!(Test-Path -LiteralPath $posterPath)) {
+                                            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                                python $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                                python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+
+                                            }
+                                        }
+                                    } else {
+                                        if (!(Test-Path -LiteralPath $posterPath)) {
+                                            Start-Sleep -Seconds 2
+                                            if (!(Test-Path -LiteralPath $posterPath)) {
+                                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                                    python $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                                    python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
+                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
                             } else {
                                 Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Crop.py file is missing or cannot be found at path [$cropScriptPath]"
                             }
