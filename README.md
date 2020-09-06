@@ -17,39 +17,41 @@ Javinizer detects your local JAV files and structures them into media library co
 
 A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com/jvlflame/JAV-Sort-Scrape-javlibrary) as a console-focused application.
 
-[View changelog](.github/CHANGELOG.md)
+[**View changelog**](.github/CHANGELOG.md)
 
-[View v1.x.x docs](https://github.com/jvlflame/Javinizer/blob/release/1.7.3/README.md)
+[**View v1.x.x docs**](https://github.com/jvlflame/Javinizer/blob/release/1.7.3/README.md)
 
 ## Installation
 
 ### Install module dependencies
 
-- [PowerShell 6 or PowerShell 7](https://github.com/PowerShell/PowerShell)
-- [Python 3+ (64-bit)](https://www.python.org/downloads/) - Linux calls `python3`
+- [PowerShell 6/7](https://github.com/PowerShell/PowerShell)
+- [Python 3](https://www.python.org/downloads/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
 
 ```powershell
-# python (Windows)
+# Python
+# Use pip3 on Linux
 > pip install pillow
 > pip install googletrans
 
-# python (Linux)
-> pip3 install pillow
-> pip3 install googletrans
 ```
+
+Running Javinizer on Linux will call Python commands with `python3`.
 
 ### Install the Javinizer module
 
 Choose one of the methods below:
 
-- Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/).
+- Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/) using PowerShell 6/7
 ```powershell
 # Install the module from PowerShell gallery (This will install the latest version by default)
+# Add -AllowPrelease to download a preview build
 PS> Install-Module Javinizer
 
 # Update the module to the newest version from PowerShell gallery
+# Add -AllowPrelease to download a preview build
 PS> Update-Module Javinizer
 ```
 
@@ -57,6 +59,7 @@ PS> Update-Module Javinizer
 
 ```powershell
 # Import the module (you will need to run this every time you open a new shell)
+# Add this to your PS Profile for it to import automatically on startup
 PS> Import-Module ./Javinizer.psm1
 
 # Or add the module files to your appropriate PowerShell version module path
@@ -69,33 +72,15 @@ PS> $env:PSModulePath
 
 Look over the `jvSettings.json` file located in the root `Javinizer` module folder. The settings file contains important fields that you will need to fill out to effectively use the Javinizer program.
 
+Settings documentation is located [here](#Settings-Information).
+
 ```powershell
 # Opens your jvSettings.ini file
 PS> Javinizer -OpenSettings
 ```
 
-### Supported multi-part-video naming schemes
 
-The supported filenames for multi-part-videos are as follows. When sorted, all multi-part-videos will be renamed to `ID-###-pt#`.
-
-```
-# Naming schemes  - Example filename
-------------------------------------
-ID-###[a-iA-I]    - ID-069A, ID-069B
-ID-###-[a-iA-I]   - ID-069-a, ID-069-b
-ID-###-\d         - ID-069-1, ID-069-2
-ID-###-0\d        - ID-069-01, ID-069-02
-ID-###-00\d       - ID-069-001, ID-069-003
-ID-###-pt\d       - ID-069-pt1, ID-069-pt2
-ID-### - pt\d     - ID-069 - pt1, ID-069 - pt2
-ID-###-part\d     - ID-069-part1, ID-069-part2
-ID-### - part\d   - ID-069 - part1, ID-069 - part2
-ID-###_\d         - ID-069_1, ID-069_2
-ID-###_0\d        - ID-069_01, ID-069_02
-ID-###-cd\d       - ID-069-cd1, ID-069-cd2
-```
-
-### Command-line switches
+### Command-line usage
 
 ```
 PS> help Javinizer
@@ -362,6 +347,14 @@ Updates existing sorted nfo files from a path with updated aliases, thumburls, n
 
 -------------------------- EXAMPLE 14 --------------------------
 
+PS > Javinizer -UpdateThumbs -Pages 1,10
+
+Description
+-----------
+Updates the actress csv file using a range of pages to scrape from.
+
+-------------------------- EXAMPLE 14 --------------------------
+
 PS > Javinizer -OpenSettings
 
 Description
@@ -370,6 +363,91 @@ Opens the settings file.
 
 ```
 
+### Supported multi-part-video naming schemes
+
+The supported filenames for multi-part-videos are as follows. When sorted, all multi-part-videos will be renamed to `ID-###-pt#`.
+
+```
+# Naming schemes  - Example filename
+------------------------------------
+ID-###[a-iA-I]    - ID-069A, ID-069B
+ID-###-[a-iA-I]   - ID-069-a, ID-069-b
+ID-###-\d         - ID-069-1, ID-069-2
+ID-###-0\d        - ID-069-01, ID-069-02
+ID-###-00\d       - ID-069-001, ID-069-003
+ID-###-pt\d       - ID-069-pt1, ID-069-pt2
+ID-### - pt\d     - ID-069 - pt1, ID-069 - pt2
+ID-###-part\d     - ID-069-part1, ID-069-part2
+ID-### - part\d   - ID-069 - part1, ID-069 - part2
+ID-###_\d         - ID-069_1, ID-069_2
+ID-###_0\d        - ID-069_01, ID-069_02
+ID-###-cd\d       - ID-069-cd1, ID-069-cd2
+```
+
+### In-depth usage
+
+**Actress Csv**
+
+Javinizer can utilize a csv file of actresses scraped from R18.com to further match actresses and their respective names/thumbnail URLs.
+
+```powershell
+# Opens the actress csv file
+PS > Javinizer -OpenThumbs
+
+# Scrapes the first 10 pages of actresses sorted by new in R18.com
+PS > Javinizer -UpdateThumbs -Pages 1,10 -Verbose
+```
+
+It is enabled by the following settings:
+- `location.thumbcsv` - If blank, this will point to the file located within your module root directory.
+- `sort.metadata.thumbcsv`
+- `sort.metadata.thumbcsv.convertalias`
+
+After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically try to match that actresses in three ways:
+1. By FirstName if LastName is NULL
+2. By FirstName and LastName
+3. By JapaneseName
+
+If the actress is matched, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. FullName is not used in any way except for you to reference.
+
+If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will also automatically convert any of the listed aliases (separated by `|` and listed in `LastName FirstName` format) to the actress that is corresponds to.
+
+For example, if your jvThumbs.csv file looks like this:
+
+| FullName | LastName | FirstName | JapaneseName | ThumbUrl | Alias |
+| -------- | -------- | --------- | ------------ | -------- | ----- |
+Aoi Rena | Aoi | Rena | あおいれな | https://pics.r18.com/mono/actjpgs/aoi_rena.jpg | Kobayakawa Reiko\|小早川怜子
+Hamasaki Mao | Hamasaki | Mao | 浜崎真緒 | https://pics.r18.com/mono/actjpgs/hamasaki_mao.jpg | Fukada Eimi
+Nagase Yui | Nagase | Yui | 永瀬ゆい |https://pics.r18.com/mono/actjpgs/nagase_yui2.jpg | Aika
+
+
+- Any scraped actress that matches `LastName: Kobayakawa; FirstName: Reiko` or `JapaneseName: 小早川怜子` will be converted to `Aoi Rena`.
+- Any scraped actress that matches `LastName: Fukada; FirstName: Eimi` will be converted to `Hamasaki Mao`.
+- Any scraped actress that matches `FirstName: Aika` will be converted to `Nagase Yui`
+
+**Genre Csv**
+
+Javinizer can utilize a csv file of genres to replace them with a genre of your choice.
+
+```powershell
+# Opens the genre replacement csv file
+PS > Javinizer -OpenGenres
+```
+
+It is enabled by the following settings:
+- `location.genrecsv` - If blank, this will point to the file located within your module root directory.
+- `sort.metadata.genrecsv`
+
+A default genre csv file is included with Javinizer which will replace Javlibrary genres with their R18 counterparts.
+
+For example, if your jvGenres.csv file looks like this:
+
+| Original | Replacement |
+| -------- | ----------- |
+| Blow | Blowjob
+
+- Any scraped genre that matches `Blow` will be converted to `Blowjob`
+
 ## Settings Information
 
 | Setting | Description | Accepted or Example Value |
@@ -377,7 +455,7 @@ Opens the settings file.
 | `throttlelimit` | Specifies the limit Javinizer will run video sorting threads. | 1-10
 | `location.input` | Specifies the default -Path that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
 | `location.output` | Specifies the default -DestinationPath that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
-| `location.thumbcsv` | Specifies the location of the thumbnail csv that is used to better match actresses. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvThumbs.csv
+| `location.thumbcsv` | Specifies the location of the actress thumbnail csv that is used to better match actresses. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvThumbs.csv
 | `location.genrecsv` | Specifies the location of the genre replacement csv that is used to do a string replacement of genres of your choice. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\jvGenres.csv
 | `location.log` | Specifies the location of the log file. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvLogs.log
 | `scraper.movie.dmm` | Specifies whether the dmm.com scraper is on/off. | 0, 1
@@ -436,6 +514,7 @@ Opens the settings file.
 | `sort.metadata.priority.id` | Specifies the array of scrapers to prioritize the ID metadata. | Array of string metadata field names
 | `sort.metadata.priority.label` | Specifies the array of scrapers to prioritize the label metadata. | Array of string metadata field names
 | `sort.metadata.priority.maker` | Specifies the array of scrapers to prioritize the maker metadata. | Array of string metadata field names
+| `sort.metadata.priority.rating` | Specifies the array of scrapers to prioritize the rating metadata. | Array of string metadata field names
 | `sort.metadata.priority.releasedate` | Specifies the array of scrapers to prioritize the releasedate metadata. | Array of string metadata field names
 | `sort.metadata.priority.runtime` | Specifies the array of scrapers to prioritize the runtime metadata. | Array of string metadata field names
 | `sort.metadata.priority.series` | Specifies the array of scrapers to prioritize the series metadata. | Array of string metadata field names
@@ -452,6 +531,6 @@ Opens the settings file.
 
 | CMS | How to use |
 | ------------- | ------------- |
-| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating Collections from tags` and `Use plot instead of outline`   |
-| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
-| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `settings.ini` file and use `Javinizer -SetEmbyActorThumbs` to set actress thumbnails |
+| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating collections from tags` and `Use plot instead of outline`   |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
