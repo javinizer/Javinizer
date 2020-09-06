@@ -106,11 +106,11 @@ function Get-JVAggregatedData {
         [Array]$RequiredField,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translate')]
+        [Alias('sort.metadata.nfo.translatedescription')]
         [Boolean]$Translate,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translate.language')]
+        [Alias('sort.metadata.nfo.translatedescription.language')]
         [String]$TranslateLanguage,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -144,8 +144,8 @@ function Get-JVAggregatedData {
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
             $ReplaceGenre = $Settings.'sort.metadata.genrecsv'
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
-            $Translate = $Settings.'sort.metadata.nfo.translate'
-            $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $Translate = $Settings.'sort.metadata.nfo.translatedescription'
+            $TranslateLanguage = $Settings.'sort.metadata.nfo.translatedescription.language'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             if ($Settings.'location.genrecsv' -ne '') {
