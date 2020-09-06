@@ -27,10 +27,7 @@
         ".rmvb",
         ".wmv"
     ],
-    "match.excludedfilestring": [
-        "^.*-trailer*",
-        "^.*-5\\."
-    ],
+    "match.excludedfilestring": ["^.*-trailer*", "^.*-5\\."],
     "match.regex": 0,
     "match.regex.string": "([a-zA-Z|tT28]+-\\d+z{0,1}Z{0,1}e{0,1}E{0,1})(?:-pt){0,1}(\\d{1,2})?",
     "match.regex.idmatch": 1,
@@ -48,7 +45,7 @@
     "sort.format.delimiter": ", ",
     "sort.format.file": "<ID>",
     "sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
-    "sort.format.posterimg": "folder",
+    "sort.format.posterimg": ["folder"],
     "sort.format.thumbimg": "fanart",
     "sort.format.trailervid": "<ID>-trailer",
     "sort.format.nfo": "<ID>",
@@ -64,76 +61,23 @@
     "sort.metadata.thumbcsv": 1,
     "sort.metadata.thumbcsv.convertalias": 1,
     "sort.metadata.genrecsv": 0,
-    "sort.metadata.genre.ignore": [
-        "Featured Actress",
-        "Hi-Def"
-    ],
-    "sort.metadata.requiredfield": [
-        "id",
-        "coverurl",
-        "genre",
-        "maker",
-        "releaseDate",
-        "title"
-    ],
-    "sort.metadata.priority.actress": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.alternatetitle": [
-        "dmm"
-    ],
-    "sort.metadata.priority.coverurl": [
-        "r18",
-        "dmm",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.description": [
-        "dmm"
-    ],
-    "sort.metadata.priority.director": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.genre": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.id": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.label": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.maker": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.releasedate": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.runtime": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.series": [
-        "r18",
-        "r18zh"
-    ],
-    "sort.metadata.priority.screenshoturl": [
-        "r18",
-        "dmm"
-    ],
-    "sort.metadata.priority.title": [
-        "r18",
-        "javlibrary"
-    ],
-    "sort.metadata.priority.trailerurl": [
-        "r18"
-    ],
+    "sort.metadata.genre.ignore": ["Featured Actress", "Hi-Def"],
+    "sort.metadata.requiredfield": ["id", "coverurl", "genre", "maker", "releaseDate", "title"],
+    "sort.metadata.priority.actress": ["r18", "javlibrary"],
+    "sort.metadata.priority.alternatetitle": ["dmm"],
+    "sort.metadata.priority.coverurl": ["r18", "dmm", "javlibrary"],
+    "sort.metadata.priority.description": ["dmm"],
+    "sort.metadata.priority.director": ["r18", "javlibrary"],
+    "sort.metadata.priority.genre": ["r18", "javlibrary"],
+    "sort.metadata.priority.id": ["r18", "javlibrary"],
+    "sort.metadata.priority.label": ["r18", "javlibrary"],
+    "sort.metadata.priority.maker": ["r18", "javlibrary"],
+    "sort.metadata.priority.releasedate": ["r18", "javlibrary"],
+    "sort.metadata.priority.runtime": ["r18", "javlibrary"],
+    "sort.metadata.priority.series": ["r18", "r18zh"],
+    "sort.metadata.priority.screenshoturl": ["r18", "dmm"],
+    "sort.metadata.priority.title": ["r18", "javlibrary"],
+    "sort.metadata.priority.trailerurl": ["r18"],
     "emby.url": "http:\/\/192.168.0.1:8096",
     "emby.apikey": "",
     "javlibrary.baseurl": "http:\/\/www.javlibrary.com",
