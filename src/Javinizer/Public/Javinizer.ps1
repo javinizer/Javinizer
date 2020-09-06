@@ -533,7 +533,21 @@ function Javinizer {
             }
 
             'Nfo' {
-                Update-JVNfo -Path $Path -Recurse:$Recurse -Depth:$Depth -FirstNameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -ThumbCsvPath $thumbCsvPath -GenreCsvPath $genreCsvPath -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -ThumbCsvAlias:$Settings.'sort.metadata.thumbcsv.convertalias'
+                $nfoParams = @{
+                    Path              = $Path
+                    Recurse           = $Recurse
+                    Depth             = $Depth
+                    GenreCsv          = $Settings.'sort.metadata.genrecsv'
+                    GenreCsvPath      = $genreCsvPath
+                    GenreIgnore       = $Settings.'sort.metadata.genre.ignore'
+                    FirstNameOrder    = $Settings.'sort.metadata.nfo.firstnameorder'
+                    ThumbCsv          = $Settings.'sort.metadata.thumbcsv'
+                    ThumbCsvAlias     = $Settings.'sort.metadata.thumbcsv.convertalias'
+                    ThumbCsvPath      = $thumbCsvPath
+                    ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+                }
+
+                Update-JVNfo @nfoParams
             }
 
             'Thumbs' {
