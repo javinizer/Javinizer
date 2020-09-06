@@ -22,12 +22,16 @@ function Test-JVData {
             $nullFields = $nullFields -join ', '
         }
 
-        if ($errors -eq 0) {
-            $dataObject = [PSCustomObject]@{
-                Data = $Data
-            }
-
-            Write-Output $dataObject
+        if ($nullFields.Count -eq 0) {
+            $nullFields = $null
         }
+
+        $dataObject = [PSCustomObject]@{
+            Data       = $Data
+            NullFields = $nullFields
+        }
+
+        Write-Output $dataObject
+
     }
 }

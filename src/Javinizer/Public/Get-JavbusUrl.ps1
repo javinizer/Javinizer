@@ -4,11 +4,7 @@ function Get-JavbusUrl {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [String]$Id,
-
-        [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateSet('ja', 'en', 'zh')]
-        [String]$Language
+        [String]$Id
     )
 
     process {
@@ -60,11 +56,9 @@ function Get-JavbusUrl {
                 }
                 $resultId = Get-JavbusId -WebRequest $webRequest
                 if ($resultId -eq $Id) {
-                    if ($Language -eq 'zh') {
-                        $directUrl = "https://" + ($result -split '/')[-2] + "/" + ($result -split '/')[-1]
-                    } else {
-                        $directUrl = "https://" + ($result -split '/')[-2] + "/$Language/" + ($result -split '/')[-1]
-                    }
+                    $directUrlZh = "https://" + ($result -split '/')[-2] + "/" + ($result -split '/')[-1]
+                    $directUrlJa = "https://" + ($result -split '/')[-2] + "/$ja/" + ($result -split '/')[-1]
+                    $directUrl = "https://" + ($result -split '/')[-2] + "/$en/" + ($result -split '/')[-1]
                     break
                 }
 
@@ -82,8 +76,9 @@ function Get-JavbusUrl {
                 return
             } else {
                 $urlObject = [PSCustomObject]@{
-                    Url      = $directUrl
-                    Language = $Language
+                    En = $directUrl
+                    Ja = $directUrlJa
+                    Zh = $directUrlZh
                 }
 
                 Write-Output $urlObject

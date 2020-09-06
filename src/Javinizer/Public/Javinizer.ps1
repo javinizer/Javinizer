@@ -205,6 +205,13 @@ function Javinizer {
     Sets/replaces all Emby/Jellyfin actress thumbnails using the actress thumbnail file. Settings 'emby.url' and 'emby.apikey' need to be defined.
 
     .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -Recurse -UpdateNfo
+
+    Description
+    -----------
+    Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
+
+    .EXAMPLE
     Javinizer -OpenSettings
 
     Description
@@ -217,15 +224,18 @@ function Javinizer {
     param (
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
+        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true, Position = 0)]
         [System.IO.DirectoryInfo]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [System.IO.DirectoryInfo]$DestinationPath,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -310,7 +320,10 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenGenres,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Thumbs')]
+        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
+        [Switch]$UpdateNfo,
+
+        [Parameter(ParameterSetName = 'Thumbs', Mandatory = $true)]
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
@@ -323,11 +336,11 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Thumbs')]
         [Hashtable]$Set,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Version')]
+        [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
         [Alias('v')]
         [Switch]$Version,
 
-        [Parameter(Mandatory = $true, ParameterSetName = 'Help')]
+        [Parameter(ParameterSetName = 'Help', Mandatory = $true)]
         [Alias('h')]
         [Switch]$Help
     )
@@ -519,6 +532,24 @@ function Javinizer {
                 $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
             }
 
+            'Nfo' {
+                $nfoParams = @{
+                    Path              = $Path
+                    Recurse           = $Recurse
+                    Depth             = $Depth
+                    GenreCsv          = $Settings.'sort.metadata.genrecsv'
+                    GenreCsvPath      = $genreCsvPath
+                    GenreIgnore       = $Settings.'sort.metadata.genre.ignore'
+                    FirstNameOrder    = $Settings.'sort.metadata.nfo.firstnameorder'
+                    ThumbCsv          = $Settings.'sort.metadata.thumbcsv'
+                    ThumbCsvAlias     = $Settings.'sort.metadata.thumbcsv.convertalias'
+                    ThumbCsvPath      = $thumbCsvPath
+                    ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+                }
+
+                Update-JVNfo @nfoParams
+            }
+
             'Thumbs' {
                 if ($Pages) {
                     Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
@@ -549,7 +580,7 @@ function Javinizer {
                 }
 
                 try {
-                    $javMovies = $Settings | Get-JVItem -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
+                    $javMovies = $Settings | Get-JVItem -Path $Path -MinimumFileSize $Settings.'match.minimumfilesize' -RegexEnabled:$Settings.'match.regex' -RegexString $Settings.'match.regex.string' -RegexIdMatch $Settings.'match.regex.idmatch' -RegexPtMatch $Settings.'match.regex.ptmatch' -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
                     # Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting local movies in [$Path]: $PSItem"
@@ -563,11 +594,11 @@ function Javinizer {
 
                 if ($Url) {
                     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exiting -- [$Path] is not a valid single file path"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exited [$Path] is not a valid single file path"
                         return
                     }
 
-                    $javData = Get-JVData  -Url $Url -Settings $Settings
+                    $javData = Get-JVData -Url $Url -Settings $Settings
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
@@ -581,14 +612,11 @@ function Javinizer {
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
-                        try {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
-                                Import-Module $using:jvModulePath
-                                $jvMovie = $_
-                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
-                            }
-                        } catch {
-                            Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occured while starting multi sort: $PSItem"
+                        $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            Import-Module $using:jvModulePath
+                            $jvMovie = $_
+                            $Settings = $using:Settings
+                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                         }
                     }
 
@@ -597,14 +625,14 @@ function Javinizer {
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                if ($null -ne $javAggregatedData) {
+                                if ($javAggregatedData.NullFields -eq '') {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                                 } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required metadata fields"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Skipped [$($movie.FileName)] missing required fields [$($javAggregatedData.NullFields)]"
                                     return
                                 }
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Skipped [$($movie.FileName)] not matched"
                             }
                         }
                     }

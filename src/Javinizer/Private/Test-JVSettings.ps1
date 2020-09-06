@@ -92,7 +92,7 @@ function Test-JVSettings {
             'sort.metadata.nfo.actresslanguageja',
             'sort.metadata.nfo.firstnameorder',
             'sort.metadata.nfo.seriesastag',
-            'sort.metadata.nfo.translate',
+            'sort.metadata.nfo.translatedescription',
             'sort.metadata.thumbcsv.convertalias',
             'sort.metadata.thumbcsv',
             'sort.movetofolder',
@@ -119,18 +119,18 @@ function Test-JVSettings {
             'sort.format.file',
             'sort.format.folder',
             'sort.format.nfo',
-            'sort.format.posterimg',
             'sort.format.screenshotfolder',
             'sort.format.screenshotimg',
             'sort.format.thumbimg',
             'sort.format.trailervid',
             'sort.metadata.nfo.displayname',
-            'sort.metadata.nfo.translate.language'
+            'sort.metadata.nfo.translatedescription.language'
         ) | Test-JVSettingsGroup -Settings $Settings -Type String
 
         $arraySettings = @(
             'match.excludedfilestring',
             'match.includedfileextension',
+            'sort.format.posterimg',
             'sort.metadata.genre.ignore',
             'sort.metadata.priority.actress',
             'sort.metadata.priority.alternatetitle',

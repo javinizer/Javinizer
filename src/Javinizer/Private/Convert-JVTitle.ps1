@@ -290,13 +290,13 @@ function Convert-JVTitle {
                 $originalBaseName = $Files.BaseName
                 $originalDirectory = $Files.Directory
                 $fileExtension = $Files.Extension
-                $filePartNumber = $filePartNumber
+                $filePartNumber = if ($RegexEnabled) { $partNum } else { $filePartNumber }
             } else {
                 $originalFileName = $Files.Name[$x]
                 $originalBaseName = $Files.BaseName[$x]
                 $originalDirectory = $Files.Directory[$x]
                 $fileExtension = $Files.Extension[$x]
-                $filePartNumber = $filePartNumber
+                $filePartNumber = if ($RegexEnabled) { $partNum } else { $filePartNumber }
             }
 
             if ($Strict.IsPresent) {

@@ -6,11 +6,7 @@ function Get-JavlibraryUrl {
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [String]$Id,
 
-        [Parameter(Mandatory = $true, Position = 1)]
-        [ValidateSet('en', 'ja', 'zh')]
-        [String]$Language,
-
-        [Parameter(Position = 2)]
+        [Parameter(Position = 1)]
         [String]$BaseUrl = 'http://www.javlibrary.com'
     )
 
@@ -24,7 +20,7 @@ function Get-JavlibraryUrl {
 
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
         }
@@ -35,7 +31,7 @@ function Get-JavlibraryUrl {
         if ($searchResultUrl -match "$BaseUrl?v=") {
             try {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -Verbose:$false
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchResultUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
             }
@@ -64,7 +60,7 @@ function Get-JavlibraryUrl {
 
                     try {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]"
-                        $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
+                        $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -Verbose:$false
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl] with Session: [$Session] and UserAgent: [$($Session.UserAgent)]: $PSItem"
                     }
@@ -90,15 +86,13 @@ function Get-JavlibraryUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
             return
         } else {
-            if ($Language -eq 'ja') {
-                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/ja/'
-            } elseif ($Language -eq 'zh') {
-                $javlibraryUrl = $javlibraryUrl -replace '/en/', '/cn/'
-            }
+            $javlibraryUrlJa = $javlibraryUrl -replace '/en/', '/ja/'
+            $javlibraryUrlZh = $javlibraryUrl -replace '/en/', '/cn/'
 
             $urlObject = [PSCustomObject]@{
-                Url      = $javlibraryUrl
-                Language = $Language
+                En = $javlibraryUrl
+                Ja = $javlibraryUrlJa
+                Zh = $javlibraryUrlZh
             }
 
             Write-Output $urlObject

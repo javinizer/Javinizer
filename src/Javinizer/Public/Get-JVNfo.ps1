@@ -4,36 +4,47 @@ function Get-JVNfo {
     [CmdletBinding()]
     param(
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Id,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$DisplayName,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Title,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$AlternateTitle,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$ReleaseDate,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Runtime,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Director,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Maker,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Label,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$Series,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
@@ -49,6 +60,7 @@ function Get-JVNfo {
         [Array]$ScreenshotUrl,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [AllowEmptyString()]
         [String]$TrailerUrl,
 
         [Parameter()]

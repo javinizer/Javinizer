@@ -11,7 +11,16 @@ function Convert-JVString {
         [Int]$PartNumber,
 
         [Parameter()]
-        [Int]$MaxTitleLength
+        [Int]$MaxTitleLength,
+
+        [Parameter()]
+        [String]$Delimiter,
+
+        [Parameter()]
+        [Boolean]$ActressLanguageJa,
+
+        [Parameter()]
+        [Boolean]$FirstNameOrder
     )
 
     process {
@@ -47,6 +56,20 @@ function Convert-JVString {
             }
         }
 
+        $actressObject = @()
+        if ($ActressLanguageJa) {
+            $actressObject = $Data.Actress.JapaneseName
+        } elseif ($FirstNameOrder) {
+            foreach ($actress in $Data.Actress) {
+                $actressObject += "$($actress.FirstName) $($actress.LastName)".Trim()
+            }
+        } else {
+            foreach ($actress in $Data.Actress) {
+                $actressObject += "$($actress.LastName) $($actress.FirstName)".Trim()
+            }
+        }
+
+        $actresses = ($actressObject | Sort-Object) -join $Delimiter
         $convertedName = $FormatString `
             -replace '<ID>', "$($Data.Id)" `
             -replace '<TITLE>', "$($Data.Title)" `
@@ -56,6 +79,7 @@ function Convert-JVString {
             -replace '<RUNTIME>', "$($Data.Runtime)" `
             -replace '<SET>', "$($Data.Series)" `
             -replace '<LABEL>', "$($Data.Label)" `
+            -replace '<ACTORS>', "$actresses" `
             -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)"
 
         foreach ($symbol in $invalidSymbols) {

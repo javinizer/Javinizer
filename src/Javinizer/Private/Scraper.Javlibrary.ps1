@@ -174,32 +174,57 @@ function Get-JavlibraryActress {
 
         try {
             $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
-                -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[1].Value }
+                -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches }
         } catch {
             return
         }
 
         foreach ($actress in $movieActress) {
+            $engActressUrl = "https://www.javlibrary.com/en/vl_star.php?s=$($actress.Groups[1].Value)"
+            $jaActressUrl = "https://www.javlibrary.com/ja/vl_star.php?s=$($actress.Groups[1].Value)"
+            $actressName = $actress.Groups[2].Value
             if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                $movieActressObject += [PSCustomObject]@{
-                    LastName     = $null
-                    FirstName    = $null
-                    JapaneseName = $actress
-                    ThumbUrl     = $null
+                try {
+                    $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
+                } catch {
+                    return
                 }
-            } else {
-                $nameParts = ($actress -split ' ').Count
+
+                $nameParts = ($engActressName -split ' ').Count
                 if ($nameParts -eq 1) {
                     $lastName = $null
-                    $firstName = $actress
+                    $firstName = $engActressName
                 } else {
-                    $lastName = ($actress -split ' ')[0]
-                    $firstName = ($actress -split ' ')[1]
+                    $lastName = ($engActressName -split ' ')[0]
+                    $firstName = ($engActressName -split ' ')[1]
                 }
+
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $lastName
                     FirstName    = $firstName
-                    JapaneseName = $null
+                    JapaneseName = $actressName
+                    ThumbUrl     = $null
+                }
+            } else {
+                try {
+                    $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
+                } catch {
+                    return
+                }
+
+                $nameParts = ($ActressName -split ' ').Count
+                if ($nameParts -eq 1) {
+                    $lastName = $null
+                    $firstName = $actressName
+                } else {
+                    $lastName = ($actressName -split ' ')[0]
+                    $firstName = ($actressName -split ' ')[1]
+                }
+
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $jaActressName
                     ThumbUrl     = $null
                 }
             }
@@ -218,7 +243,14 @@ function Get-JavlibraryCoverUrl {
     process {
         $coverUrl = (($Webrequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
         if ($coverUrl -like '*pixhost*') {
-            $coverUrl = 'http:' + $coverUrl
+            try {
+                $testConnection = Invoke-WebRequest -Uri "http:$coverUrl" -ErrorAction 'SilentlyContinue' -Verbose:$false
+            } catch {
+                $coverUrl = $null
+            }
+            if ($null -ne $testConnection) {
+                $coverUrl = 'http:' + $coverUrl
+            }
         } else {
             $coverUrl = 'https:' + $coverUrl
         }
