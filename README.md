@@ -416,9 +416,9 @@ For example, if your jvThumbs.csv file looks like this:
 
 | FullName | LastName | FirstName | JapaneseName | ThumbUrl | Alias |
 | -------- | -------- | --------- | ------------ | -------- | ----- |
-Aoi Rena | Aoi | Rena | あおいれな | https://pics.r18.com/mono/actjpgs/aoi_rena.jpg | Kobayakawa Reiko\|小早川怜子
-Hamasaki Mao | Hamasaki | Mao | 浜崎真緒 | https://pics.r18.com/mono/actjpgs/hamasaki_mao.jpg | Fukada Eimi
-Nagase Yui | Nagase | Yui | 永瀬ゆい |https://pics.r18.com/mono/actjpgs/nagase_yui2.jpg | Aika
+Aoi Rena | Aoi | Rena | あおいれな | https://[..]/aoi_rena.jpg | Kobayakawa Reiko\|小早川怜子
+Hamasaki Mao | Hamasaki | Mao | 浜崎真緒 | https://[..]/hamasaki_mao.jpg | Fukada Eimi
+Nagase Yui | Nagase | Yui | 永瀬ゆい |https://[..]/nagase_yui2.jpg | Aika
 
 
 - Any scraped actress that matches `LastName: Kobayakawa; FirstName: Reiko` or `JapaneseName: 小早川怜子` will be converted to `Aoi Rena`.
