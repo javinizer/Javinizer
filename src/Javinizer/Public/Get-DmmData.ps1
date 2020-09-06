@@ -32,7 +32,6 @@ function Get-DmmData {
             Label         = Get-DmmLabel -WebRequest $webRequest
             Series        = Get-DmmSeries -WebRequest $webRequest
             Rating        = Get-DmmRating -WebRequest $webRequest
-            RatingCount   = Get-DmmRatingCount -WebRequest $webRequest
             Actress       = Get-DmmActress -WebRequest $webRequest
             Genre         = Get-DmmGenre -WebRequest $webRequest
             CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest

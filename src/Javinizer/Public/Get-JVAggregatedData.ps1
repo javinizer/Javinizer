@@ -50,6 +50,10 @@ function Get-JVAggregatedData {
         [Array]$ReleaseDatePriority,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.priority.rating')]
+        [Array]$RatingPriority,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.runtime')]
         [Array]$RuntimePriority,
 
@@ -133,6 +137,7 @@ function Get-JVAggregatedData {
             $IdPriority = $Settings.'sort.metadata.priority.id'
             $LabelPriority = $Settings.'sort.metadata.priority.label'
             $MakerPriority = $Settings.'sort.metadata.priority.maker'
+            $RatingPriority = $Settings.'sort.metadata.priority.rating'
             $ReleaseDatePriority = $Settings.'sort.metadata.priority.releasedate'
             $RuntimePriority = $Settings.'sort.metadata.priority.runtime'
             $SeriesPriority = $Settings.'sort.metadata.priority.series'
@@ -162,6 +167,7 @@ function Get-JVAggregatedData {
             Title          = $null
             AlternateTitle = $null
             Description    = $null
+            Rating         = $null
             ReleaseDate    = $null
             Runtime        = $null
             Director       = $null
@@ -185,6 +191,7 @@ function Get-JVAggregatedData {
             'Id',
             'Label',
             'Maker',
+            'Rating',
             'ReleaseDate',
             'Runtime',
             'Series',

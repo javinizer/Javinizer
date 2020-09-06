@@ -79,7 +79,6 @@ function Get-R18Data {
             Maker         = Get-R18Maker -WebRequest $webRequest
             Label         = Get-R18Label -WebRequest $webRequest
             Series        = Get-R18Series -WebRequest $webRequest -Replace $replaceHashTable
-            Rating        = Get-R18Rating -WebRequest $webRequest
             Actress       = Get-R18Actress -WebRequest $webRequest
             Genre         = Get-R18Genre -WebRequest $webRequest -Replace $replaceHashTable
             CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest

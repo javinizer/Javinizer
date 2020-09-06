@@ -246,18 +246,6 @@ function Get-R18Series {
     }
 }
 
-function Get-R18Rating {
-    param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
-    )
-
-    process {
-        $rating = ''
-        Write-Output $rating
-    }
-}
-
 function Get-R18Genre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]

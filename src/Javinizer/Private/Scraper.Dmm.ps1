@@ -163,26 +163,22 @@ function Get-DmmRating {
         $rating = (((($Webrequest.Content -split '<p class="d-review__average">')[1] -split '<\/strong>')[0] -split '<strong>')[1] -split '点')[0]
         # Multiply the rating value by 2 to conform to 1-10 rating standard
         $integer = [int]$rating * 2
+
         if ($integer -eq 0) {
             $integer = $null
         } else {
             $rating = $integer.Tostring()
         }
 
-        Write-Output $rating
-    }
-}
-
-function Get-DmmRatingCount {
-    param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
-    )
-
-    process {
         $ratingCount = (($Webrequest.Content -split '<p class="d-review__evaluates">')[1] -split '<\/p>')[0]
         $ratingCount = (($ratingCount -split '<strong>')[1] -split '<\/strong>')[0]
-        Write-Output $ratingCount
+
+        $ratingObject = [PSCustomObject]@{
+            Rating = $rating
+            Votes  = $ratingCount
+        }
+
+        Write-Output $ratingObject
     }
 }
 
