@@ -415,7 +415,7 @@ function Get-JVAggregatedData {
         if ($Translate) {
             if ($TranslateLanguage) {
                 $originalDescription = $aggregatedDataObject.Description
-                $translatedDescription = Get-TranslatedString -String $originalDescription -Language $TranslateLanguage
+                [String]$translatedDescription = (Get-TranslatedString -String $originalDescription -Language $TranslateLanguage).Trim()
                 if ($null -eq $translatedDescription -or $translatedDescription -eq '') {
                     $aggregatedDataObject.Description = $originalDescription
                 } else {
