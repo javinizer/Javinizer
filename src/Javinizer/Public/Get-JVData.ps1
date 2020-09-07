@@ -44,7 +44,7 @@ function Get-JVData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.jav321ja')]
-        [Boolean]$Jav321,
+        [Boolean]$Jav321Ja,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
@@ -68,7 +68,7 @@ function Get-JVData {
         } elseif ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
             $R18Zh = $Settings.'scraper.movie.r18zh'
-            $Jav321 = $Settings.'scraper.movie.jav321ja'
+            $Jav321Ja = $Settings.'scraper.movie.jav321ja'
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
@@ -247,18 +247,18 @@ function Get-JVData {
                 }
             }
 
-            if ($Jav321) {
-                if (!($Jav321Url)) {
+            if ($Jav321Ja) {
+                if (!($Jav321JaUrl)) {
                     $jvJav321Url = Get-Jav321Url -Id $Id
                 }
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
                 Start-ThreadJob  -Name "jvdata-Jav321" -ThrottleLimit 100 -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    if ($using:Jav321Url) {
-                        $using:Jav321Url | Get-Jav321Data
+                    if ($using:Jav321JaUrl) {
+                        $using:Jav321JaUrl | Get-Jav321Data
                     } elseif ($using:jvJav321Url) {
                         $jvJav321Url = $using:jvJav321Url
-                        $jvJav321Url.Ja | Get-Jav321Data
+                        $jvJav321JaUrl.Ja | Get-Jav321Data
                     }
                 } | Out-Null
             }

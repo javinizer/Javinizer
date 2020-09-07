@@ -83,8 +83,8 @@ function Javinizer {
     .PARAMETER JavbusZh
         Specifies to search Javbus-Chinese when using -Find.
 
-    .PARAMETER Jav321
-        Specifies to search Jav321 when using -Find.
+    .PARAMETER Jav321Ja
+        Specifies to search Jav321-Japanese when using -Find.
 
     .PARAMETER SetEmbyThumbs
         Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
@@ -308,7 +308,7 @@ function Javinizer {
         [Switch]$JavbusZh,
 
         [Parameter(ParameterSetName = 'Info')]
-        [Switch]$Jav321,
+        [Switch]$Jav321Ja,
 
         [Parameter(ParameterSetName = 'Emby')]
         [Switch]$SetEmbyThumbs,
@@ -466,7 +466,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321:$Jav321
+                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja
                 }
 
                 if ($Aggregated) {

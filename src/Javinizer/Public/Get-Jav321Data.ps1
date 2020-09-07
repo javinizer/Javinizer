@@ -18,7 +18,7 @@ function Get-Jav321Data {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = 'jav321'
+            Source        = 'jav321ja'
             Url           = $Url
             Id            = Get-Jav321Id -WebRequest $webRequest
             Title         = Get-Jav321Title -WebRequest $webRequest
