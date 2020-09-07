@@ -18,7 +18,7 @@ function Get-JavbusData {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = if ($Url -match '/ja') { 'javbusja' } elseif ($Url -match '/zh') { 'javbuszh' } else { 'javbuszh' }
+            Source        = if ($Url -match '/ja') { 'javbusja' } elseif ($Url -match '/zh') { 'javbuszh' } else { 'javbus' }
             Url           = $Url
             Id            = Get-JavbusId -WebRequest $webRequest
             Title         = Get-JavbusTitle -WebRequest $webRequest
