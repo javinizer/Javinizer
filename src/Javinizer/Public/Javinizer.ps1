@@ -212,6 +212,13 @@ function Javinizer {
     Updates existing sorted nfo files from a path with updated aliases, thumburls, names, ignored genres, and genre replacements according to the settings.
 
     .EXAMPLE
+    Javinizer -UpdateThumbs -Pages 1,10
+
+    Description
+    -----------
+    Updates the actress csv file using a range of pages to scrape from.
+
+    .EXAMPLE
     Javinizer -OpenSettings
 
     Description
@@ -242,6 +249,7 @@ function Javinizer {
         [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Info')]
         [System.IO.FileInfo]$SettingsPath,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -416,8 +424,6 @@ function Javinizer {
         if ($Set) {
             try {
                 foreach ($item in $Set.GetEnumerator()) {
-                    $settingName = $item.Key
-                    $settingValue = $item.Value
                     $Settings."$($item.Key)" = $item.Value
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
                 }
