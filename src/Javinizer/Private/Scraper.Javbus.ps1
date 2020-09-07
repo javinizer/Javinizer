@@ -210,19 +210,19 @@ function Get-JavbusActress {
         $textInfo = (Get-Culture).TextInfo
 
         try {
-            $actresses = ($Webrequest | Select-String -AllMatches -Pattern '<a href="https:\/\/www\.javbus\.com\/(?:.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches
+            $actresses = ($Webrequest | Select-String -AllMatches -Pattern '<a href="(.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches
         } catch {
             return
         }
 
         foreach ($actress in $actresses) {
-            $engActressUrl = "https://www.javbus.com/en/star/$($actress.Groups[1].Value)"
-            $jaActressUrl = "https://www.javbus.com/ja/star/$($actress.Groups[1].Value)"
-            Write-Debug "$EngActressUrl"
-            Write-Debug "$jaActressUrl"
+            $engbaseUrl = $actress.Groups[1].Value -replace '/ja/', '/en/'
+            $jaBaseUrl = $actress.Groups[1].Value -replace '/en/', '/ja/'
+            $engActressUrl = "$engBaseUrl/star/$($actress.Groups[2].Value)"
+            $jaActressUrl = "$jaBaseUrl/star/$($actress.Groups[2].Value)"
 
-            $actressName = $actress.Groups[3].Value
-            $thumbUrl = $actress.Groups[2].Value
+            $actressName = $actress.Groups[4].Value
+            $thumbUrl = $actress.Groups[3].Value
             if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
                 $thumbUrl = $null
             }
@@ -230,26 +230,31 @@ function Get-JavbusActress {
             # Match if the name contains Japanese characters
             if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 try {
-                    $engActressName = ((Invoke-RestMethod -Uri $engactressUrl | Select-String -Pattern '<b>(.*) - Star - Video</b>').Matches.Groups[1].Value).Trim()
+                    $engActressName = ((Invoke-RestMethod -Uri $engactressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
                 } catch {
                     return
                 }
 
-                $nameParts = ($engActressName -split ' ').Count
-                if ($nameParts -eq 1) {
-                    $lastName = $null
-                    $firstName = $engActressName
+                if ($engActressName -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $nameParts = ($engActressName -split ' ').Count
+                    if ($nameParts -eq 1) {
+                        $lastName = $null
+                        $firstName = $engActressName
+                    } else {
+                        $lastName = ($engActressName -split ' ')[0]
+                        $firstName = ($engActressName -split ' ')[1]
+                    }
+
+                    if ($null -ne $firstName) {
+                        $firstName = $textInfo.ToTitleCase($firstName.ToLower())
+                    }
+
+                    if ($null -ne $lastName) {
+                        $lastName = $textInfo.ToTitleCase($lastName.ToLower())
+                    }
                 } else {
-                    $lastName = ($engActressName -split ' ')[0]
-                    $firstName = ($engActressName -split ' ')[1]
-                }
-
-                if ($null -ne $firstName) {
-                    $firstName = $textInfo.ToTitleCase($firstName.ToLower())
-                }
-
-                if ($null -ne $lastName) {
-                    $lastName = $textInfo.ToTitleCase($lastName.ToLower())
+                    $lastName = $null
+                    $firstName = $null
                 }
 
                 $movieActressObject += [PSCustomObject]@{
@@ -260,7 +265,7 @@ function Get-JavbusActress {
                 }
             } else {
                 try {
-                    $jaActressName = ((Invoke-RestMethod -Uri $jaActressUrl | Select-String -Pattern '<title>(.*) - 女優 - 映画<\/title>').Matches.Groups[1].Value).Trim()
+                    $jaActressName = ((Invoke-RestMethod -Uri $jaActressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
                 } catch {
                     return
                 }
