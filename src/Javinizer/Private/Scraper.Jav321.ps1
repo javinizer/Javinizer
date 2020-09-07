@@ -129,6 +129,42 @@ function Get-Jav321Genre {
     }
 }
 
+function Get-Jav321Description {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+
+        try {
+            $description = (($Webrequest | Select-String -Pattern '<div class="col-md-12">(.*)<\/div><\/div><\/div><\/div><script async src=').Matches.Groups[1].Value -replace '</div></div><div class="row"><div class="col-md-12">', '').Trim()
+        } catch {
+            return
+        }
+
+        Write-Output $description
+    }
+}
+
+function Get-Jav321Series {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+
+        try {
+            $series = (($Webrequest | Select-String -Pattern '<a href="\/series\/(.*)\/1">(.*)<\/a><\/div><\/div><div class="row">').Matches.Groups[2].Value).Trim()
+        } catch {
+            return
+        }
+
+        Write-Output $series
+    }
+}
+
 function Get-Jav321Actress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
@@ -150,8 +186,6 @@ function Get-Jav321Actress {
                     ThumbUrl     = if (($_.Matches.Groups[1].Value -replace "'", '') -ne '.jpg') { 'https://www.jav321.com/mono/actjpgs/' + $_.Matches.Groups[1].Value -replace "'", '' }
                 }
             }
-
-
         } catch {
             return
         }
@@ -168,8 +202,7 @@ function Get-Jav321CoverUrl {
 
     process {
         try {
-            $coverUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
-                    Select-String -Pattern 'poster="(.*).jpg">').Matches.Groups[1].Value) + '.jpg'
+            $coverUrl = ((($Webrequest | Select-String -Pattern '"/snapshot/(.*)/\d/0"><img class="img-responsive" src="(.*)"').Matches.Groups[2].Value -split '" onerror')[0] -split '"></a>')[0].Trim()
         } catch {
             return
         }

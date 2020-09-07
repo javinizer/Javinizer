@@ -22,9 +22,11 @@ function Get-Jav321Data {
             Url           = $Url
             Id            = Get-Jav321Id -WebRequest $webRequest
             Title         = Get-Jav321Title -WebRequest $webRequest
+            Description   = Get-Jav321Description -WebRequest $webRequest
             ReleaseDate   = Get-Jav321ReleaseDate -WebRequest $webRequest
             ReleaseYear   = Get-Jav321ReleaseYear -WebRequest $webRequest
             Runtime       = Get-Jav321Runtime -WebRequest $webRequest
+            Series        = Get-Jav321Series -WebRequest $webRequest
             Maker         = Get-Jav321Maker -WebRequest $webRequest
             Actress       = Get-Jav321Actress -WebRequest $webRequest
             Genre         = Get-Jav321Genre -WebRequest $webRequest
