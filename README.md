@@ -386,7 +386,7 @@ ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 
 ### In-depth usage
 
-**Actress Csv**
+#### Actress Thumb Csv
 
 Javinizer can utilize a csv file of actresses scraped from R18.com to further match actresses and their respective names/thumbnail URLs.
 
@@ -403,7 +403,7 @@ It is enabled by the following settings:
 - `sort.metadata.thumbcsv`
 - `sort.metadata.thumbcsv.convertalias`
 
-After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically try to match that actresses in three ways:
+After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically try to match the actresses in three ways:
 1. By FirstName if LastName is NULL
 2. By FirstName and LastName
 3. By JapaneseName
@@ -421,11 +421,11 @@ Hamasaki Mao | Hamasaki | Mao | 浜崎真緒 | https://[..]/hamasaki_mao.jpg | F
 Nagase Yui | Nagase | Yui | 永瀬ゆい |https://[..]/nagase_yui2.jpg | Aika
 
 
-- Any scraped actress that matches `LastName: Kobayakawa; FirstName: Reiko` or `JapaneseName: 小早川怜子` will be converted to `Aoi Rena`.
-- Any scraped actress that matches `LastName: Fukada; FirstName: Eimi` will be converted to `Hamasaki Mao`.
+- Any scraped actress that matches `LastName: Kobayakawa; FirstName: Reiko` or `JapaneseName: 小早川怜子` will be converted to `Aoi Rena`
+- Any scraped actress that matches `LastName: Fukada; FirstName: Eimi` will be converted to `Hamasaki Mao`
 - Any scraped actress that matches `FirstName: Aika` will be converted to `Nagase Yui`
 
-**Genre Csv**
+#### Genre Csv
 
 Javinizer can utilize a csv file of genres to replace them with a genre of your choice.
 
@@ -459,7 +459,7 @@ For example, if your jvGenres.csv file looks like this:
 | `location.genrecsv` | Specifies the location of the genre replacement csv that is used to do a string replacement of genres of your choice. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\jvGenres.csv
 | `location.log` | Specifies the location of the log file. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvLogs.log
 | `scraper.movie.dmm` | Specifies whether the dmm.com scraper is on/off. | 0, 1
-| `scraper.movie.jav321` | Specifies whether the jav321.com scraper is on/off. | 0, 1
+| `scraper.movie.jav321ja` | Specifies whether the jav321.com scraper is on/off. | 0, 1
 | `scraper.movie.javbus` | Specifies whether the javbus.com scraper is on/off. | 0, 1
 | `scraper.movie.javbusja` | Specifies whether the javbus.com japanese scraper is on/off. | 0, 1
 | `scraper.movie.javbuszh` | Specifies whether the javbus.com chinese scraper is on/off. | 0, 1
