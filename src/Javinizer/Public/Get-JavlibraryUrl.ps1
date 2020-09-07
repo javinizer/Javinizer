@@ -86,6 +86,7 @@ function Get-JavlibraryUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
             return
         } else {
+            $javlibraryUrl = $javlibraryUrl -replace 'http://', 'https://'
             $javlibraryUrlJa = $javlibraryUrl -replace '/en/', '/ja/'
             $javlibraryUrlZh = $javlibraryUrl -replace '/en/', '/cn/'
 
