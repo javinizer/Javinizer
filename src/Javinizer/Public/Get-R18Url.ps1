@@ -15,7 +15,7 @@ function Get-R18Url {
 
         # If contentId is given, convert it back to standard movie ID to validate
         if ($Id -match '(?:\d{1,5})?([a-zA-Z]{2,10}|[tT]28|[rR]18)(\d{1,5})') {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Content ID [$Id] detected"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Content ID [$Id] detected"
             $splitId = $Id | Select-String -Pattern '([a-zA-Z|tT28|rR18]{1,10})(\d{1,5})'
             $studioName = $splitId.Matches.Groups[1].Value
             $rawStudioId = $splitId.Matches.Groups[2].Value
@@ -48,7 +48,7 @@ function Get-R18Url {
         }
 
         if ($numResults -ge 1) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Searching [$retryCount] of [$numResults] results for [$Id]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
@@ -60,7 +60,7 @@ function Get-R18Url {
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $result
                     break
@@ -103,7 +103,7 @@ function Get-R18Url {
                 }
 
                 $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Result [$count] is [$resultId]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
                 if ($resultId -eq $Id) {
                     $directUrl = $result
                     break
