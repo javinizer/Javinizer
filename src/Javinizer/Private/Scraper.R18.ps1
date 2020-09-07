@@ -319,14 +319,14 @@ function Get-R18Actress {
                 }
             } else {
                 try {
-                    $japaneseActressName = ((Invoke-WebRequest -Uri ($zhActressUrl -replace 'lg=en', 'lg=zh')).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
+                    $jaActressName = ((Invoke-WebRequest -Uri ($zhActressUrl -replace 'lg=en', 'lg=zh')).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
                 } catch {
                     return
                 }
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($actressName -split ' ')[1]
                     FirstName    = ($actressName -split ' ')[0]
-                    JapaneseName = $japaneseActressName
+                    JapaneseName = $jaActressName
                     ThumbUrl     = $thumbUrl
                 }
             }
