@@ -43,7 +43,7 @@ function Get-JVData {
         [Boolean]$JavbusZh,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.jav321')]
+        [Alias('scraper.movie.jav321ja')]
         [Boolean]$Jav321,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
@@ -68,7 +68,7 @@ function Get-JVData {
         } elseif ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
             $R18Zh = $Settings.'scraper.movie.r18zh'
-            $Jav321 = $Settings.'scraper.movie.jav321'
+            $Jav321 = $Settings.'scraper.movie.jav321ja'
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'

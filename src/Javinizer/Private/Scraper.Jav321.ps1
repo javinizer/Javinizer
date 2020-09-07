@@ -136,24 +136,22 @@ function Get-Jav321Actress {
     )
 
     process {
+        $movieActressObject = @()
         $actress = @()
 
         try {
-            $actress = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<a href="\/star\/(.*)\/(.*)">(.*)<\/a>によって行われる<\/div>').Matches |
-            ForEach-Object { $_.Groups[3].Value } |
-            Where-Object { $_ -ne '' }
+            $actress = $Webrequest -split '<div class="thumbnail">' |
+            ForEach-Object { ($_ | Select-String -Pattern 'https:\/\/www\.jav321\.com\/mono\/actjpgs\/(.*)">(.*)<\/a><\/div>') }
 
-            $actressThumb = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<div class="thumbnail"><a href="/star\/(.*)\/(.*)"><img class="img-responsive" src="(.*)" onerror').Matches |
-            ForEach-Object { $_.Groups[3].Value } |
-            Where-Object { $_ -ne '' }
-
-
-            $movieActressObject = [PSCustomObject]@{
-                Name     = $actress
-                ThumbUrl = $actressThumb
+            $actress | ForEach-Object { $movieActressObject += [PSCustomObject]@{
+                    LastName     = $null
+                    FirstName    = $null
+                    JapaneseName = ($_.Matches.Groups[2].Value)
+                    ThumbUrl     = if (($_.Matches.Groups[1].Value -replace "'", '') -ne '.jpg') { 'https://www.jav321.com/mono/actjpgs/' + $_.Matches.Groups[1].Value -replace "'", '' }
+                }
             }
+
+
         } catch {
             return
         }
