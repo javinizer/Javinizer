@@ -98,7 +98,7 @@ function Get-JavbusDirector {
     process {
         try {
             $director = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/?(.*)?\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -138,7 +138,7 @@ function Get-JavbusLabel {
     process {
         try {
             $label = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/label\/(.*)">(.*)<\/a>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/?(.*)?\/label\/(.*)">(.*)<\/a>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -157,7 +157,7 @@ function Get-JavbusSeries {
     process {
         try {
             $series = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www.javbus.(com|org)/(.*)/series/(.*)">(.*)<\/a>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www.javbus.(com|org)/?(.*)?/series/(.*)">(.*)<\/a>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -216,11 +216,9 @@ function Get-JavbusActress {
         }
 
         foreach ($actress in $actresses) {
-            $engbaseUrl = $actress.Groups[1].Value -replace '/ja/', '/en/'
-            $jaBaseUrl = $actress.Groups[1].Value -replace '/en/', '/ja/'
-            $engActressUrl = "$engBaseUrl/star/$($actress.Groups[2].Value)"
-            $jaActressUrl = "$jaBaseUrl/star/$($actress.Groups[2].Value)"
-
+            $baseUrl = ($actress.Groups[1].Value) -replace '/ja', '' -replace '/en', ''
+            $engActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
+            $jaActressUrl = "$baseUrl/ja/star/$($actress.Groups[2].Value)"
             $actressName = $actress.Groups[4].Value
             $thumbUrl = $actress.Groups[3].Value
             if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
