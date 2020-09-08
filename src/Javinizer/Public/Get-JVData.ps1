@@ -43,12 +43,12 @@ function Get-JVData {
         [Boolean]$JavbusZh,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.jav321')]
-        [Boolean]$Jav321,
+        [Alias('scraper.movie.jav321ja')]
+        [Boolean]$Jav321Ja,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
-        [String]$JavlibraryBaseUrl = 'http://www.javlibrary.com',
+        [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Id')]
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Url')]
@@ -68,7 +68,7 @@ function Get-JVData {
         } elseif ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
             $R18Zh = $Settings.'scraper.movie.r18zh'
-            $Jav321 = $Settings.'scraper.movie.jav321'
+            $Jav321Ja = $Settings.'scraper.movie.jav321ja'
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
@@ -97,14 +97,16 @@ function Get-JVData {
             }
 
             if ($R18 -or $R18Zh) {
-                $jvR18Url = Get-R18Url -Id $Id
+                if (!($R18Url)) {
+                    $jvR18Url = Get-R18Url -Id $Id
+                }
                 if ($R18) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
                     Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:R18Url) {
                             $using:R18Url | Get-R18Data
-                        } else {
+                        } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
                                 $jvR18Url.En | Get-R18Data
@@ -120,7 +122,7 @@ function Get-JVData {
                         Import-Module $using:jvModulePath
                         if ($using:R18ZhUrl) {
                             $using:R18ZhUrl | Get-R18Data
-                        } else {
+                        } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
                                 $jvR18Url.Zh | Get-R18Data
@@ -131,14 +133,16 @@ function Get-JVData {
             }
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {
-                $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl
+                if (!($JavlibraryUrl)) {
+                    $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl
+                }
                 if ($Javlibrary) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
                     Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryUrl) {
                             $using:JavlibraryUrl | Get-JavlibraryData
-                        } else {
+                        } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
                                 $jvJavlibraryUrl.En | Get-JavlibraryData
@@ -153,7 +157,7 @@ function Get-JVData {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryJaUrl) {
                             $using:JavlibraryJaUrl | Get-JavlibraryData
-                        } else {
+                        } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
                                 $jvJavlibraryUrl.Ja | Get-JavlibraryData
@@ -168,7 +172,7 @@ function Get-JVData {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryZhUrl) {
                             $using:JavlibraryZhUrl | Get-JavlibraryData
-                        } else {
+                        } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
                                 $jvJavlibraryUrl.Zh | Get-JavlibraryData
@@ -179,32 +183,38 @@ function Get-JVData {
             }
 
             if ($Dmm) {
-                $jvDmmUrl = Get-DmmUrl -Id $Id
+                if (!($DmmUrl)) {
+                    $jvDmmUrl = Get-DmmUrl -Id $Id
+                }
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
                 Start-ThreadJob  -Name "jvdata-Dmm" -ThrottleLimit 100 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:DmmUrl) {
                         $using:DmmUrl | Get-DmmData
-                    } else {
+                    } elseif ($using:jvDmmUrl) {
                         $using:jvDmmUrl | Get-DmmData
                     }
                 } | Out-Null
             }
 
-            if ($Javbus) {
-                $jvJavbusUrl = Get-JavbusUrl -Id $Id
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
-                Start-ThreadJob  -Name "jvdata-Javbus" -ThrottleLimit 100 -ScriptBlock {
-                    Import-Module $using:jvModulePath
-                    if ($using:JavbusUrl) {
-                        $using:JavbusUrl | Get-JavbusData
-                    } else {
-                        $jvJavbusUrl = $using:jvJavbusUrl
-                        if ($jvJavbusUrl) {
-                            $jvJavbusUrl.En | Get-JavbusData
+            if ($Javbus -or $JavbusJa -or $JavbusZh) {
+                if (!($JavbusUrl)) {
+                    $jvJavbusUrl = Get-JavbusUrl -Id $Id
+                }
+                if ($Javbus) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javbus] [Url - $JavbusUrl]"
+                    Start-ThreadJob  -Name "jvdata-Javbus" -ThrottleLimit 100 -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if ($using:JavbusUrl) {
+                            $using:JavbusUrl | Get-JavbusData
+                        } elseif ($using:jvJavbusUrl) {
+                            $jvJavbusUrl = $using:jvJavbusUrl
+                            if ($jvJavbusUrl) {
+                                $jvJavbusUrl.En | Get-JavbusData
+                            }
                         }
-                    }
-                } | Out-Null
+                    } | Out-Null
+                }
 
                 if ($JavbusJa) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavbusJa] [Url - $JavbusJaUrl]"
@@ -212,7 +222,7 @@ function Get-JVData {
                         Import-Module $using:jvModulePath
                         if ($using:JavbusJaUrl) {
                             $using:JavbusJaUrl | Get-JavbusData
-                        } else {
+                        } elseif ($using:jvJavbusUrl) {
                             $jvJavbusUrl = $using:jvJavbusUrl
                             if ($jvJavbusUrl) {
                                 $jvJavbusUrl.Ja | Get-JavbusData
@@ -227,7 +237,7 @@ function Get-JVData {
                         Import-Module $using:jvModulePath
                         if ($using:JavbusZhUrl) {
                             $using:JavbusZhUrl | Get-JavbusData
-                        } else {
+                        } elseif ($using:jvJavbusUrl) {
                             $jvJavbusUrl = $using:jvJavbusUrl
                             if ($jvJavbusUrl) {
                                 $jvJavbusUrl.Zh | Get-JavbusData
@@ -237,15 +247,18 @@ function Get-JVData {
                 }
             }
 
-            if ($Jav321) {
-                $jvJav321Url = Get-Jav321Url -Id $using:Id
+            if ($Jav321Ja) {
+                if (!($Jav321JaUrl)) {
+                    $jvJav321Url = Get-Jav321Url -Id $Id
+                }
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
                 Start-ThreadJob  -Name "jvdata-Jav321" -ThrottleLimit 100 -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    if ($using:Jav321Url) {
-                        $using:Jav321Url | Get-Jav321Data
-                    } else {
-                        $using:jvJav321Url | Get-Jav321Data
+                    if ($using:Jav321JaUrl) {
+                        $using:Jav321JaUrl | Get-Jav321Data
+                    } elseif ($using:jvJav321Url) {
+                        $jvJav321Url = $using:jvJav321Url
+                        $jvJav321JaUrl.Ja | Get-Jav321Data
                     }
                 } | Out-Null
             }

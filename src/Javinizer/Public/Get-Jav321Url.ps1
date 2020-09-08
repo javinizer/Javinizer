@@ -63,8 +63,7 @@ function Get-Jav321Url {
                 return
             } else {
                 $urlObject = [PSCustomObject]@{
-                    Url      = $directUrl
-                    Language = 'ja'
+                    Ja = $directUrl
                 }
                 Write-Output $urlObject
             }

@@ -98,7 +98,7 @@ function Get-JavbusDirector {
     process {
         try {
             $director = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/?(.*)?\/director\/(.*)">(.*)<\/a><\/p>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -138,7 +138,7 @@ function Get-JavbusLabel {
     process {
         try {
             $label = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/(.*)\/label\/(.*)">(.*)<\/a>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www\.javbus\.(com|org)\/?(.*)?\/label\/(.*)">(.*)<\/a>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -157,7 +157,7 @@ function Get-JavbusSeries {
     process {
         try {
             $series = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www.javbus.(com|org)/(.*)/series/(.*)">(.*)<\/a>').Matches.Groups[5].Value
+                Select-String -Pattern '<p><span class="header">(.*)<\/span> <a href="https:\/\/www.javbus.(com|org)/?(.*)?/series/(.*)">(.*)<\/a>').Matches.Groups[5].Value
         } catch {
             return
         }
@@ -210,48 +210,88 @@ function Get-JavbusActress {
         $textInfo = (Get-Culture).TextInfo
 
         try {
-            try {
-                $actresses = ($Webrequest | Select-String -AllMatches -Pattern '<a href="https:\/\/www\.javbus\.com\/(?:.*)\/star\/(?:.*)"><img src="(.*)" title="(.*)"><\/a>').Matches
-            } catch {
-                return
+            $actresses = ($Webrequest | Select-String -AllMatches -Pattern '<a href="(.*)\/star\/(.*)"><img src="(.*)" title="(.*)"><\/a>').Matches
+        } catch {
+            return
+        }
+
+        foreach ($actress in $actresses) {
+            $baseUrl = ($actress.Groups[1].Value) -replace '/ja', '' -replace '/en', ''
+            $engActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
+            $jaActressUrl = "$baseUrl/ja/star/$($actress.Groups[2].Value)"
+            $actressName = $actress.Groups[4].Value
+            $thumbUrl = $actress.Groups[3].Value
+            if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
+                $thumbUrl = $null
             }
 
-            foreach ($actress in $actresses) {
-                $thumbUrl = $actress.Groups[1].Value
-                if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
-                    $thumbUrl = $null
+            # Match if the name contains Japanese characters
+            if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                try {
+                    $engActressName = ((Invoke-RestMethod -Uri $engactressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
+                } catch {
+                    return
                 }
 
-                # Match if the name contains Japanese characters
-                if ($actress.Groups[2].Value -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                    $movieActressObject += [PSCustomObject]@{
-                        LastName     = $null
-                        FirstName    = $null
-                        JapaneseName = $actress.Groups[2].Value
-                        ThumbUrl     = $thumbUrl
+                if ($engActressName -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $nameParts = ($engActressName -split ' ').Count
+                    if ($nameParts -eq 1) {
+                        $lastName = $null
+                        $firstName = $engActressName
+                    } else {
+                        $lastName = ($engActressName -split ' ')[0]
+                        $firstName = ($engActressName -split ' ')[1]
                     }
-                } else {
-                    $firstName = ($actress.Groups[2].Value -split ' ')[1]
+
                     if ($null -ne $firstName) {
                         $firstName = $textInfo.ToTitleCase($firstName.ToLower())
                     }
 
-                    $lastName = ($actress.Groups[2].Value -split ' ')[0]
                     if ($null -ne $lastName) {
                         $lastName = $textInfo.ToTitleCase($lastName.ToLower())
                     }
+                } else {
+                    $lastName = $null
+                    $firstName = $null
+                }
 
-                    $movieActressObject += [PSCustomObject]@{
-                        LastName     = $lastName
-                        FirstName    = $firstName
-                        JapaneseName = $null
-                        ThumbUrl     = $thumbUrl
-                    }
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $actressName
+                    ThumbUrl     = $thumbUrl
+                }
+            } else {
+                try {
+                    $jaActressName = ((Invoke-RestMethod -Uri $jaActressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
+                } catch {
+                    return
+                }
+
+                $nameParts = ($actressName -split ' ').Count
+                if ($nameParts -eq 1) {
+                    $lastName = $null
+                    $firstName = $actressName
+                } else {
+                    $lastName = ($actressName -split ' ')[0]
+                    $firstName = ($actressName -split ' ')[1]
+                }
+
+                if ($null -ne $firstName) {
+                    $firstName = $textInfo.ToTitleCase($firstName.ToLower())
+                }
+
+                if ($null -ne $lastName) {
+                    $lastName = $textInfo.ToTitleCase($lastName.ToLower())
+                }
+
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $jaActressName
+                    ThumbUrl     = $thumbUrl
                 }
             }
-        } catch {
-            Write-Error $_
-            return
         }
 
         Write-Output $movieActressObject
@@ -286,10 +326,9 @@ function Get-JavbusScreenshotUrl {
         $screenshotUrl = @()
 
         try {
-            $screenshotUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
-                    Select-String -Pattern 'href="(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*))">') -split '<a class="sample-box"' |
-                Select-String -Pattern '(https:\/\/images\.javbus\.(com|org)\/bigsample\/(.*).jpg)">').Matches |
-            ForEach-Object { $_.Groups[1].Value }
+            $screenshots = ($Webrequest -split '<a class="sample-box"')
+            $screenshots = $screenshots[1..$screenshots.Count] | ForEach-Object { ($_ | Select-String -Pattern 'href="(.*)"><div class=').Matches }
+            $screenshotUrl += ($screenshots | ForEach-Object { if ($_.Groups[1].Value -match '"') { ($_.Groups[1].Value -split '"')[0] } else { $_.Groups[1].Value } })
         } catch {
             return
         }

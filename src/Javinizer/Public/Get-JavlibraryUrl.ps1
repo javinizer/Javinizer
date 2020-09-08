@@ -7,7 +7,7 @@ function Get-JavlibraryUrl {
         [String]$Id,
 
         [Parameter(Position = 1)]
-        [String]$BaseUrl = 'http://www.javlibrary.com'
+        [String]$BaseUrl = 'https://www.javlibrary.com'
     )
 
     process {

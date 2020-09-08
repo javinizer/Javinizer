@@ -18,7 +18,7 @@ function Get-JavbusData {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = if ($Url -match '/ja') { 'javbusja' } elseif ($Url -match '/zh') { 'javbuszh' } else { 'javbuszh' }
+            Source        = if ($Url -match '/ja') { 'javbusja' } elseif ($Url -match '/en') { 'javbus' } else { 'javbuszh' }
             Url           = $Url
             Id            = Get-JavbusId -WebRequest $webRequest
             Title         = Get-JavbusTitle -WebRequest $webRequest
@@ -29,7 +29,6 @@ function Get-JavbusData {
             Maker         = Get-JavbusMaker -WebRequest $webRequest
             Label         = Get-JavbusLabel -WebRequest $webRequest
             Series        = Get-JavbusSeries -WebRequest $webRequest
-            Rating        = Get-JavbusRating -WebRequest $webRequest
             Actress       = Get-JavbusActress -WebRequest $webRequest
             Genre         = Get-JavbusGenre -WebRequest $webRequest
             CoverUrl      = Get-JavbusCoverUrl -WebRequest $webRequest

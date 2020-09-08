@@ -24,6 +24,9 @@ function Get-JVNfo {
         [String]$Description,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$Rating,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [AllowEmptyString()]
         [String]$ReleaseDate,
 
@@ -96,6 +99,7 @@ function Get-JVNfo {
         $Maker = Convert-NfoChar -String $Maker -ErrorAction SilentlyContinue
         $Label = Convert-NfoChar -String $Label -ErrorAction SilentlyContinue
         $Series = Convert-NfoChar -String $Series -ErrorAction SilentlyContinue
+        $releaseYear = ($ReleaseDate -split '-')[0]
 
         $nfoString = @"
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -104,8 +108,11 @@ function Get-JVNfo {
     <originaltitle>$AlternateTitle</originaltitle>
     <id>$Id</id>
     <releasedate>$ReleaseDate</releasedate>
+    <year>$releaseYear</year>
     <director>$Director</director>
     <studio>$Maker</studio>
+    <rating>$($Rating.Rating)</rating>
+    <votes>$($Rating.Votes)</votes>
     <plot>$Description</plot>
     <runtime>$Runtime</runtime>
     <trailer>$TrailerUrl</trailer>

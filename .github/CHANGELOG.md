@@ -5,8 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0-alpha5]
+## [2.0.0-alpha6]
+
 ### Added
+
+- `<YEAR>` re-added as a nfo field
+- `<RATING>` re-added as nfo field
+
+### Changed
+
+- Javbus scraper now updated to 2.0.0 standards
+- Jav321 scraper now updated to 2.0.0 standards
+- `jav321` scraper setting now named `jav321ja`
+- All javlibrary urls converted from http to https
+- Allow `-SettingsPath` on `-Find` parameter set
+
+### Fixed
+
+- Javinizer erroring when using `-Url` due to logic errors
+- JavbusJa and JavbusZh scrapers not running unless Javbus en scraper activated
+- Javbus scraper erroneously being matched as JavbusZh
+- Jav321 scraper failing due to incorrect variable call
+- Jav321 actress output to match the rest of the scrapers
+- Dmm not matching videos where content ID starts with string like `d_123`
+- Nfo failing to create if translated description output a newline character
+
+## [2.0.0-alpha5]
+
+### Added
+
 -   Function to update existing nfo files using thumb and genre csv (actress name, actress thumburl, actress alias, genre replacements, genre ignores)
 -   R18 scraper now scrapes both English and Japanese actress names
 -   Javlibrary scraper now scrapes both English and Japanese actress names
@@ -14,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   `<ACTORS>` re-added as available rename fileformat, setting `sort.format.delimiter = ', '`
 
 ### Changed
+
 -   Setting `sort.format.posterimg` changed to array to allow creation of multiple poster images per video (e.g. poster.jpg, folder.jpg)
 -   Setting `sort.metadata.nfo.translate` changed to `sort.metadata.nfo.translatedescription`
 -   Setting `sort.metadata.nfo.translate.language` changed to `sort.metadata.nfo.translatedescription.language`
@@ -21,6 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Url scraper is now only run once when scraping multiple languages of the same site
 
 ### Fixed
+
 -   `<ACTORS>` now works as a set fileformat
 -   Resolved DMM scraper incorrectly matching IDs with similar name (e.g hrv00030 would match chrv00030)
 -   Resolved translated description not setting properly

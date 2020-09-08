@@ -57,8 +57,8 @@ function Get-JavbusUrl {
                 $resultId = Get-JavbusId -WebRequest $webRequest
                 if ($resultId -eq $Id) {
                     $directUrlZh = "https://" + ($result -split '/')[-2] + "/" + ($result -split '/')[-1]
-                    $directUrlJa = "https://" + ($result -split '/')[-2] + "/$ja/" + ($result -split '/')[-1]
-                    $directUrl = "https://" + ($result -split '/')[-2] + "/$en/" + ($result -split '/')[-1]
+                    $directUrlJa = "https://" + ($result -split '/')[-2] + "/ja/" + ($result -split '/')[-1]
+                    $directUrl = "https://" + ($result -split '/')[-2] + "/en/" + ($result -split '/')[-1]
                     break
                 }
 
