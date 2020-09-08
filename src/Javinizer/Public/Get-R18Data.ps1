@@ -67,7 +67,7 @@ function Get-R18Data {
             'SK**lful'                       = 'Skillful'
             'SK**ls'                         = 'Skills'
             'StepB****************r'         = 'Stepbrother and Sister'
-            'StepM************n'             = ' Stepmother and Son'
+            'StepM************n'             = 'Stepmother and Son'
             'StumB**d'                       = 'Stumbled'
             'T*****e'                        = 'Torture'
             'U*********sly'                  = 'Unconsciously'
