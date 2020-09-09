@@ -539,7 +539,8 @@ function Javinizer {
             }
 
             'Nfo' {
-                $nfoParams = @{
+                Write-Warning "Feature is currently in progress. Check back in a future release."
+                <# $nfoParams = @{
                     Path              = $Path
                     Recurse           = $Recurse
                     Depth             = $Depth
@@ -553,7 +554,7 @@ function Javinizer {
                     ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
                 }
 
-                Update-JVNfo @nfoParams
+                Update-JVNfo @nfoParams #>
             }
 
             'Thumbs' {

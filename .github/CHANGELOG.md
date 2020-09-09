@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0-alpha7]
+
+### Added
+
+- Setting `sort.metadata.thumbcsv.autoadd` added
+    - If enabled, actresses scraped from R18 and R18Zh scrapers are automatically added to the thumb csv if missing
+
+### Changed
+
+- Setting `sort.metadata.genre.ignore` changed to regex match
+- Actresses are now only matched using JapaneseName while sorting
+- Additional words added to r18 uncensor list
+
+### Fixed
+
+- Actresses being matched incorrectly due to false positives with FirstName/LastName matching
+- Dmm match when searching for IDs ending with a letter (IBW-###z, KTRA-###e, etc)
+- Error being thrown when trying to trim a null translated description
+- Actress names containing backslash `\` in R18 fixed
+
+### Removed
+
+- Parameter `-UpdateNfo` removed pending further testing/development
+
 ## [2.0.0-alpha6]
 
 ### Added

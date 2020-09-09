@@ -312,8 +312,8 @@ function Get-R18Actress {
                     return
                 }
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($engActressName -split ' ')[1]
-                    FirstName    = ($engActressName -split ' ')[0]
+                    LastName     = ($engActressName -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($engActressName -split ' ')[0] -replace '\\', ''
                     JapaneseName = $actressName
                     ThumbUrl     = $thumbUrl
                 }
@@ -324,8 +324,8 @@ function Get-R18Actress {
                     return
                 }
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($actressName -split ' ')[1]
-                    FirstName    = ($actressName -split ' ')[0]
+                    LastName     = ($actressName -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($actressName -split ' ')[0] -replace '\\', ''
                     JapaneseName = $jaActressName
                     ThumbUrl     = $thumbUrl
                 }

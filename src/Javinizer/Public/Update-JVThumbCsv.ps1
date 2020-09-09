@@ -68,8 +68,8 @@ function Update-JVThumbCsv {
                 foreach ($actress in $groupedObject) {
                     $combinedActressObject += [PSCustomObject]@{
                         FullName     = "$((($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[1]) $((($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[0])".Trim()
-                        LastName     = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[1]
-                        FirstName    = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&').Trim() -split ' ')[0]
+                        LastName     = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&' -replace '\\', '').Trim() -split ' ')[1]
+                        FirstName    = (($actress.Group[0].Name -replace '\.\.\.', '' -replace '&amp;', '&' -replace '\\', '').Trim() -split ' ')[0]
                         JapaneseName = ($actress.Group[1].Name).Trim() -replace '（.*）', '' -replace '&amp;', '&'
                         ThumbUrl     = $actress.Group[0].ThumbUrl -replace '&amp;', '&'
                         Alias        = $null
