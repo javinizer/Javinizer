@@ -19,7 +19,14 @@ function Get-DmmUrl {
             # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
             if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
                 $splitId = $Id -split '-'
-                $Id = $splitId[0] + $splitId[1].PadLeft(5, '0')
+                if (($splitId[1])[-1] -match '\D') {
+                    $appendChar = ($splitId[1])[-1]
+                    Write-Debug $appendChar
+                    $splitId[1] = $splitId[1] -replace '\D', ''
+                    Write-Debug $splitId[1]
+                }
+                $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
+                $Id = $Id.Trim()
             }
 
             $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
