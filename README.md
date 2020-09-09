@@ -403,14 +403,11 @@ It is enabled by the following settings:
 - `sort.metadata.thumbcsv`
 - `sort.metadata.thumbcsv.convertalias`
 
-After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically try to match the actresses in three ways:
-1. By FirstName if LastName is NULL
-2. By FirstName and LastName
-3. By JapaneseName
+After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically attempt to match the actress by `JapaneseName` from the scraper.
 
-If the actress is matched, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. FullName is not used in any way except for you to reference.
+If the actress is matched, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. The FullName column is not used in any way except for reference.
 
-If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will also automatically convert any of the listed aliases (separated by `|` and listed in `LastName FirstName` format) to the actress that is corresponds to.
+If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically convert any of the listed aliases (separated by `|` and entered in `LastName FirstName` format) to the actress that the alias corresponds to.
 
 For example, if your jvThumbs.csv file looks like this:
 
@@ -420,10 +417,11 @@ Aoi Rena | Aoi | Rena | あおいれな | https://[..]/aoi_rena.jpg | Kobayakawa
 Hamasaki Mao | Hamasaki | Mao | 浜崎真緒 | https://[..]/hamasaki_mao.jpg | Fukada Eimi
 Nagase Yui | Nagase | Yui | 永瀬ゆい |https://[..]/nagase_yui2.jpg | Aika
 
-
 - Any scraped actress that matches `LastName: Kobayakawa; FirstName: Reiko` or `JapaneseName: 小早川怜子` will be converted to `Aoi Rena`
 - Any scraped actress that matches `LastName: Fukada; FirstName: Eimi` will be converted to `Hamasaki Mao`
 - Any scraped actress that matches `FirstName: Aika` will be converted to `Nagase Yui`
+
+If `sort.metadata.thumbcsv.autoadd` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically add any missing actresses scraped from the R18 or R18Zh scrapers to your thumbnail csv.
 
 #### Genre Csv
 
@@ -446,7 +444,7 @@ For example, if your jvGenres.csv file looks like this:
 | -------- | ----------- |
 | Blow | Blowjob
 
-- Any scraped genre that matches `Blow` will be converted to `Blowjob`
+- Any scraped genre that equals `Blow` will be replaced with `Blowjob`
 
 ## Settings Information
 
@@ -501,6 +499,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.metadata.nfo.seriesastag` | Specifies to add the <\SET> metadata as <\TAG> as well for Emby/Jellyfin support | 0, 1
 | `sort.metadata.nfo.actresslanguageja` | Specifies to prefer Japanese names when creating the metadata nfo. | 0, 1
 | `sort.metadata.thumbcsv` | Specifies to use the thumbnail csv when aggregating metadata. | 0, 1
+| `sort.metadata.thumbcsv.autoadd` | Specifies to automatically add missing actresses to the thumbnail csv when scraping using the R18 or R18Zh scrapers. | 0, 1
 | `sort.metadata.thumbcsv.convertalias` | Specifies to use the thumbnail csv alias field to replace actresses in the metadata. | 0, 1
 | `sort.metadata.genrecsv` | Specifies to use the genre csv to replace genres in the metadata. | 0, 1
 | `sort.metadata.genre.ignore` | Specifies an array of genres to ignore in the metadata. | Array of string values
