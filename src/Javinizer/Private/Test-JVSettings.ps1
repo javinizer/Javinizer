@@ -94,6 +94,7 @@ function Test-JVSettings {
             'sort.metadata.nfo.seriesastag',
             'sort.metadata.nfo.translatedescription',
             'sort.metadata.thumbcsv.convertalias',
+            'sort.metadata.thumbcsv.autoadd',
             'sort.metadata.thumbcsv',
             'sort.movetofolder',
             'sort.renamefile'
