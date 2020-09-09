@@ -162,7 +162,7 @@ function Get-JVAggregatedData {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
             if ($Settings.'location.thumbcsv' -ne '') {
-                $ThumbCsvPath = $Settings.'location.genrecsv'
+                $ThumbCsvPath = $Settings.'location.thumbcsv'
             }
         }
 
