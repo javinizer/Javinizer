@@ -432,16 +432,12 @@ function Get-JVAggregatedData {
         }
 
         if ($IgnoreGenre) {
-            $newGenres = $aggregatedDataObject.Genre
-            foreach ($genre in $IgnoreGenre) {
-                if ($newGenres -like $genre) {
-                    foreach ($genre in ($newGenres -like $genre)) {
-                        $newGenres = $newGenres -replace "$genre", $null
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
-                    }
-                }
+            $originalGenres = $aggregatedDataObject.Genre
+            $ignoredGenres = $IgnoreGenre -join '|'
+            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres }
+            foreach ($ignored in (Compare-Object -ReferenceObject $originalGenres -DifferenceObject $aggregatedDataObject.Genre)) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($ignored.InputObject)] ignored"
             }
-            $aggregatedDataObject.Genre = $newGenres | Where-Object { $_ -ne '' }
         }
 
         if ($Translate) {

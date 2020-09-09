@@ -62,7 +62,7 @@
     "sort.metadata.thumbcsv.autoadd": 1,
     "sort.metadata.thumbcsv.convertalias": 1,
     "sort.metadata.genrecsv": 0,
-    "sort.metadata.genre.ignore": ["Featured Actress", "Hi-Def", "*Sale*"],
+    "sort.metadata.genre.ignore": ["^Featured Actress", "^Hi-Def", ".*sale.*"],
     "sort.metadata.requiredfield": ["id", "coverurl", "genre", "maker", "releaseDate", "title"],
     "sort.metadata.priority.actress": ["r18", "javlibrary"],
     "sort.metadata.priority.alternatetitle": ["dmm"],
