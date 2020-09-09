@@ -434,9 +434,11 @@ function Get-JVAggregatedData {
         if ($IgnoreGenre) {
             $newGenres = $aggregatedDataObject.Genre
             foreach ($genre in $IgnoreGenre) {
-                if ($genre -in $newGenres) {
-                    $newGenres = $newGenres -replace "$genre", $null
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
+                if ($newGenres -like $genre) {
+                    foreach ($genre in ($newGenres -like $genre)) {
+                        $newGenres = $newGenres -replace "$genre", $null
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $genre] ignored"
+                    }
                 }
             }
             $aggregatedDataObject.Genre = $newGenres | Where-Object { $_ -ne '' }
