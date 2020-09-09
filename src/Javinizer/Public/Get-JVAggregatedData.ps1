@@ -415,11 +415,11 @@ function Get-JVAggregatedData {
         if ($Translate) {
             if ($TranslateLanguage) {
                 $originalDescription = $aggregatedDataObject.Description
-                [String]$translatedDescription = (Get-TranslatedString -String $originalDescription -Language $TranslateLanguage).Trim()
+                [String]$translatedDescription = Get-TranslatedString -String $originalDescription -Language $TranslateLanguage
                 if ($null -eq $translatedDescription -or $translatedDescription -eq '') {
                     $aggregatedDataObject.Description = $originalDescription
                 } else {
-                    $aggregatedDataObject.Description = $translatedDescription
+                    $aggregatedDataObject.Description = $translatedDescription.Trim()
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
                 }
 
