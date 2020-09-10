@@ -49,7 +49,7 @@ function Update-JVNfo {
             if ($Depth) {
                 $nfoFiles = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object { $_.Extension -eq '.nfo' }
             } else {
-                $nfoFiles = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object { $_.Extension -eq '.nfo' }
+                $nfoFiles = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse | Where-Object { $_.Extension -eq '.nfo' }
             }
         }
 
@@ -372,7 +372,7 @@ function Update-JVNfo {
 
             $newNfoContent = (Get-Content -LiteralPath $file) -join "`r`n"
             if ($originalNfoContent -ne $newNfoContent) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "Updated nfo [$file]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($MyInvocation.MyCommand.Name)] Updated nfo [$file]"
             }
         }
     }
