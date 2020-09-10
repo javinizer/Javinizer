@@ -19,6 +19,7 @@ function Set-JavMovie {
         $fixedDestinationPath = ($DestinationPath).replace('`[', '[').replace('`]', ']')
         $DestinationPath = (Get-Item -LiteralPath $fixedDestinationPath).FullName
         $webClient = New-Object System.Net.WebClient
+        $webClient.Headers.Add("User-Agent: Other")
         $cropPath = Join-Path -Path $ScriptRoot -ChildPath 'crop.py'
 
         if ($Settings.General.'move-to-folder' -eq 'True') {
