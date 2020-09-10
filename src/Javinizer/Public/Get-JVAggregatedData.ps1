@@ -430,13 +430,14 @@ function Get-JVAggregatedData {
         }
 
         if ($IgnoreGenre) {
-            $originalGenres = $aggregatedDataObject.Genre
-            $ignoredGenres = $IgnoreGenre -join '|'
-            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres -and $_ -ne '' }
-            if ($null -ne $originalGenres -or $originalGenres -ne '') {
-                $differenceObject = (Compare-Object -ReferenceObject $originalGenres -DifferenceObject $aggregatedDataObject.Genre)
-                foreach ($ignored in $differenceObject) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($ignored.InputObject)] ignored"
+            if ($aggregatedDataObject.Genre) {
+                $originalGenres = $aggregatedDataObject.Genre
+                $ignoredGenres = $IgnoreGenre -join '|'
+                $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres -and $_ -ne '' }
+                $originalGenres | ForEach-Object {
+                    if ($aggregatedDataObject.Genre -notcontains $_) {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $_] ignored"
+                    }
                 }
             }
         }
