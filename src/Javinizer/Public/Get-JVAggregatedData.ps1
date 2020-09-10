@@ -162,7 +162,7 @@ function Get-JVAggregatedData {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
             if ($Settings.'location.thumbcsv' -ne '') {
-                $ThumbCsvPath = $Settings.'location.genrecsv'
+                $ThumbCsvPath = $Settings.'location.thumbcsv'
             }
         }
 
@@ -384,8 +384,6 @@ function Get-JVAggregatedData {
                     $matched = @()
                     $matchedActress = @()
 
-                    # Try three methods for matching aliases
-                    # FirstName | FirstName, LastName | JapaneseName
                     if (($aggregatedDataObject.Actress[$x].JapaneseName -ne '') -and ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName'))) {
                         if ($matched.Count -eq 1) {
                             $matchedActress = $matched
@@ -432,11 +430,15 @@ function Get-JVAggregatedData {
         }
 
         if ($IgnoreGenre) {
-            $originalGenres = $aggregatedDataObject.Genre
-            $ignoredGenres = $IgnoreGenre -join '|'
-            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres }
-            foreach ($ignored in (Compare-Object -ReferenceObject $originalGenres -DifferenceObject $aggregatedDataObject.Genre)) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($ignored.InputObject)] ignored"
+            if ($aggregatedDataObject.Genre) {
+                $originalGenres = $aggregatedDataObject.Genre
+                $ignoredGenres = $IgnoreGenre -join '|'
+                $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres -and $_ -ne '' }
+                $originalGenres | ForEach-Object {
+                    if ($aggregatedDataObject.Genre -notcontains $_) {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $_] ignored"
+                    }
+                }
             }
         }
 
@@ -452,7 +454,7 @@ function Get-JVAggregatedData {
                 }
 
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
             }
         }
 
