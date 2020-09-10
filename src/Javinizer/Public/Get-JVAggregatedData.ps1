@@ -454,7 +454,7 @@ function Get-JVAggregatedData {
                 }
 
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] Translation language is missing"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
             }
         }
 

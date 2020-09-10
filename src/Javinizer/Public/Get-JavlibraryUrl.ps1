@@ -83,7 +83,7 @@ function Get-JavlibraryUrl {
         }
 
         if ($null -eq $javlibraryUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
             return
         } else {
             $javlibraryUrlJa = $javlibraryUrl -replace '/en/', '/ja/'
