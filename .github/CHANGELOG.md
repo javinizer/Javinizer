@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0-alpha8]
+
+### Changed
+- Default matcher now supports IDs ending with a letter (IBW-###z, KTRA-###e)
+- Logging messages updated to be more consistent
+
+### Fixed
+
+- Jav321 scraper not running properly
+- Javinizer now properly uses the thumb csv when a custom path is set in `location.thumbcsv`
+- Error thrown when scraped genres are null and ignored genres are present
+
+
 ## [2.0.0-alpha7]
 
 ### Added
@@ -21,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Actresses being matched incorrectly due to false positives with FirstName/LastName matching
-- Dmm match when searching for IDs ending with a letter (IBW-###z, KTRA-###e, etc)
+- Dmm match when searching for IDs ending with a letter (IBW-###z, KTRA-###e)
 - Error being thrown when trying to trim a null translated description
 - Actress names containing backslash `\` in R18 fixed
 
