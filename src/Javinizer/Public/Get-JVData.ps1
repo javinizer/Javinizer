@@ -251,7 +251,7 @@ function Get-JVData {
                 if (!($Jav321JaUrl)) {
                     $jvJav321Url = Get-Jav321Url -Id $Id
                 }
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [Url - $Jav321JaUrl]"
                 Start-ThreadJob  -Name "jvdata-Jav321" -ThrottleLimit 100 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:Jav321JaUrl) {
