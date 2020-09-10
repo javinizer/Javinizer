@@ -97,7 +97,7 @@ function Get-JVData {
             }
 
             if ($R18 -or $R18Zh) {
-                if (!($R18Url)) {
+                if (!($R18Url -or $R18ZhUrl)) {
                     $jvR18Url = Get-R18Url -Id $Id
                 }
                 if ($R18) {
@@ -133,7 +133,7 @@ function Get-JVData {
             }
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {
-                if (!($JavlibraryUrl)) {
+                if (!($JavlibraryUrl -or $JavlibraryJaUrl -or $JavlibraryZhUrl)) {
                     $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl
                 }
                 if ($Javlibrary) {
@@ -198,7 +198,7 @@ function Get-JVData {
             }
 
             if ($Javbus -or $JavbusJa -or $JavbusZh) {
-                if (!($JavbusUrl)) {
+                if (!($JavbusUrl -or $JavbusJaUrl -or $JavbusZhUrl)) {
                     $jvJavbusUrl = Get-JavbusUrl -Id $Id
                 }
                 if ($Javbus) {
@@ -258,7 +258,7 @@ function Get-JVData {
                         $using:Jav321JaUrl | Get-Jav321Data
                     } elseif ($using:jvJav321Url) {
                         $jvJav321Url = $using:jvJav321Url
-                        $jvJav321JaUrl.Ja | Get-Jav321Data
+                        $jvJav321Url.Ja | Get-Jav321Data
                     }
                 } | Out-Null
             }
