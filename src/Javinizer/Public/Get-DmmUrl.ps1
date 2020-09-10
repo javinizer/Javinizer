@@ -22,9 +22,7 @@ function Get-DmmUrl {
                 $splitId = $Id -split '-'
                 if (($splitId[1])[-1] -match '\D') {
                     $appendChar = ($splitId[1])[-1]
-                    Write-Debug $appendChar
                     $splitId[1] = $splitId[1] -replace '\D', ''
-                    Write-Debug $splitId[1]
                 }
                 $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
                 $Id = $Id.Trim()
