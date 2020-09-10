@@ -384,8 +384,6 @@ function Get-JVAggregatedData {
                     $matched = @()
                     $matchedActress = @()
 
-                    # Try three methods for matching aliases
-                    # FirstName | FirstName, LastName | JapaneseName
                     if (($aggregatedDataObject.Actress[$x].JapaneseName -ne '') -and ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName'))) {
                         if ($matched.Count -eq 1) {
                             $matchedActress = $matched
@@ -434,9 +432,12 @@ function Get-JVAggregatedData {
         if ($IgnoreGenre) {
             $originalGenres = $aggregatedDataObject.Genre
             $ignoredGenres = $IgnoreGenre -join '|'
-            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres }
-            foreach ($ignored in (Compare-Object -ReferenceObject $originalGenres -DifferenceObject $aggregatedDataObject.Genre)) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($ignored.InputObject)] ignored"
+            $aggregatedDataObject.Genre = $aggregatedDataObject.Genre | Where-Object { $_ -notmatch $ignoredGenres -and $_ -ne '' }
+            if ($null -ne $originalGenres -or $originalGenres -ne '') {
+                $differenceObject = (Compare-Object -ReferenceObject $originalGenres -DifferenceObject $aggregatedDataObject.Genre)
+                foreach ($ignored in $differenceObject) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($ignored.InputObject)] ignored"
+                }
             }
         }
 
