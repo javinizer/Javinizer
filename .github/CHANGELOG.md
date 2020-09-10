@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.4]
+
+### Fixed
+- Fixed failing download requests on R18 resources
+
+## [1.7.3]
+
+### Changed
+-Restored some scraper settings defaults
+    - .wmv to file extension default
+    - scrape-r18/dmm to true
+### Fixed
+
+- Added -Strict functionality to -SetJavlibraryOwned
+- Error when running with -Multi due to dev code
+
 ## [1.7.2]
 ### Added
 - Settings file validation for:
@@ -448,4 +464,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Initial functionality release
 - Web searching with `-Find`
 - File and directory sort with `-Path` and `-Apply`
-
