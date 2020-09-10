@@ -59,7 +59,7 @@ function Get-Jav321Url {
             }
 
             if ($null -eq $directUrl) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] Search [$Id] not matched on Jav321"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on Jav321"
                 return
             } else {
                 $urlObject = [PSCustomObject]@{
@@ -68,7 +68,7 @@ function Get-Jav321Url {
                 Write-Output $urlObject
             }
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] Search [$Id] not matched on Jav321"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Search [$Id] not matched on Jav321"
             return
         }
     }

@@ -595,13 +595,13 @@ function Javinizer {
                 }
 
                 if ($null -eq $javMovies) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exiting -- no valid movies detected in [$Path]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Path] Exiting -- no valid movies detected"
                     return
                 }
 
                 if ($Url) {
                     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Exited [$Path] is not a valid single file path"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Path] Exiting -- not a valid single file path"
                         return
                     }
 
@@ -635,11 +635,12 @@ function Javinizer {
                                 if ($javAggregatedData.NullFields -eq '') {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
                                 } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Skipped [$($movie.FileName)] missing required fields [$($javAggregatedData.NullFields)]"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return
                                 }
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "Skipped [$($movie.FileName)] not matched"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                return
                             }
                         }
                     }

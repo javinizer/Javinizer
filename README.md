@@ -47,11 +47,11 @@ Choose one of the methods below:
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/) using PowerShell 6/7
 ```powershell
 # Install the module from PowerShell gallery (This will install the latest version by default)
-# Add -AllowPrelease to download a preview build
+# Add -AllowPrerelease to download a preview build
 PS> Install-Module Javinizer
 
 # Update the module to the newest version from PowerShell gallery
-# Add -AllowPrelease to download a preview build
+# Add -AllowPrerelease to download a preview build
 PS> Update-Module Javinizer
 ```
 

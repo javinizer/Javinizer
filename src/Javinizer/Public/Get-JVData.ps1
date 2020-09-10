@@ -97,7 +97,7 @@ function Get-JVData {
             }
 
             if ($R18 -or $R18Zh) {
-                if (!($R18Url)) {
+                if (!($R18Url -or $R18ZhUrl)) {
                     $jvR18Url = Get-R18Url -Id $Id
                 }
                 if ($R18) {
@@ -133,7 +133,7 @@ function Get-JVData {
             }
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {
-                if (!($JavlibraryUrl)) {
+                if (!($JavlibraryUrl -or $JavlibraryJaUrl -or $JavlibraryZhUrl)) {
                     $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl
                 }
                 if ($Javlibrary) {
@@ -198,7 +198,7 @@ function Get-JVData {
             }
 
             if ($Javbus -or $JavbusJa -or $JavbusZh) {
-                if (!($JavbusUrl)) {
+                if (!($JavbusUrl -or $JavbusJaUrl -or $JavbusZhUrl)) {
                     $jvJavbusUrl = Get-JavbusUrl -Id $Id
                 }
                 if ($Javbus) {
@@ -251,14 +251,14 @@ function Get-JVData {
                 if (!($Jav321JaUrl)) {
                     $jvJav321Url = Get-Jav321Url -Id $Id
                 }
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [$Url - $Jav321Url]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Jav321] [Url - $Jav321JaUrl]"
                 Start-ThreadJob  -Name "jvdata-Jav321" -ThrottleLimit 100 -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if ($using:Jav321JaUrl) {
                         $using:Jav321JaUrl | Get-Jav321Data
                     } elseif ($using:jvJav321Url) {
                         $jvJav321Url = $using:jvJav321Url
-                        $jvJav321JaUrl.Ja | Get-Jav321Data
+                        $jvJav321Url.Ja | Get-Jav321Data
                     }
                 } | Out-Null
             }
@@ -268,7 +268,7 @@ function Get-JVData {
             $jobName = @((Get-Job | Where-Object { $_.Name -like "jvdata-*" } | Select-Object Name).Name)
 
             if ($jobCount -eq 0) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] No scrapers were run"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] No scrapers were run"
                 return
             } else {
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Waiting - Scraper jobs] [$jobName]"

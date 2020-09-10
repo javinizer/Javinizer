@@ -138,7 +138,7 @@ function Get-R18Url {
         }
 
         if ($null -eq $directUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on R18"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on R18"
             return
         } else {
             $directUrlZh = $directUrl + '&lg=zh'

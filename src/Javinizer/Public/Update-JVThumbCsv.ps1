@@ -80,12 +80,12 @@ function Update-JVThumbCsv {
                     if ($null -ne $actressCsv) {
                         if (!(Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actress -IncludeEqual -ExcludeDifferent -Property @('JapaneseName', 'ThumbUrl'))) {
                             $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "Wrote [$actressString - $($actress.JapaneseName)] [Page $x] to thumb csv"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($MyInvocation.MyCommand.Name)] Wrote [$actressString - $($actress.JapaneseName)] [Page $x] to thumb csv"
                             $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                         }
                     } else {
                         $actressString = "$($actress.LastName) $($actress.FirstName)".Trim()
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "Wrote [$actressString - $($actress.JapaneseName)] [Page $x] to thumb csv"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($MyInvocation.MyCommand.Name)] Wrote [$actressString - $($actress.JapaneseName)] [Page $x] to thumb csv"
                         $actress | Export-Csv -LiteralPath $ThumbCsvPath -Append -Encoding utf8
                     }
                 }
