@@ -231,7 +231,7 @@ function Javinizer {
     param (
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
-        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true, Position = 0)]
+        [Parameter(ParameterSetName = 'Nfo', Position = 0)]
         [System.IO.DirectoryInfo]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
@@ -266,6 +266,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$HideProgress,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Update,
 
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$IsThread,
@@ -557,6 +560,25 @@ function Javinizer {
                 Update-JVNfo @nfoParams #>
             }
 
+            'Update' {
+                Write-Warning "Feature is currently in progress. Check back in a future release."
+                <# $nfoParams = @{
+                    Path              = $Path
+                    Recurse           = $Recurse
+                    Depth             = $Depth
+                    GenreCsv          = $Settings.'sort.metadata.genrecsv'
+                    GenreCsvPath      = $genreCsvPath
+                    GenreIgnore       = $Settings.'sort.metadata.genre.ignore'
+                    FirstNameOrder    = $Settings.'sort.metadata.nfo.firstnameorder'
+                    ThumbCsv          = $Settings.'sort.metadata.thumbcsv'
+                    ThumbCsvAlias     = $Settings.'sort.metadata.thumbcsv.convertalias'
+                    ThumbCsvPath      = $thumbCsvPath
+                    ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+                }
+
+                Update-JVNfo @nfoParams #>
+            }
+
             'Thumbs' {
                 if ($Pages) {
                     Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
@@ -623,7 +645,7 @@ function Javinizer {
                             Import-Module $using:jvModulePath
                             $jvMovie = $_
                             $Settings = $using:Settings
-                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                         }
                     }
 
@@ -633,7 +655,7 @@ function Javinizer {
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
-                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
+                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                 } else {
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return
