@@ -313,8 +313,6 @@ function Set-JVMovie {
             if ($DownloadActressImg -and !($Update)) {
                 if ($null -ne $Data.Actress) {
                     try {
-                        $webClient = New-Object System.Net.WebClient
-                        $webclient.Headers.Add("User-Agent: Other")
                         $actorFolderPath = Join-Path -Path $folderPath -ChildPath $actorFolderName
                         if (!(Test-Path -LiteralPath $actorFolderPath)) {
                             New-Item -Path $actorFolderPath -ItemType Directory -Force:$Force | Out-Null
@@ -323,6 +321,8 @@ function Set-JVMovie {
                         $nfoXML = [xml]$nfoContents
                         foreach ($actress in $nfoXML.movie.actor) {
                             if ($actress.thumb -ne '') {
+                                $webClient = New-Object System.Net.WebClient
+                                $webclient.Headers.Add("User-Agent: Other")
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $actorFolderPath -ChildPath "$newName.jpg"
 
