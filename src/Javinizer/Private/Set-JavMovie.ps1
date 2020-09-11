@@ -176,11 +176,11 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
                     if ($null -ne $DataObject.ActressThumbUrl) {
-                        $webClient = New-Object System.Net.WebClient
-                        $webClient.Headers.Add("User-Agent: Other")
                         New-Item -ItemType Directory -Name $DataObject.ActorImgFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $nfoActress = $nfoXml.movie.actor
                         foreach ($actress in $nfoActress) {
+                            $webClient = New-Object System.Net.WebClient
+                            $webClient.Headers.Add("User-Agent: Other")
                             if ($actress.thumb -ne '') {
                                 $firstName, $lastName = $actress.name -split ' '
                                 if ($null -eq $lastName -or $lastName -eq '') {
