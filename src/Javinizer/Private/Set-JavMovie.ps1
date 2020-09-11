@@ -108,6 +108,8 @@ function Set-JavMovie {
             if ($Settings.Metadata.'download-thumb-img' -eq 'True') {
                 try {
                     if ($null -ne $DataObject.CoverUrl) {
+                        $webClient = New-Object System.Net.WebClient
+                        $webClient.Headers.Add("User-Agent: Other")
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile(($DataObject.CoverUrl).ToString(), $fixedCoverPath)
                         } elseif ((!(Test-Path -LiteralPath $fixedCoverPath))) {
@@ -154,6 +156,8 @@ function Set-JavMovie {
                         New-Item -ItemType Directory -Name $DataObject.ScreenshotFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $index = 1
                         foreach ($screenshot in $DataObject.ScreenshotUrl) {
+                            $webClient = New-Object System.Net.WebClient
+                            $webClient.Headers.Add("User-Agent: Other")
                             if ($Force.IsPresent) {
                                 $webClient.DownloadFile($screenshot, (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))
                             } elseif (!(Test-Path -LiteralPath (Join-Path -Path $fixedScreenshotPath -ChildPath ($screenshotImgName + $index + '.jpg')))) {
@@ -172,6 +176,8 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-actress-img' -eq 'True') {
                     if ($null -ne $DataObject.ActressThumbUrl) {
+                        $webClient = New-Object System.Net.WebClient
+                        $webClient.Headers.Add("User-Agent: Other")
                         New-Item -ItemType Directory -Name $DataObject.ActorImgFolderName -Path $fixedFolderPath -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         $nfoActress = $nfoXml.movie.actor
                         foreach ($actress in $nfoActress) {
@@ -200,6 +206,8 @@ function Set-JavMovie {
             try {
                 if ($Settings.Metadata.'download-trailer-vid' -eq 'True') {
                     if ($null -ne $DataObject.TrailerUrl) {
+                        $webClient = New-Object System.Net.WebClient
+                        $webClient.Headers.Add("User-Agent: Other")
                         if ($Force.IsPresent) {
                             $webClient.DownloadFile($DataObject.TrailerUrl, $fixedTrailerPath)
                         } elseif (!(Test-Path -LiteralPath $trailerPath)) {
