@@ -221,6 +221,7 @@ function Set-JVMovie {
                 if ($null -ne $Data.CoverUrl) {
                     try {
                         $webClient = New-Object System.Net.WebClient
+                        $webclient.Headers.Add("User-Agent: Other")
                         $thumbPath = Join-Path -Path $folderPath -ChildPath "$thumbName.jpg"
                         if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
                             if ($Force) {
@@ -306,6 +307,7 @@ function Set-JVMovie {
                 if ($null -ne $Data.Actress) {
                     try {
                         $webClient = New-Object System.Net.WebClient
+                        $webclient.Headers.Add("User-Agent: Other")
                         $actorFolderPath = Join-Path -Path $folderPath -ChildPath $actorFolderName
                         if (!(Test-Path -LiteralPath $actorFolderPath)) {
                             New-Item -Path $actorFolderPath -ItemType Directory -Force:$Force | Out-Null
@@ -348,9 +350,9 @@ function Set-JVMovie {
             if ($DownloadScreenshotImg) {
                 if ($null -ne $Data.ScreenshotUrl) {
                     try {
-                        $retryCount = 0
                         $index = 1
                         $webClient = New-Object System.Net.WebClient
+                        $webclient.Headers.Add("User-Agent: Other")
                         $screenshotFolderPath = Join-Path $folderPath -ChildPath $screenshotFolderName
                         if (!(Test-Path -LiteralPath $screenshotFolderPath)) {
                             New-Item -Path $screenshotFolderPath -ItemType Directory -Force:$Force -ErrorAction SilentlyContinue | Out-Null
@@ -389,7 +391,8 @@ function Set-JVMovie {
             if ($DownloadTrailerVid) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
-                        $retryCount = 0
+                        $webClient = New-Object System.Net.WebClient
+                        $webclient.Headers.Add("User-Agent: Other")
                         $trailerPath = Join-Path -Path $folderPath -ChildPath "$trailerName.mp4"
                         if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
                             if ($Force.IsPresent) {
