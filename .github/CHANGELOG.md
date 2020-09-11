@@ -5,14 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0]
+
+### Added
+- Added `-Update` parameter to only update nfo when sorting a directory
+    - This replaces v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
+
+### Fixed
+
+- Fixed failing screenshot download requests from R18 resources
+
 ## [2.0.0-alpha9]
 
 ### Fixed
+
 - Fixed failing download requests from R18 resources
 
 ## [2.0.0-alpha8]
 
 ### Changed
+
 - Default matcher now supports IDs ending with a letter (IBW-###z, KTRA-###e)
 - Logging messages updated to be more consistent
 

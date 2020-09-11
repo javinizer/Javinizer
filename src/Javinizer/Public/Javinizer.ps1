@@ -25,6 +25,9 @@ function Javinizer {
     .PARAMETER Url
         Specifies a url or an array of urls to sort a single JAV file.
 
+    .PARAMETER Update
+        Specifies to only create/update the nfo file when sorting a file.
+
     .PARAMETER SettingsPath
         Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
 
@@ -149,11 +152,11 @@ function Javinizer {
     Sorts a path of JAV files without attemping automatic filename cleaning.
 
     .EXAMPLE
-    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
+    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -Update
 
     Description
     -----------
-    Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
+    Sorts a path of JAV files while only updating/creating the nfo file without moving/renaming any existing files.
 
     .EXAMPLE
     Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID> - <TITLE>'}

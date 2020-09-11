@@ -47,6 +47,7 @@ Choose one of the methods below:
 - Install the module directly from [PowerShell Gallery](https://www.powershellgallery.com/packages/Javinizer/) using PowerShell 6/7
 ```powershell
 # Install the module from PowerShell gallery (This will install the latest version by default)
+# View the PowerShell gallery page for instructions on installing specific versions
 # Add -AllowPrerelease to download a preview build
 PS> Install-Module Javinizer
 
@@ -79,10 +80,9 @@ Settings documentation is located [here](#Settings-Information).
 PS> Javinizer -OpenSettings
 ```
 
-
 ### Command-line usage
 
-```
+```powershell
 PS> help Javinizer
 
 NAME
@@ -94,7 +94,7 @@ A command-line based tool to scrape and sort your local Japanese Adult Video (JA
 
 SYNTAX
 Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath
-<FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
+<FileInfo>] [-Update] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
 [<CommonParameters>]
 
 Javinizer [-Path] <DirectoryInfo> [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
@@ -139,6 +139,9 @@ PARAMETERS
 
 -Strict [<SwitchParameter>]
     Specifies to not automatically try to match filenames to the movie ID. Can be useful for movies like T28- and R18-.
+
+-Update [<SwitchParameter>]
+    Specifies to only create/update the nfo file when sorting a file.
 
 -MoveToFolder <Boolean>
     Specifies whether or not to move sorted files to its own folder. Defaults to 'sort.movetofolder' in the settings file.
@@ -235,12 +238,11 @@ PARAMETERS
     OutBuffer, PipelineVariable, and OutVariable. For more information, see
     about_CommonParameters (https://go.microsoft.com/fwlink/?LinkID=113216).
 
-
 ```
 
 ### Examples
 
-```
+```powershell
 -------------------------- EXAMPLE 1 --------------------------
 
 PS > Javinizer
@@ -275,11 +277,11 @@ Sorts a path of JAV files without attemping automatic filename cleaning.
 
 -------------------------- EXAMPLE 5 --------------------------
 
-PS > Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
+PS > Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -Update
 
 Description
 -----------
-Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
+Sorts a path of JAV files while only updating/creating the nfo file without moving/renaming any existing files.
 
 -------------------------- EXAMPLE 6 --------------------------
 
