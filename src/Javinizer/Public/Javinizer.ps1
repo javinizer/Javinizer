@@ -472,7 +472,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja
+                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                 }
 
                 if ($Aggregated) {
