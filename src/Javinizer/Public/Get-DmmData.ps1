@@ -11,24 +11,16 @@ function Get-DmmData {
         $movieDataObject = @()
         if ($Url -match '/en/') {
             $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-            $cookieObject = [PSCustomObject]@{
-                ckcy     = @{Name = 'ckcy'; Value = '2'; Domain = 'dmm.co.jp' }
-                cklg     = @{Name = 'cklg'; Value = 'en'; Domain = 'dmm.co.jp' }
-                agecheck = @{Name = 'age_check_done'; Value = '1'; Domain = 'dmm.co.jp' }
-            }
-
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'ckcy'
             $cookie.Value = '2'
             $cookie.Domain = 'dmm.co.jp'
             $session.Cookies.Add($cookie)
-
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'cklg'
             $cookie.Value = 'en'
             $cookie.Domain = 'dmm.co.jp'
             $session.Cookies.Add($cookie)
-
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'age_check_done'
             $cookie.Value = '1'
@@ -44,7 +36,7 @@ function Get-DmmData {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = 'dmm'
+            Source        = if ($Url -match '/en/') { 'dmm' } else { 'dmmja' }
             Url           = $Url
             Id            = Get-DmmContentId -WebRequest $webRequest
             Title         = Get-DmmTitle -WebRequest $webRequest
@@ -61,7 +53,6 @@ function Get-DmmData {
             Genre         = Get-DmmGenre -WebRequest $webRequest
             CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
-            #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
         }
 
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
