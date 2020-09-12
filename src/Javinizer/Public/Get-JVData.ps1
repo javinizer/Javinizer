@@ -141,11 +141,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryUrl) {
-                            $using:JavlibraryUrl | Get-JavlibraryData
+                            $using:JavlibraryUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                         } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.En | Get-JavlibraryData
+                                $jvJavlibraryUrl.En | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                             }
                         }
                     } | Out-Null
@@ -156,11 +156,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavlibraryJa" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryJaUrl) {
-                            $using:JavlibraryJaUrl | Get-JavlibraryData
+                            $using:JavlibraryJaUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                         } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Ja | Get-JavlibraryData
+                                $jvJavlibraryUrl.Ja | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                             }
                         }
                     } | Out-Null
@@ -171,11 +171,11 @@ function Get-JVData {
                     Start-ThreadJob  -Name "jvdata-JavlibraryZh" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryZhUrl) {
-                            $using:JavlibraryZhUrl | Get-JavlibraryData
+                            $using:JavlibraryZhUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                         } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Zh | Get-JavlibraryData
+                                $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                             }
                         }
                     } | Out-Null

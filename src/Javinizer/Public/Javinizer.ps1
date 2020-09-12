@@ -459,7 +459,7 @@ function Javinizer {
                         }
 
                         if ($item.Source -match 'javlibrary') {
-                            $item.Url | Get-JavlibraryData
+                            $item.Url | Get-JavlibraryData -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                         }
 
                         if ($item.Source -match 'r18') {
