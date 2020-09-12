@@ -569,25 +569,6 @@ function Javinizer {
                 Update-JVNfo @nfoParams #>
             }
 
-            'Update' {
-                Write-Warning "Feature is currently in progress. Check back in a future release."
-                <# $nfoParams = @{
-                    Path              = $Path
-                    Recurse           = $Recurse
-                    Depth             = $Depth
-                    GenreCsv          = $Settings.'sort.metadata.genrecsv'
-                    GenreCsvPath      = $genreCsvPath
-                    GenreIgnore       = $Settings.'sort.metadata.genre.ignore'
-                    FirstNameOrder    = $Settings.'sort.metadata.nfo.firstnameorder'
-                    ThumbCsv          = $Settings.'sort.metadata.thumbcsv'
-                    ThumbCsvAlias     = $Settings.'sort.metadata.thumbcsv.convertalias'
-                    ThumbCsvPath      = $thumbCsvPath
-                    ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
-                }
-
-                Update-JVNfo @nfoParams #>
-            }
-
             'Thumbs' {
                 if ($Pages) {
                     Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
@@ -644,7 +625,7 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 5) {
                         Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
 
