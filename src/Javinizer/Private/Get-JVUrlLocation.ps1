@@ -43,9 +43,16 @@ function Get-JVUrlLocation {
                     }
                 }
             } elseif ($link -match 'dmm.co.jp') {
-                $testUrlObject += [PSCustomObject]@{
-                    Url    = $link
-                    Source = 'dmm'
+                if ($link -match '/en') {
+                    $testUrlObject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'dmm'
+                    }
+                } else {
+                    $testUrlObject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'dmmja'
+                    }
                 }
             } elseif ($link -match 'javbus') {
                 if ($link -match '/ja') {

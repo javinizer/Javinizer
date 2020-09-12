@@ -5,8 +5,11 @@ function Get-DmmContentId {
     )
 
     process {
-        $contentId = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">品番：<\/td>')[1] -split '<\/td>')[0] -split '<td>')[1]
-        $contentId = Convert-HtmlCharacter -String $contentId
+        try {
+            $contentId = (((($Webrequest.Content -split '<td align="right" valign="top" class="nw">(品番：|Movie Number:)<\/td>')[2] -split '\/td>')[0]) | Select-String -Pattern '>(.*)<').Matches.Groups[1].Value
+        } catch {
+            return
+        }
         Write-Output $contentId
     }
 }
@@ -18,8 +21,11 @@ function Get-DmmTitle {
     )
 
     process {
-        $title = (($Webrequest.Content -split '<h1 id="title" class="item fn">')[1] -split '<\/h1>')[0]
-        $title = Convert-HtmlCharacter -String $title
+        try {
+            $title = ($Webrequest.Content | Select-String -Pattern '<h1 id="title" class="item fn">(.*)<\/h1><\/div>').Matches.Groups[1].Value
+        } catch {
+            return
+        }
         Write-Output $title
     }
 }
@@ -31,16 +37,18 @@ function Get-DmmDescription {
     )
 
     process {
-        $description = (($Webrequest.Content -split '<meta name="description" content=')[1] -split '\/>')[0]
-        # Remove the first 14 characters of the description string
-        # This will remove the 'Fanza' string prepending the description in the html
-        $description = $description.Substring(14)
-        # Remove the last 2 characters of the description string
-        # This will remove the extra quotation mark at the end of the description
-        $description = $description.Substring(0, $description.Length - 2)
-        $description = Convert-HtmlCharacter -String $description
-        $description = $description -replace '<([^>]+)>', ''
-        $description = (($description -split '\.\*\.')[0]).Trim()
+        try {
+            $description = ($Webrequest.Content -split '<div class="mg-b20 lh4">')[1]
+            $description = ($Webrequest.Content | Select-String -Pattern '<p class="mg-b20">\n(.*)').Matches.Groups[1].Value
+        } catch {
+            $description = $null
+        }
+
+        if ($null -eq $description -or $description -eq '') {
+            $description = (((($Webrequest.Content -join "`r`n") -split '<div class="mg-b20 lh4">')[1]) -split '\n')[6]
+            $description = ($description -replace '<p class=".*">.*<\/p>', '').Trim()
+        }
+
         Write-Output $description
     }
 }
@@ -52,8 +60,11 @@ function Get-DmmReleaseDate {
     )
 
     process {
-        $releaseDate = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">配信開始日：<\/td>')[1] -split '<\/td>')[0] -split '<td>')[1]
-        $releaseDate = Convert-HtmlCharacter -String $releaseDate
+        try {
+            $releaseDate = ($Webrequest.Content | Select-String -Pattern '\d{4}\/\d{2}\/\d{2}').Matches.Groups[0].Value
+        } catch {
+            return
+        }
         $year, $month, $day = $releaseDate -split '/'
         $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
         Write-Output $releaseDate
@@ -80,8 +91,11 @@ function Get-DmmRuntime {
     )
 
     process {
-        $length = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">収録時間：<\/td>')[1] -split '<\/td>')[0] -split '<td>')[1]
-        $length = ($length -split '分')[0]
+        try {
+            $length = ($Webrequest.Content | Select-String -Pattern '(\d{2,3})\s?(?:minutes|分)').Matches.Groups[1].Value
+        } catch {
+            return
+        }
         Write-Output $length
     }
 }
@@ -93,13 +107,11 @@ function Get-DmmDirector {
     )
 
     process {
-        $director = ((($Webrequest.Content -split '監督：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
-        $director = Convert-HtmlCharacter -String $director
-
-        if ($director -eq '</tr') {
-            $director = $null
+        try {
+            $director = ($Webrequest.Content | Select-String -Pattern '\/article=director\/id=\d*\/">(.*)<\/a>').Matches.Groups[1].Value
+        } catch {
+            return
         }
-
         Write-Output $director
     }
 }
@@ -111,8 +123,11 @@ function Get-DmmMaker {
     )
 
     process {
-        $maker = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">メーカー：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
-        $maker = Convert-HtmlCharacter -String $maker
+        try {
+            $maker = ($Webrequest.Content | Select-String -Pattern '\/article=maker\/id=\d*\/">(.*)<\/a>').Matches.Groups[1].Value
+        } catch {
+            return
+        }
         Write-Output $maker
     }
 }
@@ -124,13 +139,11 @@ function Get-DmmLabel {
     )
 
     process {
-        $label = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">レーベル：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
-        $label = Convert-HtmlCharacter -String $label
-
-        if ($label -eq '</tr') {
-            $label = $null
+        try {
+            $label = ($Webrequest.Content | Select-String -Pattern '\/article=label\/id=\d*\/">(.*)<\/a>').Matches.Groups[1].Value
+        } catch {
+            return
         }
-
         Write-Output $label
     }
 }
@@ -142,13 +155,11 @@ function Get-DmmSeries {
     )
 
     process {
-        $series = ((($Webrequest.Content -split '<td align="right" valign="top" class="nw">シリーズ：<\/td>')[1] -split '<\/a>')[0] -split '>')[2]
-        $series = Convert-HtmlCharacter -String $series
-
-        if ($series -eq '</tr') {
-            $series = $null
+        try {
+            $series = ($Webrequest.Content | Select-String -Pattern '\/article=series\/id=\d*\/">(.*)<\/a>').Matches.Groups[1].Value
+        } catch {
+            return
         }
-
         Write-Output $series
     }
 }
@@ -160,14 +171,15 @@ function Get-DmmRating {
     )
 
     process {
-        $rating = (((($Webrequest.Content -split '<p class="d-review__average">')[1] -split '<\/strong>')[0] -split '<strong>')[1] -split '点')[0]
+        $rating = ($Webrequest.Content | Select-String -Pattern '<strong>(.*)\s?(points|点)<\/strong>').Matches.Groups[1].Value
         # Multiply the rating value by 2 to conform to 1-10 rating standard
-        $integer = [int]$rating * 2
+        $newRating = [Decimal]$rating * 2
+        $integer = [Math]::Round($newRating)
 
         if ($integer -eq 0) {
             $integer = $null
         } else {
-            $rating = $integer.Tostring()
+            $rating = $integer.ToString()
         }
 
         $ratingCount = (($Webrequest.Content -split '<p class="d-review__evaluates">')[1] -split '<\/p>')[0]
@@ -190,27 +202,44 @@ function Get-DmmActress {
 
     process {
         $movieActressObject = @()
-        $actressHtml = ((($Webrequest.Content -split '出演者：<\/td>')[1] -split '<\/td>')[0] -split '<span id="performer">')[1]
-        $actressHtml = $actressHtml -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(.*)\/">', ''
-        $actressHtml = $actressHtml -split '<\/a>', ''
+        try {
+            $movieActress = ($Webrequest.Content | Select-String -Pattern '\/article=actress\/id=\d*\/">(.*)<\/a>' -AllMatches).Matches
+        } catch {
+            return
+        }
+        #$actress = $actress | ForEach-Object { $actressArray += $_.Groups[1].Value }
 
-        if ($actressHtml[0] -ne '') {
-            foreach ($actress in $actressHtml) {
-                $actress = Convert-HtmlCharacter -String $actress
-                if ($actress -ne '') {
-                    $movieActressObject += [PSCustomObject]@{
-                        LastName     = $null
-                        FirstName    = $null
-                        JapaneseName = $actress -replace '<\/a>', ''
-                        ThumbUrl     = $null
-                    }
+        foreach ($actress in $movieActress) {
+            $actressName = $actress.Groups[1].Value
+            if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $actressName
+                    ThumbUrl     = $null
+                }
+            } else {
+                $TextInfo = (Get-Culture).TextInfo
+                $actressName = $TextInfo.ToTitleCase($actressName)
+                $nameParts = ($ActressName -split ' ').Count
+                if ($nameParts -eq 1) {
+                    $lastName = $null
+                    $firstName = $actressName
+                } else {
+                    $lastName = ($actressName -split ' ')[0]
+                    $firstName = ($actressName -split ' ')[1]
+                }
+
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = $lastName
+                    FirstName    = $firstName
+                    JapaneseName = $jaActressName
+                    ThumbUrl     = $null
                 }
             }
-        } else {
-            $movieActressObject = $null
         }
-        Write-Output $movieActressObject
 
+        Write-Output $movieActressObject
     }
 }
 
@@ -222,19 +251,23 @@ function Get-DmmGenre {
 
     process {
         $genreArray = @()
-        $genre = (((($Webrequest.Content -split 'ジャンル：<\/td>')[1] -split '<\/td>')[0] -split '<td>')[1] -split '">')
-        $genre = ($genre -replace '<\/a>', '') -replace '&nbsp;&nbsp;', ''
-        $genre = $genre -replace '<a href="\/digital\/videoa\/-\/list\/=\/article=keyword\/id=(.*)\/'
-
-        foreach ($entry in $genre) {
-            $entry = Convert-HtmlCharacter -String $entry
-            if ($entry -ne '') {
-                $genreArray += $entry
-            }
+        try {
+            $genre = ($Webrequest.Content | Select-String -Pattern '>(Genre:|ジャンル：)<\/td>\n(.*)').Matches.Groups[1].Value
+        } catch {
+            $genre = $null
         }
 
-        if ($genreArray.Count -eq 0) {
-            $genreArray = $null
+        try {
+            if ($null -ne $genre -or $genre -ne '') {
+                $genre = ((($Webrequest.Content -join "`r`n") -split '>(Genre:|ジャンル：)')[2] -split '<\/tr>')[0]
+                $genre = ($genre -split '\/a>' | ForEach-Object { $_ | Select-String -Pattern '>(.*)<' }).Matches
+            }
+        } catch {
+            return
+        }
+
+        if ($null -ne $genre -or $genre -ne '') {
+            $genre = $genre | ForEach-Object { $genreArray += $_.Groups[1].Value -replace '<.*>', '' }
         }
 
         Write-Output $genreArray
@@ -248,8 +281,11 @@ function Get-DmmCoverUrl {
     )
 
     process {
-        $coverUrl = ((($Webrequest.Content -split '<div class="center" id="sample-video">')[1] -split '" target')[0] -split '<a href="')[1]
-        $coverUrl = Convert-HtmlCharacter -String $coverUrl
+        try {
+            $coverUrl = ($Webrequest.Content | Select-String -Pattern '(https:\/\/pics\.dmm\.co\.jp\/(mono\/movie\/adult|digital\/video)\/(.*)/(.*)\.jpg)').Matches.Groups[1].Value -replace 'ps.jpg', 'pl.jpg'
+        } catch {
+            return
+        }
         Write-Output $coverUrl
     }
 }

@@ -31,6 +31,10 @@ function Get-JVData {
         [Boolean]$Dmm,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.dmmja')]
+        [Boolean]$DmmJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javbus')]
         [Boolean]$Javbus,
 
@@ -73,6 +77,7 @@ function Get-JVData {
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
             $Dmm = $Settings.'scraper.movie.dmm'
+            $DmmJa = $Settings.'scraper.movie.dmmja'
             $Javbus = $Settings.'scraper.movie.javbus'
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
@@ -182,19 +187,35 @@ function Get-JVData {
                 }
             }
 
-            if ($Dmm) {
-                if (!($DmmUrl)) {
+            if ($Dmm -or $DmmJa) {
+                if (!($DmmUrl -or $DmmJaUrl)) {
                     $jvDmmUrl = Get-DmmUrl -Id $Id
                 }
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
-                Start-ThreadJob  -Name "jvdata-Dmm" -ThrottleLimit 100 -ScriptBlock {
-                    Import-Module $using:jvModulePath
-                    if ($using:DmmUrl) {
-                        $using:DmmUrl | Get-DmmData
-                    } elseif ($using:jvDmmUrl) {
-                        $using:jvDmmUrl | Get-DmmData
-                    }
-                } | Out-Null
+                if ($Dmm) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                    Start-ThreadJob  -Name "jvdata-Dmm" -ThrottleLimit 100 -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if ($using:DmmUrl) {
+                            $using:DmmUrl | Get-DmmData
+                        } elseif ($using:jvDmmUrl) {
+                            $jvDmmUrl = $using:jvDmmUrl
+                            $jvDmmUrl.En | Get-DmmData
+                        }
+                    } | Out-Null
+                }
+
+                if ($DmmJa) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                    Start-ThreadJob  -Name "jvdata-Dmm" -ThrottleLimit 100 -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if ($using:DmmUrl) {
+                            $using:DmmUrl | Get-DmmData
+                        } elseif ($using:jvDmmUrl) {
+                            $jvDmmUrl = $using:jvDmmUrl
+                            $jvDmmUrl.Ja | Get-DmmData
+                        }
+                    } | Out-Null
+                }
             }
 
             if ($Javbus -or $JavbusJa -or $JavbusZh) {

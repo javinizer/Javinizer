@@ -66,7 +66,10 @@ function Javinizer {
         Specifies to search R18-Chinese when using -Find.
 
     .PARAMETER Dmm
-        Specifies to search R18 when using -Find.
+        Specifies to search Dmm when using -Find.
+
+    .PARAMETER DmmJa
+        Specifies to search Dmm-Japanese when using -Find.
 
     .PARAMETER Javlibrary
         Specifies to search Javlibrary when using -Find.
@@ -296,6 +299,9 @@ function Javinizer {
         [Switch]$Dmm,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$DmmJa,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Switch]$Javlibrary,
 
         [Parameter(ParameterSetName = 'Info')]
@@ -472,7 +478,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
+                        -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                 }
 
                 if ($Aggregated) {

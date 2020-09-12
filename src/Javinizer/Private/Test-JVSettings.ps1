@@ -72,6 +72,7 @@ function Test-JVSettings {
             'javlibrary.request.timeout',
             'match.regex',
             'scraper.movie.dmm',
+            'scraper.movie.dmmja',
             'scraper.movie.jav321ja',
             'scraper.movie.javbus',
             'scraper.movie.javbusja',
