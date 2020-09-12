@@ -309,7 +309,7 @@ function Get-R18Actress {
                 try {
                     $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
                 } catch {
-                    return
+                    $engActressName = $null
                 }
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($engActressName -split ' ')[1] -replace '\\', ''
@@ -321,7 +321,7 @@ function Get-R18Actress {
                 try {
                     $jaActressName = ((Invoke-WebRequest -Uri ($zhActressUrl -replace 'lg=en', 'lg=zh')).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
                 } catch {
-                    return
+                    $jaActressName = $null
                 }
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($actressName -split ' ')[1] -replace '\\', ''

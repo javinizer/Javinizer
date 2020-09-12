@@ -190,8 +190,7 @@ function Get-JavlibraryActress {
                 try {
                     $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
                 } catch {
-                    throw $_
-                    return
+                    $engActressName = $null
                 }
 
                 $nameParts = ($engActressName -split ' ').Count
@@ -213,8 +212,7 @@ function Get-JavlibraryActress {
                 try {
                     $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
                 } catch {
-                    throw $_
-                    return
+                    $jaActressName = $null
                 }
 
                 $nameParts = ($ActressName -split ' ').Count

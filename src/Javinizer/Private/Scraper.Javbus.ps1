@@ -230,7 +230,7 @@ function Get-JavbusActress {
                 try {
                     $engActressName = ((Invoke-RestMethod -Uri $engactressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
                 } catch {
-                    return
+                    $engActressName = $null
                 }
 
                 if ($engActressName -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
@@ -265,7 +265,7 @@ function Get-JavbusActress {
                 try {
                     $jaActressName = ((Invoke-RestMethod -Uri $jaActressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
                 } catch {
-                    return
+                    $jaActressName = $null
                 }
 
                 $nameParts = ($actressName -split ' ').Count
