@@ -450,7 +450,7 @@ function Get-JVAggregatedData {
                     $aggregatedDataObject.Description = $originalDescription
                 } else {
                     $aggregatedDataObject.Description = $translatedDescription.Trim()
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $descriptionTemp] translated to [$($aggregatedDataObject.Description)]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $originalDescription] translated to [$($aggregatedDataObject.Description)]"
                 }
 
             } else {
