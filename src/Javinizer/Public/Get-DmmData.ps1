@@ -4,7 +4,10 @@ function Get-DmmData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [String]$Url
+        [String]$Url,
+
+        [Parameter()]
+        [Boolean]$ScrapeActress
     )
 
     process {
@@ -31,6 +34,8 @@ function Get-DmmData {
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
             $webRequest = Invoke-WebRequest -Uri $Url -WebSession $session -Method Get -Verbose:$false
+        } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]"
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem"
         }
@@ -49,7 +54,7 @@ function Get-DmmData {
             Label         = Get-DmmLabel -WebRequest $webRequest
             Series        = Get-DmmSeries -WebRequest $webRequest
             Rating        = Get-DmmRating -WebRequest $webRequest
-            Actress       = Get-DmmActress -WebRequest $webRequest
+            Actress       = Get-DmmActress -WebRequest $webRequest -ScrapeActress:$ScrapeActress
             Genre         = Get-DmmGenre -WebRequest $webRequest
             CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest

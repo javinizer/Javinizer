@@ -171,7 +171,16 @@ function Get-DmmRating {
     )
 
     process {
-        $rating = ($Webrequest.Content | Select-String -Pattern '<strong>(.*)\s?(points|点)<\/strong>').Matches.Groups[1].Value
+        try {
+            $rating = ($Webrequest.Content | Select-String -Pattern '<strong>(.*)\s?(points|点)<\/strong>').Matches.Groups[1].Value
+        } catch {
+            return
+        }
+
+        if ($rating -match 'Five ') {
+            $rating = 5
+        }
+
         # Multiply the rating value by 2 to conform to 1-10 rating standard
         $newRating = [Decimal]$rating * 2
         $integer = [Math]::Round($newRating)
@@ -197,7 +206,10 @@ function Get-DmmRating {
 function Get-DmmActress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Boolean]$ScrapeActress
     )
 
     process {
@@ -214,38 +226,40 @@ function Get-DmmActress {
             $jaActressUrl = "https://www.dmm.co.jp/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
             $actressName = $actress.Groups[2].Value
             if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-                $cookie = New-Object System.Net.Cookie
-                $cookie.Name = 'ckcy'
-                $cookie.Value = '2'
-                $cookie.Domain = 'dmm.co.jp'
-                $session.Cookies.Add($cookie)
-                $cookie = New-Object System.Net.Cookie
-                $cookie.Name = 'cklg'
-                $cookie.Value = 'en'
-                $cookie.Domain = 'dmm.co.jp'
-                $session.Cookies.Add($cookie)
-                $cookie = New-Object System.Net.Cookie
-                $cookie.Name = 'age_check_done'
-                $cookie.Value = '1'
-                $cookie.Domain = 'dmm.co.jp'
-                $session.Cookies.Add($cookie)
+                if ($ScrapeActress) {
+                    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+                    $cookie = New-Object System.Net.Cookie
+                    $cookie.Name = 'ckcy'
+                    $cookie.Value = '2'
+                    $cookie.Domain = 'dmm.co.jp'
+                    $session.Cookies.Add($cookie)
+                    $cookie = New-Object System.Net.Cookie
+                    $cookie.Name = 'cklg'
+                    $cookie.Value = 'en'
+                    $cookie.Domain = 'dmm.co.jp'
+                    $session.Cookies.Add($cookie)
+                    $cookie = New-Object System.Net.Cookie
+                    $cookie.Name = 'age_check_done'
+                    $cookie.Value = '1'
+                    $cookie.Domain = 'dmm.co.jp'
+                    $session.Cookies.Add($cookie)
 
-                try {
-                    $engActressName = ((((Invoke-WebRequest -Uri $engActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
-                } catch {
-                    $engActressName = $null
-                }
+                    try {
+                        $engActressName = ((((Invoke-WebRequest -Uri $engActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
+                    } catch {
+                        $engActressName = $null
+                    }
 
-                $TextInfo = (Get-Culture).TextInfo
-                $engActressName = $TextInfo.ToTitleCase($engActressName)
-                $nameParts = ($engActressName -split ' ').Count
-                if ($nameParts -eq 1) {
-                    $lastName = $null
-                    $firstName = $engActressName
-                } else {
-                    $lastName = ($engActressName -split ' ')[0]
-                    $firstName = ($engActressName -split ' ')[1]
+                    $TextInfo = (Get-Culture).TextInfo
+                    $engActressName = $TextInfo.ToTitleCase($engActressName)
+                    $nameParts = ($engActressName -split ' ').Count
+                    if ($nameParts -eq 1) {
+                        $lastName = $null
+                        $firstName = $engActressName
+                    } else {
+                        $lastName = ($engActressName -split ' ')[0]
+                        $firstName = ($engActressName -split ' ')[1]
+                    }
                 }
 
                 $movieActressObject += [PSCustomObject]@{
@@ -255,17 +269,20 @@ function Get-DmmActress {
                     ThumbUrl     = $null
                 }
             } else {
-                $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-                $cookie = New-Object System.Net.Cookie
-                $cookie.Name = 'age_check_done'
-                $cookie.Value = '1'
-                $cookie.Domain = 'dmm.co.jp'
-                $session.Cookies.Add($cookie)
-                try {
-                    $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
-                } catch {
-                    $jaActressName = $null
+                if ($ScrapeActress) {
+                    $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+                    $cookie = New-Object System.Net.Cookie
+                    $cookie.Name = 'age_check_done'
+                    $cookie.Value = '1'
+                    $cookie.Domain = 'dmm.co.jp'
+                    $session.Cookies.Add($cookie)
+                    try {
+                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
+                    } catch {
+                        $jaActressName = $null
+                    }
                 }
+
                 $TextInfo = (Get-Culture).TextInfo
                 $actressName = $TextInfo.ToTitleCase($actressName)
                 $nameParts = ($ActressName -split ' ').Count
