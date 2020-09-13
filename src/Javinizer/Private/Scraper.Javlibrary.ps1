@@ -165,7 +165,10 @@ function Get-JavlibraryGenre {
 function Get-JavlibraryActress {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com'
     )
 
     process {
@@ -180,14 +183,14 @@ function Get-JavlibraryActress {
         }
 
         foreach ($actress in $movieActress) {
-            $engActressUrl = "https://www.javlibrary.com/en/vl_star.php?s=$($actress.Groups[1].Value)"
-            $jaActressUrl = "https://www.javlibrary.com/ja/vl_star.php?s=$($actress.Groups[1].Value)"
+            $engActressUrl = "$JavlibraryBaseUrl/en/vl_star.php?s=$($actress.Groups[1].Value)"
+            $jaActressUrl = "$JavlibraryBaseUrl/ja/vl_star.php?s=$($actress.Groups[1].Value)"
             $actressName = $actress.Groups[2].Value
             if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 try {
                     $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
                 } catch {
-                    return
+                    $engActressName = $null
                 }
 
                 $nameParts = ($engActressName -split ' ').Count
@@ -209,7 +212,7 @@ function Get-JavlibraryActress {
                 try {
                     $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
                 } catch {
-                    return
+                    $jaActressName = $null
                 }
 
                 $nameParts = ($ActressName -split ' ').Count

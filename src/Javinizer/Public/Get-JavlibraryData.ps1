@@ -4,7 +4,10 @@ function Get-JavlibraryData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [String]$Url
+        [String]$Url,
+
+        [Parameter()]
+        [String]$JavlibraryBaseUrl
     )
 
     process {
@@ -30,7 +33,7 @@ function Get-JavlibraryData {
             Maker         = Get-JavlibraryMaker -WebRequest $webRequest
             Label         = Get-JavlibraryLabel -WebRequest $webRequest
             Rating        = Get-JavlibraryRating -WebRequest $webRequest
-            Actress       = Get-JavlibraryActress -WebRequest $webRequest
+            Actress       = Get-JavlibraryActress -WebRequest $webRequest -JavlibraryBaseUrl $JavlibraryBaseUrl
             Genre         = Get-JavlibraryGenre -WebRequest $webRequest
             CoverUrl      = Get-JavlibraryCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-JavlibraryScreenshotUrl -WebRequest $webRequest

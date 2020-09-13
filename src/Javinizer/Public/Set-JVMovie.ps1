@@ -16,6 +16,9 @@ function Set-JVMovie {
         [PSObject]$Data,
 
         [Parameter()]
+        [Switch]$Update,
+
+        [Parameter()]
         [Int]$PartNumber,
 
         [Parameter()]
@@ -198,7 +201,7 @@ function Set-JVMovie {
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # We do not want to recreate the destination folder if it already exists
             try {
-                if (!(Test-Path -LiteralPath $folderPath)) {
+                if (!(Test-Path -LiteralPath $folderPath) -and (!($Update))) {
                     New-Item -Path $folderPath -ItemType Directory -Force:$Force | Out-Null
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$folderPath]"
                 }
@@ -208,7 +211,11 @@ function Set-JVMovie {
 
             if ($CreateNfo) {
                 try {
-                    $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
+                    if (!($Update)) {
+                        $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
+                    } else {
+                        $nfoPath = Join-Path -Path (Get-Item -LiteralPath $Path).Directory -CHildPath "$nfoName.nfo"
+                    }
                     $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -AddTag $AddTag
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
@@ -217,7 +224,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadThumbImg) {
+            if ($DownloadThumbImg -and (!($Update))) {
                 if ($null -ne $Data.CoverUrl) {
                     try {
                         $webClient = New-Object System.Net.WebClient
@@ -247,7 +254,7 @@ function Set-JVMovie {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$thumbPath]: $PSItem"
                     }
 
-                    if ($DownloadPosterImg) {
+                    if ($DownloadPosterImg -and (!($Update))) {
                         try {
                             $cropScriptPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'crop.py'
                             if (Test-Path -LiteralPath $cropScriptPath) {
@@ -303,11 +310,9 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadActressImg) {
+            if ($DownloadActressImg -and !($Update)) {
                 if ($null -ne $Data.Actress) {
                     try {
-                        $webClient = New-Object System.Net.WebClient
-                        $webclient.Headers.Add("User-Agent: Other")
                         $actorFolderPath = Join-Path -Path $folderPath -ChildPath $actorFolderName
                         if (!(Test-Path -LiteralPath $actorFolderPath)) {
                             New-Item -Path $actorFolderPath -ItemType Directory -Force:$Force | Out-Null
@@ -316,6 +321,8 @@ function Set-JVMovie {
                         $nfoXML = [xml]$nfoContents
                         foreach ($actress in $nfoXML.movie.actor) {
                             if ($actress.thumb -ne '') {
+                                $webClient = New-Object System.Net.WebClient
+                                $webclient.Headers.Add("User-Agent: Other")
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $actorFolderPath -ChildPath "$newName.jpg"
 
@@ -347,18 +354,18 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadScreenshotImg) {
+            if ($DownloadScreenshotImg -and (!($Update))) {
                 if ($null -ne $Data.ScreenshotUrl) {
                     try {
                         $index = 1
-                        $webClient = New-Object System.Net.WebClient
-                        $webclient.Headers.Add("User-Agent: Other")
                         $screenshotFolderPath = Join-Path $folderPath -ChildPath $screenshotFolderName
                         if (!(Test-Path -LiteralPath $screenshotFolderPath)) {
                             New-Item -Path $screenshotFolderPath -ItemType Directory -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         }
 
                         foreach ($screenshot in $Data.ScreenshotUrl) {
+                            $webClient = New-Object System.Net.WebClient
+                            $webclient.Headers.Add("User-Agent: Other")
                             $screenshotPath = Join-Path -Path $screenshotFolderPath -ChildPath "$screenshotImgName$index.jpg"
                             if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
                                 if ($Force.IsPresent) {
@@ -388,7 +395,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadTrailerVid) {
+            if ($DownloadTrailerVid -and (!($Update))) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
                         $webClient = New-Object System.Net.WebClient
@@ -420,7 +427,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($RenameFile) {
+            if ($RenameFile -and (!($Update))) {
                 try {
                     $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
@@ -439,22 +446,24 @@ function Set-JVMovie {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
                 }
             } else {
-                try {
-                    $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
-                    if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
-                            if (!(Test-Path -LiteralPath $filePath)) {
-                                Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
+                if (!($Update)) {
+                    try {
+                        $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
+                        if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
+                            if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
+                                if (!(Test-Path -LiteralPath $filePath)) {
+                                    Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
+                                } else {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
+                                }
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                             }
-                        } else {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                         }
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
                     }
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
                 }
             }
         }

@@ -174,6 +174,7 @@ function Get-JVNfo {
             $actressNfoString = @"
     <actor>
         <name>$actressName</name>
+        <altname>$($item.JapaneseName)</altname>
         <thumb>$($item.ThumbUrl)</thumb>
         <role>Actress</role>
     </actor>

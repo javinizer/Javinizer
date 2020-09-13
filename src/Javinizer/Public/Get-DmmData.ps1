@@ -4,23 +4,45 @@ function Get-DmmData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [String]$Url
+        [String]$Url,
+
+        [Parameter()]
+        [Boolean]$ScrapeActress
     )
 
     process {
         $movieDataObject = @()
-        $dmmUrl = $Url
+        if ($Url -match '/en/') {
+            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'ckcy'
+            $cookie.Value = '2'
+            $cookie.Domain = 'dmm.co.jp'
+            $session.Cookies.Add($cookie)
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'cklg'
+            $cookie.Value = 'en'
+            $cookie.Domain = 'dmm.co.jp'
+            $session.Cookies.Add($cookie)
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'age_check_done'
+            $cookie.Value = '1'
+            $cookie.Domain = 'dmm.co.jp'
+            $session.Cookies.Add($cookie)
+        }
 
         try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$dmmUrl]"
-            $webRequest = Invoke-WebRequest -Uri $dmmUrl -Method Get -Verbose:$false
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
+            $webRequest = Invoke-WebRequest -Uri $Url -WebSession $session -Method Get -Verbose:$false
+        } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Not found on DMM [$Url]"
         } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$dmmUrl]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem"
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = 'dmm'
-            Url           = $dmmUrl
+            Source        = if ($Url -match '/en/') { 'dmm' } else { 'dmmja' }
+            Url           = $Url
             Id            = Get-DmmContentId -WebRequest $webRequest
             Title         = Get-DmmTitle -WebRequest $webRequest
             Description   = Get-DmmDescription -WebRequest $webRequest
@@ -32,11 +54,10 @@ function Get-DmmData {
             Label         = Get-DmmLabel -WebRequest $webRequest
             Series        = Get-DmmSeries -WebRequest $webRequest
             Rating        = Get-DmmRating -WebRequest $webRequest
-            Actress       = Get-DmmActress -WebRequest $webRequest
+            Actress       = Get-DmmActress -WebRequest $webRequest -ScrapeActress:$ScrapeActress
             Genre         = Get-DmmGenre -WebRequest $webRequest
             CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
-            #TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
         }
 
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"

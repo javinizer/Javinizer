@@ -77,9 +77,26 @@ function Get-DmmUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
             return
         } else {
+            try {
+                $jaId = ($directUrl | Select-String -Pattern 'cid=(.*)\/\?').Matches.Groups[1].Value
+                $jaIdPart = $jaId -replace '\d{5}[zZ]?[eE]?', ''
+
+                $splitJaIdNum = (($jaId | Select-String -Pattern '\d{5}[zZ]?[eE]?').Matches.Groups[0].Value) -replace '^0*', ''
+                if (($splitJaIdNum)[-1] -match '\D') {
+                    $appendChar = ($splitIdJaIdNum)[-1]
+                    $splitJaIdNum = $splitJaIdNum -replace '\D', ''
+                }
+
+                $enIdNum = $splitJaIdNum.PadLeft(3, '0') + $appendChar
+                $enId = $jaIdPart + $enIdNum
+            } catch {
+                return
+            }
+
+            $enDirectUrl = "https://www.dmm.co.jp/en/mono/dvd/-/detail/=/cid=$enId"
             $urlObject = [PSCustomObject]@{
-                Url      = $directUrl
-                Language = 'ja'
+                En = $enDirectUrl
+                Ja = $directUrl
             }
 
             Write-Output $urlObject

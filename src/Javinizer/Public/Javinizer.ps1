@@ -25,6 +25,9 @@ function Javinizer {
     .PARAMETER Url
         Specifies a url or an array of urls to sort a single JAV file.
 
+    .PARAMETER Update
+        Specifies to only create/update the nfo file when sorting a file.
+
     .PARAMETER SettingsPath
         Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
 
@@ -63,7 +66,10 @@ function Javinizer {
         Specifies to search R18-Chinese when using -Find.
 
     .PARAMETER Dmm
-        Specifies to search R18 when using -Find.
+        Specifies to search Dmm when using -Find.
+
+    .PARAMETER DmmJa
+        Specifies to search Dmm-Japanese when using -Find.
 
     .PARAMETER Javlibrary
         Specifies to search Javlibrary when using -Find.
@@ -90,6 +96,12 @@ function Javinizer {
         Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
         it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
 
+    .PARAMETER EmbyUrl
+        Specifies the Emby/Jellyfin baseurl instead of using the setting 'emby.url'.
+
+    .PARAMETER EmbyApiKey
+        Specifies the Emby/Jellyfin API key instead of using th setting 'emby.apikey'.
+
     .PARAMETER ReplaceAll
         Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
 
@@ -104,6 +116,9 @@ function Javinizer {
 
     .PARAMETER OpenGenres
         Specifies to open the genre replacements file.
+
+    .PARAMETER OpenUncensor
+        Specifies to open the uncensor replacements file.
 
     .PARAMETER UpdateThumbs
         Specifies to update the actress thumbnails file.
@@ -149,11 +164,11 @@ function Javinizer {
     Sorts a path of JAV files without attemping automatic filename cleaning.
 
     .EXAMPLE
-    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -RenameFile:$false -MoveToFolder:$false
+    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -Update
 
     Description
     -----------
-    Sorts a path of JAV files to its own directory without renaming or moving any files. This is useful for updating already existing directories.
+    Sorts a path of JAV files while only updating/creating the nfo file without moving/renaming any existing files.
 
     .EXAMPLE
     Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID> - <TITLE>'}
@@ -231,11 +246,13 @@ function Javinizer {
     param (
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
-        [Parameter(ParameterSetName = 'Nfo', Mandatory = $true, Position = 0)]
-        [System.IO.DirectoryInfo]$Path,
+        [Parameter(ParameterSetName = 'Nfo', Position = 0)]
+        [AllowEmptyString()]
+        [String]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
-        [System.IO.DirectoryInfo]$DestinationPath,
+        [AllowEmptyString()]
+        [String]$DestinationPath,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
@@ -268,6 +285,9 @@ function Javinizer {
         [Switch]$HideProgress,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Update,
+
+        [Parameter(ParameterSetName = 'Path')]
         [Switch]$IsThread,
 
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
@@ -288,6 +308,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Dmm,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$DmmJa,
 
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Javlibrary,
@@ -314,6 +337,12 @@ function Javinizer {
         [Switch]$SetEmbyThumbs,
 
         [Parameter(ParameterSetName = 'Emby')]
+        [String]$EmbyUrl,
+
+        [Parameter(ParameterSetName = 'Emby')]
+        [String]$EmbyApiKey,
+
+        [Parameter(ParameterSetName = 'Emby')]
         [Switch]$ReplaceAll,
 
         [Parameter(ParameterSetName = 'Settings')]
@@ -327,6 +356,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenGenres,
+
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenUncensor,
 
         [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
         [Switch]$UpdateNfo,
@@ -387,18 +419,22 @@ function Javinizer {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'location.thumbcsv' -PathType Leaf)) {
-                New-Item -Path $Settings.'location.thumbcsv' | Out-Null
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Thumb csv not found at path [$($Settings.'location.thumbcsv')]"
+                return
+            } else {
+                $thumbCsvPath = $Settings.'location.thumbcsv'
             }
-            $thumbCsvPath = $Settings.'location.thumbcsv'
         }
 
         if ($Settings.'location.genrecsv' -eq '') {
             $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'location.genrecsv' -PathType Leaf)) {
-                New-Item -Path $Settings.'location.genrecsv' | Out-Null
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Genre csv not found at path [$($Settings.'location.genrecsv')]"
+                return
+            } else {
+                $genreCsvPath = $Settings.'location.genrecsv'
             }
-            $genreCsvPath = $Settings.'location.genrecsv'
         }
 
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
@@ -441,7 +477,7 @@ function Javinizer {
                     $urlObject = Get-JVUrlLocation -Url $Find
                     $data = foreach ($item in $urlObject) {
                         if ($item.Source -match 'dmm') {
-                            $item.Url | Get-DmmData
+                            $item.Url | Get-DmmData -ScrapeActress:$Setting.'scraper.option.dmm.scrapeactress'
                         }
 
                         if ($item.Source -match 'jav321') {
@@ -453,7 +489,7 @@ function Javinizer {
                         }
 
                         if ($item.Source -match 'javlibrary') {
-                            $item.Url | Get-JavlibraryData
+                            $item.Url | Get-JavlibraryData -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                         }
 
                         if ($item.Source -match 'r18') {
@@ -466,7 +502,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja
+                        -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                 }
 
                 if ($Aggregated) {
@@ -517,6 +553,15 @@ function Javinizer {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
                 }
+
+                if ($OpenUncensor) {
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
+                        Invoke-Item -LiteralPath (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv')
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                    }
+                }
             }
 
             'Help' {
@@ -535,7 +580,11 @@ function Javinizer {
             }
 
             'Emby' {
-                $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+                if ($EmbyUrl) {
+                    $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll -Url $EmbyUrl -ApiKey $EmbyApiKey
+                } else {
+                    $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+                }
             }
 
             'Nfo' {
@@ -569,6 +618,9 @@ function Javinizer {
                 # Default path to location.input in settings if not specified
                 if (!($Path)) {
                     $Path = $Settings.'location.input'
+                    if ($null -eq $Path -or $Path -eq '') {
+                        $Path = (Get-Location).Path
+                    }
                 }
 
                 # This will check that the Path is valid
@@ -579,6 +631,9 @@ function Javinizer {
                 # Default destination path to location.output in settings if not specified
                 if (!($DestinationPath)) {
                     $DestinationPath = $Settings.'location.output'
+                    if ($null -eq $DestinationPath -or $DestinationPath -eq '') {
+                        $DestinationPath = (Get-Item -LiteralPath $Path).Directory
+                    }
                 }
 
                 # This will check that the DestinationPath is a valid directory
@@ -613,7 +668,7 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 5) {
                         Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
 
@@ -623,7 +678,7 @@ function Javinizer {
                             Import-Module $using:jvModulePath
                             $jvMovie = $_
                             $Settings = $using:Settings
-                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                         }
                     }
 
@@ -633,7 +688,7 @@ function Javinizer {
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
-                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Force:$Force
+                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                 } else {
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return

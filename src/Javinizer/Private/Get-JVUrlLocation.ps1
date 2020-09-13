@@ -20,7 +20,7 @@ function Get-JVUrlLocation {
                         Source = 'r18'
                     }
                 }
-            } elseif ($link -match 'javlibrary.com') {
+            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com') {
                 if ($link -match '/ja/') {
                     $testUrlObject += [PSCustomObject]@{
                         Url    = $link
@@ -43,9 +43,16 @@ function Get-JVUrlLocation {
                     }
                 }
             } elseif ($link -match 'dmm.co.jp') {
-                $testUrlObject += [PSCustomObject]@{
-                    Url    = $link
-                    Source = 'dmm'
+                if ($link -match '/en') {
+                    $testUrlObject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'dmm'
+                    }
+                } else {
+                    $testUrlObject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'dmmja'
+                    }
                 }
             } elseif ($link -match 'javbus') {
                 if ($link -match '/ja') {
