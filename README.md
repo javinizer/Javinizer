@@ -175,7 +175,10 @@ PARAMETERS
     Specifies to search R18-Chinese when using -Find.
 
 -Dmm [<SwitchParameter>]
-    Specifies to search R18 when using -Find.
+    Specifies to search Dmm when using -Find.
+
+-DmmJa [<SwitchParameter>]
+    Specifies to search Dmm-Japanese when using -Find.
 
 -Javlibrary [<SwitchParameter>]
     Specifies to search Javlibrary when using -Find.
@@ -202,6 +205,12 @@ PARAMETERS
     Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
     it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
 
+-EmbyUrl
+    Specifies the Emby/Jellyfin baseurl instead of using the setting 'emby.url'.
+
+-EmbyApiKey
+    Specifies the Emby/Jellyfin API key instead of using the setting 'emby.apikey'.
+
 -ReplaceAll [<SwitchParameter>]
     Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
 
@@ -216,6 +225,9 @@ PARAMETERS
 
 -OpenGenres [<SwitchParameter>]
     Specifies to open the genre replacements file.
+
+-OpenUncensor [<SwitchParameter>]
+    Specifies to open the R18 uncensor replacements file.
 
 -UpdateThumbs [<SwitchParameter>]
     Specifies to update the actress thumbnails file.
@@ -405,11 +417,11 @@ It is enabled by the following settings:
 - `sort.metadata.thumbcsv`
 - `sort.metadata.thumbcsv.convertalias`
 
-After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically attempt to match the actress by `JapaneseName` from the scraper.
+After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically attempt to match the actress by `JapaneseName` -> `FirstName` -> `LastName FirstName`.
 
 If the actress is matched, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. The FullName column is not used in any way except for reference.
 
-If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically convert any of the listed aliases (separated by `|` and entered in `LastName FirstName` format) to the actress that the alias corresponds to.
+If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically convert any of the listed aliases (separated by `|` and entered in `LastName FirstName` format) to the actress that the alias corresponds to. Using the JapaneseName as the alias will yield the most accurate results.
 
 For example, if your jvThumbs.csv file looks like this:
 
@@ -423,7 +435,7 @@ Nagase Yui | Nagase | Yui | 永瀬ゆい |https://[..]/nagase_yui2.jpg | Aika
 - Any scraped actress that matches `LastName: Fukada; FirstName: Eimi` will be converted to `Hamasaki Mao`
 - Any scraped actress that matches `FirstName: Aika` will be converted to `Nagase Yui`
 
-If `sort.metadata.thumbcsv.autoadd` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically add any missing actresses scraped from the R18 or R18Zh scrapers to your thumbnail csv.
+If `sort.metadata.thumbcsv.autoadd` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically add any missing actresses scraped from the R18 or R18Zh scrapers to your thumbnail csv if the actress has a thumbnail.
 
 #### Genre Csv
 
@@ -458,7 +470,8 @@ For example, if your jvGenres.csv file looks like this:
 | `location.thumbcsv` | Specifies the location of the actress thumbnail csv that is used to better match actresses. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvThumbs.csv
 | `location.genrecsv` | Specifies the location of the genre replacement csv that is used to do a string replacement of genres of your choice. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\jvGenres.csv
 | `location.log` | Specifies the location of the log file. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvLogs.log
-| `scraper.movie.dmm` | Specifies whether the dmm.com scraper is on/off. | 0, 1
+| `scraper.movie.dmm` | Specifies whether the dmm.co.jp scraper is on/off. | 0, 1
+| `scraper.movie.dmmja` | Specifies whether the dmm.co.jp japanese scraper is on/off. | 0, 1
 | `scraper.movie.jav321ja` | Specifies whether the jav321.com scraper is on/off. | 0, 1
 | `scraper.movie.javbus` | Specifies whether the javbus.com scraper is on/off. | 0, 1
 | `scraper.movie.javbusja` | Specifies whether the javbus.com japanese scraper is on/off. | 0, 1
@@ -468,6 +481,7 @@ For example, if your jvGenres.csv file looks like this:
 | `scraper.movie.javlibraryzh` | Specifies whether the javlibrary.com chinese scraper is on/off. | 0, 1
 | `scraper.movie.r18` | Specifies whether the r18.com scraper is on/off. | 0, 1
 | `scraper.movie.r18zh` | Specifies whether the r18.com chinese scraper is on/off. | 0, 1
+| `scraper.option.dmm.scrapeactress` | Specifies whether to turn on/off scraping both English/Japanese actress names on dmm and dmmja scrapers | 0, 1
 | `match.minimumfilesize` | Specifies the minimum filesize that Javinizer will find when performing a directory search in MB. | Any number
 | `match.includedfileextension` | Specifies the extensions that Javinizer will find when performing a directory search. | ".ext"
 | `match.excludedfilestring` | Specifies the file strings that Javinizer will ignore when performing a directory search using regex | "^.*-trailer*"

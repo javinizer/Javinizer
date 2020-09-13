@@ -5,15 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0]
+## [2.0.0-alpha10]
 
 ### Added
+
 - Added `-Update` parameter to only update nfo when sorting a directory
     - This replaces v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
+- English 'dmm' scraper added
+    - Somewhat unreliable as not all videos on the DMM Japanese site are available on the English site
+    - Original 'dmm' scraper renamed to 'dmmja'
+- Setting `scraper.option.dmm.scrapeactress` added to turn on/off both English/Japanese actress name scraping for dmm scrapers
+    - Only enable this if you want to use Dmm as a primary scraper for your actress metadata as it greatly increases time taken to sort
+- Parameter `-EmbyUrl` and `-EmbyApiKey` added to assign values in the commandline
+- Parameter `-OpenUncensor` to open the R18 uncensored word replacement csv
+
+### Changed
+
+- Setting `throttlelimit` limited to 5
+- R18 uncensored words and replacements are now moved to a file at module root `jvUncensor.csv`
+- Path will default to your current commandline location if `-Path` is not specified and setting `location.input` is blank
+- DestinationPath will default to the sorted file's current directory if `-DestinationPath` is not specified and setting `location.output` is blank
+- Setting `sort.metadata.thumbcsv.autoadd` no longer adds actresses with a missing thumburl
+- Add warning if custom thumb or genre csv is not found at specified path
 
 ### Fixed
 
+- Writing thumbs to Emby/Jellyfin is now functional again with `-SetEmbyThumbs` following R18 resource restrictions
 - Fixed failing screenshot download requests from R18 resources
+- Parameter `-Find` with Javlibrary when using a custom javlibrary baseurl in your settings
 
 ## [2.0.0-alpha9]
 
