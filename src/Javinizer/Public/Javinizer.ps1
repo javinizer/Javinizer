@@ -401,18 +401,22 @@ function Javinizer {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'location.thumbcsv' -PathType Leaf)) {
-                New-Item -Path $Settings.'location.thumbcsv' | Out-Null
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Thumb csv not found at path [$($Settings.'location.thumbcsv')]"
+                return
+            } else {
+                $thumbCsvPath = $Settings.'location.thumbcsv'
             }
-            $thumbCsvPath = $Settings.'location.thumbcsv'
         }
 
         if ($Settings.'location.genrecsv' -eq '') {
             $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
         } else {
             if (!(Test-Path -LiteralPath $Settings.'location.genrecsv' -PathType Leaf)) {
-                New-Item -Path $Settings.'location.genrecsv' | Out-Null
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Genre csv not found at path [$($Settings.'location.genrecsv')]"
+                return
+            } else {
+                $genreCsvPath = $Settings.'location.genrecsv'
             }
-            $genreCsvPath = $Settings.'location.genrecsv'
         }
 
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
