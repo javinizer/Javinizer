@@ -96,6 +96,12 @@ function Javinizer {
         Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
         it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
 
+    .PARAMETER EmbyUrl
+        Specifies the Emby/Jellyfin baseurl instead of using the setting 'emby.url'.
+
+    .PARAMETER EmbyApiKey
+        Specifies the Emby/Jellyfin API key instead of using th setting 'emby.apikey'.
+
     .PARAMETER ReplaceAll
         Specifies to replace all Emby/Jellyfin actress thumbnails regardless if they already have one.
 
@@ -110,6 +116,9 @@ function Javinizer {
 
     .PARAMETER OpenGenres
         Specifies to open the genre replacements file.
+
+    .PARAMETER OpenUncensor
+        Specifies to open the uncensor replacements file.
 
     .PARAMETER UpdateThumbs
         Specifies to update the actress thumbnails file.
@@ -328,6 +337,12 @@ function Javinizer {
         [Switch]$SetEmbyThumbs,
 
         [Parameter(ParameterSetName = 'Emby')]
+        [String]$EmbyUrl,
+
+        [Parameter(ParameterSetName = 'Emby')]
+        [String]$EmbyApiKey,
+
+        [Parameter(ParameterSetName = 'Emby')]
         [Switch]$ReplaceAll,
 
         [Parameter(ParameterSetName = 'Settings')]
@@ -341,6 +356,9 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenGenres,
+
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenUncensor,
 
         [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
         [Switch]$UpdateNfo,
@@ -535,6 +553,15 @@ function Javinizer {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
                 }
+
+                if ($OpenUncensor) {
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
+                        Invoke-Item -LiteralPath (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv')
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                    }
+                }
             }
 
             'Help' {
@@ -553,7 +580,11 @@ function Javinizer {
             }
 
             'Emby' {
-                $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+                if ($EmbyUrl) {
+                    $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll -Url $EmbyUrl -ApiKey $EmbyApiKey
+                } else {
+                    $Settings | Set-JVEmbyThumbs -ReplaceAll:$ReplaceAll
+                }
             }
 
             'Nfo' {
