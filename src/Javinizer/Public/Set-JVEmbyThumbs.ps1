@@ -34,7 +34,7 @@ function Set-JVEmbyThumbs {
     process {
         if ($Url[-1] -eq '/') {
             # Remove the trailing slash if it is included to create the valid searchUrl
-            $Url = $BaseUrl[0..($BaseUrl.Length - 1)] -join ''
+            $Url = $Url[0..($Url.Length - 1)] -join ''
         }
 
         try {
@@ -107,20 +107,25 @@ function Set-JVEmbyThumbs {
 
             if ($null -ne $thumbUrl) {
                 if ($PSCmdlet.ShouldProcess("[$($actress.Name)] => [$thumbUrl]")) {
-                    $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey"
+                    try {
+                        [Byte[]]$thumb = (Invoke-WebRequest -Method Get -Uri $thumbUrl -Verbose:$false).Content
+                        $thumbBase64 = [Convert]::ToBase64String($thumb)
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
+                    }
 
                     try {
+                        $thumbPostUrl = "$Url/emby/Items/$($actress.Id)/Images/Thumb?api_key=$ApiKey"
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [POST] on URL [$thumbPostUrl]"
-                        Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Thumb&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
+                        Invoke-WebRequest -Method Post -Uri "$Url/emby/Items/$($actress.Id)/Images/Thumb?api_key=$ApiKey" -Body $thumbBase64 -ContentType "image/jpeg" -ErrorAction Continue -Verbose:$false | Out-Null
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$thumbPostUrl]: $PSItem" -Action 'Continue'
                     }
 
-                    $primaryPostUrl = "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey"
-
                     try {
+                        $primaryPostUrl = "$Url/emby/Items/$($actress.Id)/Images/Primary?api_key=$ApiKey"
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [POST] on URL [$primaryPostUrl]"
-                        Invoke-RestMethod -Method Post -Uri "$Url/emby/Items/$($actress.Id)/RemoteImages/Download?Type=Primary&ImageUrl=$thumbUrl&api_key=$ApiKey" -ErrorAction Continue -Verbose:$false | Out-Null
+                        Invoke-WebRequest -Method Post -Uri "$Url/emby/Items/$($actress.Id)/Images/Primary?api_key=$ApiKey" -Body $thumbBase64 -ContentType "image/jpeg" -ErrorAction Continue -Verbose:$false | Out-Null
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred on [POST] on URL [$primaryPostUrl]: $PSItem" -Action 'Continue'
                     }
