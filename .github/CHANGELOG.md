@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Added `-Update` parameter to only update nfo when sorting a directory
-    - This replaces v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
+    - This can replace v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
 - English 'dmm' scraper added
     - Somewhat unreliable as not all videos on the DMM Japanese site are available on the English site
     - Original 'dmm' scraper renamed to 'dmmja'
@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- Fixed scraped R18 actress names containing aliases in parentheses
 - Writing thumbs to Emby/Jellyfin is now functional again with `-SetEmbyThumbs` following R18 resource restrictions
 - Fixed failing screenshot download requests from R18 resources
 - Parameter `-Find` with Javlibrary when using a custom javlibrary baseurl in your settings
