@@ -4,79 +4,18 @@ function Get-R18Data {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [String]$Url
+        [String]$Url,
+
+        [Parameter()]
+        [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv')
     )
 
     process {
         $movieDataObject = @()
-        $replaceHashTable = @{
-            '[Recommended For Smartphones] ' = ''
-            'A*****t'                        = 'Assault'
-            'A*****ted'                      = 'Assaulted'
-            'A****p'                         = 'Asleep'
-            'A***e'                          = 'Abuse'
-            'B***d'                          = 'Blood'
-            'B**d'                           = 'Bled'
-            'C***d'                          = 'Child'
-            'D******ed'                      = 'Destroyed'
-            'D******eful'                    = 'Shameful'
-            'D***k'                          = 'Drunk'
-            'D***king'                       = 'Drinking'
-            'D**g'                           = 'Drug'
-            'D**gged'                        = 'Drugged'
-            'F***'                           = 'Fuck'
-            'F*****g'                        = 'Forcing'
-            'F***e'                          = 'Force'
-            'G*********d'                    = 'Gang Banged'
-            'G*******g'                      = 'Gang bang'
-            'G******g'                       = 'Gangbang'
-            'H*********n'                    = 'Humiliation'
-            'H*******ed'                     = 'Hypnotized'
-            'H*******m'                      = 'Hypnotism'
-            'I****t'                         = 'Incest'
-            'I****tuous'                     = 'Incestuous'
-            'K****p'                         = 'Kidnap'
-            'K**l'                           = 'Kill'
-            'K**ler'                         = 'Killer'
-            'K*d'                            = 'Kid'
-            'Ko**ji'                         = 'Komyo-ji'
-            'Lo**ta'                         = 'Lolita'
-            'M******r'                       = 'Molester'
-            'M****t'                         = 'Molest'
-            'M****ted'                       = 'Molested'
-            'M****ter'                       = 'Molester'
-            'M****ting'                      = 'Molesting'
-            'P****h'                         = 'Punish'
-            'P****hment'                     = 'Punishment'
-            'P*A'                            = 'PTA'
-            'R****g'                         = 'Raping'
-            'R**e'                           = 'Rape'
-            'R**ed'                          = 'Raped'
-            'S*********l'                    = 'School Girl'
-            'S*********ls'                   = 'School Girls'
-            'S********l'                     = 'Schoolgirl'
-            'S********n'                     = 'Submission'
-            'S******g'                       = 'Sleeping'
-            'S*****t'                        = 'Student'
-            'S***e'                          = 'Slave'
-            'S***p'                          = 'Sleep'
-            'S**t'                           = 'Shit'
-            'Sch**l'                         = 'School'
-            'Sch**lgirl'                     = 'Schoolgirl'
-            'Sch**lgirls'                    = 'Schoolgirls'
-            'SK**lful'                       = 'Skillful'
-            'SK**ls'                         = 'Skills'
-            'StepB****************r'         = 'Stepbrother and Sister'
-            'StepM************n'             = 'Stepmother and Son'
-            'StumB**d'                       = 'Stumbled'
-            'T*****e'                        = 'Torture'
-            'U*********sly'                  = 'Unconsciously'
-            'U**verse'                       = 'Universe'
-            'V*****e'                        = 'Violate'
-            'V*****ed'                       = 'Violated'
-            'V*****es'                       = 'Violates'
-            'V*****t'                        = 'Violent'
-            'Y********l'                     = 'Young Girl'
+        try {
+            $replaceHashtable = Import-Csv -LiteralPath $UncensorCsvPath
+        } catch {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when import uncensor csv at path [$UncensorCsvPath]: $PSItem"
         }
 
         try {

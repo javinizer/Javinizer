@@ -47,8 +47,8 @@ function Get-R18Title {
         $title = (($Webrequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
         $title = Convert-HtmlCharacter -String $title
         if ($Replace) {
-            foreach ($string in $Replace.GetEnumerator()) {
-                $title = $title -replace [regex]::Escape($string.Name), $string.Value
+            foreach ($string in $Replace) {
+                $title = $title -replace [regex]::Escape($string.Original), $string.Replacement
                 $title = $title -replace '  ', ' '
             }
         }
@@ -232,8 +232,8 @@ function Get-R18Series {
             }
 
             if ($Replace) {
-                foreach ($string in $Replace.GetEnumerator()) {
-                    $series = $series -replace [regex]::Escape($string.Name), $string.Value
+                foreach ($string in $Replace) {
+                    $series = $series -replace [regex]::Escape($string.Original), $string.Replacement
                 }
             }
 
@@ -265,7 +265,7 @@ function Get-R18Genre {
                 $genre = Convert-HtmlCharacter -String $genre
                 if ($Replace) {
                     foreach ($string in $Replace.GetEnumerator()) {
-                        $genre = $genre -replace [regex]::Escape($string.Name), $string.Value
+                        $genre = $genre -replace [regex]::Escape($string.Original), $string.Replacement
                     }
                 }
                 $genreArray += $genre
