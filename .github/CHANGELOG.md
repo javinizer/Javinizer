@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0-alpha10]
+## [2.0.0]
 
 ### Added
 
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- JapaneseName added to nfo file as altname
 - Setting `throttlelimit` limited to 5
 - R18 uncensored words and replacements are now moved to a file at module root `jvUncensor.csv`
 - Path will default to your current commandline location if `-Path` is not specified and setting `location.input` is blank
