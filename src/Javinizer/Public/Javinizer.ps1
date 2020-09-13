@@ -238,10 +238,12 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
-        [System.IO.DirectoryInfo]$Path,
+        [AllowEmptyString()]
+        [String]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
-        [System.IO.DirectoryInfo]$DestinationPath,
+        [AllowEmptyString()]
+        [String]$DestinationPath,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
@@ -453,7 +455,7 @@ function Javinizer {
                     $urlObject = Get-JVUrlLocation -Url $Find
                     $data = foreach ($item in $urlObject) {
                         if ($item.Source -match 'dmm') {
-                            $item.Url | Get-DmmData
+                            $item.Url | Get-DmmData -ScrapeActress:$Setting.'scraper.option.dmm.scrapeactress'
                         }
 
                         if ($item.Source -match 'jav321') {
@@ -581,6 +583,9 @@ function Javinizer {
                 # Default path to location.input in settings if not specified
                 if (!($Path)) {
                     $Path = $Settings.'location.input'
+                    if ($null -eq $Path -or $Path -eq '') {
+                        $Path = (Get-Location).Path
+                    }
                 }
 
                 # This will check that the Path is valid
@@ -591,6 +596,9 @@ function Javinizer {
                 # Default destination path to location.output in settings if not specified
                 if (!($DestinationPath)) {
                     $DestinationPath = $Settings.'location.output'
+                    if ($null -eq $DestinationPath -or $DestinationPath -eq '') {
+                        $DestinationPath = (Get-Item -LiteralPath $Path).Directory
+                    }
                 }
 
                 # This will check that the DestinationPath is a valid directory
