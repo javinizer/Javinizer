@@ -177,7 +177,23 @@ function Get-DmmRating {
             return
         }
 
-        if ($rating -match 'Five ') {
+        if ($rating -match 'One') {
+            $rating = 1
+        }
+
+        if ($rating -match 'Two') {
+            $rating = 2
+        }
+
+        if ($rating -match 'Three') {
+            $rating = 3
+        }
+
+        if ($rating -match 'Four') {
+            $rating = 4
+        }
+
+        if ($rating -match 'Five') {
             $rating = 5
         }
 
