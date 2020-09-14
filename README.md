@@ -403,6 +403,30 @@ ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 
 ### In-depth usage
 
+#### Metadata Priorities
+
+Scrapers by default are english. Scrapers appended by Ja are Japanese, Zh are Chinese.
+Current metadata scrapers include:
+- Dmm
+- DmmJa
+- R18
+- R18Zh
+- Javlibrary
+- JavlibraryJa
+- JavlibraryZh
+- Javbus
+- JavbusJa
+- JavbusZh
+- Jav321Ja
+
+Javinizer assigns metadata to fields in order by the sources listed `sort.metadata.priority.(field)` if the scraper is enabled by the setting `scraper.movie.(source)`.
+Metadata will never be combined using data from multiple sources, but rather assigned only to the first priority source that has valid data.
+
+For example, if your actress priority looks like this: `"sort.metadata.priority.actress": ["r18", "javlibrary", "javbus"]`
+- If actresses are found from the R18 scraper => R18 actresses will be assigned to the metadata field
+- If actresses are not found on the R18 scraper but are found on the Javlibrary scraper => Javlibrary actresses will be assigned to the metadata field
+- If actresses are not found on the R18 and Javlibrary scrapers but are found on the JavBus scraper => JavBus actresses will be assigned to the metadata field
+
 #### Actress Thumb Csv
 
 Javinizer can utilize a csv file of actresses scraped from R18.com to further match actresses and their respective names/thumbnail URLs.
@@ -461,7 +485,7 @@ For example, if your jvGenres.csv file looks like this:
 | -------- | ----------- |
 | Blow | Blowjob
 
-- Any scraped genre that equals `Blow` will be replaced with `Blowjob`
+- Any scraped genre that equals `Blow` will be replaced with `Blowjob
 
 ## Settings Information
 
