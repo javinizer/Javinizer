@@ -477,7 +477,7 @@ function Javinizer {
                     $urlObject = Get-JVUrlLocation -Url $Find
                     $data = foreach ($item in $urlObject) {
                         if ($item.Source -match 'dmm') {
-                            $item.Url | Get-DmmData -ScrapeActress:$Setting.'scraper.option.dmm.scrapeactress'
+                            $item.Url | Get-DmmData -ScrapeActress:$Settings.'scraper.option.dmm.scrapeactress'
                         }
 
                         if ($item.Source -match 'jav321') {

@@ -346,7 +346,7 @@ function Get-DmmGenre {
             return
         }
 
-        if ($null -ne $genre -or $genre -ne '') {
+        if ($null -ne $genre -and $genre -ne '') {
             $genre = $genre | ForEach-Object { $genreArray += $_.Groups[1].Value -replace '<.*>', '' }
         }
 
