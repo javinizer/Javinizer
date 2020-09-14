@@ -93,18 +93,21 @@ A command-line based tool to scrape and sort your local Japanese Adult Video (JA
 
 
 SYNTAX
-Javinizer [[-Path] <DirectoryInfo>] [[-DestinationPath] <DirectoryInfo>] [-Recurse] [-Depth <Int32>] [-Url <Array>] [-SettingsPath
-<FileInfo>] [-Update] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress] [-IsThread] [-Set <Hashtable>]
+Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Recurse] [-Depth <Int32>] [-Url <Array>]
+[-SettingsPath <FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress]
+[-Update] [-IsThread] [-Set <Hashtable>] [<CommonParameters>]
+
+Javinizer [[-Path] <String>] [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
+
+Javinizer [-SettingsPath <FileInfo>] [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-DmmJa]
+[-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus] [-JavbusJa] [-JavbusZh] [-Jav321Ja] [-Set <Hashtable>]
 [<CommonParameters>]
 
-Javinizer [-Path] <DirectoryInfo> [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
+Javinizer [-SetEmbyThumbs] [-EmbyUrl <String>] [-EmbyApiKey <String>] [-ReplaceAll] [-Set <Hashtable>]
+[<CommonParameters>]
 
-Javinizer [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus]
-[-JavbusJa] [-JavbusZh] [-Jav321] [-Set <Hashtable>] [<CommonParameters>]
-
-Javinizer [-SetEmbyThumbs] [-ReplaceAll] [-Set <Hashtable>] [<CommonParameters>]
-
-Javinizer [-OpenSettings] [-OpenLog] [-OpenThumbs] [-OpenGenres] [-Set <Hashtable>] [<CommonParameters>]
+Javinizer [-OpenSettings] [-OpenLog] [-OpenThumbs] [-OpenGenres] [-OpenUncensor] [-Set <Hashtable>]
+[<CommonParameters>]
 
 Javinizer -UpdateThumbs [-Pages <Array>] [-Set <Hashtable>] [<CommonParameters>]
 
@@ -205,10 +208,10 @@ PARAMETERS
     Specifies to set Emby/Jellyfin actress thumbnails using the thumbnail csv. If 'location.thumbcsv' is not specified in the settings file,
     it defaults to the jvGenres.csv file in the module root. 'emby.url' and 'emby.apikey' need to be defined in the settings file.
 
--EmbyUrl
+-EmbyUrl <String>
     Specifies the Emby/Jellyfin baseurl instead of using the setting 'emby.url'.
 
--EmbyApiKey
+-EmbyApiKey <String>
     Specifies the Emby/Jellyfin API key instead of using the setting 'emby.apikey'.
 
 -ReplaceAll [<SwitchParameter>]
@@ -400,6 +403,30 @@ ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 
 ### In-depth usage
 
+#### Metadata Priorities
+
+Scrapers by default are english. Scrapers appended by Ja are Japanese, Zh are Chinese.
+Current metadata scrapers include:
+- Dmm
+- DmmJa
+- R18
+- R18Zh
+- Javlibrary
+- JavlibraryJa
+- JavlibraryZh
+- Javbus
+- JavbusJa
+- JavbusZh
+- Jav321Ja
+
+Javinizer assigns metadata to fields in order by the sources listed `sort.metadata.priority.(field)` if the scraper is enabled by the setting `scraper.movie.(source)`.
+Metadata will never be combined using data from multiple sources, but rather assigned only to the first priority source that has valid data.
+
+For example, if your actress priority looks like this: `"sort.metadata.priority.actress": ["r18", "javlibrary", "javbus"]`
+- If actresses are found from the R18 scraper => R18 actresses will be assigned to the metadata field
+- If actresses are not found on the R18 scraper but are found on the Javlibrary scraper => Javlibrary actresses will be assigned to the metadata field
+- If actresses are not found on the R18 and Javlibrary scrapers but are found on the JavBus scraper => JavBus actresses will be assigned to the metadata field
+
 #### Actress Thumb Csv
 
 Javinizer can utilize a csv file of actresses scraped from R18.com to further match actresses and their respective names/thumbnail URLs.
@@ -458,7 +485,7 @@ For example, if your jvGenres.csv file looks like this:
 | -------- | ----------- |
 | Blow | Blowjob
 
-- Any scraped genre that equals `Blow` will be replaced with `Blowjob`
+- Any scraped genre that equals `Blow` will be replaced with `Blowjob
 
 ## Settings Information
 
@@ -538,7 +565,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.metadata.priority.trailerurl` | Specifies the array of scrapers to prioritize the trailerurl metadata. | Array of string metadata field names
 | `emby.url` | Specifies the base URL of your Emby/Jellyfin instance to add actress images. | http:\\/\\/192.168.0.1:8096
 | `emby.apikey` | Specifies the API key of your Emby/Jellyfin instance. | API Key string
-| `javlibrary.baseurl` | Specifies the base URL of the Javlibrary instance you want to scrape. This is useful if you are running into CloudFlare errors on the main site and want to use a mirror. | http:\\/\\/javlibrary.com
+| `javlibrary.baseurl` | Specifies the base URL of the Javlibrary instance you want to scrape. This is useful if you are running into CloudFlare errors on the main site and want to use a mirror such as g46e.com or m45e.com | http:\\/\\/javlibrary.com
 | `admin.log` | Specifies to write debug, warning, error, and verbose messages to the log file. | 0, 1
 | `admin.log.level` | Specifies the level of logs that will be written to the log file. | Debug, Info, Warning, Error
 
