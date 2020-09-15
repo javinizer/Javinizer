@@ -31,15 +31,14 @@ function Convert-JVTitle {
         # Unwanted strings in files to remove
         $RemoveStrings = @(
             # Prefixes
-            'hjd2048.com-',
-            '1080fhd.com_',
+            '^.*@',
+            '^.*\.com-',
+            '^.*\.com_',
             '^[0-9]{4}',
-            'xhd1080.com',
-            'ShareSex.net',
-            'jav365.com_',
+            '^.*\.com',
+            '^.*\.net',
             '069-3XPLANET-',
-            'fun2048.com@',
-            'javl.in_',
+            '^.*\.in_',
             'Watch18plus-',
             '\[(.*?)\]',
             'FHD-',
