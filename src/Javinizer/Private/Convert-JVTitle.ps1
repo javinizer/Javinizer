@@ -31,14 +31,10 @@ function Convert-JVTitle {
         # Unwanted strings in files to remove
         $RemoveStrings = @(
             # Prefixes
-            '^.*@',
-            '^.*\.com-',
-            '^.*\.com_',
+            '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]',
+            '[@|-|_]?[a-zA-Z0-9]+(\.com|\.net|\.tk)[_|-]?',
             '^[0-9]{4}',
-            '^.*\.com',
-            '^.*\.net',
             '069-3XPLANET-',
-            '^.*\.in_',
             'Watch18plus-',
             '\[(.*?)\]',
             'FHD-',
@@ -105,7 +101,6 @@ function Convert-JVTitle {
                         $fileBaseNameUpper[$index] = $file
                     }
                 }
-
                 $index++
             }
         } else {
@@ -287,11 +282,13 @@ function Convert-JVTitle {
                 }
                 $contentId = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
                 $contentId = $contentId.Trim()
+            } elseif ($RegexEnabled) {
+                $movieId = $fileBaseNameUpperCleaned[$x]
+                $contentId = $fileBaseNameUpperCleaned[$x]
             } else {
                 $movieId = ($fileBaseNameUpperCleaned[$x] -split '\d', 3 | Where-Object { $_ -ne '' }) -join '-'
                 $contentId = $fileBaseNameUpperCleaned[$x]
             }
-
 
             if ($Files.Count -eq '1') {
                 $originalFileName = $Files.Name
@@ -308,7 +305,7 @@ function Convert-JVTitle {
             }
 
             if ($Strict.IsPresent) {
-                $dataObject += [pscustomobject]@{
+                $dataObject += [PSCustomObject]@{
                     Id         = $originalBaseName
                     ContentId  = $contentId
                     FileName   = $originalFileName
@@ -320,7 +317,7 @@ function Convert-JVTitle {
                     PartNumber = $filePartNumber
                 }
             } else {
-                $dataObject += [pscustomobject]@{
+                $dataObject += [PSCustomObject]@{
                     Id         = $movieId
                     ContentId  = $contentId
                     FileName   = $originalFileName
