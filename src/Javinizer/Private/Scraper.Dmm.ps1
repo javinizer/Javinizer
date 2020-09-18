@@ -293,7 +293,7 @@ function Get-DmmActress {
                     $cookie.Domain = 'dmm.co.jp'
                     $session.Cookies.Add($cookie)
                     try {
-                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
+                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '' -replace '（.*）').Trim()
                     } catch {
                         $jaActressName = $null
                     }
