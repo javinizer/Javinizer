@@ -192,6 +192,10 @@ function Set-JVMovie {
             }
         }
 
+        if ($Update) {
+            $folderPath = (Get-Item -LiteralPath $Path).Directory
+        }
+
         <#         $pathLength = (Join-Path -Path $folderPath -ChildPath $fileName).Length
         if ($pathLength -gt $MaxPathLength) {
             Write-Warning "[$(Get-TimeStamp)][$($MyInvocation.MyCommand.Name)] Skipped: [$($DataObject.OriginalFileName)] Folder path length limitations: [$pathLength characters]"
@@ -211,11 +215,7 @@ function Set-JVMovie {
 
             if ($CreateNfo) {
                 try {
-                    if (!($Update)) {
-                        $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    } else {
-                        $nfoPath = Join-Path -Path (Get-Item -LiteralPath $Path).Directory -CHildPath "$nfoName.nfo"
-                    }
+                    $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
                     $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -AddTag $AddTag
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
@@ -224,7 +224,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadThumbImg -and (!($Update))) {
+            if ($DownloadThumbImg) {
                 if ($null -ne $Data.CoverUrl) {
                     try {
                         $webClient = New-Object System.Net.WebClient
@@ -254,7 +254,7 @@ function Set-JVMovie {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$thumbPath]: $PSItem"
                     }
 
-                    if ($DownloadPosterImg -and (!($Update))) {
+                    if ($DownloadPosterImg) {
                         try {
                             $cropScriptPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'crop.py'
                             if (Test-Path -LiteralPath $cropScriptPath) {
@@ -310,7 +310,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadActressImg -and !($Update)) {
+            if ($DownloadActressImg) {
                 if ($null -ne $Data.Actress) {
                     try {
                         $actorFolderPath = Join-Path -Path $folderPath -ChildPath $actorFolderName
@@ -354,7 +354,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadScreenshotImg -and (!($Update))) {
+            if ($DownloadScreenshotImg) {
                 if ($null -ne $Data.ScreenshotUrl) {
                     try {
                         $index = 1
@@ -395,7 +395,7 @@ function Set-JVMovie {
                 }
             }
 
-            if ($DownloadTrailerVid -and (!($Update))) {
+            if ($DownloadTrailerVid) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
                         $webClient = New-Object System.Net.WebClient
