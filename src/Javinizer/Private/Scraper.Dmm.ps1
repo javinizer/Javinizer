@@ -389,7 +389,6 @@ function Get-DmmScreenshotUrl {
     }
 }
 
-# ! Unable to get trailer url from HTTP from main DMM video page
 function Get-DmmTrailerUrl {
     param (
         [Object]$Webrequest
@@ -400,9 +399,9 @@ function Get-DmmTrailerUrl {
     }
 
     process {
-        $id = Get-DmmContentId -Webrequest $Webrequest
-        $trailerPageUrl = "http://www.dmm.co.jp/service/digitalapi/-/html5_player/=/cid=$($id)"
+        $iFrameUrl = 'https://www.dmm.co.jp' + ($Webrequest.Content | Select-String -Pattern "onclick.+sampleplay\('([^']+)'\)").Matches.Groups[1].Value
         try {
+            $trailerPageUrl = ((Invoke-WebRequest -Uri $iFrameUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern 'src="([^"]+)"').Matches.Groups[1].Value
             $trailerUrl = ((Invoke-WebRequest -Uri $trailerPageUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '\\/\\/cc3001\.dmm\.co\.jp\\/litevideo\\/freepv[^"]+').Matches.Groups[0].Value -replace '\\', ''
         } catch {
             return
