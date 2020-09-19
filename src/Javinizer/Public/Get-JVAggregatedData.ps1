@@ -158,6 +158,7 @@ function Get-JVAggregatedData {
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
+            $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
