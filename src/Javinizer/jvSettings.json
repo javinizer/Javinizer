@@ -4,6 +4,7 @@
     "location.output": "",
     "location.thumbcsv": "",
     "location.genrecsv": "",
+    "location.uncensorcsv": "",
     "location.log": "",
     "scraper.movie.dmm": 0,
     "scraper.movie.dmmja": 1,
