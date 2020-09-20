@@ -231,7 +231,8 @@ function Get-DmmActress {
     process {
         $movieActressObject = @()
         try {
-            $movieActress = ($Webrequest.Content | Select-String -Pattern 'performer"><a href="\/digital\/videoa\/-\/list\/=\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+            $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
+            $movieActress = ($actressBlock | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
         } catch {
             return
         }
