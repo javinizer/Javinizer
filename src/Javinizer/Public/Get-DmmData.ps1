@@ -58,7 +58,7 @@ function Get-DmmData {
             Genre         = Get-DmmGenre -WebRequest $webRequest
             CoverUrl      = Get-DmmCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-DmmScreenshotUrl -WebRequest $webRequest
-            TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest
+            TrailerUrl    = Get-DmmTrailerUrl -WebRequest $webRequest -Session:$session
         }
 
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] DMM data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
