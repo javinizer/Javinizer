@@ -391,18 +391,22 @@ function Get-DmmScreenshotUrl {
 
 function Get-DmmTrailerUrl {
     param (
-        [Object]$Webrequest
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Object]$Session
     )
 
-    begin {
-        $trailerUrl = @()
-    }
-
     process {
+        $trailerUrl = @()
         $iFrameUrl = 'https://www.dmm.co.jp' + ($Webrequest.Content | Select-String -Pattern "onclick.+sampleplay\('([^']+)'\)").Matches.Groups[1].Value
         try {
-            $trailerPageUrl = ((Invoke-WebRequest -Uri $iFrameUrl -Verbose:$false).Content | Select-String -Pattern 'src="([^"]+)"').Matches.Groups[1].Value -replace '/en', ''
+            $trailerPageUrl = ((Invoke-WebRequest -Uri $iFrameUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern 'src="([^"]+)"').Matches.Groups[1].Value -replace '/en', ''
             $trailerUrl = ((Invoke-WebRequest -Uri $trailerPageUrl -Verbose:$false).Content | Select-String -Pattern '\\/\\/cc3001\.dmm\.co\.jp\\/litevideo\\/freepv[^"]+').Matches.Groups[0].Value -replace '\\', ''
+            if ($trailerUrl -match '^//') {
+                $trailerUrl = "https:$trailerUrl"
+            }
         } catch {
             return
         }
@@ -410,3 +414,4 @@ function Get-DmmTrailerUrl {
         Write-Output "https:$trailerUrl"
     }
 }
+
