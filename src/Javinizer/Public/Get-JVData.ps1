@@ -60,7 +60,7 @@ function Get-JVData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('location.uncensorcsv')]
-        [System.IO.FileInfo]$UncensorCsvPath,
+        [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'),
 
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Id')]
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Url')]
@@ -90,7 +90,9 @@ function Get-JVData {
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
             $DmmScrapeActress = $Settings.'scraper.option.dmm.scrapeactress'
-            $UncensorCsvPath = $Settings.'location.uncensorcsv'
+            if ($Settings.'location.uncensorcsv' -ne '') {
+                $UncensorCsvPath = $Settings.'location.uncensorcsv'
+            }
         }
 
         if ($Settings) {
