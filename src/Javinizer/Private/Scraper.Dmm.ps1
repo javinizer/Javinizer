@@ -230,13 +230,21 @@ function Get-DmmActress {
 
     process {
         $movieActressObject = @()
-        try {
-            $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
-            $movieActress = ($actressBlock | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
-        } catch {
-            return
+        if ($Webrequest.Content -match '\/digital\/videoa\/-\/detail\/ajax-performer\/') {
+            try {
+                $fullActressUrl = "https://www.dmm.co.jp" + ($Webrequest.Content | Select-String -Pattern '\/digital\/videoa\/-\/detail\/ajax-performer\/=\/data=.*\/').Matches.Groups[0].Value
+                $movieActress = ((Invoke-WebRequest -Uri $fullActressUrl -Verbose:$false).Content | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+            } catch {
+                return
+            }
+        } else {
+            try {
+                $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
+                $movieActress = ($actressBlock | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+            } catch {
+                return
+            }
         }
-        #$actress = $actress | ForEach-Object { $actressArray += $_.Groups[1].Value }
 
         foreach ($actress in $movieActress) {
             $engActressUrl = "https://www.dmm.co.jp/en/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
@@ -282,7 +290,7 @@ function Get-DmmActress {
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $lastName
                     FirstName    = $firstName
-                    JapaneseName = $actressName
+                    JapaneseName = ($actressName -replace '（.*）', '').Trim()
                     ThumbUrl     = $null
                 }
             } else {
@@ -294,7 +302,7 @@ function Get-DmmActress {
                     $cookie.Domain = 'dmm.co.jp'
                     $session.Cookies.Add($cookie)
                     try {
-                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '' -replace '（.*）').Trim()
+                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '' -replace '（.*）', '').Trim()
                     } catch {
                         $jaActressName = $null
                     }
