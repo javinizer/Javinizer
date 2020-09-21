@@ -412,6 +412,6 @@ function Get-DmmTrailerUrl {
             return
         }
 
-        Write-Output "https:$trailerUrl"
+        Write-Output $trailerUrl
     }
 }
