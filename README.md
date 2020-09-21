@@ -144,7 +144,7 @@ PARAMETERS
     Specifies to not automatically try to match filenames to the movie ID. Can be useful for movies like T28- and R18-.
 
 -Update [<SwitchParameter>]
-    Specifies to only create/update the nfo file when sorting a file.
+    Specifies to only create/update metadata files without moving any existing files.
 
 -MoveToFolder <Boolean>
     Specifies whether or not to move sorted files to its own folder. Defaults to 'sort.movetofolder' in the settings file.
@@ -292,11 +292,11 @@ Sorts a path of JAV files without attemping automatic filename cleaning.
 
 -------------------------- EXAMPLE 5 --------------------------
 
-PS > Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -Update
+PS > Javinizer -Path 'C:\JAV\Sorted' -Recurse -Update
 
 Description
 -----------
-Sorts a path of JAV files while only updating/creating the nfo file without moving/renaming any existing files.
+Sorts a path of JAV files while only updating/creating metadata without moving any existing files.
 
 -------------------------- EXAMPLE 6 --------------------------
 
@@ -446,7 +446,7 @@ It is enabled by the following settings:
 
 After your scraper data is aggregated using your metadata priority settings, Javinizer will automatically attempt to match the actress by `JapaneseName` -> `FirstName` -> `LastName FirstName`.
 
-If the actress is matched, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. The FullName column is not used in any way except for reference.
+If a unique actress is matched from the csv, then the full details (FirstName, LastName, JapaneseName, ThumbUrl) are written to that actress. The FullName column is not used in any way except for reference.
 
 If `sort.metadata.thumbcsv.convertalias` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically convert any of the listed aliases (separated by `|` and entered in `LastName FirstName` format) to the actress that the alias corresponds to. Using the JapaneseName as the alias will yield the most accurate results.
 
@@ -491,11 +491,12 @@ For example, if your jvGenres.csv file looks like this:
 
 | Setting | Description | Accepted or Example Value |
 | ------------- | ------------- | ------------- |
-| `throttlelimit` | Specifies the limit Javinizer will run video sorting threads. | 1-10
+| `throttlelimit` | Specifies the limit Javinizer will run video sorting threads. | 1-5
 | `location.input` | Specifies the default -Path that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
 | `location.output` | Specifies the default -DestinationPath that Javinizer will use to sort videos. | C:\\\JAV\\\Unsorted
 | `location.thumbcsv` | Specifies the location of the actress thumbnail csv that is used to better match actresses. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvThumbs.csv
 | `location.genrecsv` | Specifies the location of the genre replacement csv that is used to do a string replacement of genres of your choice. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\jvGenres.csv
+| `location.uncensorcsv` | Specifies the location of the uncensor csv that is used to do string replacements of censored words in R18 metadata. This will point to the file within your Javinizer module folder by default. | C:\\\JAV\\\Uncensor.csv
 | `location.log` | Specifies the location of the log file. This will point to the file within the Javinizer module folder by default. | C:\\\JAV\\\jvLogs.log
 | `scraper.movie.dmm` | Specifies whether the dmm.co.jp scraper is on/off. | 0, 1
 | `scraper.movie.dmmja` | Specifies whether the dmm.co.jp japanese scraper is on/off. | 0, 1
