@@ -58,6 +58,10 @@ function Get-JVData {
         [Alias('scraper.movie.dmm.scrapeactress')]
         [Boolean]$DmmScrapeActress,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('location.uncensorcsv')]
+        [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'),
+
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Id')]
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'Url')]
         [PSObject]$Settings,
@@ -86,6 +90,9 @@ function Get-JVData {
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
             $DmmScrapeActress = $Settings.'scraper.option.dmm.scrapeactress'
+            if ($Settings.'location.uncensorcsv' -ne '') {
+                $UncensorCsvPath = $Settings.'location.uncensorcsv'
+            }
         }
 
         if ($Settings) {
@@ -115,11 +122,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:R18Url) {
-                            $using:R18Url | Get-R18Data
+                            $using:R18Url | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                         } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
-                                $jvR18Url.En | Get-R18Data
+                                $jvR18Url.En | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                             }
                         }
                     } | Out-Null
@@ -131,11 +138,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18Zh" -ThrottleLimit 100 -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:R18ZhUrl) {
-                            $using:R18ZhUrl | Get-R18Data
+                            $using:R18ZhUrl | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                         } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
-                                $jvR18Url.Zh | Get-R18Data
+                                $jvR18Url.Zh | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                             }
                         }
                     } | Out-Null

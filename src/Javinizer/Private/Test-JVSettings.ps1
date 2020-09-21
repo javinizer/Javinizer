@@ -63,7 +63,8 @@ function Test-JVSettings {
             'location.input',
             'location.log',
             'location.output',
-            'location.thumbcsv'
+            'location.thumbcsv',
+            'location.uncensorcsv'
         ) | Test-JVSettingsGroup -Settings $Settings -Type Path
 
         $booleanSettings = @(

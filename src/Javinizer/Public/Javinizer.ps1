@@ -26,7 +26,7 @@ function Javinizer {
         Specifies a url or an array of urls to sort a single JAV file.
 
     .PARAMETER Update
-        Specifies to only create/update the nfo file when sorting a file.
+        Specifies to only create/update metadata files without moving any existing files.
 
     .PARAMETER SettingsPath
         Specifies the path to the settings file you want Javinizer to use. Defaults to the jvSettings.json file in the module root.
@@ -164,11 +164,11 @@ function Javinizer {
     Sorts a path of JAV files without attemping automatic filename cleaning.
 
     .EXAMPLE
-    Javinizer -Path 'C:\JAV\Sorted' -DestinationPath 'C:\JAV\Sorted' -Update
+    Javinizer -Path 'C:\JAV\Sorted' -Recurse -Update
 
     Description
     -----------
-    Sorts a path of JAV files while only updating/creating the nfo file without moving/renaming any existing files.
+    Sorts a path of JAV files while only updating/creating metadata without moving any existing files.
 
     .EXAMPLE
     Javinizer -Path 'C:\JAV\Sorted' -Set @{'sort.download.actressimg' = 1; 'sort.format.file' = '<ID> - <TITLE>'}
@@ -437,23 +437,30 @@ function Javinizer {
             }
         }
 
+        if ($Settings.'location.uncensorcsv' -eq '') {
+            $uncensorCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'location.uncensorcsv' -PathType Leaf)) {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Uncensor csv not found at path [$($Settings.'location.uncensorcsv')]"
+                return
+            } else {
+                $uncensorCsvPath = $Settings.'location.uncensorcsv'
+            }
+        }
+
         if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
             if ($MoveToFolder -eq $true) {
                 $Settings.'sort.movetofolder' = 1
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             } elseif ($MoveToFolder -eq $false) {
                 $Settings.'sort.movetofolder' = 0
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.movetofolder] replaced as [1]"
             }
         }
 
         if ($PSBoundParameters.ContainsKey('RenameFile')) {
             if ($RenameFile -eq $true) {
                 $Settings.'sort.renamefile' = 1
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [1]"
             } elseif ($RenameFile -eq $false) {
                 $Settings.'sort.renamefile' = 0
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - sort.renamefile] replaced as [0]"
             }
         }
 
@@ -477,7 +484,7 @@ function Javinizer {
                     $urlObject = Get-JVUrlLocation -Url $Find
                     $data = foreach ($item in $urlObject) {
                         if ($item.Source -match 'dmm') {
-                            $item.Url | Get-DmmData -ScrapeActress:$Setting.'scraper.option.dmm.scrapeactress'
+                            $item.Url | Get-DmmData -ScrapeActress:$Settings.'scraper.option.dmm.scrapeactress'
                         }
 
                         if ($item.Source -match 'jav321') {
@@ -493,7 +500,7 @@ function Javinizer {
                         }
 
                         if ($item.Source -match 'r18') {
-                            $item.Url | Get-R18Data
+                            $item.Url | Get-R18Data -UncensorCsvPath:$uncensorCsvPath
                         }
                     }
 
@@ -502,7 +509,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
+                        -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' -UncensorCsvPath $uncensorCsvPath
                 }
 
                 if ($Aggregated) {
@@ -556,8 +563,8 @@ function Javinizer {
 
                 if ($OpenUncensor) {
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
-                        Invoke-Item -LiteralPath (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv')
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [UncensorCsvPath - $uncensorCsvPath']"
+                        Invoke-Item -LiteralPath $uncensorCsvPath
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
                     }
@@ -660,7 +667,7 @@ function Javinizer {
                         return
                     }
 
-                    $javData = Get-JVData -Url $Url -Settings $Settings
+                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
@@ -684,7 +691,7 @@ function Javinizer {
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
                         foreach ($movie in $javMovies) {
-                            $javData = Get-JVData -Id $movie.Id -Settings $Settings
+                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {

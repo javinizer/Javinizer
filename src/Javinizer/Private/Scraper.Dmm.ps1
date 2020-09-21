@@ -231,7 +231,8 @@ function Get-DmmActress {
     process {
         $movieActressObject = @()
         try {
-            $movieActress = ($Webrequest.Content | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+            $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
+            $movieActress = ($actressBlock | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
         } catch {
             return
         }
@@ -293,7 +294,7 @@ function Get-DmmActress {
                     $cookie.Domain = 'dmm.co.jp'
                     $session.Cookies.Add($cookie)
                     try {
-                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '').Trim()
+                        $jaActressName = ((((Invoke-WebRequest -Uri $jaActressUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '<title>(.*)</title>').Matches.Groups[1].Value -split '-')[0] -replace '\(.*\)', '' -replace '（.*）').Trim()
                     } catch {
                         $jaActressName = $null
                     }
@@ -346,7 +347,7 @@ function Get-DmmGenre {
             return
         }
 
-        if ($null -ne $genre -or $genre -ne '') {
+        if ($null -ne $genre -and $genre -ne '') {
             $genre = $genre | ForEach-Object { $genreArray += $_.Groups[1].Value -replace '<.*>', '' }
         }
 
@@ -400,8 +401,8 @@ function Get-DmmTrailerUrl {
 
     process {
         $trailerUrl = @()
-        $iFrameUrl = 'https://www.dmm.co.jp' + ($Webrequest.Content | Select-String -Pattern "onclick.+sampleplay\('([^']+)'\)").Matches.Groups[1].Value
         try {
+            $iFrameUrl = 'https://www.dmm.co.jp' + ($Webrequest.Content | Select-String -Pattern "onclick.+sampleplay\('([^']+)'\)").Matches.Groups[1].Value
             $trailerPageUrl = ((Invoke-WebRequest -Uri $iFrameUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern 'src="([^"]+)"').Matches.Groups[1].Value -replace '/en', ''
             $trailerUrl = ((Invoke-WebRequest -Uri $trailerPageUrl -Verbose:$false).Content | Select-String -Pattern '\\/\\/cc3001\.dmm\.co\.jp\\/litevideo\\/freepv[^"]+').Matches.Groups[0].Value -replace '\\', ''
             if ($trailerUrl -match '^//') {
@@ -414,4 +415,3 @@ function Get-DmmTrailerUrl {
         Write-Output "https:$trailerUrl"
     }
 }
-

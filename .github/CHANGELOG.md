@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0-alpha10]
+## [2.0.1]
+
+### Added
+- Setting `location.uncensorcsv` to allow user-defined uncensor csv path
+
+### Changed
+- Dmm scraper now includes TrailerUrl
+- `-Update` parameter now downloads metadata items in addition to updating the nfo file
+- Actress matcher logic changed for more accurate results
+- Changed default file matching logic to better clean and match filenames downloaded from torrent sites
+
+### Fixed
+- Javlibrary ratings are now properly assigned to the nfo
+- Dmm scraper now correctly gets actresses
+- Regex file match no longer incorrectly changes the movie ID during sort
+- `sort.metadata.nfo.firstnameorder` now correctly applies to `<ACTORS>` in sort formats
+
+## [2.0.0]
 
 ### Added
 
@@ -21,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- JapaneseName added to nfo file as altname
 - Setting `throttlelimit` limited to 5
 - R18 uncensored words and replacements are now moved to a file at module root `jvUncensor.csv`
 - Path will default to your current commandline location if `-Path` is not specified and setting `location.input` is blank
