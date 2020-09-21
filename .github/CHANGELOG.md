@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2]
+
+### Fixed
+- Dmm/DmmJa scraper
+    - Aliases are now removed from the Japanese actress name
+    - TrailerUrl no longer contains an invalid url
+    - Actresses are now fully scraped if there are 10+ actresses in a movie
+
 ## [2.0.1]
 
 ### Added
@@ -13,8 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Dmm scraper now includes TrailerUrl
 - `-Update` parameter now downloads metadata items in addition to updating the nfo file
-- Actress matcher logic changed for more accurate results
-- Changed default file matching logic to better clean and match filenames downloaded from torrent sites
+- Actress matcher logic updated for more accurate results
+- Default file matcher logic updated to better clean filenames downloaded from torrent sites
 
 ### Fixed
 - Javlibrary ratings are now properly assigned to the nfo
