@@ -7,7 +7,7 @@ function Get-JavbusId {
     process {
         try {
             $id = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[1].Value
+                Select-String '<title>(.*?) (.*?)').Matches.Groups[1].Value
         } catch {
             return
         }
@@ -25,9 +25,14 @@ function Get-JavbusTitle {
         try {
             $title = ($Webrequest | ForEach-Object { $_ -split '\n' } |
                 Select-String '<title>(.*?) (.*?) - JavBus<\/title>').Matches.Groups[2].Value
-
         } catch {
-            return
+            try {
+                $titleStart = ($Webrequest | ForEach-Object { $_ -split '\n' } | Select-String '<title>(.*?) (.*)').Matches.Groups[2].Value
+                $titleEnd = ($Webrequest | ForEach-Object { $_ -split '\n' } | Select-String '(.*?) - JavBus<\/title>').Matches.Groups[1].Value
+                $title = $titleStart + $titleEnd
+            } catch {
+                return
+            }
         }
 
         $title = Convert-HtmlCharacter -String $title
@@ -217,8 +222,14 @@ function Get-JavbusActress {
 
         foreach ($actress in $actresses) {
             $baseUrl = ($actress.Groups[1].Value) -replace '/ja', '' -replace '/en', ''
-            $engActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
-            $jaActressUrl = "$baseUrl/ja/star/$($actress.Groups[2].Value)"
+            if ($baseUrl -match '/uncensored') {
+                $engActressUrl = "https://www.javbus.com/en/uncensored/star/$($actress.Groups[2].Value)"
+                $jaActressUrl = "https://www.javbus.com/ja/uncensored/star/$($actress.Groups[2].Value)"
+            } else {
+                $engActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
+                $jaActressUrl = "$baseUrl/ja/star/$($actress.Groups[2].Value)"
+            }
+
             $actressName = $actress.Groups[4].Value
             $thumbUrl = $actress.Groups[3].Value
             if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
