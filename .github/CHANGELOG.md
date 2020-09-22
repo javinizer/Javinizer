@@ -10,8 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Dmm/DmmJa scraper
     - Aliases are now removed from the Japanese actress name
-    - TrailerUrl no longer contains an invalid url
+    - TrailerUrl no longer contains an invalid url with duplicate "https"
     - Actresses are now fully scraped if there are 10+ actresses in a movie
+    - Maker, Series, and Label no longer pulls inaccurate data
+- Javbus scraper
+    - Search no longer fails when title html spans multiple lines
+    - Both Japanese and English actress names are now pulled when scraping an uncensored movie
+- Javinizer no longers fails to scrape when running in PowerShell 6
 
 ## [2.0.1]
 
