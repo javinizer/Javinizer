@@ -145,6 +145,7 @@ function Convert-JVTitle {
                             # Write modified filename to $fileBaseNameHyphen, inserting a '-' at the specified
                             # index between the alphabetical and numerical character, and appending extension
                             $fileBaseNameHyphen = ($file.Insert($x + 1, '-'))
+                            break
                         }
                     }
                     # Get index if file changed
@@ -161,34 +162,17 @@ function Convert-JVTitle {
         # Clean any trailing text if not removed by $RemoveStrings
         for ($x = 0; $x -lt $fileBaseNameUpper.Length; $x++) {
             $filePartNumber = $null
-            #Match ID-###A, ID###B, etc.
-            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[a-dA-D]") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                if ($fileP3 -eq 'A') { $filePartNumber = '1' }
-                elseif ($fileP3 -eq 'B') { $filePartNumber = '2' }
-                elseif ($fileP3 -eq 'C') { $filePartNumber = '3' }
-                elseif ($fileP3 -eq 'D') { $filePartNumber = '4' }
-                #elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
-                #elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
-                #elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
-                #elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
-                #elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
-            }
+            # Match ID-###A, ID###B, etc.
             # Match ID-###-A, ID-###-B, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-][a-dA-D]") {
+            # Match ID-### - A, ID-### - B, etc.
+            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?\s?[-]?\s?[A-Z]$") {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $fileP3 = $fileP3 -replace '-', ''
-                if ($fileP3 -eq 'A') { $filePartNumber = '1' }
-                elseif ($fileP3 -eq 'B') { $filePartNumber = '2' }
-                elseif ($fileP3 -eq 'C') { $filePartNumber = '3' }
-                elseif ($fileP3 -eq 'D') { $filePartNumber = '4' }
-                #elseif ($fileP3 -eq 'E') { $filePartNumber = '5' }
-                #elseif ($fileP3 -eq 'F') { $filePartNumber = '6' }
-                #elseif ($fileP3 -eq 'G') { $filePartNumber = '7' }
-                #elseif ($fileP3 -eq 'H') { $filePartNumber = '8' }
-                #elseif ($fileP3 -eq 'I') { $filePartNumber = '9' }
+                $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').PadLeft(3, '0')
+                $fileP3 = ($fileP3 -replace '-', '').Trim()
+                $asciiP3 = [int][char]$fileP3
+                if ($asciiP3 -gt 64 -and $asciiP3 -lt 91) {
+                    $filePartNumber = $asciiP3 - 64
+                }
             }
             <#
                 #Match ID-###-A, ID-###-B, etc.
@@ -199,60 +183,19 @@ function Convert-JVTitle {
                 }
                 #>
             # Match ID-###-1, ID-###-2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]\d$") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ($fileP3 -replace '-', '')[1]
-                $filePartNumber = $filePartNum
-            }
             # Match ID-###-01, ID-###-02, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]0\d$") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
-                $filePartNumber = $filePartNum
-            }
             # Match ID-###-001, ID-###-002, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]00\d$") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = (($fileP3 -replace '-', '') -replace '0', '')[1]
-                $filePartNumber = $filePartNum
-            }
-            # Match ID-### - pt1, ID-### - pt2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E? [-] pt|PT") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
-                $filePartNumber = $filePartNum
-            }
-            # Match ID-### - part1, ID ### - part2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E? [-] part|PART") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
-                $filePartNumber = $filePartNum
-            }
             # Match ID-###-pt1, ID-###-pt2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]pt|PT") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
-                $filePartNumber = $filePartNum
-            }
+            # Match ID-### - pt1, ID-### - pt2, etc.
             # Match ID-###-part1, ID-###-part2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]part|PART") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'pt', '')[1]
-                $filePartNumber = $filePartNum
-            }
+            # Match ID-### - part1, ID ### - part2, etc.
             # Match ID-###-cd1, ID-###-cd2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?[-]cd|CD") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
-                $fileBaseNameUpperCleaned += $fileP1 + $fileP2
-                $filePartNum = ((($fileP3 -replace '-', '') -replace '0', '') -replace 'cd', '')[1]
-                $filePartNumber = $filePartNum
+            # Match ID-### - cd1, ID-### - cd2, etc.
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?\s?[-]\s?(cd|part|pt)?[-]?\d{1,3}") {
+                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?\s?[-])"
+                $fileBaseNameUpperCleaned += $fileP1 + "-" + ($fileP2 -replace '-', '').Trim()
+                $filePartNum = ((($fileP3 -replace '-', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '').Trim()
+                $filePartNumber = [int]$filePartNum
             }
 
             # Match everything else
