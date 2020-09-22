@@ -38,7 +38,11 @@ InModuleScope 'Javinizer' {
                     "bbi-094 - cd14.wmv",
                     "bbi00094o.wmv",
                     "bbi00094-p.wmv",
-                    "bbi00094 - q.wmv"
+                    "bbi00094 - q.wmv",
+                    "bbi00094-pt18.wmv",
+                    "bbi00094 - pt19.wmv",
+                    "bbi00094-cd20.wmv",
+                    "bbi00094 - cd21.wmv"
                 )
 
                 Mock Get-ChildItem {
@@ -54,7 +58,7 @@ InModuleScope 'Javinizer' {
                 }
 
                 $files = Get-ChildItem
-                $results = Convert-JVTitle $files
+                $results = Convert-JVTitle $files -RegexEnabled $false
                 $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
                 $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
                 $results.PartNumber | Should -Be (1..$fileNames.Length)
