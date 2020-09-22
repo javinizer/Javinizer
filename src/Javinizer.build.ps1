@@ -214,7 +214,7 @@ Add-BuildTask Test {
         Assert-Build($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
 
         # Ensure our builds fail until if below a minimum defined code test coverage threshold
-        $coverageThreshold = 50
+        $coverageThreshold = 0
 
         if ($testResults.CodeCoverage.NumberOfCommandsExecuted -ne 0) {
             $coveragePercent = '{0:N2}' -f ($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
