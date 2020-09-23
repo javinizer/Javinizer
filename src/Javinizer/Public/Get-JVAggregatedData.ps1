@@ -538,7 +538,7 @@ function Get-JVAggregatedData {
             }
         }
 
-        if ($null -ne $Tagline) {
+        if ($Tagline -ne '') {
             $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
             if ($null -ne $taglineString -and $taglineString -ne '') {
                 $aggregatedDataObject.Tagline += $taglineString
