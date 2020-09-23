@@ -131,7 +131,15 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.unknownactress')]
-        [Boolean]$UnknownActress
+        [Boolean]$UnknownActress,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.tag')]
+        [Array]$Tag,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.tagline')]
+        [String]$Tagline
     )
 
     process {
@@ -164,6 +172,8 @@ function Get-JVAggregatedData {
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
+            $Tag = $Settings.'sort.metadata.nfo.format.tag'
+            $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -185,6 +195,8 @@ function Get-JVAggregatedData {
             Maker          = $null
             Label          = $null
             Series         = $null
+            Tag            = $null
+            Tagline        = $null
             Actress        = $null
             Genre          = $null
             CoverUrl       = $null
@@ -510,6 +522,26 @@ function Get-JVAggregatedData {
 
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
+            }
+        }
+
+        if ($null -ne $Tag[0]) {
+            $aggregatedDataObject.Tag = @()
+            foreach ($entry in $Tag) {
+                $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+                if ($null -ne $tagString -and $tagstring -ne '') {
+                    $aggregatedDataObject.Tag += $tagString
+                }
+            }
+            if ($null -eq $aggregatedDataObject.Tag[0]) {
+                $aggregatedDataObject.Tag = $null
+            }
+        }
+
+        if ($null -ne $Tagline) {
+            $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+            if ($null -ne $taglineString -and $taglineString -ne '') {
+                $aggregatedDataObject.Tagline += $taglineString
             }
         }
 

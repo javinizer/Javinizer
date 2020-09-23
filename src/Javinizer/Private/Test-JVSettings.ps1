@@ -93,11 +93,11 @@ function Test-JVSettings {
             'sort.metadata.genrecsv',
             'sort.metadata.nfo.actresslanguageja',
             'sort.metadata.nfo.firstnameorder',
-            'sort.metadata.nfo.seriesastag',
             'sort.metadata.nfo.translatedescription',
             'sort.metadata.thumbcsv.convertalias',
             'sort.metadata.thumbcsv.autoadd',
             'sort.metadata.thumbcsv',
+            'sort.metadata.unknownactress',
             'sort.movetofolder',
             'sort.renamefile'
         ) | Test-JVSettingsGroup -Settings $Settings -Type Boolean
@@ -127,6 +127,7 @@ function Test-JVSettings {
             'sort.format.thumbimg',
             'sort.format.trailervid',
             'sort.metadata.nfo.displayname',
+            'sort.metadata.nfo.format.tagline',
             'sort.metadata.nfo.translatedescription.language'
         ) | Test-JVSettingsGroup -Settings $Settings -Type String
 
@@ -135,6 +136,7 @@ function Test-JVSettings {
             'match.includedfileextension',
             'sort.format.posterimg',
             'sort.metadata.genre.ignore',
+            'sort.metadata.nfo.format.tag',
             'sort.metadata.priority.actress',
             'sort.metadata.priority.alternatetitle',
             'sort.metadata.priority.coverurl',
