@@ -126,8 +126,12 @@ function Get-JVAggregatedData {
         [Boolean]$ActressLanguageJa,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.emtadata.thumbcsv.autoadd')]
-        [Boolean]$ThumbCsvAutoAdd
+        [Alias('sort.metadata.thumbcsv.autoadd')]
+        [Boolean]$ThumbCsvAutoAdd,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.addunknownactress')]
+        [Boolean]$AddUnknownActress
     )
 
     process {
@@ -159,6 +163,7 @@ function Get-JVAggregatedData {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
+            $AddUnknownActress = $Settings.'sort.metadata.nfo.addunknownactress'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -442,6 +447,17 @@ function Get-JVAggregatedData {
                 }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+            }
+        }
+
+        if ($AddUnknownActress) {
+            if ($null -eq $aggregatedDataObject.Actress) {
+                $aggregatedDataObject.Actress += [PSCustomObject]@{
+                    LastName     = $null
+                    FirstName    = 'Unknown'
+                    JapaneseName = 'Unknown'
+                    ThumbUrl     = $null
+                }
             }
         }
 
