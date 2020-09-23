@@ -130,8 +130,8 @@ function Get-JVAggregatedData {
         [Boolean]$ThumbCsvAutoAdd,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.addunknownactress')]
-        [Boolean]$AddUnknownActress
+        [Alias('sort.metadata.nfo.unknownactress')]
+        [Boolean]$UnknownActress
     )
 
     process {
@@ -163,7 +163,7 @@ function Get-JVAggregatedData {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
-            $AddUnknownActress = $Settings.'sort.metadata.nfo.addunknownactress'
+            $AddUnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }

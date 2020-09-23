@@ -61,7 +61,7 @@
     "sort.metadata.nfo.seriesastag": 1,
     "sort.metadata.nfo.firstnameorder": 0,
     "sort.metadata.nfo.actresslanguageja": 0,
-    "sort.metadata.nfo.addunknownactress": 1,
+    "sort.metadata.nfo.unknownactress": 1,
     "sort.metadata.thumbcsv": 1,
     "sort.metadata.thumbcsv.autoadd": 1,
     "sort.metadata.thumbcsv.convertalias": 1,
