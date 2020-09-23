@@ -83,7 +83,7 @@ function Get-DmmUrl {
 
                 $splitJaIdNum = (($jaId | Select-String -Pattern '\d{5}[zZ]?[eE]?').Matches.Groups[0].Value) -replace '^0*', ''
                 if (($splitJaIdNum)[-1] -match '\D') {
-                    $appendChar = ($splitIdJaIdNum)[-1]
+                    $appendChar = ($splitJaIdNum)[-1]
                     $splitJaIdNum = $splitJaIdNum -replace '\D', ''
                 }
 
