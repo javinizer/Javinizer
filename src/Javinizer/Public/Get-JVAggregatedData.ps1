@@ -163,7 +163,7 @@ function Get-JVAggregatedData {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
-            $AddUnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
+            $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -450,7 +450,7 @@ function Get-JVAggregatedData {
             }
         }
 
-        if ($AddUnknownActress) {
+        if ($UnknownActress) {
             if ($null -eq $aggregatedDataObject.Actress) {
                 $aggregatedDataObject.Actress += [PSCustomObject]@{
                     LastName     = $null
