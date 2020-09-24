@@ -46,7 +46,7 @@ function Get-DmmDescription {
 
         if ($null -eq $description -or $description -eq '') {
             $description = (((($Webrequest.Content -join "`r`n") -split '<div class="mg-b20 lh4">')[1]) -split '\n')[6]
-            $description = ($description -replace '<p class=".*">.*<\/p>', '').Trim()
+            $description = ($description -replace '<p class=".*">.*<\/p>', '', '<br>').Trim()
         }
 
         Write-Output $description
