@@ -122,6 +122,28 @@ InModuleScope 'Javinizer' {
                 $results.Id | Should -Be (,"IBW-230Z" * $fileNames.Length)
                 $results.PartNumber | Should -Be ((1..4) * [Math]::Ceiling($fileNames.Length / 4))[0..($fileNames.Length - 1)]
             }
+
+            It 'Should fail for multiparts > D except Z, E, R. Numerics are OK.' {
+                $fileNames = @(
+                    "bbi-094f.wmv",
+                    "bbi-094 - g.mp4",
+                    "bbi-094-pt5.mp4"
+                )
+
+                $files = @()
+                foreach($file in $FileNames) {
+                    $file = [PSCustomObject]@{
+                        Name = $file
+                        BaseName = $file.Substring(0, $file.Length - 4)
+                    }
+                    $files += $file
+                }
+
+                $results = Convert-JVTitle $files -RegexEnabled $false
+                $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
+                $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
+                $results.PartNumber | Should -Be ($null, $null, 5)
+            }
         }
 
     }#describe_PrivateFunctions
