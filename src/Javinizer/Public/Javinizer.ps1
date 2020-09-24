@@ -548,7 +548,7 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [ThumbCsvPath - $thumbCsvPath]"
                         Invoke-Item -LiteralPath $thumbCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$thumbCsvPath]: $PSItem"
                     }
                 }
 
@@ -557,16 +557,16 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
                         Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$genreCsvPath]: $PSItem"
                     }
                 }
 
                 if ($OpenUncensor) {
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] [UncensorCsvPath - $uncensorCsvPath']"
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [UncensorCsvPath - $uncensorCsvPath]"
                         Invoke-Item -LiteralPath $uncensorCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$uncensorCsvPath]: $PSItem"
                     }
                 }
             }
