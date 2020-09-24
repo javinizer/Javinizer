@@ -37,7 +37,7 @@ function Get-R18Data {
             Runtime       = Get-R18Runtime -WebRequest $webRequest
             Director      = Get-R18Director -WebRequest $webRequest
             Maker         = Get-R18Maker -WebRequest $webRequest
-            Label         = Get-R18Label -WebRequest $webRequest
+            Label         = Get-R18Label -WebRequest $webRequest -Replace $replaceHashTable
             Series        = Get-R18Series -WebRequest $webRequest -Replace $replaceHashTable
             Actress       = Get-R18Actress -WebRequest $webRequest
             Genre         = Get-R18Genre -WebRequest $webRequest -Replace $replaceHashTable

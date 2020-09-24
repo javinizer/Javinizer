@@ -48,8 +48,10 @@ function Get-R18Title {
         $title = Convert-HtmlCharacter -String $title
         if ($Replace) {
             foreach ($string in $Replace) {
-                $title = $title -replace [regex]::Escape($string.Original), $string.Replacement
-                $title = $title -replace '  ', ' '
+                if (($title -split ' ') -eq $string.Original) {
+                    $title = $title -replace [regex]::Escape($string.Original), $string.Replacement
+                    $title = $title -replace '  ', ' '
+                }
             }
         }
 
@@ -188,12 +190,26 @@ function Get-R18Maker {
 function Get-R18Label {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Object]$Replace
     )
 
     process {
-        $label = (((($Webrequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/dl>')[0] -split '<dd>')[1] -split '<br>')[0]
-        $label = Convert-HtmlCharacter -String $label
+        try {
+            $label = ((($Webrequest.Content -split '<dt>(Label:|廠牌:)<\/dt>')[2] -split '</dd>')[0] -replace '<[^>]*>' , '').Trim()
+        } catch {
+            return
+        }
+
+        if ($Replace) {
+            foreach ($string in $Replace.GetEnumerator()) {
+                if (($label -split ' ') -eq $string.Original) {
+                    $label = $label -replace [regex]::Escape($string.Original), $string.Replacement
+                }
+            }
+        }
 
         if ($label -eq '----') {
             $label = $null
@@ -261,11 +277,13 @@ function Get-R18Genre {
 
         foreach ($genre in $genreHtml) {
             $genre = $genre.trim()
-            if ($genre -notmatch 'https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(.*)' -and $genre -ne '') {
+            if ($genre -notmatch 'https:\/\/www\.r18\.com\/videos\/vod\/(movies|amateur)\/list\/id=(.*)' -and $genre -ne '') {
                 $genre = Convert-HtmlCharacter -String $genre
                 if ($Replace) {
                     foreach ($string in $Replace.GetEnumerator()) {
-                        $genre = $genre -replace [regex]::Escape($string.Original), $string.Replacement
+                        if (($genre -split ' ') -eq $string.Original) {
+                            $genre = $genre -replace [regex]::Escape($string.Original), $string.Replacement
+                        }
                     }
                 }
                 $genreArray += $genre
