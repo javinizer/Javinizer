@@ -19,8 +19,22 @@ InModuleScope 'Javinizer' {
     $WarningPreference = "SilentlyContinue"
     #-------------------------------------------------------------------------
     Describe 'Javinizer Private Function Tests' -Tag Unit {
-        Context 'Convert-JVTitle' {
 
+        BeforeAll {
+            function Get-Files ($fileNames) {
+                $files = @()
+                foreach($file in $FileNames) {
+                    $file = [PSCustomObject]@{
+                        Name = $file
+                        BaseName = $file.Substring(0, $file.Length - 4)
+                    }
+                    $files += $file
+                }
+                return $files
+            }
+        }
+
+        Context 'Convert-JVTitle' {
             It 'Should convert multipart ID-### accordingly' {
                 $fileNames = @(
                     "bbi-094a.wmv",
@@ -46,15 +60,7 @@ InModuleScope 'Javinizer' {
                     "bbi00094 - cd1.wmv"
                 )
 
-                $files = @()
-                foreach($file in $FileNames) {
-                    $file = [PSCustomObject]@{
-                        Name = $file
-                        BaseName = $file.Substring(0, $file.Length - 4)
-                    }
-                    $files += $file
-                }
-
+                $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
                 $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
                 $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
@@ -108,15 +114,7 @@ InModuleScope 'Javinizer' {
                     "ibw00230z - cd1.mp4"
                 )
 
-                $files = @()
-                foreach($file in $FileNames) {
-                    $file = [PSCustomObject]@{
-                        Name = $file
-                        BaseName = $file.Substring(0, $file.Length - 4)
-                    }
-                    $files += $file
-                }
-
+                $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
                 $results.ContentId | Should -Be (,"IBW00230Z" * $fileNames.Length)
                 $results.Id | Should -Be (,"IBW-230Z" * $fileNames.Length)
@@ -130,15 +128,7 @@ InModuleScope 'Javinizer' {
                     "bbi-094-pt5.mp4"
                 )
 
-                $files = @()
-                foreach($file in $FileNames) {
-                    $file = [PSCustomObject]@{
-                        Name = $file
-                        BaseName = $file.Substring(0, $file.Length - 4)
-                    }
-                    $files += $file
-                }
-
+                $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
                 $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
                 $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
