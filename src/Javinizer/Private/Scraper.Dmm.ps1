@@ -371,7 +371,7 @@ function Get-DmmCoverUrl {
 
     process {
         try {
-            $coverUrl = ($Webrequest.Content | Select-String -Pattern '(https:\/\/pics\.dmm\.co\.jp\/(mono\/movie\/adult|digital\/video)\/(.*)/(.*)\.jpg)').Matches.Groups[1].Value -replace 'ps.jpg', 'pl.jpg'
+            $coverUrl = ($Webrequest.Content | Select-String -Pattern '(https:\/\/pics\.dmm\.co\.jp\/(mono\/movie\/adult|digital\/(?:video|amateur))\/(.*)\/(.*)\.jpg)').Matches.Groups[1].Value -replace 'ps.jpg', 'pl.jpg'
         } catch {
             return
         }
