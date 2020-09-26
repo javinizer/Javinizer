@@ -14,6 +14,28 @@ function Get-DmmContentId {
     }
 }
 
+function Get-DmmId {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+        try {
+            # Expects ###ID##### or ID#####
+            $contentId = Get-DmmContentId $Webrequest
+            $Id = $contentId
+            $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)$' -AllMatches).Matches
+            if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
+                $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0')
+            }
+        } catch {
+            return
+        }
+        Write-Output $Id
+    }
+}
+
 function Get-DmmTitle {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
