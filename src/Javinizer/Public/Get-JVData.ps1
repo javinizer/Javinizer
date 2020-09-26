@@ -59,6 +59,7 @@ function Get-JVData {
         [Boolean]$DmmScrapeActress,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Url')]
         [Alias('location.uncensorcsv')]
         [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'),
 
@@ -67,7 +68,7 @@ function Get-JVData {
         [PSObject]$Settings,
 
         [Parameter(ParameterSetName = 'Url')]
-        [PSObject]$Url
+        [Array]$Url
     )
 
     process {
@@ -221,11 +222,11 @@ function Get-JVData {
                 }
 
                 if ($DmmJa) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
                     Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
-                        if ($using:DmmUrl) {
-                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        if ($using:DmmJaUrl) {
+                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         } elseif ($using:jvDmmUrl) {
                             $jvDmmUrl = $using:jvDmmUrl
                             $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
