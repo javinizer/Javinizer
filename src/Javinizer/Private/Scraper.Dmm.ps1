@@ -147,7 +147,7 @@ function Get-DmmMaker {
 
     process {
         try {
-            $maker = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=maker\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
+            $maker = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=maker\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -163,7 +163,7 @@ function Get-DmmLabel {
 
     process {
         try {
-            $label = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=label\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
+            $label = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=label\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -179,7 +179,7 @@ function Get-DmmSeries {
 
     process {
         try {
-            $series = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=series\/id=\d*\/">(.*)<\/a><\/td>').Matches.Groups[2].Value
+            $series = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=series\/id=\d*\/">(.*)<\/a><\/td>').Matches.Groups[2].Value
         } catch {
             return
         }
