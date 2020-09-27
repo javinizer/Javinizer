@@ -12,8 +12,14 @@ function Get-DmmData {
 
     process {
         $movieDataObject = @()
+        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+        $cookie = New-Object System.Net.Cookie
+        $cookie.Name = 'age_check_done'
+        $cookie.Value = '1'
+        $cookie.Domain = 'dmm.co.jp'
+        $session.Cookies.Add($cookie)
+
         if ($Url -match '/en/') {
-            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'ckcy'
             $cookie.Value = '2'
@@ -22,11 +28,6 @@ function Get-DmmData {
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'cklg'
             $cookie.Value = 'en'
-            $cookie.Domain = 'dmm.co.jp'
-            $session.Cookies.Add($cookie)
-            $cookie = New-Object System.Net.Cookie
-            $cookie.Name = 'age_check_done'
-            $cookie.Value = '1'
             $cookie.Domain = 'dmm.co.jp'
             $session.Cookies.Add($cookie)
         }

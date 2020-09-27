@@ -25,9 +25,10 @@ function Get-DmmId {
             # Expects ###ID##### or ID#####
             $contentId = Get-DmmContentId $Webrequest
             $Id = $contentId
-            $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)$' -AllMatches).Matches
+            $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
+
             if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
-                $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0')
+                $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0') + $m.Groups[3].Value.ToUpper()
             }
         } catch {
             return
