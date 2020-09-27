@@ -24,7 +24,6 @@ function Get-DmmId {
         try {
             # Expects ###ID##### or ID#####
             $contentId = Get-DmmContentId $Webrequest
-            $Id = $contentId
             $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
 
             if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {

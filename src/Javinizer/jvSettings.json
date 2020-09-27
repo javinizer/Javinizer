@@ -18,6 +18,8 @@
     "scraper.movie.r18": 1,
     "scraper.movie.r18zh": 0,
     "scraper.option.dmm.scrapeactress": 0,
+    "scraper.option.dmm.idpreference": "id",
+    "scraper.option.r18.idpreference": "id",
     "match.minimumfilesize": 0,
     "match.includedfileextension": [
         ".asf",
@@ -76,6 +78,7 @@
     "sort.metadata.priority.director": ["r18", "javlibrary"],
     "sort.metadata.priority.genre": ["r18", "javlibrary"],
     "sort.metadata.priority.id": ["r18", "javlibrary"],
+    "sort.metadata.priority.contentid": ["r18", "dmmja"],
     "sort.metadata.priority.label": ["r18", "javlibrary"],
     "sort.metadata.priority.maker": ["r18", "javlibrary"],
     "sort.metadata.priority.releasedate": ["r18", "javlibrary", "dmmja"],

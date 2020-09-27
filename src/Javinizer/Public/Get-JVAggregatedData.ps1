@@ -38,6 +38,10 @@ function Get-JVAggregatedData {
         [Array]$IdPriority,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.priority.contentid')]
+        [Array]$ContentIdPriority,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.label')]
         [Array]$LabelPriority,
 
@@ -151,6 +155,7 @@ function Get-JVAggregatedData {
             $DirectorPriority = $Settings.'sort.metadata.priority.director'
             $GenrePriority = $Settings.'sort.metadata.priority.genre'
             $IdPriority = $Settings.'sort.metadata.priority.id'
+            $ContentIdPriority = $Settings.'sort.metadata.priority.contentid'
             $LabelPriority = $Settings.'sort.metadata.priority.label'
             $MakerPriority = $Settings.'sort.metadata.priority.maker'
             $RatingPriority = $Settings.'sort.metadata.priority.rating'
@@ -184,6 +189,7 @@ function Get-JVAggregatedData {
 
         $aggregatedDataObject = [PSCustomObject]@{
             Id             = $null
+            ContentId      = $null
             DisplayName    = $null
             Title          = $null
             AlternateTitle = $null
@@ -220,7 +226,8 @@ function Get-JVAggregatedData {
             'Series',
             'ScreenshotUrl',
             'Title',
-            'TrailerUrl'
+            'TrailerUrl',
+            'ContentId'
         )
 
         foreach ($field in $metadataFields) {

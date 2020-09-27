@@ -7,7 +7,10 @@ function Get-R18Data {
         [String]$Url,
 
         [Parameter()]
-        [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv')
+        [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'),
+
+        [Parameter()]
+        [String]$IdPreference = "id"
     )
 
     process {
@@ -29,7 +32,7 @@ function Get-R18Data {
             Source        = if ($Url -match 'lg=zh') { 'r18zh' } else { 'r18' }
             Url           = $Url
             ContentId     = Get-R18ContentId -WebRequest $webRequest
-            Id            = Get-R18Id -WebRequest $webRequest
+            Id            = if ($IdPreference -eq "id") { Get-R18Id -WebRequest $webRequest } elseif ($IdPreference -eq "contentid") { Get-R18ContentId -WebRequest $webRequest }
             Title         = Get-R18Title -WebRequest $webRequest -Replace $replaceHashTable
             Description   = Get-R18Description -WebRequest $webRequest
             ReleaseDate   = Get-R18ReleaseDate -WebRequest $webRequest
