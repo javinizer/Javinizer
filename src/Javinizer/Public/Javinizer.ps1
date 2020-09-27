@@ -667,9 +667,13 @@ function Javinizer {
                         return
                     }
 
+                    if ($Settings.'sort.metadata.nfo.mediainfo') {
+                        $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
+                    }
+
                     $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                     if ($null -ne $javData) {
-                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
                             $javAggregatedData | Set-JVMovie -Path $javMovies.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $JavMovies.PartNumber -Force:$Force
                         }
@@ -691,9 +695,13 @@ function Javinizer {
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
                         foreach ($movie in $javMovies) {
+                            if ($Settings.'sort.metadata.nfo.mediainfo') {
+                                $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
+                            }
+
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                             if ($null -ne $javData) {
-                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                 } else {

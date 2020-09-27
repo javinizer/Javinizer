@@ -55,6 +55,7 @@
     "sort.format.screenshotimg": "fanart",
     "sort.format.screenshotfolder": "extrafanart",
     "sort.format.actressimgfolder": ".actors",
+    "sort.metadata.nfo.mediainfo": 0,
     "sort.metadata.nfo.translatedescription": 0,
     "sort.metadata.nfo.translatedescription.language": "en",
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",

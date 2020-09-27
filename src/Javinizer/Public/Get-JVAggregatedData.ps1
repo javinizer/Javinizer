@@ -139,7 +139,10 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.format.tagline')]
-        [String]$Tagline
+        [String]$Tagline,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [PSObject]$MediaInfo
     )
 
     process {
@@ -202,6 +205,7 @@ function Get-JVAggregatedData {
             CoverUrl       = $null
             ScreenshotUrl  = $null
             TrailerUrl     = $null
+            MediaInfo      = $MediaInfo
         }
 
         $metadataFields = @(
@@ -231,6 +235,12 @@ function Get-JVAggregatedData {
                 if ($null -eq $aggregatedDataObject.$field) {
                     if ($field -eq 'AlternateTitle') {
                         $aggregatedDataObject.$field = $sourceData.Title
+                    } elseif ($field -eq 'Id') {
+                        if ($IdPreference -eq 'contentid') {
+                            $aggregatedDataObject.$field = $sourceData.ContentId
+                        } else {
+                            $aggregatedDataObject.$field = $sourcedata.Id
+                        }
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
