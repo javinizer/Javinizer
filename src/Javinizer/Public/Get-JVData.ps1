@@ -55,16 +55,8 @@ function Get-JVData {
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.dmm.scrapeactress')]
+        [Alias('scraper.option.dmm.scrapeactress')]
         [Boolean]$DmmScrapeActress,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.dmm.idpreference')]
-        [String]$DmmIdPreference,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.dmm.r18preference')]
-        [String]$R18IdPreference,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Url')]
@@ -104,8 +96,6 @@ function Get-JVData {
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
             $DmmScrapeActress = $Settings.'scraper.option.dmm.scrapeactress'
-            $DmmIdPreference = $Settings.'scraper.option.dmm.idpreference'
-            $R18IdPreference = $Settings.'scraper.option.r18.idpreference'
             if ($Settings.'location.uncensorcsv' -ne '') {
                 $UncensorCsvPath = $Settings.'location.uncensorcsv'
             }
@@ -138,11 +128,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:R18Url) {
-                            $using:R18Url | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath -IdPreference:$using:R18IdPreference
+                            $using:R18Url | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                         } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
-                                $jvR18Url.En | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath -IdPreference:$using:R18IdPreference
+                                $jvR18Url.En | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                             }
                         }
                     } | Out-Null
@@ -153,11 +143,11 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18Zh" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:R18ZhUrl) {
-                            $using:R18ZhUrl | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath -IdPreference:$using:R18IdPreference
+                            $using:R18ZhUrl | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                         } elseif ($using:jvR18Url) {
                             $jvR18Url = $using:jvR18Url
                             if ($jvR18Url) {
-                                $jvR18Url.Zh | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath -IdPreference:$using:R18IdPreference
+                                $jvR18Url.Zh | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
                             }
                         }
                     } | Out-Null
@@ -223,23 +213,23 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:DmmUrl) {
-                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress -IdPreference:$using:DmmIdPreference
+                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         } elseif ($using:jvDmmUrl) {
                             $jvDmmUrl = $using:jvDmmUrl
-                            $jvDmmUrl.En | Get-DmmData -ScrapeActress:$using:DmmScrapeActress -IdPreference:$using:DmmIdPreference
+                            $jvDmmUrl.En | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         }
                     } | Out-Null
                 }
 
                 if ($DmmJa) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
-                    Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:DmmJaUrl) {
-                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress -IdPreference:$using:DmmIdPreference
+                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         } elseif ($using:jvDmmUrl) {
                             $jvDmmUrl = $using:jvDmmUrl
-                            $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress -IdPreference:$using:DmmIdPreference
+                            $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         }
                     } | Out-Null
                 }

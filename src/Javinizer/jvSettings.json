@@ -18,8 +18,7 @@
     "scraper.movie.r18": 1,
     "scraper.movie.r18zh": 0,
     "scraper.option.dmm.scrapeactress": 0,
-    "scraper.option.dmm.idpreference": "id",
-    "scraper.option.r18.idpreference": "id",
+    "scraper.option.idpreference": "id",
     "match.minimumfilesize": 0,
     "match.includedfileextension": [
         ".asf",
