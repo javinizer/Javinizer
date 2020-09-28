@@ -99,7 +99,8 @@ function Convert-JVString {
             -replace '<SET>', "$($Data.Series)" `
             -replace '<LABEL>', "$($Data.Label)" `
             -replace '<ACTORS>', "$actresses" `
-            -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)"
+            -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)" `
+            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)"
 
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {

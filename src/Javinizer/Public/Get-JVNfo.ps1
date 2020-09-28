@@ -72,6 +72,9 @@ function Get-JVNfo {
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String]$Tagline,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$MediaInfo,
+
         [Parameter()]
         [Boolean]$ActressLanguageJa,
 
@@ -185,6 +188,29 @@ function Get-JVNfo {
 
 "@
             $nfoString = $nfoString + $actressNfoString
+        }
+
+        if ($MediaInfo) {
+            $mediaNfoString = @"
+    <fileinfo>
+        <streamdetails>
+            <video>
+                <codec>$($MediaInfo.VideoCodec)</codec>
+                <aspect>$($MediaInfo.VideoAspect)</aspect>
+                <width>$($MediaInfo.VideoWidth)</width>
+                <height>$($MediaInfo.VideoHeight)</height>
+                <durationinseconds>$($MediaInfo.VideoDuration)</durationinseconds>
+            </video>
+            <audio>
+                <codec>$($MediaInfo.AudioCodec)</codec>
+                <language>$($MediaInfo.AudioLanguage)</language>
+                <channels>$($MediaInfo.AudioChannels)</channels>
+            </audio>
+        </streamdetails>
+    </fileinfo>
+
+"@
+            $nfoString = $nfoString + $mediaNfoString
         }
 
         $endNfoString = @"

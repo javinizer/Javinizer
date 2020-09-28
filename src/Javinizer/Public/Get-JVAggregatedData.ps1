@@ -147,7 +147,10 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('scraper.option.idpreference')]
-        [String]$IdPreference
+        [String]$IdPreference,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [PSObject]$MediaInfo
     )
 
     process {
@@ -213,6 +216,7 @@ function Get-JVAggregatedData {
             CoverUrl       = $null
             ScreenshotUrl  = $null
             TrailerUrl     = $null
+            MediaInfo      = $MediaInfo
         }
 
         $metadataFields = @(
