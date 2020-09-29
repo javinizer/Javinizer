@@ -38,6 +38,10 @@ function Get-JVAggregatedData {
         [Array]$IdPriority,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.priority.contentid')]
+        [Array]$ContentIdPriority,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.label')]
         [Array]$LabelPriority,
 
@@ -142,6 +146,10 @@ function Get-JVAggregatedData {
         [String]$Tagline,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('scraper.option.idpreference')]
+        [String]$IdPreference,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [PSObject]$MediaInfo
     )
 
@@ -154,6 +162,7 @@ function Get-JVAggregatedData {
             $DirectorPriority = $Settings.'sort.metadata.priority.director'
             $GenrePriority = $Settings.'sort.metadata.priority.genre'
             $IdPriority = $Settings.'sort.metadata.priority.id'
+            $ContentIdPriority = $Settings.'sort.metadata.priority.contentid'
             $LabelPriority = $Settings.'sort.metadata.priority.label'
             $MakerPriority = $Settings.'sort.metadata.priority.maker'
             $RatingPriority = $Settings.'sort.metadata.priority.rating'
@@ -177,6 +186,7 @@ function Get-JVAggregatedData {
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
+            $IdPreference = $Settings.'scraper.option.idpreference'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -187,6 +197,7 @@ function Get-JVAggregatedData {
 
         $aggregatedDataObject = [PSCustomObject]@{
             Id             = $null
+            ContentId      = $null
             DisplayName    = $null
             Title          = $null
             AlternateTitle = $null
@@ -224,7 +235,8 @@ function Get-JVAggregatedData {
             'Series',
             'ScreenshotUrl',
             'Title',
-            'TrailerUrl'
+            'TrailerUrl',
+            'ContentId'
         )
 
         foreach ($field in $metadataFields) {
@@ -239,7 +251,7 @@ function Get-JVAggregatedData {
                         if ($IdPreference -eq 'contentid') {
                             $aggregatedDataObject.$field = $sourceData.ContentId
                         } else {
-                            $aggregatedDataObject.$field = $sourcedata.Id
+                            $aggregatedDataObject.$field = $sourceData.Id
                         }
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field

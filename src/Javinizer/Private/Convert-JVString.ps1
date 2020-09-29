@@ -90,6 +90,7 @@ function Convert-JVString {
         $actresses = ($actressObject | Sort-Object) -join $Delimiter
         $convertedName = $FormatString `
             -replace '<ID>', "$($Data.Id)" `
+            -replace '<CONTENTID>', "$($Data.ContentId)" `
             -replace '<TITLE>', "$($Data.Title)" `
             -replace '<RELEASEDATE>', "$($Data.ReleaseDate)" `
             -replace '<YEAR>', "$(($Data.ReleaseDate -split '-')[0])" `

@@ -55,7 +55,7 @@ function Get-JVData {
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.dmm.scrapeactress')]
+        [Alias('scraper.option.dmm.scrapeactress')]
         [Boolean]$DmmScrapeActress,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
@@ -68,7 +68,7 @@ function Get-JVData {
         [PSObject]$Settings,
 
         [Parameter(ParameterSetName = 'Url')]
-        [Array]$Url
+        [PSObject]$Url
     )
 
     process {
@@ -223,7 +223,7 @@ function Get-JVData {
 
                 if ($DmmJa) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
-                    Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:DmmJaUrl) {
                             $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
