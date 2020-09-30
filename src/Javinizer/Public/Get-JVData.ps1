@@ -51,6 +51,10 @@ function Get-JVData {
         [Boolean]$Jav321Ja,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.dlgetchuja')]
+        [Boolean]$DLgetchuJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
@@ -298,6 +302,14 @@ function Get-JVData {
                         $jvJav321Url = $using:jvJav321Url
                         $jvJav321Url.Ja | Get-Jav321Data
                     }
+                } | Out-Null
+            }
+
+            if ($DLgetchuJa) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DLgetchuJa] [Url - $DLgetchuJaUrl]"
+                Start-ThreadJob -Name "jvdata-DLgetchuJa" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Import-Module $using:jvModulePath
+                    $using:DLgetchuJaUrl | Get-DLGetchuData
                 } | Out-Null
             }
 

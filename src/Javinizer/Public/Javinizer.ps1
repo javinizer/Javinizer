@@ -502,6 +502,10 @@ function Javinizer {
                         if ($item.Source -match 'r18') {
                             $item.Url | Get-R18Data -UncensorCsvPath:$uncensorCsvPath
                         }
+
+                        if ($item.Source -match 'dlgetchu') {
+                            $item.Url | Get-DLgetchuData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
