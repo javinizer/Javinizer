@@ -56,6 +56,7 @@ function Get-DLgetchuReleaseDate {
     process {
         try {
             $releaseDate = ($Webrequest.Content | Select-String -Pattern '<td bgcolor="white" width="449">(\d{4}\/\d{2}\/\d{2})<\/td>').Matches.Groups[1].Value
+            $releaseDate = ($releaseDate -split '/') -join '-'
         } catch {
             return
         }
