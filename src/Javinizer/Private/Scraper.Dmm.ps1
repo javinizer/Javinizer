@@ -14,6 +14,28 @@ function Get-DmmContentId {
     }
 }
 
+function Get-DmmId {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+        try {
+            # Expects ###ID##### or ID#####
+            $contentId = Get-DmmContentId $Webrequest
+            $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
+
+            if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
+                $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0') + $m.Groups[3].Value.ToUpper()
+            }
+        } catch {
+            return
+        }
+        Write-Output $Id
+    }
+}
+
 function Get-DmmTitle {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
@@ -46,7 +68,7 @@ function Get-DmmDescription {
 
         if ($null -eq $description -or $description -eq '') {
             $description = (((($Webrequest.Content -join "`r`n") -split '<div class="mg-b20 lh4">')[1]) -split '\n')[6]
-            $description = ($description -replace '<p class=".*">.*<\/p>', '').Trim()
+            $description = ($description -replace '<p class=".*">.*<\/p>', '' -replace '<br>', '').Trim()
         }
 
         Write-Output $description
@@ -124,7 +146,7 @@ function Get-DmmMaker {
 
     process {
         try {
-            $maker = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=maker\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
+            $maker = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=maker\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -140,7 +162,7 @@ function Get-DmmLabel {
 
     process {
         try {
-            $label = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=label\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
+            $label = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=label\/id=\d*\/">(.*)<\/a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -156,7 +178,7 @@ function Get-DmmSeries {
 
     process {
         try {
-            $series = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|\/en\/mono\/dvd\/)-\/list\/=\/article=series\/id=\d*\/">(.*)<\/a><\/td>').Matches.Groups[2].Value
+            $series = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=series\/id=\d*\/">(.*)<\/a><\/td>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -371,7 +393,7 @@ function Get-DmmCoverUrl {
 
     process {
         try {
-            $coverUrl = ($Webrequest.Content | Select-String -Pattern '(https:\/\/pics\.dmm\.co\.jp\/(mono\/movie\/adult|digital\/video)\/(.*)/(.*)\.jpg)').Matches.Groups[1].Value -replace 'ps.jpg', 'pl.jpg'
+            $coverUrl = ($Webrequest.Content | Select-String -Pattern '(https:\/\/pics\.dmm\.co\.jp\/(mono\/movie\/adult|digital\/(?:video|amateur))\/(.*)\/(.*)\.jpg)').Matches.Groups[1].Value -replace 'ps.jpg', 'pl.jpg'
         } catch {
             return
         }

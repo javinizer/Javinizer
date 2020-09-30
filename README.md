@@ -25,10 +25,11 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 
 ### Install module dependencies
 
-- [PowerShell 6/7](https://github.com/PowerShell/PowerShell)
+- [PowerShell 6/7](https://github.com/PowerShell/PowerShell) *Recommended PowerShell 7
 - [Python 3](https://www.python.org/downloads/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
+- [MediaInfo](https://mediaarea.net/en/MediaInfo) *MediaInfo will need to be added to your PATH
 
 ```powershell
 # Python
@@ -401,9 +402,17 @@ ID-###_0\d        - ID-069_01, ID-069_02
 ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 ```
 
-### In-depth usage
+## In-depth usage
 
-#### Metadata Priorities
+### Media Library Setup
+
+| CMS | How to use |
+| ------------- | ------------- |
+| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating collections from tags` and `Use plot instead of outline`   |
+| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
+| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
+
+### Metadata Priorities
 
 Scrapers by default are english. Scrapers appended by Ja are Japanese, Zh are Chinese.
 Current metadata scrapers include:
@@ -427,7 +436,22 @@ For example, if your actress priority looks like this: `"sort.metadata.priority.
 - If actresses are not found on the R18 scraper but are found on the Javlibrary scraper => Javlibrary actresses will be assigned to the metadata field
 - If actresses are not found on the R18 and Javlibrary scrapers but are found on the JavBus scraper => JavBus actresses will be assigned to the metadata field
 
-#### Actress Thumb Csv
+### Metadata Format Strings
+
+- <\ID>
+- <\CONTENTID>
+- <\TITLE>
+- <\RELEASEDATE>
+- <\YEAR>
+- <\STUDIO>
+- <\RUNTIME>
+- <\SET>
+- <\LABEL>
+- <\ACTORS>
+- <\ORIGINALTITLE>
+- <\RESOLUTION> - requires `sort.metadata.nfo.mediainfo` as true
+
+### Actress Thumb Csv
 
 Javinizer can utilize a csv file of actresses scraped from R18.com to further match actresses and their respective names/thumbnail URLs.
 
@@ -464,7 +488,7 @@ Nagase Yui | Nagase | Yui | 永瀬ゆい |https://[..]/nagase_yui2.jpg | Aika
 
 If `sort.metadata.thumbcsv.autoadd` is enabled in addition to `sort.metadata.thumbcsv`, then Javinizer will automatically add any missing actresses scraped from the R18 or R18Zh scrapers to your thumbnail csv if the actress has a thumbnail.
 
-#### Genre Csv
+### Genre Csv
 
 Javinizer can utilize a csv file of genres to replace them with a genre of your choice.
 
@@ -528,20 +552,24 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.download.screenshotimg` | Specifies to download screenshot images when sorting a movie. | 0, 1
 | `sort.download.trailervid` | Specifies to download the trailer video when sorting a movie. | 0, 1
 | `sort.format.delimiter` | Specifies the delimiter between actresses when using \<ACTORS> in the format string. | Any string value
-| `sort.format.file` | Specifies the format string when renaming a file. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.folder` | Specifies the format string when creating the folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.posterimg` | Specifies an array of format string when creating the poster image. Multiple strings will allow you to create multiple poster image files. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.trailervid` | Specifies the format string when creating the trailer video. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.nfo` | Specifies the format string when creating the nfo. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.screenshotimg` | Specifies the format string when creating the screenshot images. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.screenshotfolder` | Specifies the format string when creating the screenshot images folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.format.actressimgfolder` | Specifies the format string when creating the actress image folder. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
-| `sort.metadata.nfo.translatedescription` | Specifies to translate the description | 0, 1
+| `sort.format.file` | Specifies the format string when renaming a file. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.folder` | Specifies the format string when creating the folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.posterimg` | Specifies an array of format strings when creating the poster image. Multiple strings will allow you to create multiple poster image files. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.trailervid` | Specifies the format string when creating the trailer video. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.nfo` | Specifies the format string when creating the nfo. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.screenshotimg` | Specifies the format string when creating the screenshot images. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.screenshotfolder` | Specifies the format string when creating the screenshot images folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.actressimgfolder` | Specifies the format string when creating the actress image folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.metadata.nfo.mediainfo` | Specifies to add media metadata information to the nfo file. This requires the MediaInfo command line application. | 0, 1
+| `sort.metadata.nfo.translatedescription` | Specifies to translate the description. | 0, 1
 | `sort.metadata.nfo.translatedescription.language` | Specifies which language to translate to.  | Check [here](https://developers.google.com/admin-sdk/directory/v1/languages) for language codes
-| `sort.metadata.nfo.displayname` | Specifies the format string of the displayname in the metadata nfo file. | <\ID>, <\TITLE>, <\RELEASEDATE>, <\YEAR>, <\STUDIO>, <\RUNTIME>, <\SET>, <\LABEL>, <\ACTORS>, <\ORIGINALTITLE>
+| `sort.metadata.nfo.displayname` | Specifies the format string of the displayname in the metadata nfo file. | [Format Strings](#Metadata-Format-Strings)
 | `sort.metadata.nfo.seriesastag` | Specifies to add the <\SET> metadata as <\TAG> as well for Emby/Jellyfin support | 0, 1
+| `sort.metadata.nfo.format.tag` | Specifies an array of format strings to add tags to the aggregated data object | [Format Strings](#Metadata-Format-Strings)
+| `sort.metadata.nfo.format.tagline` | Specifies the format string to add a tagline to the aggregated data object | [Format Strings](#Metadata-Format-Strings)
 | `sort.metadata.nfo.actresslanguageja` | Specifies to prefer Japanese names when creating the metadata nfo. | 0, 1
+| `sort.metadata.nfo.unknownactress` | Specifies to add an 'Unknown' actress to scraped movies without any actresses | 0, 1
 | `sort.metadata.thumbcsv` | Specifies to use the thumbnail csv when aggregating metadata. | 0, 1
 | `sort.metadata.thumbcsv.autoadd` | Specifies to automatically add missing actresses to the thumbnail csv when scraping using the R18 or R18Zh scrapers. | 0, 1
 | `sort.metadata.thumbcsv.convertalias` | Specifies to use the thumbnail csv alias field to replace actresses in the metadata. | 0, 1
@@ -569,11 +597,3 @@ For example, if your jvGenres.csv file looks like this:
 | `javlibrary.baseurl` | Specifies the base URL of the Javlibrary instance you want to scrape. This is useful if you are running into CloudFlare errors on the main site and want to use a mirror such as g46e.com or m45e.com | http:\\/\\/javlibrary.com
 | `admin.log` | Specifies to write debug, warning, error, and verbose messages to the log file. | 0, 1
 | `admin.log.level` | Specifies the level of logs that will be written to the log file. | Debug, Info, Warning, Error
-
-## Media Library Setup
-
-| CMS | How to use |
-| ------------- | ------------- |
-| Plex  | Set-up a `Movie` library with custom agent [XBMCnfoMoviesImporter.bundle](https://github.com/gboudreau/XBMCnfoMoviesImporter.bundle). Turn on settings `Enable generating collections from tags` and `Use plot instead of outline`   |
-| Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
-| Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |

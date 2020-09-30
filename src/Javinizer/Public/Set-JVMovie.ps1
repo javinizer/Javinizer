@@ -105,10 +105,6 @@ function Set-JVMovie {
         [String]$DisplayName,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.seriesastag')]
-        [Boolean]$AddTag,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$FirstNameOrder,
 
@@ -152,13 +148,16 @@ function Set-JVMovie {
             $ScreenshotFolderFormat = $Settings.'sort.format.screenshotfolder'
             $ActorFolderFormat = $Settings.'sort.format.actressimgfolder'
             $DisplayName = $Settings.'sort.metadata.nfo.displayname'
-            $AddTag = $Settings.'sort.metadata.nfo.seriesastag'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
         }
 
-        $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        if ($RenameFile) {
+            $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        } else {
+            $fileName = (Get-Item -LiteralPath $Path).BaseName
+        }
         $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
@@ -216,7 +215,7 @@ function Set-JVMovie {
             if ($CreateNfo) {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -AddTag $AddTag -ActressLanguageJa:$ActressLanguageJa
+                    $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
                 } catch {

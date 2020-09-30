@@ -12,8 +12,14 @@ function Get-DmmData {
 
     process {
         $movieDataObject = @()
+        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+        $cookie = New-Object System.Net.Cookie
+        $cookie.Name = 'age_check_done'
+        $cookie.Value = '1'
+        $cookie.Domain = 'dmm.co.jp'
+        $session.Cookies.Add($cookie)
+
         if ($Url -match '/en/') {
-            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'ckcy'
             $cookie.Value = '2'
@@ -22,11 +28,6 @@ function Get-DmmData {
             $cookie = New-Object System.Net.Cookie
             $cookie.Name = 'cklg'
             $cookie.Value = 'en'
-            $cookie.Domain = 'dmm.co.jp'
-            $session.Cookies.Add($cookie)
-            $cookie = New-Object System.Net.Cookie
-            $cookie.Name = 'age_check_done'
-            $cookie.Value = '1'
             $cookie.Domain = 'dmm.co.jp'
             $session.Cookies.Add($cookie)
         }
@@ -38,13 +39,14 @@ function Get-DmmData {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Not found on DMM [$Url]"
             continue
         } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
         }
 
         $movieDataObject = [PSCustomObject]@{
             Source        = if ($Url -match '/en/') { 'dmm' } else { 'dmmja' }
             Url           = $Url
-            Id            = Get-DmmContentId -WebRequest $webRequest
+            Id            = Get-DmmId -WebRequest $webRequest
+            ContentId     = Get-DmmContentId -WebRequest $webRequest
             Title         = Get-DmmTitle -WebRequest $webRequest
             Description   = Get-DmmDescription -WebRequest $webRequest
             ReleaseDate   = Get-DmmReleaseDate -WebRequest $webRequest

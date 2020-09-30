@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0]
+
+### Added
+- **EXPERIMENTAL** Dl.getchu scraper (#51)
+    - This is scraper is only available via the `-Url` parameter when sorting a single file or using `-Find` to search the Url
+- Setting `sort.metadata.nfo.mediainfo` added to allow user to add video/audio metadata to nfo (#94)
+    - [MediaInfo](https://mediaarea.net/en/MediaInfo) required for use. MediaInfo will need to be added to your system PATH
+    - `<RESOLUTION>` added to file formats
+- Setting `sort.metadata.nfo.unknownactress` to allow `Unknown` actress to be written to nfo file when no actresses are scraped (#105)
+- Setting `sort.metadata.nfo.format.tagline` to allow user to set a tagline which accepts file format strings (#106)
+- Setting `sort.metadata.priority.contentid` to set the priority of the ContentId displayed by aggregated data object
+    - `<CONTENTID>` added to file formats
+
+### Changed
+- Default file matcher updated to better match multipart videos and support DMM ContentId (#111)
+- Setting `sort.metadata.nfo.seriesastag` is now `sort.metadata.nfo.format.tag`
+    - This setting is now an array, which allows multiple file format strings to be created as separate tags (#106)
+- Javinizer now performs a retry on the Javlibrary URL scraper and continues to run despite webrequest errors (#109)
+- AggregatedData object now contains `ContentId`
+
+### Fixed
+- Get-DmmUrl now correctly assigns the URLs when searching for a movie with ID with a letter suffix (#107)
+- Manually sorting with a DmmJa URL now functions properly (#111)
+- Nfo file now correctly renames to the movie name when `sort.renamefile` is set to false, and `sort.create.nfoperfile` is true (#102)
+- `<ACTORS>` file rename format now properly falls back to the alternate language when the primary is missing (#103)
+- R18 scraper now properly assigns the genre and label fields for Amateur videos (#108)
+- Extra html on the Description field for the DMM scraper is now removed
+
+
+
 ## [2.0.2]
 
 ### Fixed

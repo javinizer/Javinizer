@@ -66,14 +66,20 @@ function Get-JVNfo {
         [AllowEmptyString()]
         [String]$TrailerUrl,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Array]$Tag,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [String]$Tagline,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$MediaInfo,
+
         [Parameter()]
         [Boolean]$ActressLanguageJa,
 
         [Parameter()]
-        [Boolean]$NameOrder,
-
-        [Parameter()]
-        [Boolean]$AddTag
+        [Boolean]$NameOrder
     )
 
     process {
@@ -117,13 +123,14 @@ function Get-JVNfo {
     <runtime>$Runtime</runtime>
     <trailer>$TrailerUrl</trailer>
     <mpaa>XXX</mpaa>
+    <tagline>$Tagline</tagline>
     <set>$Series</set>
 
 "@
 
-        if ($AddTag) {
+        foreach ($item in $Tag) {
             $tagNfoString = @"
-    <tag>$Series</tag>
+    <tag>$item</tag>
 
 "@
             $nfoString = $nfoString + $tagNfoString
@@ -181,6 +188,29 @@ function Get-JVNfo {
 
 "@
             $nfoString = $nfoString + $actressNfoString
+        }
+
+        if ($MediaInfo) {
+            $mediaNfoString = @"
+    <fileinfo>
+        <streamdetails>
+            <video>
+                <codec>$($MediaInfo.VideoCodec)</codec>
+                <aspect>$($MediaInfo.VideoAspect)</aspect>
+                <width>$($MediaInfo.VideoWidth)</width>
+                <height>$($MediaInfo.VideoHeight)</height>
+                <durationinseconds>$($MediaInfo.VideoDuration)</durationinseconds>
+            </video>
+            <audio>
+                <codec>$($MediaInfo.AudioCodec)</codec>
+                <language>$($MediaInfo.AudioLanguage)</language>
+                <channels>$($MediaInfo.AudioChannels)</channels>
+            </audio>
+        </streamdetails>
+    </fileinfo>
+
+"@
+            $nfoString = $nfoString + $mediaNfoString
         }
 
         $endNfoString = @"

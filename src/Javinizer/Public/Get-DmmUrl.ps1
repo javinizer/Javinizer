@@ -34,7 +34,7 @@ function Get-DmmUrl {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
             }
 
             $retryCount = 3
@@ -54,7 +54,7 @@ function Get-DmmUrl {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                         $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem" -Action 'Continue'
                     }
 
                     $resultId = Get-DmmContentId -WebRequest $webRequest
@@ -83,7 +83,7 @@ function Get-DmmUrl {
 
                 $splitJaIdNum = (($jaId | Select-String -Pattern '\d{5}[zZ]?[eE]?').Matches.Groups[0].Value) -replace '^0*', ''
                 if (($splitJaIdNum)[-1] -match '\D') {
-                    $appendChar = ($splitIdJaIdNum)[-1]
+                    $appendChar = ($splitJaIdNum)[-1]
                     $splitJaIdNum = $splitJaIdNum -replace '\D', ''
                 }
 

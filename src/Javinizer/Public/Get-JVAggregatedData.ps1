@@ -38,6 +38,10 @@ function Get-JVAggregatedData {
         [Array]$IdPriority,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.priority.contentid')]
+        [Array]$ContentIdPriority,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.priority.label')]
         [Array]$LabelPriority,
 
@@ -126,8 +130,27 @@ function Get-JVAggregatedData {
         [Boolean]$ActressLanguageJa,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.emtadata.thumbcsv.autoadd')]
-        [Boolean]$ThumbCsvAutoAdd
+        [Alias('sort.metadata.thumbcsv.autoadd')]
+        [Boolean]$ThumbCsvAutoAdd,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.unknownactress')]
+        [Boolean]$UnknownActress,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.tag')]
+        [Array]$Tag,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.tagline')]
+        [String]$Tagline,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('scraper.option.idpreference')]
+        [String]$IdPreference,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [PSObject]$MediaInfo
     )
 
     process {
@@ -139,6 +162,7 @@ function Get-JVAggregatedData {
             $DirectorPriority = $Settings.'sort.metadata.priority.director'
             $GenrePriority = $Settings.'sort.metadata.priority.genre'
             $IdPriority = $Settings.'sort.metadata.priority.id'
+            $ContentIdPriority = $Settings.'sort.metadata.priority.contentid'
             $LabelPriority = $Settings.'sort.metadata.priority.label'
             $MakerPriority = $Settings.'sort.metadata.priority.maker'
             $RatingPriority = $Settings.'sort.metadata.priority.rating'
@@ -159,6 +183,10 @@ function Get-JVAggregatedData {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
+            $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
+            $Tag = $Settings.'sort.metadata.nfo.format.tag'
+            $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
+            $IdPreference = $Settings.'scraper.option.idpreference'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -169,6 +197,7 @@ function Get-JVAggregatedData {
 
         $aggregatedDataObject = [PSCustomObject]@{
             Id             = $null
+            ContentId      = $null
             DisplayName    = $null
             Title          = $null
             AlternateTitle = $null
@@ -180,11 +209,14 @@ function Get-JVAggregatedData {
             Maker          = $null
             Label          = $null
             Series         = $null
+            Tag            = $null
+            Tagline        = $null
             Actress        = $null
             Genre          = $null
             CoverUrl       = $null
             ScreenshotUrl  = $null
             TrailerUrl     = $null
+            MediaInfo      = $MediaInfo
         }
 
         $metadataFields = @(
@@ -203,7 +235,8 @@ function Get-JVAggregatedData {
             'Series',
             'ScreenshotUrl',
             'Title',
-            'TrailerUrl'
+            'TrailerUrl',
+            'ContentId'
         )
 
         foreach ($field in $metadataFields) {
@@ -214,6 +247,12 @@ function Get-JVAggregatedData {
                 if ($null -eq $aggregatedDataObject.$field) {
                     if ($field -eq 'AlternateTitle') {
                         $aggregatedDataObject.$field = $sourceData.Title
+                    } elseif ($field -eq 'Id') {
+                        if ($IdPreference -eq 'contentid') {
+                            $aggregatedDataObject.$field = $sourceData.ContentId
+                        } else {
+                            $aggregatedDataObject.$field = $sourceData.Id
+                        }
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
@@ -445,6 +484,17 @@ function Get-JVAggregatedData {
             }
         }
 
+        if ($UnknownActress) {
+            if ($null -eq $aggregatedDataObject.Actress) {
+                $aggregatedDataObject.Actress += [PSCustomObject]@{
+                    LastName     = $null
+                    FirstName    = 'Unknown'
+                    JapaneseName = 'Unknown'
+                    ThumbUrl     = $null
+                }
+            }
+        }
+
         if ($ReplaceGenre) {
             if (Test-Path -LiteralPath $GenreCsvPath) {
                 try {
@@ -494,6 +544,26 @@ function Get-JVAggregatedData {
 
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
+            }
+        }
+
+        if ($null -ne $Tag[0]) {
+            $aggregatedDataObject.Tag = @()
+            foreach ($entry in $Tag) {
+                $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+                if ($null -ne $tagString -and $tagstring -ne '') {
+                    $aggregatedDataObject.Tag += $tagString
+                }
+            }
+            if ($null -eq $aggregatedDataObject.Tag[0]) {
+                $aggregatedDataObject.Tag = $null
+            }
+        }
+
+        if ($Tagline -ne '') {
+            $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+            if ($null -ne $taglineString -and $taglineString -ne '') {
+                $aggregatedDataObject.Tagline += $taglineString
             }
         }
 

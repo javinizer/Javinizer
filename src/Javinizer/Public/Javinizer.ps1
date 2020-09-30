@@ -502,6 +502,10 @@ function Javinizer {
                         if ($item.Source -match 'r18') {
                             $item.Url | Get-R18Data -UncensorCsvPath:$uncensorCsvPath
                         }
+
+                        if ($item.Source -match 'dlgetchu') {
+                            $item.Url | Get-DLgetchuData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -517,7 +521,7 @@ function Javinizer {
                 }
 
                 if ($Nfo) {
-                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AddTag:$Settings.'sort.metadata.nfo.seriesastag'
+                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder'
                     Write-Output $nfoData
                 } else {
                     Write-Output $data.Data
@@ -548,7 +552,7 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [ThumbCsvPath - $thumbCsvPath]"
                         Invoke-Item -LiteralPath $thumbCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$thumbCsvPath]: $PSItem"
                     }
                 }
 
@@ -557,16 +561,16 @@ function Javinizer {
                         Write-Host "[$($MyInvocation.MyCommand.Name)] [GenreCsvPath - $genreCsvPath]"
                         Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$genreCsvPath]: $PSItem"
                     }
                 }
 
                 if ($OpenUncensor) {
                     try {
-                        Write-Host "[$($MyInvocation.MyCommand.Name)] [UncensorCsvPath - $uncensorCsvPath']"
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [UncensorCsvPath - $uncensorCsvPath]"
                         Invoke-Item -LiteralPath $uncensorCsvPath
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$uncensorCsvPath]: $PSItem"
                     }
                 }
             }
@@ -667,9 +671,13 @@ function Javinizer {
                         return
                     }
 
+                    if ($Settings.'sort.metadata.nfo.mediainfo') {
+                        $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
+                    }
+
                     $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                     if ($null -ne $javData) {
-                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($null -ne $javAggregatedData) {
                             $javAggregatedData | Set-JVMovie -Path $javMovies.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $JavMovies.PartNumber -Force:$Force
                         }
@@ -691,9 +699,13 @@ function Javinizer {
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
                         foreach ($movie in $javMovies) {
+                            if ($Settings.'sort.metadata.nfo.mediainfo') {
+                                $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
+                            }
+
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath
                             if ($null -ne $javData) {
-                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                 } else {

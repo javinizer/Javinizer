@@ -51,14 +51,19 @@ function Get-JVData {
         [Boolean]$Jav321Ja,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.dlgetchuja')]
+        [Boolean]$DLgetchuJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.dmm.scrapeactress')]
+        [Alias('scraper.option.dmm.scrapeactress')]
         [Boolean]$DmmScrapeActress,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Url')]
         [Alias('location.uncensorcsv')]
         [System.IO.FileInfo]$UncensorCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'),
 
@@ -221,11 +226,11 @@ function Get-JVData {
                 }
 
                 if ($DmmJa) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
-                    Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
+                    Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
-                        if ($using:DmmUrl) {
-                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        if ($using:DmmJaUrl) {
+                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         } elseif ($using:jvDmmUrl) {
                             $jvDmmUrl = $using:jvDmmUrl
                             $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
@@ -297,6 +302,14 @@ function Get-JVData {
                         $jvJav321Url = $using:jvJav321Url
                         $jvJav321Url.Ja | Get-Jav321Data
                     }
+                } | Out-Null
+            }
+
+            if ($DLgetchuJa) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DLgetchuJa] [Url - $DLgetchuJaUrl]"
+                Start-ThreadJob -Name "jvdata-DLgetchuJa" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Import-Module $using:jvModulePath
+                    $using:DLgetchuJaUrl | Get-DLGetchuData
                 } | Out-Null
             }
 

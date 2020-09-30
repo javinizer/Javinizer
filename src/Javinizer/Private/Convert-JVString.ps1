@@ -58,20 +58,39 @@ function Convert-JVString {
 
         $actressObject = @()
         if ($ActressLanguageJa) {
-            $actressObject = $Data.Actress.JapaneseName
+            if ($null -ne $Data.Actress.Japanese) {
+                $actressObject = $Data.Actress.JapaneseName
+            } elseif ($FirstNameOrder) {
+                foreach ($actress in $Data.Actress) {
+                    $actressObject += "$($actress.FirstName) $($actress.LastName)".Trim()
+                }
+            } else {
+                foreach ($actress in $Data.Actress) {
+                    $actressObject += "$($actress.LastName) $($actress.FirstName)".Trim()
+                }
+            }
         } elseif ($FirstNameOrder) {
-            foreach ($actress in $Data.Actress) {
-                $actressObject += "$($actress.FirstName) $($actress.LastName)".Trim()
+            if ($null -ne $Data.Actress.FirstName) {
+                foreach ($actress in $Data.Actress) {
+                    $actressObject += "$($actress.FirstName) $($actress.LastName)".Trim()
+                }
+            } else {
+                $actressObject = $Data.Actress.JapaneseName
             }
         } else {
-            foreach ($actress in $Data.Actress) {
-                $actressObject += "$($actress.LastName) $($actress.FirstName)".Trim()
+            if ($null -ne $Data.Actress.FirstName) {
+                foreach ($actress in $Data.Actress) {
+                    $actressObject += "$($actress.LastName) $($actress.FirstName)".Trim()
+                }
+            } else {
+                $actressObject = $Data.Actress.JapaneseName
             }
         }
 
         $actresses = ($actressObject | Sort-Object) -join $Delimiter
         $convertedName = $FormatString `
             -replace '<ID>', "$($Data.Id)" `
+            -replace '<CONTENTID>', "$($Data.ContentId)" `
             -replace '<TITLE>', "$($Data.Title)" `
             -replace '<RELEASEDATE>', "$($Data.ReleaseDate)" `
             -replace '<YEAR>', "$(($Data.ReleaseDate -split '-')[0])" `
@@ -80,7 +99,8 @@ function Convert-JVString {
             -replace '<SET>', "$($Data.Series)" `
             -replace '<LABEL>', "$($Data.Label)" `
             -replace '<ACTORS>', "$actresses" `
-            -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)"
+            -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)" `
+            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)"
 
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {
