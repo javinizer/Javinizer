@@ -29,7 +29,7 @@ A rebuild of my previous project [JAV-Sort-Scrape-javlibrary](https://github.com
 - [Python 3](https://www.python.org/downloads/)
     - [Pillow](https://pypi.org/project/Pillow/)
     - [Googletrans](https://pypi.org/project/googletrans/)
-- [MediaInfo](https://mediaarea.net/en/MediaInfo) *MediaInfo will need to be added to your PATH
+- [MediaInfo](https://mediaarea.net/en/MediaInfo/Download) *You will need the CLI version. MediaInfo will also need to be added to your PATH
 
 ```powershell
 # Python
