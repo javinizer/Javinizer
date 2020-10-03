@@ -63,6 +63,7 @@
     "sort.metadata.nfo.firstnameorder": 0,
     "sort.metadata.nfo.actresslanguageja": 0,
     "sort.metadata.nfo.unknownactress": 1,
+    "sort.metadata.nfo.originalpath": 0,
     "sort.metadata.nfo.format.tag": ["<SET>"],
     "sort.metadata.nfo.format.tagline": "",
     "sort.metadata.thumbcsv": 1,

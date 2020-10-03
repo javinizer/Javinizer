@@ -108,13 +108,17 @@ function Set-JVMovie {
         [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$FirstNameOrder,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.delimiter')]
         [String]$DelimiterFormat,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.actresslanguageja')]
-        [Boolean]$ActressLanguageJa
+        [Boolean]$ActressLanguageJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.originalpath')]
+        [Boolean]$OriginalPath
     )
 
     begin {
@@ -151,6 +155,7 @@ function Set-JVMovie {
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+            $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
         }
 
         if ($RenameFile) {
@@ -215,7 +220,11 @@ function Set-JVMovie {
             if ($CreateNfo) {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa
+                    if ($OriginalPath) {
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path
+                    } else {
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa
+                    }
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
                 } catch {

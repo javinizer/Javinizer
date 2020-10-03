@@ -79,7 +79,10 @@ function Get-JVNfo {
         [Boolean]$ActressLanguageJa,
 
         [Parameter()]
-        [Boolean]$NameOrder
+        [Boolean]$NameOrder,
+
+        [Parameter()]
+        [String]$OriginalPath
     )
 
     process {
@@ -127,6 +130,15 @@ function Get-JVNfo {
     <set>$Series</set>
 
 "@
+
+        if ($OriginalPath) {
+            $originalPathNfoString = @"
+    <originalpath>$OriginalPath</originalpath>
+
+"@
+            $nfoString = $nfoString + $originalPathNfoString
+
+        }
 
         foreach ($item in $Tag) {
             $tagNfoString = @"

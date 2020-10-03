@@ -94,6 +94,7 @@ function Test-JVSettings {
             'sort.metadata.nfo.actresslanguageja',
             'sort.metadata.nfo.firstnameorder',
             'sort.metadata.nfo.translatedescription',
+            'sort.metadata.nfo.originalpath',
             'sort.metadata.thumbcsv.convertalias',
             'sort.metadata.thumbcsv.autoadd',
             'sort.metadata.thumbcsv',
