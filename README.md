@@ -570,6 +570,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.metadata.nfo.format.tagline` | Specifies the format string to add a tagline to the aggregated data object | [Format Strings](#Metadata-Format-Strings)
 | `sort.metadata.nfo.actresslanguageja` | Specifies to prefer Japanese names when creating the metadata nfo. | 0, 1
 | `sort.metadata.nfo.unknownactress` | Specifies to add an 'Unknown' actress to scraped movies without any actresses | 0, 1
+| `sort.metadata.nfo.originalpath` | Specifies to add an 'originalpath' field to the nfo specifying the location the movie was last sorted from | 0, 1
 | `sort.metadata.thumbcsv` | Specifies to use the thumbnail csv when aggregating metadata. | 0, 1
 | `sort.metadata.thumbcsv.autoadd` | Specifies to automatically add missing actresses to the thumbnail csv when scraping using the R18 or R18Zh scrapers. | 0, 1
 | `sort.metadata.thumbcsv.convertalias` | Specifies to use the thumbnail csv alias field to replace actresses in the metadata. | 0, 1
