@@ -73,6 +73,10 @@ function Set-JVMovie {
         [String]$FolderFormat,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.format.outputfolder')]
+        [String]$OutputFolderFormat,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.posterimg')]
         [Array]$PosterFormat,
 
@@ -144,6 +148,7 @@ function Set-JVMovie {
             $DownloadTrailerVid = $Settings.'sort.download.trailervid'
             $FileFormat = $Settings.'sort.format.file'
             $FolderFormat = $Settings.'sort.format.folder'
+            $OutputFolderFormat = $Settings.'sort.format.outputfolder'
             $PosterFormat = $Settings.'sort.format.posterimg'
             $ThumbnailFormat = $Settings.'sort.format.thumbimg'
             $TrailerFormat = $Settings.'sort.format.trailervid'
@@ -156,12 +161,16 @@ function Set-JVMovie {
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
+
         }
 
         if ($RenameFile) {
             $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         } else {
             $fileName = (Get-Item -LiteralPath $Path).BaseName
+        }
+        if ($outputFolderFormat -ne '') {
+            $outputFolderName = Convert-JVstring -Data $Data -Format $OutputFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         }
         $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
@@ -184,9 +193,17 @@ function Set-JVMovie {
 
         if ($MoveToFolder) {
             if ($DestinationPath) {
-                $folderPath = Join-Path -Path $DestinationPath -ChildPath $folderName
+                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
+                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                } else {
+                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $folderName
+                }
             } else {
-                $folderPath = Join-Path -Path $Path -ChildPath $folderName
+                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
+                    $folderPath = Join-Path -Path $Path -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                } else {
+                    $folderPath = Join-Path -Path $Path -ChildPath $folderName
+                }
             }
         } else {
             if ($DestinationPath) {
