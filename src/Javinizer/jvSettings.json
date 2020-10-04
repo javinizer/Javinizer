@@ -92,6 +92,8 @@
     "emby.url": "http:\/\/192.168.0.1:8096",
     "emby.apikey": "",
     "javlibrary.baseurl": "http:\/\/www.javlibrary.com",
+    "javlibrary.cookie.session": "",
+    "javlibrary.cookie.userid": "",
     "admin.log": 1,
     "admin.log.level": "info"
 }
