@@ -177,7 +177,7 @@ function Get-R18Maker {
 
     process {
         $maker = ((($Webrequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
-        $maker = Convert-HtmlCharacter -String $maker
+        $maker = Convert-HtmlCharacter -String ($maker -replace '\n', ' ')
 
         if ($maker -eq '----') {
             $maker = $null
@@ -210,6 +210,8 @@ function Get-R18Label {
                 }
             }
         }
+
+        $label = $label -replace '\n', ' '
 
         if ($label -eq '----') {
             $label = $null

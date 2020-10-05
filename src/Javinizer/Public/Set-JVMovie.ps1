@@ -73,6 +73,10 @@ function Set-JVMovie {
         [String]$FolderFormat,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.format.outputfolder')]
+        [String]$OutputFolderFormat,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.posterimg')]
         [Array]$PosterFormat,
 
@@ -108,13 +112,21 @@ function Set-JVMovie {
         [Alias('sort.metadata.nfo.firstnameorder')]
         [Boolean]$FirstNameOrder,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.delimiter')]
         [String]$DelimiterFormat,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.actresslanguageja')]
-        [Boolean]$ActressLanguageJa
+        [Boolean]$ActressLanguageJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.originalpath')]
+        [Boolean]$OriginalPath,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.altnamerole')]
+        [Boolean]$AltNameRole
     )
 
     begin {
@@ -140,6 +152,7 @@ function Set-JVMovie {
             $DownloadTrailerVid = $Settings.'sort.download.trailervid'
             $FileFormat = $Settings.'sort.format.file'
             $FolderFormat = $Settings.'sort.format.folder'
+            $OutputFolderFormat = $Settings.'sort.format.outputfolder'
             $PosterFormat = $Settings.'sort.format.posterimg'
             $ThumbnailFormat = $Settings.'sort.format.thumbimg'
             $TrailerFormat = $Settings.'sort.format.trailervid'
@@ -151,12 +164,18 @@ function Set-JVMovie {
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+            $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
+            $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
+
         }
 
         if ($RenameFile) {
             $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         } else {
             $fileName = (Get-Item -LiteralPath $Path).BaseName
+        }
+        if ($outputFolderFormat -ne '') {
+            $outputFolderName = Convert-JVstring -Data $Data -Format $OutputFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         }
         $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
         $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
@@ -179,9 +198,17 @@ function Set-JVMovie {
 
         if ($MoveToFolder) {
             if ($DestinationPath) {
-                $folderPath = Join-Path -Path $DestinationPath -ChildPath $folderName
+                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
+                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                } else {
+                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $folderName
+                }
             } else {
-                $folderPath = Join-Path -Path $Path -ChildPath $folderName
+                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
+                    $folderPath = Join-Path -Path $Path -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                } else {
+                    $folderPath = Join-Path -Path $Path -ChildPath $folderName
+                }
             }
         } else {
             if ($DestinationPath) {
@@ -215,7 +242,11 @@ function Set-JVMovie {
             if ($CreateNfo) {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa
+                    if ($OriginalPath) {
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
+                    } else {
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
+                    }
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
                 } catch {

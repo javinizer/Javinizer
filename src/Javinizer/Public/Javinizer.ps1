@@ -129,6 +129,9 @@ function Javinizer {
     .PARAMETER Set
         Specifies a hashtable to update specific settings on the command-line.
 
+    .PARAMETER SetOwned
+        Specifies to set a path of movie files as owned on JavLibrary.
+
     .PARAMETER Version
         Specifies to display the Javinizer module version.
 
@@ -240,6 +243,12 @@ function Javinizer {
     -----------
     Opens the settings file.
 
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned
+
+    Description
+    -----------
+    Sets movies detected in a directory as owned on JavLibrary.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]
@@ -247,6 +256,7 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path', Position = 0)]
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
+        [Parameter(ParameterSetName = 'Javlibrary', Position = 0)]
         [AllowEmptyString()]
         [String]$Path,
 
@@ -256,20 +266,25 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
         [Array]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Info')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [System.IO.FileInfo]$SettingsPath,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [Switch]$Strict,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -282,6 +297,7 @@ function Javinizer {
         [Switch]$Force,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [Switch]$HideProgress,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -369,11 +385,15 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Thumbs')]
         [Array]$Pages,
 
+        [Parameter(ParameterSetName = 'Javlibrary')]
+        [Switch]$SetOwned,
+
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetNAme = 'Info')]
         [Parameter(ParameterSetName = 'Settings')]
         [Parameter(ParameterSetName = 'Emby')]
         [Parameter(ParameterSetName = 'Thumbs')]
+        [Parameter(ParameterSetName = 'Javlibrary')]
         [Hashtable]$Set,
 
         [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
@@ -521,7 +541,7 @@ function Javinizer {
                 }
 
                 if ($Nfo) {
-                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder'
+                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AltNameRole:$Settings.'sort.metadata.nfo.altnamerole'
                     Write-Output $nfoData
                 } else {
                     Write-Output $data.Data
@@ -617,6 +637,64 @@ function Javinizer {
                 Update-JVNfo @nfoParams #>
             }
 
+            'Javlibrary' {
+                try {
+                    $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -Verbose:$false -Headers @{
+                        "method"                    = "GET"
+                        "authority"                 = "www.javlibrary.com"
+                        "scheme"                    = "https"
+                        "path"                      = "/en/mv_owned_print.php"
+                        "upgrade-insecure-requests" = "1"
+                        "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+                        "sec-fetch-site"            = "none"
+                        "sec-fetch-mode"            = "navigate"
+                        "sec-fetch-user"            = "?1"
+                        "sec-fetch-dest"            = "document"
+                        "accept-encoding"           = "gzip, deflate, br"
+                        "accept-language"           = "en-US,en;q=0.9"
+                        "cookie"                    = "timezone=420; over18=18; userid=$($Settings.'javlibrary.cookie.userid'); session=$($Settings.'javlibrary.cookie.session')"
+                    }
+
+                    $ownedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
+                    $ownedMovies = $ownedMovies[2..($ownedMovies.Length - 1)]
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when retrieving owned movies from [https://www.javlibrary.com/en/mv_owned_print.php]"
+                }
+
+                if ($null -ne $ownedMovies) {
+                    if ($ownedMovies -gt 1) {
+                        if ($ownedMovies[0].Length -le 1) {
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when authenticating to JAVLibrary, check that your userid and session cookies are valid"
+                        }
+                    }
+                }
+
+                try {
+                    $javMovies = $Settings | Get-JVItem -Path $Path -MinimumFileSize $Settings.'match.minimumfilesize' -RegexEnabled:$Settings.'match.regex' -RegexString $Settings.'match.regex.string' -RegexIdMatch $Settings.'match.regex.idmatch' -RegexPtMatch $Settings.'match.regex.ptmatch' -Recurse:$Recurse -Depth:$Depth -Strict:$Strict | Select-Object Id -Unique
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting existing movies from path [$Path]: $PSItem"
+                    return
+                }
+
+                $unowned = @()
+                foreach ($movie in $javMovies) {
+                    if (!($ownedMovies -match $movie.Id)) {
+                        $unowned += $movie.Id
+                    }
+                }
+
+                if ($unowned.Count -ge 1) {
+                    $index = 1
+                    foreach ($movieId in $unowned) {
+                        Write-Progress -Id 1 -Activity "Javinizer" -Status "Remaining Jobs: $($unowned.Count-$index)" -PercentComplete ($index/$unowned.Count*100) -CurrentOperation "Setting owned: $movieId"
+                        Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -Session $Settings.'javlibrary.cookie.session'
+                        $index++
+                    }
+                } else {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- no unowned movies detected"
+                }
+            }
+
             'Thumbs' {
                 if ($Pages) {
                     Update-JVThumbCsv -ThumbCsvPath $thumbCsvPath -StartPage $Pages[0] -EndPage $Pages[1]
@@ -654,20 +732,19 @@ function Javinizer {
 
                 try {
                     $javMovies = $Settings | Get-JVItem -Path $Path -MinimumFileSize $Settings.'match.minimumfilesize' -RegexEnabled:$Settings.'match.regex' -RegexString $Settings.'match.regex.string' -RegexIdMatch $Settings.'match.regex.idmatch' -RegexPtMatch $Settings.'match.regex.ptmatch' -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
-                    # Write-Host "[$($MyInvocation.MyCommand.Name)] [Path - $Path] [DestinationPath - $DestinationPath] [Files - $($javMovies.Count)]"
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting local movies in [$Path]: $PSItem"
                     return
                 }
 
                 if ($null -eq $javMovies) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Path] Exiting -- no valid movies detected"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- no valid movies detected"
                     return
                 }
 
                 if ($Url) {
                     if (!(Test-Path -LiteralPath $Path -PathType Leaf)) {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Path] Exiting -- not a valid single file path"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- not a valid single file path"
                         return
                     }
 
