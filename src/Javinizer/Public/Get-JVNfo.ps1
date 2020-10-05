@@ -111,6 +111,7 @@ function Get-JVNfo {
         $Maker = Convert-NfoChar -String $Maker -ErrorAction SilentlyContinue
         $Label = Convert-NfoChar -String $Label -ErrorAction SilentlyContinue
         $Series = Convert-NfoChar -String $Series -ErrorAction SilentlyContinue
+        $Tagline = Convert-NfoChar -String $Tagline -ErrorAction SilentlyContinue
         $releaseYear = ($ReleaseDate -split '-')[0]
 
         $nfoString = @"
@@ -144,6 +145,7 @@ function Get-JVNfo {
         }
 
         foreach ($item in $Tag) {
+            $item = Convert-NfoChar -String $Tag -ErrorAction SilentlyContinue
             $tagNfoString = @"
     <tag>$item</tag>
 
