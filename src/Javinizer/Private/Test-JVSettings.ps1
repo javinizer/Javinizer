@@ -91,6 +91,7 @@ function Test-JVSettings {
             'sort.download.thumbimg',
             'sort.download.trailervid',
             'sort.metadata.genrecsv',
+            'sort.metadata.nfo.altnamerole',
             'sort.metadata.nfo.actresslanguageja',
             'sort.metadata.nfo.firstnameorder',
             'sort.metadata.nfo.translatedescription',

@@ -82,7 +82,10 @@ function Get-JVNfo {
         [Boolean]$NameOrder,
 
         [Parameter()]
-        [String]$OriginalPath
+        [String]$OriginalPath,
+
+        [Parameter()]
+        [Boolean]$AltNameRole
     )
 
     process {
@@ -162,6 +165,13 @@ function Get-JVNfo {
             if ($ActressLanguageJa) {
                 if ($null -ne $item.JapaneseName) {
                     $actressName = ($item.JapaneseName)
+                    if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
+                        if ($NameOrder) {
+                            $altName = ("$($item.FirstName) $($item.LastName)").Trim()
+                        } else {
+                            $altName = ("$($item.LastName) $($item.FirstName)").Trim()
+                        }
+                    }
                 }
 
                 if ($null -eq $actressName) {
@@ -171,6 +181,7 @@ function Get-JVNfo {
                         } else {
                             $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
                         }
+                        $altName = $null
                     }
                 }
             } else {
@@ -180,25 +191,42 @@ function Get-JVNfo {
                     } else {
                         $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
                     }
+
+                    if ($null -ne $item.JapaneseName) {
+                        $altName = ($item.JapaneseName)
+                    }
                 }
 
                 if ($null -eq $actressName) {
                     if ($null -ne $item.JapaneseName) {
                         $actressName = ($item.JapaneseName).Trim()
                     }
+                    $altName = $null
                 }
             }
 
-
-            $actressNfoString = @"
+            if ($AltNameRole) {
+                $actressNfoString = @"
     <actor>
         <name>$actressName</name>
-        <altname>$($item.JapaneseName)</altname>
+        <altname>$altName</altname>
+        <thumb>$($item.ThumbUrl)</thumb>
+        <role>$altName</role>
+    </actor>
+
+"@
+            } else {
+                $actressNfoString = @"
+    <actor>
+        <name>$actressName</name>
+        <altname>$altName</altname>
         <thumb>$($item.ThumbUrl)</thumb>
         <role>Actress</role>
     </actor>
 
 "@
+            }
+
             $nfoString = $nfoString + $actressNfoString
         }
 

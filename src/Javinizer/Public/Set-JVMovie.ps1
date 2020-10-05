@@ -122,7 +122,11 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.originalpath')]
-        [Boolean]$OriginalPath
+        [Boolean]$OriginalPath,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.altnamerole')]
+        [Boolean]$AltNameRole
     )
 
     begin {
@@ -161,6 +165,7 @@ function Set-JVMovie {
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
+            $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
 
         }
 
@@ -238,9 +243,9 @@ function Set-JVMovie {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
                     if ($OriginalPath) {
-                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
                     } else {
-                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa
+                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
                     }
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
