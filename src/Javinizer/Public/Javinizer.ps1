@@ -129,6 +129,9 @@ function Javinizer {
     .PARAMETER Set
         Specifies a hashtable to update specific settings on the command-line.
 
+    .PARAMETER SetOwned
+        Specifies to set a path of movie files as owned on JavLibrary.
+
     .PARAMETER Version
         Specifies to display the Javinizer module version.
 
@@ -240,6 +243,12 @@ function Javinizer {
     -----------
     Opens the settings file.
 
+    .EXAMPLE
+    Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned
+
+    Description
+    -----------
+    Sets movies detected in a directory as owned on JavLibrary.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Path')]

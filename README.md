@@ -98,7 +98,10 @@ Javinizer [[-Path] <String>] [[-DestinationPath] <String>] [-Recurse] [-Depth <I
 [-SettingsPath <FileInfo>] [-Strict] [-MoveToFolder <Boolean>] [-RenameFile <Boolean>] [-Force] [-HideProgress]
 [-Update] [-IsThread] [-Set <Hashtable>] [<CommonParameters>]
 
-Javinizer [[-Path] <String>] [-Recurse] [-Depth <Int32>] -UpdateNfo [<CommonParameters>]
+Javinizer [[-Path] <String>] [-Recurse] [-Depth <Int32>] [-SettingsPath <FileInfo>] -UpdateNfo [<CommonParameters>]
+
+Javinizer [[-Path] <String>] [-Recurse] [-Depth <Int32>] [-SettingsPath <FileInfo>] [-Strict] [-HideProgress]
+[-SetOwned] [-Set <Hashtable>] [<CommonParameters>]
 
 Javinizer [-SettingsPath <FileInfo>] [-Find] <PSObject> [-Aggregated] [-Nfo] [-R18] [-R18Zh] [-Dmm] [-DmmJa]
 [-Javlibrary] [-JavlibraryZh] [-JavlibraryJa] [-Javbus] [-JavbusJa] [-JavbusZh] [-Jav321Ja] [-Set <Hashtable>]
@@ -242,6 +245,9 @@ PARAMETERS
 -Set <Hashtable>
     Specifies a hashtable to update specific settings on the command-line.
 
+-SetOwned [<SwitchParameter>]
+    Specifies to set a path of movie files as owned on JavLibrary.
+
 -Version [<SwitchParameter>]
     Specifies to display the Javinizer module version.
 
@@ -378,6 +384,14 @@ PS > Javinizer -OpenSettings
 Description
 -----------
 Opens the settings file.
+
+-------------------------- EXAMPLE 15 --------------------------
+
+PS > Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned
+
+Description
+-----------
+Sets movies detected in a directory as owned on JavLibrary.
 
 ```
 
@@ -554,6 +568,8 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.format.delimiter` | Specifies the delimiter between actresses when using \<ACTORS> in the format string. | Any string value
 | `sort.format.file` | Specifies the format string when renaming a file. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.folder` | Specifies the format string when creating the folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.outputfolder` | Specifies the format string when creating an output folder in the destination path. Leaving this blank will omit creating the output folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.posterimg` | Specifies an array of format strings when creating the poster image. Multiple strings will allow you to create multiple poster image files. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.trailervid` | Specifies the format string when creating the trailer video. | [Format Strings](#Metadata-Format-Strings)
@@ -562,6 +578,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.format.screenshotfolder` | Specifies the format string when creating the screenshot images folder. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.actressimgfolder` | Specifies the format string when creating the actress image folder. | [Format Strings](#Metadata-Format-Strings)
 | `sort.metadata.nfo.mediainfo` | Specifies to add media metadata information to the nfo file. This requires the MediaInfo command line application. | 0, 1
+| `sort.metadata.nfo.altnamerole` | Specifies to set the actress role in the nfo as the altname. | 0, 1
 | `sort.metadata.nfo.translatedescription` | Specifies to translate the description. | 0, 1
 | `sort.metadata.nfo.translatedescription.language` | Specifies which language to translate to.  | Check [here](https://developers.google.com/admin-sdk/directory/v1/languages) for language codes
 | `sort.metadata.nfo.displayname` | Specifies the format string of the displayname in the metadata nfo file. | [Format Strings](#Metadata-Format-Strings)
@@ -570,7 +587,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.metadata.nfo.format.tagline` | Specifies the format string to add a tagline to the aggregated data object | [Format Strings](#Metadata-Format-Strings)
 | `sort.metadata.nfo.actresslanguageja` | Specifies to prefer Japanese names when creating the metadata nfo. | 0, 1
 | `sort.metadata.nfo.unknownactress` | Specifies to add an 'Unknown' actress to scraped movies without any actresses | 0, 1
-| `sort.metadata.nfo.originalpath` | Specifies to add an 'originalpath' field to the nfo specifying the location the movie was last sorted from | 0, 1
+| `sort.metadata.nfo.originalpath` | Specifies to add an 'originalpath' field to the nfo specifying the location the movie was last sorted from. | 0, 1
 | `sort.metadata.thumbcsv` | Specifies to use the thumbnail csv when aggregating metadata. | 0, 1
 | `sort.metadata.thumbcsv.autoadd` | Specifies to automatically add missing actresses to the thumbnail csv when scraping using the R18 or R18Zh scrapers. | 0, 1
 | `sort.metadata.thumbcsv.convertalias` | Specifies to use the thumbnail csv alias field to replace actresses in the metadata. | 0, 1

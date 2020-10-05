@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1]
+
+### Added
+- Setting `sort.format.outputfolder` to create a static or dynamic output folder for sorted movies in the destination path (#115)
+    - This setting accepts a format string (i.e. `"sort.format.outputfolder": "<STUDIO>"` will sort movies into a folder of their studio name in the destination path)
+- Setting `sort.metadata.nfo.altnamerole` to add the actress `<altname>` as the actress role (#110)
+- Setting `javlibrary.cookie.session` and `javlibrary.cookie.userid` to set a path of movies as 'Owned' on JavLibrary. This runs on a single thread and is not affected by throttlelimit (#119)
+    - Log into JavLibrary and view browser cookies [www.javlibrary.com / Cookies / session] and [www.javlibrary.com / Cookies / userid] and define them in your settings
+    - Usage: `Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned`
+- Setting `sort.metadata.nfo.originalpath` to add the path the movie was last sorted from to the nfo file under field `<originalpath>` (#116)
+
+### Changed
+- `<altname>` in the actress metadata in the nfo is now dynamic based on the selected actress name language (#110)
+
+### Fixed
+- Sort no longer fails when newlines are present in R18 maker and label metadata output (#121)
+
 ## [2.1.0]
 
 ### Added
