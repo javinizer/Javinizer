@@ -367,7 +367,7 @@ function Get-JVAggregatedData {
                     # Try three methods for matching aliases
                     # FirstName | FirstName, LastName | JapaneseName
                     for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
-                        if (($aggregatedDataObject.Actress[$x].LastName -eq '' -and $aggregatedDataObject.Actress[$x].FirstName -ne '') -and ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName'))) {
+                        if ((($aggregatedDataObject.Actress[$x].LastName -eq '' -or $null -eq $aggregatedDataObject.Actress[$x].LastName) -and ($aggregatedDataObject.Actress[$x].FirstName -ne '' -and $null -ne $aggregatedDataObject.Actress[$x].FirstName)) -and ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName'))) {
                             $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
                             if ($matched.Count -eq 1) {
                                 $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
@@ -387,10 +387,10 @@ function Get-JVAggregatedData {
                         } elseif ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
                             $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
                             if ($matched.Count -eq 1) {
-                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched[0].Index].FirstName
-                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
-                                $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched[0].Index].JapaneseName
-                                $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched[0].Index].ThumbUrl
+                                $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
+                                $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
+                                $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
+                                $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched.Index].ThumbUrl
                                 $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName LastName match"
                             } elseif ($matched.Count -gt 1) {
@@ -402,7 +402,7 @@ function Get-JVAggregatedData {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName LastName match"
                             }
                         } elseif (($aggregatedDataObject.Actress[$x].JapaneseName -ne '') -and ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName'))) {
-                            $aliasString = "$($matched.LastName) $($matched.FirstName)".Trim()
+                            $aliasString = "$($matched.JapaneseName)".Trim()
                             if ($matched.Count -eq 1) {
                                 $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched.Index].FirstName
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
