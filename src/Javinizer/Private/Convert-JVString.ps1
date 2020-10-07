@@ -20,7 +20,10 @@ function Convert-JVString {
         [Boolean]$ActressLanguageJa,
 
         [Parameter()]
-        [Boolean]$FirstNameOrder
+        [Boolean]$FirstNameOrder,
+
+        [Parameter()]
+        [Boolean]$GroupActress
     )
 
     process {
@@ -88,6 +91,17 @@ function Convert-JVString {
         }
 
         $actresses = ($actressObject | Sort-Object) -join $Delimiter
+
+        if ($GroupActress) {
+            if (($actresses -split $Delimiter).Count -gt 1) {
+                $actresses = '@Group'
+            } elseif ($actresses -match 'Unknown') {
+                $actresses = '@Unknown'
+            }
+        } else {
+            $actresses = ($actressObject | Sort-Object) -join $Delimiter
+        }
+
         $convertedName = $FormatString `
             -replace '<ID>', "$($Data.Id)" `
             -replace '<CONTENTID>', "$($Data.ContentId)" `
