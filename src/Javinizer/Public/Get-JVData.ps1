@@ -213,7 +213,7 @@ function Get-JVData {
 
             if ($Dmm -or $DmmJa) {
                 if (!($DmmUrl -or $DmmJaUrl)) {
-                    $jvDmmUrl = Get-DmmUrl -Id $Id -Strict:$Strict
+                    $jvDmmUrl = Get-DmmUrl -Id $Id
                 }
                 if ($Dmm) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
