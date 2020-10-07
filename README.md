@@ -452,18 +452,18 @@ For example, if your actress priority looks like this: `"sort.metadata.priority.
 
 ### Metadata Format Strings
 
-- <\ID>
-- <\CONTENTID>
-- <\TITLE>
-- <\RELEASEDATE>
-- <\YEAR>
-- <\STUDIO>
-- <\RUNTIME>
-- <\SET>
-- <\LABEL>
-- <\ACTORS>
-- <\ORIGINALTITLE>
-- <\RESOLUTION> - requires `sort.metadata.nfo.mediainfo` as true
+- \<ID>
+- \<CONTENTID>
+- \<TITLE>
+- \<RELEASEDATE>
+- \<YEAR>
+- \<STUDIO>
+- \<RUNTIME>
+- \<SET>
+- \<LABEL>
+- \<ACTORS>
+- \<ORIGINALTITLE>
+- \<RESOLUTION> - requires `sort.metadata.nfo.mediainfo` as true
 
 ### Actress Thumb Csv
 
@@ -523,7 +523,7 @@ For example, if your jvGenres.csv file looks like this:
 | -------- | ----------- |
 | Blow | Blowjob
 
-- Any scraped genre that equals `Blow` will be replaced with `Blowjob
+- Any scraped genre that equals `Blow` will be replaced with `Blowjob`
 
 ## Settings Information
 
@@ -565,6 +565,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.download.posterimg` | Specifies to create the poster image when sorting a movie. Sort.download.thumbimg is required for this to function. | 0, 1
 | `sort.download.screenshotimg` | Specifies to download screenshot images when sorting a movie. | 0, 1
 | `sort.download.trailervid` | Specifies to download the trailer video when sorting a movie. | 0, 1
+| `sort.format.groupactress` | Specifies to convert theformat string for \<ACTORS> when there is more than one actress to "@Group" and if unknown, to "@Unknown". | 0, 1
 | `sort.format.delimiter` | Specifies the delimiter between actresses when using \<ACTORS> in the format string. | Any string value
 | `sort.format.file` | Specifies the format string when renaming a file. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.folder` | Specifies the format string when creating the folder. | [Format Strings](#Metadata-Format-Strings)

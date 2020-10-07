@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2]
+
+### Added
+- Setting `sort.format.groupactress` to convert the `<ACTORS>` format string. If enabled:
+    - Multiple actresses => `@Group`
+    - Unknown actress => `@Unknown`
+- `-Strict` parameter is now available during `-Find` usage for R18 scraper only (#125)
+    - R18 scraper does automatic conversion from ContentID => Id which failed for certain movie IDs ( MBR-AA063)
+
+### Fixed
+- Aliases for actresses with a single-word name are now properly replaced by the thumb csv
+- Tags and tagline fields in the nfo now correctly replace invalid xml characters (#124)
+    - Sort no longer fails when trying to download actress images
+- Downloading actress images no longer fails when
+- R18 title metadata is now properly uncensored
+
 ## [2.1.1]
 
 ### Added
