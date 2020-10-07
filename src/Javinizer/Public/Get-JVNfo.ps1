@@ -94,7 +94,7 @@ function Get-JVNfo {
             param (
                 [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
                 [AllowEmptyString()]
-                [String]$String
+                [PSObject]$String
             )
 
             process {

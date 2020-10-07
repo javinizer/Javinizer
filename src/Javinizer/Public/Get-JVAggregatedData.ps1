@@ -150,7 +150,12 @@ function Get-JVAggregatedData {
         [String]$IdPreference,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [PSObject]$MediaInfo
+        [Alias('sort.metadata.nfo.mediainfo')]
+        [PSObject]$MediaInfo,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.format.groupactress')]
+        [Boolean]$GroupActress
     )
 
     process {
@@ -187,6 +192,7 @@ function Get-JVAggregatedData {
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
             $IdPreference = $Settings.'scraper.option.idpreference'
+            $GroupActress = $Settings.'sort.format.groupactress'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -262,7 +268,7 @@ function Get-JVAggregatedData {
         }
 
         # The displayname value is updated after the previous fields have already been scraped
-        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder
+        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($ThumbCsv) {
             if (Test-Path -LiteralPath $ThumbCsvPath) {
@@ -550,7 +556,7 @@ function Get-JVAggregatedData {
         if ($null -ne $Tag[0]) {
             $aggregatedDataObject.Tag = @()
             foreach ($entry in $Tag) {
-                $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+                $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
                 if ($null -ne $tagString -and $tagstring -ne '') {
                     $aggregatedDataObject.Tag += $tagString
                 }
@@ -561,7 +567,7 @@ function Get-JVAggregatedData {
         }
 
         if ($Tagline -ne '') {
-            $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder)
+            $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
             if ($null -ne $taglineString -and $taglineString -ne '') {
                 $aggregatedDataObject.Tagline += $taglineString
             }

@@ -90,6 +90,7 @@ function Test-JVSettings {
             'sort.download.screenshotimg',
             'sort.download.thumbimg',
             'sort.download.trailervid',
+            'sort.format.groupactress',
             'sort.metadata.genrecsv',
             'sort.metadata.nfo.altnamerole',
             'sort.metadata.nfo.actresslanguageja',
