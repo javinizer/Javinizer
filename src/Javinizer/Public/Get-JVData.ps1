@@ -72,7 +72,10 @@ function Get-JVData {
         [PSObject]$Settings,
 
         [Parameter(ParameterSetName = 'Url')]
-        [PSObject]$Url
+        [PSObject]$Url,
+
+        [Parameter(ParameterSetName = 'Id')]
+        [Switch]$Strict
     )
 
     process {
@@ -125,7 +128,7 @@ function Get-JVData {
 
             if ($R18 -or $R18Zh) {
                 if (!($R18Url -or $R18ZhUrl)) {
-                    $jvR18Url = Get-R18Url -Id $Id
+                    $jvR18Url = Get-R18Url -Id $Id -Strict:$Strict
                 }
                 if ($R18) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
@@ -210,7 +213,7 @@ function Get-JVData {
 
             if ($Dmm -or $DmmJa) {
                 if (!($DmmUrl -or $DmmJaUrl)) {
-                    $jvDmmUrl = Get-DmmUrl -Id $Id
+                    $jvDmmUrl = Get-DmmUrl -Id $Id -Strict:$Strict
                 }
                 if ($Dmm) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"

@@ -4,10 +4,13 @@ function Get-DmmUrl {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, ValueFromPipeline = $true)]
-        [string]$Id,
+        [String]$Id,
 
         [Parameter()]
-        [string]$r18Url
+        [String]$r18Url,
+
+        [Parameter()]
+        [Switch]$Strict
     )
 
     process {
@@ -18,14 +21,16 @@ function Get-DmmUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
         } else {
             # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
-            if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
-                $splitId = $Id -split '-'
-                if (($splitId[1])[-1] -match '\D') {
-                    $appendChar = ($splitId[1])[-1]
-                    $splitId[1] = $splitId[1] -replace '\D', ''
+            if (!($Strict)) {
+                if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
+                    $splitId = $Id -split '-'
+                    if (($splitId[1])[-1] -match '\D') {
+                        $appendChar = ($splitId[1])[-1]
+                        $splitId[1] = $splitId[1] -replace '\D', ''
+                    }
+                    $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
+                    $Id = $Id.Trim()
                 }
-                $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
-                $Id = $Id.Trim()
             }
 
             $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
