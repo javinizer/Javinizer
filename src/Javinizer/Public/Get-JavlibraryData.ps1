@@ -7,7 +7,10 @@ function Get-JavlibraryData {
         [String]$Url,
 
         [Parameter()]
-        [String]$JavlibraryBaseUrl
+        [String]$JavlibraryBaseUrl,
+
+        [Parameter()]
+        [PSObject]$Session
     )
 
     process {
@@ -33,7 +36,7 @@ function Get-JavlibraryData {
             Maker         = Get-JavlibraryMaker -WebRequest $webRequest
             Label         = Get-JavlibraryLabel -WebRequest $webRequest
             Rating        = Get-JavlibraryRating -WebRequest $webRequest
-            Actress       = Get-JavlibraryActress -WebRequest $webRequest -JavlibraryBaseUrl $JavlibraryBaseUrl
+            Actress       = Get-JavlibraryActress -WebRequest $webRequest -JavlibraryBaseUrl $JavlibraryBaseUrl -Session:$Session
             Genre         = Get-JavlibraryGenre -WebRequest $webRequest
             CoverUrl      = Get-JavlibraryCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-JavlibraryScreenshotUrl -WebRequest $webRequest

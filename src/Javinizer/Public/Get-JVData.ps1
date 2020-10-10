@@ -75,7 +75,11 @@ function Get-JVData {
         [PSObject]$Url,
 
         [Parameter(ParameterSetName = 'Id')]
-        [Switch]$Strict
+        [Switch]$Strict,
+
+        [Parameter(ParameterSetName = 'Url')]
+        [Parameter(ParameterSetName = 'Id')]
+        [PSObject]$Session
     )
 
     process {
@@ -163,18 +167,18 @@ function Get-JVData {
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {
                 if (!($JavlibraryUrl -or $JavlibraryJaUrl -or $JavlibraryZhUrl)) {
-                    $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl
+                    $jvJavlibraryUrl = Get-JavlibraryUrl -Id $Id -BaseUrl $JavlibraryBaseUrl -Session:$Session
                 }
                 if ($Javlibrary) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $JavlibraryUrl]"
                     Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if ($using:JavlibraryUrl) {
-                            $using:JavlibraryUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                            $using:JavlibraryUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         } elseif ($using:jvJavlibraryUrl) {
                             $jvJavlibraryUrl = $using:jvJavlibraryUrl
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.En | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                                $jvJavlibraryUrl.En | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                             }
                         }
                     } | Out-Null
