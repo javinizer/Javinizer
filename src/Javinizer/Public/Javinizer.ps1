@@ -504,43 +504,41 @@ function Javinizer {
         # Validate the values in the settings file following all command-line transformations
         $Settings = $Settings | Test-JVSettings
 
-        if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Javlibrary) -or $SetOwned) {
-            if ($Settings.'javlibrary.baseurl' -match 'javlibrary.com') {
-                if (!($CfSession)) {
-                    try {
-                        $CfSession = Get-CfSession -Cfduid:$Settings.'javlibrary.cookie.cfduid' -Cfclearance:$Settings.'javlibrary.cookie.cfclearance' -UserAgent:$Settings.'javlibrary.browser.useragent'
-                        $test = Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
-                        $CfSession = Get-CfSession
-
-                        # Testing with the newly created session sometimes fails if there is no wait time
-                        Start-Sleep -Seconds 2
-                    }
-                }
-
+        if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path -and ($Settings.'javlibrary.baseurl' -match 'javlibrary.com')) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa -and ($Settings.'javlibrary.baseurl' -match 'javlibrary.com')) -or $SetOwned) {
+            if (!($CfSession)) {
                 try {
+                    $CfSession = Get-CfSession -Cfduid:$Settings.'javlibrary.cookie.cfduid' -Cfclearance:$Settings.'javlibrary.cookie.cfclearance' -UserAgent:$Settings.'javlibrary.browser.useragent'
                     $test = Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false
                 } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
-                }
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
+                    $CfSession = Get-CfSession
 
-                $originalSettingsContent = Get-Content -Path $SettingsPath
-                $cookies = $CfSession.Cookies.GetCookies('https://javlibrary.com')
-                $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
-                $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
-                $userAgent = $CfSession.UserAgent
-                $settingsContent = $OriginalSettingsContent
-                $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
-                $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
-                $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
-                $origJson = $originalSettingsContent | ConvertFrom-Json
-                $newJson = $settingsContent | ConvertFrom-Json
-
-                if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
-                    $settingsContent | Out-File -FilePath $SettingsPath
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
+                    # Testing with the newly created session sometimes fails if there is no wait time
+                    Start-Sleep -Seconds 2
                 }
+            }
+
+            try {
+                $test = Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
+            }
+
+            $originalSettingsContent = Get-Content -Path $SettingsPath
+            $cookies = $CfSession.Cookies.GetCookies('https://javlibrary.com')
+            $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
+            $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
+            $userAgent = $CfSession.UserAgent
+            $settingsContent = $OriginalSettingsContent
+            $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
+            $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
+            $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
+            $origJson = $originalSettingsContent | ConvertFrom-Json
+            $newJson = $settingsContent | ConvertFrom-Json
+
+            if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
+                $settingsContent | Out-File -FilePath $SettingsPath
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
             }
         }
 
