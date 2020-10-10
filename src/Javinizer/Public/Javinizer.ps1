@@ -513,11 +513,13 @@ function Javinizer {
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
                         $CfSession = Get-CfSession
+
+                        # Testing with the newly created session sometimes fails if there is no wait time
+                        Start-Sleep -Seconds 2
                     }
                 }
 
                 try {
-                    Start-Sleep -Seconds 2
                     $test = Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
