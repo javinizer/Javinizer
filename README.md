@@ -426,6 +426,38 @@ ID-###-cd\d       - ID-069-cd1, ID-069-cd2
 | Emby | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
 | Jellyfin | Set-up a `Movie` library with all metadata/image downloaders disabled. Input your server url and API key in the `jvSettings.json` file and use `Javinizer -SetEmbyThumbs` to set actress thumbnails |
 
+
+### Javlibrary Scraper
+
+The Javlibrary scraper periodically has Cloudflare IUAM (I'm Under Attack Mode) activated on its site, meaning that Javinizer is unable to automatically bypass the bot protection. In this case, we need to manually specify the browser cookies and useragent when running Javinizer.
+
+This can be done in multiple ways when the Javlibrary scraper is enabled in the settings.
+Updated websession settings are automatically populated in your settings files after a successful connection to Javlibrary.
+```powershell
+# 1. Input websession values during Javinizer runtime
+Javinizer -Path 'C:\JAV\Unsorted' -DestinationPath 'C:\JAV\Sorted'
+
+cmdlet Get-CfSession at command pipeline position 1
+Supply values for the following parameters:
+Cfduid: dec857987e88528669d3bda527c8119731602366718
+Cfclearance: 812db5df4cfffb1ec11b2b5cff38d6323b842a9d-1602366718-0-1zc9220a8fz43c94e72z7b83181-150
+UserAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+
+# 2. Create the websession object first and specify it as a parameter
+$session = Get-CfSession -Cduid 'dec857987e88528669d3bda527c8119731602366718' `
+-Cfclearance '812db5df4cfffb1ec11b2b5cff38d6323b842a9d-1602366718-0-1zc9220a8fz43c94e72z7b83181-150' `
+-UserAgent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'
+
+Javinizer -Path 'C:\JAV\Unsorted' -DestinationPath 'C:\JAV\Sorted' -CfSession $session
+
+# 3. Manually populate the settings file with websession values
+Javinizer -OpenSettings
+
+"javlibrary.browser.useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+"javlibrary.cookie.cfduid": "dec857987e88528669d3bda527c8119731602366718",
+"javlibrary.cookie.cfclearance": "812db5df4cfffb1ec11b2b5cff38d6323b842a9d-1602366718-0-1zc9220a8fz43c94e72z7b83181-150",
+```
+
 ### Metadata Priorities
 
 Scrapers by default are english. Scrapers appended by Ja are Japanese, Zh are Chinese.
@@ -614,5 +646,10 @@ For example, if your jvGenres.csv file looks like this:
 | `emby.url` | Specifies the base URL of your Emby/Jellyfin instance to add actress images. | http:\\/\\/192.168.0.1:8096
 | `emby.apikey` | Specifies the API key of your Emby/Jellyfin instance. | API Key string
 | `javlibrary.baseurl` | Specifies the base URL of the Javlibrary instance you want to scrape. This is useful if you are running into CloudFlare errors on the main site and want to use a mirror such as g46e.com or m45e.com | http:\\/\\/javlibrary.com
+| `javlibrary.browser.useragent` | Specifies your browser's user agent when accessing Javlibrary. This can be found by googling your user agent | Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+| `javlibrary.cookie.cfduid` | Specifies the cookie value of the __cfduid cookie when accessing Javlibrary | dec857987e88528669d3bda527c8119731602366718
+| `javlibrary.cookie.cfclearance` | Specifies the cookie value of the cf_clearance cookie when accessing Javlibrary | 812db5df4cfffb1ec11b2b5cff38d6323b842a9d-1602222718-0-1zc9220a8fz16c94e72z7b83181-150
+| `javlibrary.cookie.session` | Specifies the cookie value of the session cookie when logged into Javlibrary, used to set owned movies | 0HDNScw5zuKGOFMoRZJxQI9GGGIGhffZ49W9tz
+| `javlibrary.cookie.userid` | Specifies the cookie value of the userid cookie when logged into Javlibrary, used to set owned movies | jvlflame
 | `admin.log` | Specifies to write debug, warning, error, and verbose messages to the log file. | 0, 1
 | `admin.log.level` | Specifies the level of logs that will be written to the log file. | Debug, Info, Warning, Error
