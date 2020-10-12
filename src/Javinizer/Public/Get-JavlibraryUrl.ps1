@@ -7,7 +7,10 @@ function Get-JavlibraryUrl {
         [String]$Id,
 
         [Parameter(Position = 1)]
-        [String]$BaseUrl = 'https://www.javlibrary.com'
+        [String]$BaseUrl = 'http://www.javlibrary.com',
+
+        [Parameter(Position = 2)]
+        [PSObject]$Session
     )
 
     process {
@@ -20,12 +23,12 @@ function Get-JavlibraryUrl {
 
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
         } catch {
             try {
                 # Add a retry to the URL search due to 500 errors occurring randomly when scraping Javlibrary
                 Start-Sleep -Seconds 3
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+                $webRequest = Invoke-WebRequest -Uri $searchUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
             }
@@ -37,7 +40,7 @@ function Get-JavlibraryUrl {
         if ($searchResultUrl -match "$BaseUrl?v=") {
             try {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl]"
-                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -Method Get -Verbose:$false
+                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchResultUrl]: $PSItem" -Action 'Continue'
             }
@@ -66,7 +69,7 @@ function Get-JavlibraryUrl {
 
                     try {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl]"
-                        $webRequest = Invoke-WebRequest -Uri $directUrl -Method Get -Verbose:$false
+                        $webRequest = Invoke-WebRequest -Uri $directUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl]: $PSItem" -Action 'Continue'
                     }

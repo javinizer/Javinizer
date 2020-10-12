@@ -172,7 +172,10 @@ function Get-JavlibraryActress {
         [Object]$Webrequest,
 
         [Parameter()]
-        [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com'
+        [String]$JavlibraryBaseUrl = 'http://www.javlibrary.com',
+
+        [Parameter()]
+        [PSObject]$Session
     )
 
     process {
@@ -192,7 +195,7 @@ function Get-JavlibraryActress {
             $actressName = $actress.Groups[2].Value
             if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 try {
-                    $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
+                    $engActressName = ((Invoke-WebRequest -Uri $engActressUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
                 } catch {
                     $engActressName = $null
                 }
@@ -214,7 +217,7 @@ function Get-JavlibraryActress {
                 }
             } else {
                 try {
-                    $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
+                    $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
                 } catch {
                     $jaActressName = $null
                 }

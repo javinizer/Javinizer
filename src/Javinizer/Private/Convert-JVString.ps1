@@ -44,17 +44,41 @@ function Convert-JVString {
         if ($maxTitleLength) {
             if ($Data.Title.Length -ge $MaxTitleLength) {
                 $shortTitle = $Data.Title.Substring(0, $MaxTitleLength)
-                $splitTitle = $shortTitle -split ' '
-                if ($splitTitle.Count -gt 1) {
-                    # Remove the last word of the title just in case it is cut off
-                    $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
-                    if ($title[-1] -match '\W') {
-                        $Data.Title = ($title.Substring(0, $title.Length - 2)) + '...'
-                    } else {
-                        $Data.Title = $title + '...'
-                    }
-                } else {
+                if ($shortTitle -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                     $Data.Title = $shortTitle + '...'
+                } else {
+                    $splitTitle = $shortTitle -split ' '
+                    if ($splitTitle.Count -gt 1) {
+                        # Remove the last word of the title just in case it is cut off
+                        $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
+                        if ($title[-1] -match '\W') {
+                            $Data.Title = ($title.Substring(0, $title.Length - 2)) + '...'
+                        } else {
+                            $Data.Title = $title + '...'
+                        }
+                    } else {
+                        $Data.Title = $shortTitle + '...'
+                    }
+                }
+            }
+
+            if ($Data.AlternateTitle.Length -ge $MaxTitleLength) {
+                $shortTitle = $Data.AlternateTitle.Substring(0, $MaxTitleLength)
+                if ($shortTitle -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $Data.AlternateTitle = $shortTitle + '...'
+                } else {
+                    $splitTitle = $shortTitle -split ' '
+                    if ($splitTitle.Count -gt 1) {
+                        # Remove the last word of the title just in case it is cut off
+                        $title = ($splitTitle[0..($splitTitle.Length - 2)] -join ' ')
+                        if ($title[-1] -match '\W') {
+                            $Data.AlternateTitle = ($title.Substring(0, $title.Length - 2)) + '...'
+                        } else {
+                            $Data.AlternateTitle = $title + '...'
+                        }
+                    } else {
+                        $Data.AlternateTitle = $shortTitle + '...'
+                    }
                 }
             }
         }

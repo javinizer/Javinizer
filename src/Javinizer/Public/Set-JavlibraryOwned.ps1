@@ -8,16 +8,20 @@ function Set-JavlibraryOwned {
         [String]$UserId,
 
         [Parameter(Mandatory = $true)]
-        [String]$Session
+        [String]$LoginSession,
+
+        [Parameter(Mandatory = $true)]
+        [PSObject]$Session
     )
 
     process {
         $ProgressPreference = 'SilentlyContinue'
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$Id] [$($MyInvocation.MyCommand.Name)] Setting owned on JavLibrary"
+
         try {
-            $url = (Get-JavlibraryUrl -Id $Id).En
+            $url = (Get-JavlibraryUrl -Id $Id -BaseUrl 'http://www.javlibrary.com' -Session:$Session).En
             if ($null -ne $url) {
-                $request = Invoke-WebRequest -Uri $url -Method Get -Verbose:$false
+                $request = Invoke-WebRequest -Uri $url -WebSession $Session -UserAgent $Session.UserAgent -Method Get -Verbose:$false
                 $ajaxId = Get-JavlibraryAjaxId -Webrequest $request
 
             } else {
@@ -47,10 +51,12 @@ function Set-JavlibraryOwned {
                     "referer"          = $url
                     "accept-encoding"  = "gzip, deflate, br"
                     "accept-language"  = "en-US, en; q=0.9"
-                    "cookie"           = "timezone=420; over18=18; userid=$UserId; session=$Session"
+                    "cookie"           = "timezone=420; over18=18; userid=$UserId; session=$LoginSession"
                 } `
                     -ContentType "application/x-www-form-urlencoded; charset=UTF-8" `
                     -Body "type=2&targetid=$ajaxId" `
+                    -WebSession $Session `
+                    -UserAgent $Session.UserAgent `
                     -Verbose:$false
             }
             if ($stopwatch.elapsed -gt $timeout) {

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.3]
+
+### Added
+- Function `Get-CfSession` to create a websession object to access the Javlibrary scraper
+- Settings `javlibrary.browser.useragent`, `javlibrary.cookie.cfduid`, and `javlibrary.cookie.cfclearance` to persist Javlibrary websession
+
+### Changed
+- Javinizer out-of-box-experience (OOBE) updated to remove Javlibrary as a default scraper due to Cloudflare IAUM protection
+    - Javbus is now enabled as a default scraper
+
+### Fixed
+- Sort now properly fails when there are missing required metadata fields when using `-Url`
+- Javbus scraper now properly finds uncensored videos when similar search results are found in the censored section
+- Maxtitlelength behavior for Japanese titles now do not cut off at the last whitespace character
+
+
 ## [2.1.2]
 
 ### Added
