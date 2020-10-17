@@ -15,65 +15,79 @@ function Get-DmmUrl {
 
     process {
         $originalId = $Id
-        if ($r18Url) {
-            $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
-            $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$r18Id"
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
-        } else {
-            # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
-            if (!($Strict)) {
-                if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
-                    $splitId = $Id -split '-'
-                    if (($splitId[1])[-1] -match '\D') {
-                        $appendChar = ($splitId[1])[-1]
-                        $splitId[1] = $splitId[1] -replace '\D', ''
-                    }
-                    $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
-                    $Id = $Id.Trim()
-                }
-            }
-
-            $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
-
+        # The digital/videoa URL is not being caught by the html for movie IDs matching '0001 - 0009'
+        if ($Id -match '00\d') {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Movie ID using 00X format, falling back to R18 scraper"
+            $url = Get-R18Url -Id $Id -Strict:$Strict
             try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+                $cid = ($url.En | Select-String -Pattern 'id=(.*)\/').Matches.Groups[1].Value
             } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
+                $cid = $null
             }
-
-            $retryCount = 3
-            $searchResults = ($webrequest.links.href | Where-Object { $_ -like '*digital/videoa/*' })
-            $numResults = $searchResults.count
-
-            if ($retryCount -gt $numResults) {
-                $retryCount = $numResults
+            if ($null -ne $cid) {
+                $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$cid/?i3_ref=search&amp;i3_ord=5"
             }
-
-            if ($numResults -ge 1) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$originalId]"
-
-                $count = 1
-                foreach ($result in $searchResults) {
-                    try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                        $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem" -Action 'Continue'
+        } else {
+            if ($r18Url) {
+                $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
+                $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$r18Id"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
+            } else {
+                # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
+                if (!($Strict)) {
+                    if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
+                        $splitId = $Id -split '-'
+                        if (($splitId[1])[-1] -match '\D') {
+                            $appendChar = ($splitId[1])[-1]
+                            $splitId[1] = $splitId[1] -replace '\D', ''
+                        }
+                        $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
+                        $Id = $Id.Trim()
                     }
+                }
 
-                    $resultId = Get-DmmContentId -WebRequest $webRequest
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                    if ($resultId -match "^(.*_)?\d*$Id") {
-                        $directUrl = $result
-                        break
+                $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
+
+                try {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                    $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
+                }
+
+                $retryCount = 3
+                $searchResults = ($webrequest.links.href | Where-Object { $_ -like '*digital/videoa/*' })
+                $numResults = $searchResults.count
+
+                if ($retryCount -gt $numResults) {
+                    $retryCount = $numResults
+                }
+
+                if ($numResults -ge 1) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$originalId]"
+
+                    $count = 1
+                    foreach ($result in $searchResults) {
+                        try {
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
+                            $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
+                        } catch {
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem" -Action 'Continue'
+                        }
+
+                        $resultId = Get-DmmContentId -WebRequest $webRequest
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
+                        if ($resultId -match "^(.*_)?\d*$Id") {
+                            $directUrl = $result
+                            break
+                        }
+
+                        if ($count -eq $retryCount) {
+                            break
+                        }
+
+                        $count++
                     }
-
-                    if ($count -eq $retryCount) {
-                        break
-                    }
-
-                    $count++
                 }
             }
         }
