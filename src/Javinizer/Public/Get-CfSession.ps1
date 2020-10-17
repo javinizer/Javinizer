@@ -8,14 +8,17 @@ function Get-CfSession {
         [String]$Cfclearance,
 
         [Parameter(Mandatory = $true, Position = 2)]
-        [String]$UserAgent
+        [String]$UserAgent,
+
+        [Parameter()]
+        [String]$BaseUrl
     )
 
     process {
         $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-        $cookie = New-Object System.Net.Cookie('__cfduid', "$Cfduid", '/', 'javlibrary.com')
+        $cookie = New-Object System.Net.Cookie('__cfduid', "$Cfduid", '/', "$BaseUrl")
         $session.Cookies.Add($cookie)
-        $cookie = New-Object System.Net.Cookie('cf_clearance', "$Cfclearance", '/', 'javlibrary.com')
+        $cookie = New-Object System.Net.Cookie('cf_clearance', "$Cfclearance", '/', "$BaseUrl")
         $session.Cookies.Add($cookie)
         $session.UserAgent = $UserAgent
         Write-Output $session

@@ -307,6 +307,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$IsThread,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$IsWeb,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -504,47 +507,55 @@ function Javinizer {
         # Validate the values in the settings file following all command-line transformations
         $Settings = $Settings | Test-JVSettings
 
-        if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path -and ($Settings.'javlibrary.baseurl' -match 'javlibrary.com')) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa -and ($Settings.'javlibrary.baseurl' -match 'javlibrary.com')) -or $SetOwned) {
-            if (!($CfSession)) {
-                try {
-                    $CfSession = Get-CfSession -Cfduid:$Settings.'javlibrary.cookie.cfduid' -Cfclearance:$Settings.'javlibrary.cookie.cfclearance' -UserAgent:$Settings.'javlibrary.browser.useragent'
-                    # Testing with the newly created session sometimes fails if there is no wait time
-                    Start-Sleep -Seconds 1
-                    Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
-                    $CfSession = Get-CfSession
-                    # Testing with the newly created session sometimes fails if there is no wait time
-                    Start-Sleep -Seconds 1
+        if (!($IsThread)) {
+            if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or $SetOwned) {
+                if (!($CfSession)) {
                     try {
-                        Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
+                        Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
+                    } catch {
+                        try {
+                            $CfSession = Get-CfSession -Cfduid:$Settings.'javlibrary.cookie.cfduid' -Cfclearance:$Settings.'javlibrary.cookie.cfclearance' -UserAgent:$Settings.'javlibrary.browser.useragent' -BaseUrl $Settings.'javlibrary.baseurl'
+                            # Testing with the newly created session sometimes fails if there is no wait time
+                            Start-Sleep -Seconds 1
+                            Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
+                        } catch {
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
+                            $CfSession = Get-CfSession -BaseUrl $Settings.'javlibrary.baseurl'
+                            # Testing with the newly created session sometimes fails if there is no wait time
+                            Start-Sleep -Seconds 1
+                            try {
+                                Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
+                            } catch {
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
+                            }
+                        }
+                    }
+                } else {
+                    try {
+                        Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
                     }
                 }
-            } else {
-                try {
-                    $test = Invoke-WebRequest 'https://www.javlibrary.com' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
+
+                if ($CfSession) {
+                    $originalSettingsContent = Get-Content -Path $SettingsPath
+                    $cookies = $CfSession.Cookies.GetCookies($Settings.'javlibrary.baseurl')
+                    $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
+                    $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
+                    $userAgent = $CfSession.UserAgent
+                    $settingsContent = $OriginalSettingsContent
+                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
+                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
+                    $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
+                    $origJson = $originalSettingsContent | ConvertFrom-Json
+                    $newJson = $settingsContent | ConvertFrom-Json
+
+                    if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
+                        $settingsContent | Out-File -FilePath $SettingsPath
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
+                    }
                 }
-            }
-
-            $originalSettingsContent = Get-Content -Path $SettingsPath
-            $cookies = $CfSession.Cookies.GetCookies('https://javlibrary.com')
-            $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
-            $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
-            $userAgent = $CfSession.UserAgent
-            $settingsContent = $OriginalSettingsContent
-            $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
-            $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
-            $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
-            $origJson = $originalSettingsContent | ConvertFrom-Json
-            $newJson = $settingsContent | ConvertFrom-Json
-
-            if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
-                $settingsContent | Out-File -FilePath $SettingsPath
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
             }
         }
 
@@ -690,9 +701,10 @@ function Javinizer {
 
             'Javlibrary' {
                 try {
-                    $request = Invoke-WebRequest -Uri "https://www.javlibrary.com/en/mv_owned_print.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
+                    $javlibraryBaseUrl = $Settings.'javlibrary.baseurl'
+                    $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned_print.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
                         "method"                    = "GET"
-                        "authority"                 = "www.javlibrary.com"
+                        "authority"                 = "$javlibraryBaseUrl"
                         "scheme"                    = "https"
                         "path"                      = "/en/mv_owned_print.php"
                         "upgrade-insecure-requests" = "1"
@@ -709,7 +721,7 @@ function Javinizer {
                     $ownedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
                     $ownedMovies = $ownedMovies[2..($ownedMovies.Length - 1)]
                 } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when retrieving owned movies from [https://www.javlibrary.com/en/mv_owned_print.php]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when retrieving owned movies from [$javlibraryBaseUrl/en/mv_owned_print.php]"
                 }
 
                 if ($null -ne $ownedMovies) {
@@ -738,7 +750,7 @@ function Javinizer {
                     $index = 1
                     foreach ($movieId in $unowned) {
                         Write-Progress -Id 1 -Activity "Javinizer" -Status "Remaining Jobs: $($unowned.Count-$index)" -PercentComplete ($index/$unowned.Count*100) -CurrentOperation "Setting owned: $movieId"
-                        Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -LoginSession $Settings.'javlibrary.cookie.session' -Session:$CfSession
+                        Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -LoginSession $Settings.'javlibrary.cookie.session' -Session:$CfSession -BaseUrl $javlibraryBaseUrl
                         $index++
                     }
                 } else {
@@ -820,11 +832,21 @@ function Javinizer {
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
-                        $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
-                            Import-Module $using:jvModulePath
-                            $jvMovie = $_
-                            $Settings = $using:Settings
-                            Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                        if ($PSBoundParameters.ContainsKey('IsWeb')) {
+                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                                Import-Module $using:jvModulePath
+                                $jvMovie = $_
+                                $Settings = $using:Settings
+                                $a = Javinizer -IsThread -IsWeb -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                Write-Output $a
+                            }
+                        } else {
+                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                                Import-Module $using:jvModulePath
+                                $jvMovie = $_
+                                $Settings = $using:Settings
+                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                            }
                         }
                     }
 
@@ -838,7 +860,11 @@ function Javinizer {
                             if ($null -ne $javData) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
-                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                    if ($PSBoundParameters.ContainsKey('IsWeb')) {
+                                        Write-Output ($javAggregatedData).Data
+                                    } else {
+                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                    }
                                 } else {
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return
