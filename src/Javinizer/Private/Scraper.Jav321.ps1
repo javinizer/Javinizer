@@ -118,9 +118,8 @@ function Get-Jav321Genre {
         $genre = @()
 
         try {
-            $genre = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<a href="\/genre\/(.*)\/(.*)">(.*)<\/a> ').Matches.Groups[0] -split '<\/a>' |
-            ForEach-Object { ($_ -split '>')[1] }
+            $genre = ($Webrequest | Select-String '<a href="\/genre\/.+?">(.+?)<\/a>' -AllMatches).Matches |
+                ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
         }
