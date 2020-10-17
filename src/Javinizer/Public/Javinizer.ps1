@@ -508,7 +508,7 @@ function Javinizer {
         $Settings = $Settings | Test-JVSettings
 
         if (!($IsThread)) {
-            if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or $SetOwned) {
+            if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or ($Find -like '*javlibrary*' -or $Find -like '*g46e*' -or $Find -like '*m45e*') -or $SetOwned) {
                 if (!($CfSession)) {
                     try {
                         Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
