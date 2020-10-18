@@ -857,21 +857,26 @@ function Javinizer {
                             }
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
-                            if ($null -ne $javData) {
-                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                if ($javAggregatedData.NullFields -eq '') {
-                                    if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                                        Write-Output ($javAggregatedData).Data
-                                    } else {
-                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
-                                    }
-                                } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
-                                    return
+                            if ($PSBoundParameters.ContainsKey('IsWeb')) {
+                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo
+                                [PSCustomObject]@{
+                                    Data       = $javAggregatedData.Data
+                                    Path       = $movie.FullName
+                                    PartNumber = $movie.PartNumber
                                 }
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
-                                return
+                                if ($null -ne $javData) {
+                                    $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                    if ($javAggregatedData.NullFields -eq '') {
+                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                    } else {
+                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
+                                        return
+                                    }
+                                } else {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                    return
+                                }
                             }
                         }
                     }
