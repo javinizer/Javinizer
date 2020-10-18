@@ -833,7 +833,7 @@ function Javinizer {
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            $javMovies | Invoke-Parallel -IsWeb -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 $Settings = $using:Settings
@@ -857,26 +857,25 @@ function Javinizer {
                             }
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
-                            if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo
-                                [PSCustomObject]@{
-                                    Data       = $javAggregatedData.Data
-                                    Path       = $movie.FullName
-                                    PartNumber = $movie.PartNumber
-                                }
-                            } else {
-                                if ($null -ne $javData) {
-                                    $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                    if ($javAggregatedData.NullFields -eq '') {
-                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                            if ($null -ne $javData) {
+                                $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                if ($javAggregatedData.NullFields -eq '') {
+                                    if ($PSBoundParameters.ContainsKey('IsWeb')) {
+                                        [PSCustomObject]@{
+                                            Path       = $movie.FullName
+                                            Data       = $javAggregatedData.Data
+                                            PartNumber = $movie.PartNumber
+                                        }
                                     } else {
-                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
-                                        return
+                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                     }
                                 } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
                                     return
                                 }
+                            } else {
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                return
                             }
                         }
                     }
