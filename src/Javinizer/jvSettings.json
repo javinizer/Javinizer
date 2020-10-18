@@ -50,7 +50,7 @@
     "sort.format.delimiter": ", ",
     "sort.format.file": "<ID>",
     "sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
-    "sort.format.outputfolder": "",
+    "sort.format.outputfolder": [],
     "sort.format.posterimg": ["folder"],
     "sort.format.thumbimg": "fanart",
     "sort.format.trailervid": "<ID>-trailer",
