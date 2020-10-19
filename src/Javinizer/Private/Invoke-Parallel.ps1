@@ -164,20 +164,29 @@ function Invoke-Parallel {
         [PSObject]$Parameter,
 
         [switch]$ImportVariables,
+
         [switch]$ImportModules,
+
         [switch]$ImportFunctions,
 
         [int]$Throttle = 20,
+
         [int]$SleepTimer = 200,
+
         [int]$RunspaceTimeout = 0,
+
         [switch]$NoCloseOnTimeout = $false,
+
         [int]$MaxQueue,
 
         [validatescript( { Test-Path (Split-Path $_ -parent) })]
-        [switch] $AppendLog = $false,
+        [switch]$AppendLog = $false,
+
         [string]$LogFile,
 
-        [switch] $Quiet = $false
+        [switch]$Quiet = $false,
+
+        [switch]$IsWeb = $false
     )
     begin {
         #No max queue specified?  Estimate one.
@@ -251,6 +260,13 @@ function Invoke-Parallel {
                         -PercentComplete $( Try { $script:completedCount / $totalCount * 100 } Catch { 0 } )
                     #-CurrentOperation "$startedCount threads defined - $totalCount input objects - $script:completedCount input objects processed"
                     Write-Progress -Id 2 -ParentId $ProgressId -Activity "Max threads: [$Throttle]" -Status "Sorting: $($runspaces.object.FileName -join ', ')"
+                }
+
+                if ($IsWeb) {
+                    $cache:totalCount = $totalCount
+                    $cache:completedCount = $script:completedCount
+                    $cache:currentSort = $runspaces.object.FileName
+                    $cache:currentSortFullName = $runspaces.object.FullName
                 }
 
                 #run through each runspace.
@@ -431,6 +447,10 @@ function Invoke-Parallel {
         $runspacepool = [runspacefactory]::CreateRunspacePool(1, $Throttle, $sessionstate, $Host)
         $runspacepool.Open()
 
+        if ($IsWeb) {
+            $cache:runspacepool = $runspacepool
+        }
+
         #Write-Verbose "Creating empty collection to hold runspace jobs"
         $runspaces = New-Object System.Collections.ArrayList
 
@@ -536,7 +556,7 @@ function Invoke-Parallel {
             }
             #Write-Verbose ( "Finish processing the remaining runspace jobs: {0}" -f ( @($runspaces | Where-Object { $null -ne $_.Runspace }).Count) )
 
-            Get-RunspaceData -wait
+            Get-RunspaceData -Wait
             if (-not $quiet) {
                 Write-Progress -Id $ProgressId -Activity "Javinizer" -Status "Starting threads" -Completed
             }

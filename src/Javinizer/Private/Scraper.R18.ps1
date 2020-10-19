@@ -209,7 +209,7 @@ function Get-R18Label {
             }
         }
 
-        $label = $label -replace '\n', ' '
+        $label = Convert-HtmlCharacter -String ($label -replace '\n', ' ')
 
         if ($label -eq '----') {
             $label = $null

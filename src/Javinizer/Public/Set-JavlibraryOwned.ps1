@@ -10,8 +10,11 @@ function Set-JavlibraryOwned {
         [Parameter(Mandatory = $true)]
         [String]$LoginSession,
 
-        [Parameter(Mandatory = $true)]
-        [PSObject]$Session
+        [Parameter(Mandatory = $false)]
+        [PSObject]$Session,
+
+        [Parameter()]
+        [String]$BaseUrl = 'http://www.javlibrary.com'
     )
 
     process {
@@ -19,7 +22,7 @@ function Set-JavlibraryOwned {
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$Id] [$($MyInvocation.MyCommand.Name)] Setting owned on JavLibrary"
 
         try {
-            $url = (Get-JavlibraryUrl -Id $Id -BaseUrl 'http://www.javlibrary.com' -Session:$Session).En
+            $url = (Get-JavlibraryUrl -Id $Id -BaseUrl $BaseUrl -Session:$Session).En
             if ($null -ne $url) {
                 $request = Invoke-WebRequest -Uri $url -WebSession $Session -UserAgent $Session.UserAgent -Method Get -Verbose:$false
                 $ajaxId = Get-JavlibraryAjaxId -Webrequest $request
@@ -28,23 +31,22 @@ function Set-JavlibraryOwned {
                 return
             }
 
-            $index = 0
             $timeout = New-TimeSpan -Seconds 20
             $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
             while ($check.Content -notmatch '"ERROR":1' -and $stopwatch.Elapsed -lt $timeout) {
                 if ($check.Content -match '"ERROR":-3') {
                     Start-Sleep -Seconds 3
                 }
-                $check = Invoke-WebRequest -Uri "https://www.javlibrary.com/ajax/ajax_cv_favoriteadd.php" `
+                $check = Invoke-WebRequest -Uri "$BaseUrl/ajax/ajax_cv_favoriteadd.php" `
                     -Method "POST" `
                     -Headers @{
                     "method"           = "POST"
-                    "authority"        = "www.javlibrary.com"
+                    "authority"        = "$BaseUrl"
                     "scheme"           = "https"
                     "path"             = "/ajax/ajax_cv_favoriteadd.php"
                     "accept"           = "application/json, text/javascript, */*; q=0.01"
                     "x-requested-with" = "XMLHttpRequest"
-                    "origin"           = "https://www.javlibrary.com"
+                    "origin"           = "$BaseUrl"
                     "sec-fetch-site"   = "same-origin"
                     "sec-fetch-mode"   = "cors"
                     "sec-fetch-dest"   = "empty"

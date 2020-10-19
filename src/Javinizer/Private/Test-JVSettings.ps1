@@ -140,6 +140,7 @@ function Test-JVSettings {
         $arraySettings = @(
             'match.excludedfilestring',
             'match.includedfileextension',
+            "sort.format.outputfolder",
             'sort.format.posterimg',
             'sort.metadata.genre.ignore',
             'sort.metadata.nfo.format.tag',
