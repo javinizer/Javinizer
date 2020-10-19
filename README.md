@@ -601,7 +601,7 @@ For example, if your jvGenres.csv file looks like this:
 | `sort.format.delimiter` | Specifies the delimiter between actresses when using \<ACTORS> in the format string. | Any string value
 | `sort.format.file` | Specifies the format string when renaming a file. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.folder` | Specifies the format string when creating the folder. | [Format Strings](#Metadata-Format-Strings)
-| `sort.format.outputfolder` | Specifies the format string when creating an output folder in the destination path. Leaving this blank will omit creating the output folder. | [Format Strings](#Metadata-Format-Strings)
+| `sort.format.outputfolder` | Specifies an array of format strings when creating an output folder in the destination path. Leaving this blank will omit creating the output folder. Multiple format strings will create a nested output structure. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.posterimg` | Specifies an array of format strings when creating the poster image. Multiple strings will allow you to create multiple poster image files. | [Format Strings](#Metadata-Format-Strings)
 | `sort.format.thumbimg` | Specifies the format string when creating the thumbnail image. | [Format Strings](#Metadata-Format-Strings)

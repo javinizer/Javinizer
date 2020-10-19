@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.4]
+
+### Changed
+- Url scraper now run within threads to increase sort speed
+- Setting `sort.format.outputfolder` changed to array to allow nested output folders (#136)
+- Parameter `-SetOwned` now uses the `javlibrary.baseurl` setting when setting owned movies
+- Javlibrary re-added in settings as a default scraper, Javbus removed
+
+### Fixed
+- R18 Url scraper now correctly finds movies that match ID value XXX-00X (#138)
+- Jav321Ja now correctly retrieves all genres when scraping (#135)
+- Cookies are now prompted for when cloudflare IUAM is detected and a javlibrary url is specified when using -Find
+
+
 ## [2.1.3]
 
 ### Added
