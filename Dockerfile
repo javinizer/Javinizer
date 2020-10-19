@@ -1,4 +1,4 @@
-FROM ironmansoftware/universal:latest
+FROM ironmansoftware/universal:1.4.3-ubunutu-18.04
 LABEL description="Universal - The ultimate platform for building web-based IT Tools"
 
 EXPOSE 5000
@@ -17,8 +17,8 @@ RUN pip3 install pillow googletrans
 RUN apt-get install -y git
 
 RUN pwsh -Command "Set-PSRepository PSGallery -InstallationPolicy Trusted; Install-Module Javinizer -Force"
-RUN pwsh -Command "git clone -b dev https://github.com/jvlflame/Javinizer.git; Copy-Item -Path Javinizer/dashboard/* -Recurse -Destination /data/Repository"
-RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
-RUN cp -r Javinizer/dashboard/* /data/Repository/
-RUN rm Javinizer -rf
+
 ENTRYPOINT ["./home/Universal/Universal.Server"]
+RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
+#RUN mkdir data/Repository && cp -r Javinizer/dashboard/* data/Repository
+#RUN rm -rf Javinizer

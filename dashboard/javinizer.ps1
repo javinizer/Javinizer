@@ -1,4 +1,4 @@
-Import-Module "/root/.local/share/powershell/Modules/Javinizer/2.1.3/Javinizer.psm1"
+Import-Module "/root/.local/share/powershell/Modules/Javinizer/2.1.4/Javinizer.psm1"
 
 $Pages = @()
 
