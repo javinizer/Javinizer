@@ -1,4 +1,4 @@
-$cache:settingsPath = 'C:\ProgramData\Javinizer\src\Javinizer\jvSettings.json'
+$cache:settingsPath = '/root/.local/share/powershell/Modules/Javinizer/2.1.3/jvSettings.json'
 $cache:settings = Get-Content -Path $cache:settingsPath | ConvertFrom-Json
 $cache:inProgress = $false
 $cache:findData = @()
