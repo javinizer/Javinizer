@@ -145,7 +145,7 @@ function Get-JVNfo {
         }
 
         foreach ($item in $Tag) {
-            $item = Convert-NfoChar -String $Tag -ErrorAction SilentlyContinue
+            $item = Convert-NfoChar -String $item -ErrorAction SilentlyContinue
             $tagNfoString = @"
     <tag>$item</tag>
 
