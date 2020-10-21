@@ -24,11 +24,10 @@ RUN apt-get install -y git
 WORKDIR /home
 RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
 
-# Download dashboard files
-RUN mkdir /pages
-RUN curl https://gist.githubusercontent.com/jvlflame/ab6a598445c36f50f45b604c30f9b34b/raw/4b6e373a66f5a22c2c73384da27d42793edc5627/main -o javinizer.ps1
-WORKDIR /home/pages
-RUN curl https://gist.githubusercontent.com/jvlflame/97e2c544a492738726d87c32fd77e75a/raw/2c185df411ada7c4298671a845f8a0b17b280b74/page -o page.ps1
-
 EXPOSE 5000
+VOLUME ["/data"]
+ENV Data__RepositoryPath ./data/Repository
+ENV Data__ConnectionString ./data/database.db
+ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
+ENV Logging__Path ./data/logs/log.txt
 ENTRYPOINT ["/home/Universal/Universal.Server"]

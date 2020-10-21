@@ -1,7 +1,8 @@
-$cache:settingsPath = '/root/.local/share/powershell/Modules/Javinizer/2.1.4/jvSettings.json'
+$cache:settingsPath = '/home/Javinizer/src/Javinizer/jvSettings.json'
 $cache:settings = Get-Content -Path $cache:settingsPath | ConvertFrom-Json
 $cache:inProgress = $false
 $cache:findData = @()
+$cache:filePath = ''
 $cache:index = 0
 $iconSearch = New-UDIcon -Icon 'search' -Size lg
 $iconRightArrow = New-UDIcon -Icon 'arrow_right' -Size lg
@@ -27,36 +28,36 @@ function JavinizerSearch {
         }
 
         if ($Item.Mode -like 'd*') {
-            Show-UDToast -Message "Searching [$($Item.FullName)]" -Title 'Multi Sort' -Duration 5000
+            Show-UDToast -Message "Searching [$($Item.FullName)]" -Title 'Multi Sort' -Duration 5000 -Position bottomRight
             $recurse = (Get-UDElement -Id 'RecurseChkbx')['checked']
             $strict = (Get-UDElement -id 'StrictChkbx')['checked']
             $cache:searchTotal = ($cache:settings | Get-JVItem -Path $Item.FullName -Recurse:$recurse -Strict:$strict).Count
             $jvData = Javinizer -Path $Item.FullName -Recurse:$recurse -Strict:$strict -IsWeb
             $cache:findData = ($jvData | Where-Object { $null -ne $_.Data })
-            Show-UDToast -Message (($cache:sortData).GetType().Name) -Duration 5000
+            Show-UDToast -Message (($cache:sortData).GetType().Name) -Duration 5000 -Position bottomRight
         } else {
             $movieId = ($cache:settings | Get-JVItem -Path $Item.FullName).Id
             Set-UDElement -Id 'ManualSearchTextbox' -Properties @{
                 value = $movieId
             }
 
-            Show-UDToast -Message "Searching for [$($Item.FullName)]" -Title 'Single Sort' -Duration 5000
+            Show-UDToast -Message "Searching for [$($Item.FullName)]" -Title 'Single Sort' -Duration 5000 -Position bottomRight
             $jvData = Javinizer -Path $Item.FullName -Strict:$strict -IsWeb
-            if ($null -ne $javData.Data) {
+            if ($null -ne $jvData.Data) {
                 $cache:findData = $jvData
             } else {
-                Show-UDToast "Id [$movieId] not found" -BackgroundColor Red -Duration 5000
+                Show-UDToast "Id [$movieId] not found" -Title 'Error' -TitleColor red -Duration 5000 -Position bottomRight
             }
             $cache:originalFindData = $cache:findData
         }
 
-        <# if ($null -in $jvData.Data) {
+        #if ($null -in $jvData.Data) {
         $skipped = ($jvData | Where-Object { $null -eq $_.Data })
         foreach ($moviePath in $skipped) {
             Show-UDToast -Message $moviePath
         }
 
-        Show-UDModal -FullWidth -MaxWidth lg -Content {
+        <# Show-UDModal -FullWidth -MaxWidth lg -Content {
                 New-UDCard -Title 'Skipped movies' -Content {
                     $skipped = $jvData | Where-Object { $null -eq $_.Data }
                     New-UDList -Content {
@@ -80,7 +81,7 @@ function JavinizerSearch {
         $cache:inProgress = $false
         $cache:inSort = $false
     } else {
-        Show-UDToast -Message "A job is currently running, please wait." -Duration 5000 -Title "Error" -TitleColor red -Position topCenter
+        Show-UDToast -Message "A job is currently running, please wait." -Title "Error" -TitleColor red -Duration 5000 -Position bottomRight
     }
 }
 
@@ -141,7 +142,7 @@ New-UDPage -Name "Javinizer Web" -Content {
                 } else {
                     Hide-UDModal
                 }
-            } -AutoRefresh -AutoRefreshInterval .5
+            } -AutoRefresh -AutoRefreshInterval 2
 
             New-UDGrid -Container -Content {
                 New-UDGrid -Item -ExtraSmallSize 6 -Content {
@@ -194,11 +195,14 @@ New-UDPage -Name "Javinizer Web" -Content {
 
                                             # Remove the movie after it's committed
                                             $cache:findData = $cache:findData | Where-Object { $_.Path -ne $moviePath }
+                                            if ($cache:index -gt 0) {
+                                                $cache:index -= 1
+                                            }
                                             SyncPage -Sort
-                                            Show-UDToast -Message "[$moviePath] sorted to [$destinationPath]" -Title "Success" -TitleColor green -Duration 5000 -Position topCenter
+                                            Show-UDToast -Message "[$moviePath] sorted to [$destinationPath]" -Title "Success" -TitleColor green -Duration 5000 -Position bottomRight
                                             $cache:inProgress = $false
                                         } else {
-                                            Show-UDToast -Message "A job is currently running, please wait." -Duration 5000 -Title "Error" -TitleColor red -Position topCenter
+                                            Show-UDToast -Message "A job is currently running, please wait." -Title "Error" -TitleColor red -Duration 5000 -Position bottomRight
                                         }
                                     }
                                 }
@@ -222,13 +226,12 @@ New-UDPage -Name "Javinizer Web" -Content {
                             New-UDGrid -Item -ExtraSmallSize 12 -Content {
                                 New-UDDynamic -Id 'FileBrowser' -Content {
                                     $cache:filePath = (Get-UDElement -Id 'DirectoryTextbox').value
-                                    $search = Get-ChildItem -LiteralPath $cache:filePath | Select-Object Name, Length, FullName, Mode, Extension | ConvertTo-Json | ConvertFrom-Json
-
+                                    $search = Get-ChildItem -LiteralPath $cache:filePath | Select-Object Name, Length, FullName, Mode, Extension, LastWriteTime | ConvertTo-Json | ConvertFrom-Json
                                     $searchColumns = @(
                                         New-UDTableColumn -Property Name -Title 'Name' -Render {
                                             $Item = $Body | ConvertFrom-Json
                                             if ($Item.Mode -like 'd*') {
-                                                New-UDButton -Variant 'outlined' -Text "$($Item.Name)" -OnClick {
+                                                New-UDButton -Icon (New-UDIcon -Icon folder_open_o) -IconAlignment left -Variant 'outlined' -Text "$($Item.Name)" -FullWidth -OnClick {
                                                     Set-UDElement -Id 'DirectoryTextbox' -Properties @{
                                                         value = $item.FullName
                                                     }
@@ -238,7 +241,18 @@ New-UDPage -Name "Javinizer Web" -Content {
                                                 New-UDTypography -Variant 'display1' -Text "$($Item.Name)"
                                             }
                                         }
-
+                                        New-UDTableColumn -Property Length -Title 'Size' -Render {
+                                            $Item = $Body | ConvertFrom-Json
+                                            if ($Item.Mode -like 'd*') {
+                                                New-UDTypography -Variant 'display1' -Text ''
+                                            } else {
+                                                New-UDTypography -Variant 'display1' -Text "$([Math]::Round($Item.Length / 1GB, 2)) GB"
+                                            }
+                                        }
+                                        New-UDTableColumn -Property Length -Title 'Last Modified' -Render {
+                                            $Item = $Body | ConvertFrom-Json
+                                            New-UDTypography -Variant 'display1' -Text "$($Item.LastWriteTime)"
+                                        }
                                         New-UDTableColumn -Property FullName -Title 'Search' -Render {
                                             $Item = $Body | ConvertFrom-Json
                                             $includedExtensions = $cache:settings.'match.includedfileextension'
@@ -249,7 +263,32 @@ New-UDPage -Name "Javinizer Web" -Content {
                                             }
                                         }
                                     )
-                                    New-UDTable -Id 'DirectoryTable' -Data $search -Columns $searchColumns -Title "Directory: $cache:filePath" -Padding dense -Sort -Search -PageSize 5 -PageSizeOptions @(5, 10, 20, 50, 100)
+                                    New-UDStyle -Style '
+                                        .MuiTypography-caption {
+                                            font-size: initial !important;
+                                        }
+                                        .MuiButton-outlined {
+                                            border: 0;
+                                        }
+                                        .MuiTableCell-root {
+                                            padding: 12px;
+                                            border-bottom: 3px solid rgba(81, 81, 81, 1);
+                                        }
+                                        .MuiButton-label {
+                                            justify-content: initial !important;
+                                        }
+                                        .MuiButtonBase-root {
+                                            letter-spacing = initial !important;
+                                            display: contents;
+                                        }
+                                        .MuiButton-root {
+                                            font-size: initial !important;
+                                            text-align: left;
+                                            text-transform: none;
+                                            line-height: initial !important;
+                                        }' -Content {
+                                        New-UDTable -Id 'DirectoryTable' -Data $search -Columns $searchColumns -Title "Directory: $cache:filePath" -Padding dense -Sort -Search -PageSize 5 -PageSizeOptions @(5, 10, 20, 50, 100)
+                                    }
                                 }
                                 New-UDGrid -Container -Content {
                                     New-UDGrid -Item -ExtraSmallSize 6 -Content {
@@ -262,6 +301,10 @@ New-UDPage -Name "Javinizer Web" -Content {
                                             New-UDTextbox -Id 'DirectoryTextbox' -Placeholder 'Enter a directory' -Value $dir -Autofocus
                                             New-UDButton -Icon $iconSearch -Variant outlined -OnClick {
                                                 $cache:filePath = (Get-UDElement -Id 'DirectoryTextbox').value
+
+                                                if (!(Test-Path -LiteralPath $cache:filePath)) {
+                                                    Show-UDToast "[$cache:filePath] is not a valid path" -Title 'Error' -TitleColor red -Duration 5000 -Position bottomRight
+                                                }
                                                 Sync-UDElement -Id 'FileBrowser'
                                             }
 
@@ -289,10 +332,13 @@ New-UDPage -Name "Javinizer Web" -Content {
                                                     $cache:inProgress = $true
                                                     $searchInput = (Get-UDElement -Id 'ManualSearchTextbox').value
                                                     if ($cache:findData.Id -ne (Get-UDElement -Id 'ManualSearchTextbox').value -or $cache:findData -eq $null -or $cache:findData -eq '') {
-                                                        Show-UDToast -Message "Searching for [$searchInput]" -Duration 5000 -Title "Single sort" -Position topCenter
+                                                        Show-UDToast -Message "Searching for [$searchInput]" -Title "Single sort" -Duration 5000 -Position bottomRight
                                                         if ($searchInput -like '*.com*') {
                                                             $searchInput = $searchInput -split ','
-                                                            $cache:findData = (Javinizer -Find $searchInput -Aggregated)
+                                                            $jvData = (Javinizer -Find $searchInput -Aggregated)
+                                                            $cache:findData = [PSCustomObject]@{
+                                                                Data = $jvData
+                                                            }
                                                         } else {
                                                             $findParams = @{
                                                                 Find         = $searchInput
@@ -309,11 +355,14 @@ New-UDPage -Name "Javinizer Web" -Content {
                                                                 R18Zh        = $cache:settings.'scraper.movie.r18zh'
                                                                 Aggregated   = $true
                                                             }
-                                                            $cache:findData = (Javinizer @findParams)
+                                                            $jvData = (Javinizer @findParams)
+                                                            $cache:findData = [PSCustomObject]@{
+                                                                Data = $jvData
+                                                            }
                                                         }
 
                                                         if ($null -eq $cache:findData) {
-                                                            Show-UDToast "Id [$searchInput] not found" -Duration 5000 -Title 'Error' -TitleColor red -Position topCenter
+                                                            Show-UDToast "Id [$searchInput] not found" -Title 'Error' -TitleColor red -Duration 5000 -Position bottomRight
                                                         }
 
                                                         $cache:originalFindData = $cache:findData
@@ -321,7 +370,7 @@ New-UDPage -Name "Javinizer Web" -Content {
                                                         $cache:inProgress = $false
                                                     }
                                                 } else {
-                                                    Show-UDToast -Message "A job is currently running, please wait." -Duration 5000 -Title "Error" -TitleColor red -Position topCenter
+                                                    Show-UDToast -Message "A job is currently running, please wait." -Title "Error" -TitleColor red -Duration 5000 -Position bottomRight
                                                 }
                                             }
                                             New-UDButton -Icon $iconTrash -Variant outlined -OnClick {
@@ -331,8 +380,14 @@ New-UDPage -Name "Javinizer Web" -Content {
                                         }
                                     }
                                     New-UDGrid -Item -ExtraSmallSize 6 -Content {
-                                        New-UDCheckBox -Id 'RecurseChkbx' -Label 'Recurse' -LabelPlacement end
-                                        New-UDCheckBox -Id 'StrictChkbx' -Label 'Strict'  -LabelPlacement end
+                                        New-UDCheckBox -Id 'RecurseChkbx' -Label 'Recurse' -LabelPlacement end -Checked $cache:settings.'web.sort.recurse' -OnChange {
+                                            $cache:settings.'web.sort.recurse' = (Get-UDElement -Id 'RecurseChkbx')['checked']
+                                            ($cache:settings | ConvertTo-Json) | Out-File -LiteralPath $cache:settingsPath
+                                        }
+                                        New-UDCheckBox -Id 'StrictChkbx' -Label 'Strict'  -LabelPlacement end -Checked $cache:settings.'web.sort.strict' -OnChange {
+                                            $cache:settings.'web.sort.strict' = (Get-UDElement -Id 'StrictChkbx')['checked']
+                                            ($cache:settings | ConvertTo-Json) | Out-File -LiteralPath $cache:settingsPath
+                                        }
                                     }
                                 }
                             }
@@ -618,14 +673,22 @@ New-UDPage -Name "Javinizer Web" -Content {
                             }
 
                             New-UDButton -Text 'Edit Settings (JSON)' -OnClick {
+                                $cache:inProgress = $true
                                 Show-UDModal -FullScreen -Content {
-                                    $settingsContent = (Get-Content -Path $cache:settingsPath)
-                                    New-UDCodeEditor -Id 'editor' -Language 'ini' -Height '150ch' -Width '150ch' -Theme vs-dark -Code $settingsContent
+                                    $settingsContent = (Get-Content -LiteralPath $cache:settingsPath) -join "`r`n"
+                                    New-UDCodeEditor -Id 'SettingsEditor' -HideCodeLens -Language 'json' -Height '200ch' -Width '250ch' -Theme vs-dark -Code $settingsContent
+
                                 } -Header {
                                     "jvSettings.json"
                                 } -Footer {
-                                    New-UDButton -Text "Close" -OnClick { Hide-UDModal }
-                                    New-UDButton -Text 'Apply and close' -OnClick { Hide-UDModal }
+                                    New-UDButton -Text "Close" -OnClick {
+                                        $cache:inProgress = $false
+                                        Hide-UDModal
+                                    }
+                                    New-UDButton -Text 'Apply and close' -OnClick {
+                                        $cache:inProgress = $false
+                                        Hide-UDModal
+                                    }
                                 }
                             }
                             New-UDButton -Text 'Reset' -OnClick {
@@ -809,6 +872,23 @@ New-UDPage -Name "Javinizer Web" -Content {
         }
 
         New-UDTab -Text 'Log' -Content {
+            New-UDButton -Text 'Load data' -OnClick {
+                <# $cache:inProgress = $true
+                $cache:searchTotal = 10
+                $cache:findData = @()
+                1..10 | ForEach-Object {
+                    $cache:findData += "Test "
+                    Start-Sleep -Seconds 1
+                } #>
+
+                Show-UDToast -Message (Get-Job | ConvertTo-Json) -Duration 10000
+                #Start-Sleep -Seconds 10
+                #$cache:inProgress = $false
+            }
+
+
+
+
             <# New-UDPaper -Content {
                 New-UDElement -Attributes @{
                     style = @{

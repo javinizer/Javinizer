@@ -1,4 +1,4 @@
-Import-Module "/root/.local/share/powershell/Modules/Javinizer/2.1.4/Javinizer.psm1"
+Import-Module "/home/Javinizer/src/Javinizer/Javinizer.psm1"
 
 $Pages = @()
 
@@ -7,4 +7,4 @@ Get-ChildItem (Join-Path $PSScriptRoot "pages") -Recurse -File | ForEach-Object 
     $Pages += $Page
 }
 
-New-UDDashboard -Title "Javinizer Web" -Pages $Pages -Theme $Theme
+$dashboard = New-UDDashboard -Title "Javinizer Web" -Pages $Pages -Theme $Theme
