@@ -100,6 +100,8 @@
     "javlibrary.cookie.cfclearance": "",
     "javlibrary.cookie.session": "",
     "javlibrary.cookie.userid": "",
+    "web.sort.recurse": 1,
+    "web.sort.strict": 0,
     "admin.log": 1,
     "admin.log.level": "info"
 }
