@@ -24,6 +24,10 @@ RUN apt-get install -y git
 WORKDIR /home
 RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
 
+# Add custom UD components
+WORKDIR /home/data/Dashboard/Components
+RUN pwsh -Command "Find-Module -Name 'UniversalDashboard.Style' -Repository 'PSGallery' | Save-Module -Path ."
+
 EXPOSE 5000
 VOLUME ["/data"]
 ENV Data__RepositoryPath ./data/Repository
