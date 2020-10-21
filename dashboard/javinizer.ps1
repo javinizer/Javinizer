@@ -7,4 +7,4 @@ Get-ChildItem (Join-Path $PSScriptRoot "pages") -Recurse -File | ForEach-Object 
     $Pages += $Page
 }
 
-$dashboard = New-UDDashboard -Title "Javinizer Web" -Pages $Pages -Theme $Theme
+New-UDDashboard -Title "Javinizer Web" -Pages $Pages -Theme $Theme
