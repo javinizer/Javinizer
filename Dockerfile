@@ -5,7 +5,7 @@ RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-
 RUN add-apt-repository multiverse
 RUN mkdir /home/Universal
 WORKDIR /home/Universal
-RUN wget https://download1525.mediafire.com/44sluapunwcg/m48eo5iqhyfro4l/Universal.linux-x64.1.4.4.rar \
+RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.4.rar \
     && unrar x Universal.linux-x64.1.4.4.rar \
     && rm Universal.linux-x64.1.4.4.rar
 RUN chmod +x /home/Universal/Universal.Server
