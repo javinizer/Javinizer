@@ -872,45 +872,34 @@ New-UDPage -Name "Javinizer Web" -Content {
         }
 
         New-UDTab -Text 'Log' -Content {
-            New-UDButton -Text 'Load data' -OnClick {
-                <# $cache:inProgress = $true
-                $cache:searchTotal = 10
-                $cache:findData = @()
-                1..10 | ForEach-Object {
-                    $cache:findData += "Test "
-                    Start-Sleep -Seconds 1
-                } #>
-
-                Show-UDToast -Message (Get-Job | ConvertTo-Json) -Duration 10000
-                #Start-Sleep -Seconds 10
-                #$cache:inProgress = $false
-            }
-
-
-
-
-            <# New-UDPaper -Content {
-                New-UDElement -Attributes @{
-                    style = @{
-                        width = "100%"
-                    }
-                } -Content {
-                    New-UDProgress -Circular
-                }
-            } #>
-
-            <#             New-UDTable -Data $Data -Padding dense
-            $rawLog = (Get-Content -LiteralPath 'C:\ProgramData\Javinizer\src\Javinizer\jvLog.log')
-            $log = $rawLog[($rawLog.Count - 1)..0] -join "`n"
+            $rawLog = (Get-Content -LiteralPath '/home/Javinizer/src/Javinizer/jvLog.log')
+            $fullLog = $rawLog -join "`n"
+            $recentLog = ($rawLog | Select-Object -Last 50) -join "`n"
+            #$log = $rawLog[($rawLog.Count - 1)..0] -join "`n"
             #New-UDCheckBox -Id 'logAutoRefreshChkbx' -Label 'Autorefresh' -LabelPlacement end
             #New-UDTextbox -Id 'logAutoRefreshInterval' -Label 'Every how many seconds' -Placeholder '5'
             #$cache:logAutoRefresh = (Get-UDElement -Id "logAutoRefreshChkbx")['checked']
             #$cache:logAutoRefreshInterval = [Int](Get-UDElement -Id 'logAutoRefreshInterval').value
+            New-UDButton -Text 'Refresh' -OnClick {
+                Sync-UDElement -Id 'LogEditor'
+            }
+            New-UDButton -Text 'View Full Log' -OnClick {
+                $cache:inProgress = $true
+                Show-UDModal -FullScreen -Content {
+                    New-UDCodeEditor -Id 'LogEditor' -HideCodeLens -Language 'powershell' -Height '175ch' -Width '175ch' -Theme vs-dark -ReadOnly -Code $fullLog
+                } -Footer {
+                    New-UDButton 'Close' -OnClick {
+                        Hide-UDModal
+                        $cache:inProgress = $false
+                    }
+                }
+            }
+            New-UDTypography -Variant h5 -Text "Last 50 Entries"
             New-UDDynamic -Content {
                 New-UDGrid -Container -Content {
-                    New-UDCodeEditor -Id 'LogEditor' -HideCodeLens -Language 'powershell' -Height '200ch' -Width '250ch' -Theme vs-dark -Code $log
+                    New-UDCodeEditor -Id 'LogEditor' -HideCodeLens -Language 'powershell' -Height '150ch' -Width '250ch' -Theme vs-dark -ReadOnly -Code $recentLog
                 }
-            } -AutoRefresh:$cache:logAutoRefresh -AutoRefreshInterval:$cache:logAutoRefreshInterval #>
+            } #-AutoRefresh:$cache:logAutoRefresh -AutoRefreshInterval:$cache:logAutoRefreshInterval
         }
     }
 }
