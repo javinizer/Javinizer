@@ -701,6 +701,13 @@ function Javinizer {
 
             'Javlibrary' {
                 try {
+                    if (!($Path)) {
+                        $Path = $Settings.'location.input'
+                        if ($null -eq $Path -or $Path -eq '') {
+                            $Path = (Get-Location).Path
+                        }
+                    }
+
                     $javlibraryBaseUrl = $Settings.'javlibrary.baseurl'
                     $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned_print.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
                         "method"                    = "GET"
