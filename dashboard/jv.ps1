@@ -1,4 +1,6 @@
-Import-Module "/root/.local/share/powershell/Modules/Javinizer/2.1.3/Javinizer.psm1"
+Import-Module "/home/Javinizer/src/Javinizer/Javinizer.psm1"
+Import-Module "/home/UniversalDashboard.CodeEditor/1.0.4/UniversalDashboard.CodeEditor.psd1"
+Import-Module UniversalDashboard.Style
 
 $Pages = @()
 
