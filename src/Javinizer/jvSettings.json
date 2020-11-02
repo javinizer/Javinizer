@@ -102,6 +102,7 @@
     "javlibrary.cookie.userid": "",
     "web.sort.recurse": 1,
     "web.sort.strict": 0,
+    "web.navigation.pagesize": 5,
     "admin.log": 1,
     "admin.log.level": "info"
 }
