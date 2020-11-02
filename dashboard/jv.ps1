@@ -1,6 +1,6 @@
 Import-Module "/home/Javinizer/src/Javinizer/Javinizer.psm1"
 Import-Module UniversalDashboard.Style
-Import-Module UniversalDashboard.CodeEditor
+#Import-Module UniversalDashboard.CodeEditor
 
 $Pages = @()
 

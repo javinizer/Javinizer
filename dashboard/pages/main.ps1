@@ -810,8 +810,8 @@ New-UDPage -Name "Javinizer Web" -Content {
                                                                     }
                                                                 }
                                                             } -Footer {
-                                                                New-UDButton -Id 'addActressBtn' -Text 'Apply and close' -Variant outlined -FullWidth -OnClick {
-                                                                    Set-UDElement -Id 'addActressBtn' -Properties @{
+                                                                New-UDButton -Id 'updateActressBtn' -Text 'Apply and close' -Variant outlined -FullWidth -OnClick {
+                                                                    Set-UDElement -Id 'updateActressBtn' -Properties @{
                                                                         Disabled = $true
                                                                     }
 

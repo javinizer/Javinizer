@@ -18,6 +18,7 @@ RUN apt-get install -y mediainfo
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update -y
 RUN apt-get install -y python3.8 python3-pip
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
 RUN pip3 install pillow googletrans
 RUN apt-get install -y git
 
