@@ -260,7 +260,11 @@ function Get-JVAggregatedData {
                             $aggregatedDataObject.$field = $sourceData.Id
                         }
                     } elseif ($field -eq 'Actress') {
-                        $aggregatedDataObject.$field = @($sourceData.Actress)
+                        if ($null -eq $sourceData.Actress) {
+                            $aggregatedDataObject.$field = $null
+                        } else {
+                            $aggregatedDataObject.$field = @($sourceData.Actress)
+                        }
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
@@ -494,6 +498,7 @@ function Get-JVAggregatedData {
 
         if ($UnknownActress) {
             if ($null -eq $aggregatedDataObject.Actress) {
+                $aggregatedDataObject.Actress = @()
                 $aggregatedDataObject.Actress += [PSCustomObject]@{
                     LastName     = $null
                     FirstName    = 'Unknown'
