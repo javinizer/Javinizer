@@ -259,6 +259,8 @@ function Get-JVAggregatedData {
                         } else {
                             $aggregatedDataObject.$field = $sourceData.Id
                         }
+                    } elseif ($field -eq 'Actress') {
+                        $aggregatedDataObject.$field = @($sourceData.Actress)
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
