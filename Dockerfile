@@ -9,7 +9,6 @@ RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.6.rar \
     && unrar x Universal.linux-x64.1.4.6.rar \
     && rm Universal.linux-x64.1.4.6.rar
 RUN chmod +x /home/Universal/Universal.Server
-#RUN ./home/Universal/Universal.Server
 
 RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && dpkg -i packages-microsoft-prod.deb && apt-get update
 RUN add-apt-repository universe
@@ -29,6 +28,10 @@ RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module Unive
 # Clone dev Javinizer branch
 WORKDIR /home
 RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
+
+RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
+    && unrar x UniversalDashboard.CodeEditor.rar \
+    && rm UniversalDashboard.CodeEditor.rar
 
 EXPOSE 5000
 VOLUME ["/data"]
