@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.5]
+
+### Changed
+- Parameter `-SetOwned` now uses default path from settings
+
+### Fixed
+- Multiple tags are now created properly from setting `sort.metadata.nfo.format.tag`
+- Aggregated data object actress is now always created as an array
+
 ## [2.1.4]
 
 ### Changed
