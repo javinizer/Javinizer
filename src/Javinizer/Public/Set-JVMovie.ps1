@@ -465,7 +465,15 @@ function Set-JVMovie {
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                         if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
                             if (!(Test-Path -LiteralPath $filePath)) {
-                                Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                    Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                    if ($Force) {
+                                        mv $Path $filePath --force
+                                    } else {
+                                        mv $Path $filePath --no-clobber
+                                    }
+                                }
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
                             } else {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
@@ -484,7 +492,15 @@ function Set-JVMovie {
                         if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
                             if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
                                 if (!(Test-Path -LiteralPath $filePath)) {
-                                    Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                        Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                        if ($Force) {
+                                            mv $Path $filePath --force
+                                        } else {
+                                            mv $Path $filePath --no-clobber
+                                        }
+                                    }
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
                                 } else {
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
