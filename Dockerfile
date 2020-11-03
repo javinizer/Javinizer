@@ -1,5 +1,6 @@
 
-FROM ubuntu:18.04
+FROM ghcr.io/linuxserver/baseimage-ubuntu:version-486889a0
+
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
 RUN add-apt-repository multiverse
@@ -23,7 +24,7 @@ RUN apt-get install -y git
 
 # Add custom UD components
 RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted"
-RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.CodeEditor"
+RUN pwsh -Command "Install-Module UniversalDashboard.Style"
 
 # Clone dev Javinizer branch
 WORKDIR /home
@@ -34,9 +35,9 @@ RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
     && rm UniversalDashboard.CodeEditor.rar
 
 EXPOSE 5000
-VOLUME ["/data"]
-ENV Data__RepositoryPath ./data/Repository
-ENV Data__ConnectionString ./data/database.db
-ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
-ENV Logging__Path ./data/logs/log.txt
+VOLUME ["/appdata"]
+ENV Data__RepositoryPath ./appdata/Repository
+ENV Data__ConnectionString ./appdata/database.db
+ENV UniversalDashboard__AssetsFolder ./appdata/UniversalDashboard
+ENV Logging__Path ./appdata/logs/log.txt
 ENTRYPOINT ["/home/Universal/Universal.Server"]
