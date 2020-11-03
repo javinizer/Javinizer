@@ -1,6 +1,7 @@
 
-FROM ghcr.io/linuxserver/baseimage-ubuntu:version-486889a0
+FROM ubuntu:18.04
 
+ADD docker-entrypoint.sh /home/
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
 RUN add-apt-repository multiverse
@@ -35,9 +36,9 @@ RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
     && rm UniversalDashboard.CodeEditor.rar
 
 EXPOSE 5000
-VOLUME ["/appdata"]
-ENV Data__RepositoryPath ./appdata/Repository
-ENV Data__ConnectionString ./appdata/database.db
-ENV UniversalDashboard__AssetsFolder ./appdata/UniversalDashboard
-ENV Logging__Path ./appdata/logs/log.txt
-ENTRYPOINT ["/home/Universal/Universal.Server"]
+VOLUME ["/data"]
+ENV Data__RepositoryPath ./data/Repository
+ENV Data__ConnectionString ./data/database.db
+ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
+ENV Logging__Path ./data/logs/log.txt
+ENTRYPOINT ["./home/docker-entrypoint.sh"]
