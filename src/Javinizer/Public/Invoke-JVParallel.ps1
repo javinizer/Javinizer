@@ -1,4 +1,4 @@
-function Invoke-Parallel {
+function Invoke-JVParallel {
     <#
     .SYNOPSIS
         Function to control parallel processing using runspaces
@@ -186,7 +186,10 @@ function Invoke-Parallel {
 
         [switch]$Quiet = $false,
 
-        [switch]$IsWeb = $false
+        [switch]$IsWeb = $false,
+
+        [ValidateSet('search', 'sort')]
+        [string]$IsWebType
     )
     begin {
         #No max queue specified?  Estimate one.
@@ -265,8 +268,14 @@ function Invoke-Parallel {
                 if ($IsWeb) {
                     $cache:totalCount = $totalCount
                     $cache:completedCount = $script:completedCount
-                    $cache:currentSort = $runspaces.object.FileName
-                    $cache:currentSortFullName = $runspaces.object.FullName
+                    if ($IsWebType -eq 'sort') {
+                        $cache:currentSort = $runspaces.object.Data.Id
+                        $cache:currentSortFullname = $runspaces.object.Path
+                    }
+                    if ($IsWebType -eq 'search') {
+                        $cache:currentSort = $runspaces.object.FileName
+                        $cache:currentSortFullName = $runspaces.object.FullName
+                    }
                 }
 
                 #run through each runspace.

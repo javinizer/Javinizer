@@ -310,6 +310,10 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$IsWeb,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [ValidateSet('Search', 'Sort')]
+        [String]$IsWebType,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -840,15 +844,25 @@ function Javinizer {
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                            $javMovies | Invoke-Parallel -IsWeb -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
-                                Import-Module $using:jvModulePath
-                                $jvMovie = $_
-                                $Settings = $using:Settings
-                                $a = Javinizer -IsThread -IsWeb -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
-                                Write-Output $a
+                            if ($IsWebType -eq 'Search') {
+                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'search' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                    Import-Module $using:jvModulePath
+                                    $jvMovie = $_
+                                    $Settings = $using:Settings
+                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    Write-Output $jvData
+                                }
+                            } else {
+                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'search' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                    Import-Module $using:jvModulePath
+                                    $jvMovie = $_
+                                    $Settings = $using:Settings
+                                    Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                }
                             }
+
                         } else {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            $javMovies | Invoke-JVParallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 $Settings = $using:Settings
@@ -868,10 +882,14 @@ function Javinizer {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($javAggregatedData.NullFields -eq '') {
                                     if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                                        [PSCustomObject]@{
-                                            Path       = $movie.FullName
-                                            Data       = $javAggregatedData.Data
-                                            PartNumber = $movie.PartNumber
+                                        if ($IsWebType -eq 'Search') {
+                                            [PSCustomObject]@{
+                                                Path       = $movie.FullName
+                                                Data       = $javAggregatedData.Data
+                                                PartNumber = $movie.PartNumber
+                                            }
+                                        } elseif ($IsWebType -eq 'Sort') {
+                                            $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
                                         }
                                     } else {
                                         $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force

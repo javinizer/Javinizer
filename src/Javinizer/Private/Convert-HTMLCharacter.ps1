@@ -19,6 +19,11 @@ function Convert-HTMLCharacter {
             -replace '&#039', ''
 
         $newString = $String.Trim()
+
+        if ($newString -eq '') {
+            $newString = $null
+        }
+
         Write-Output $newString
     }
 }

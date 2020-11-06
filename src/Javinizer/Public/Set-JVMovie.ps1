@@ -204,6 +204,12 @@ function Set-JVMovie {
             }
         }
 
+        if ($OriginalPath) {
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
+        } else {
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
+        }
+
         if ($MoveToFolder) {
             if ($DestinationPath) {
                 if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
@@ -244,11 +250,6 @@ function Set-JVMovie {
             if ($CreateNfo) {
                 try {
                     $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    if ($OriginalPath) {
-                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
-                    } else {
-                        $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
-                    }
                     $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
                 } catch {

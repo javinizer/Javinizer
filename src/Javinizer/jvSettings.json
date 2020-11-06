@@ -102,6 +102,8 @@
     "javlibrary.cookie.userid": "",
     "web.sort.recurse": 1,
     "web.sort.strict": 0,
+    "web.sort.interactive": 1,
+    "web.sort.update": 1,
     "web.navigation.pagesize": 5,
     "admin.log": 1,
     "admin.log.level": "info"
