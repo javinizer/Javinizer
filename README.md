@@ -3,7 +3,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=release)](https://github.com/jvlflame/Javinizer/releases)
 [![PSGallery Downloads](https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery%20downloads&style=flat)](https://www.powershellgallery.com/packages/Javinizer/)
 [![GitHub Downloads](https://img.shields.io/github/downloads/jvlflame/javinizer/total?color=red&label=github%20downloads&style=flat)](https://github.com/jvlflame/Javinizer/releases)
-[![Discord](https://img.shields.io/discord/608449512352120834?color=brightgreen&style=flat&label=discord%20chat)](https://discord.gg/K2Yjevk)
+[![Discord](https://img.shields.io/discord/608449512352120834?color=brightgreen&style=flat&label=discord%20chat)](https://discord.gg/Pds7xCpzpc)
 
 A command-line based tool to scrape and sort your local Japanese Adult Video (JAV) files.
 
