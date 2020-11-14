@@ -188,7 +188,7 @@ function Invoke-JVParallel {
 
         [switch]$IsWeb = $false,
 
-        [ValidateSet('search', 'sort')]
+        [ValidateSet('search', 'sort', 'searchsort')]
         [string]$IsWebType
     )
     begin {
@@ -268,11 +268,11 @@ function Invoke-JVParallel {
                 if ($IsWeb) {
                     $cache:totalCount = $totalCount
                     $cache:completedCount = $script:completedCount
-                    if ($IsWebType -eq 'sort') {
+                    if ($IsWebType -eq 'searchsort') {
                         $cache:currentSort = $runspaces.object.Data.Id
                         $cache:currentSortFullname = $runspaces.object.Path
                     }
-                    if ($IsWebType -eq 'search') {
+                    if ($IsWebType -eq 'search' -or $IsWebType -eq 'sort') {
                         $cache:currentSort = $runspaces.object.FileName
                         $cache:currentSortFullName = $runspaces.object.FullName
                     }

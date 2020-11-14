@@ -448,6 +448,17 @@ function Javinizer {
             $script:JVLogWrite = 0
         }
 
+        if ($Settings.'location.historycsv' -eq '') {
+            $historyCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvHistory.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'location.historycsv' -PathType Leaf)) {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Thumb csv not found at path [$($Settings.'location.historycsv')]"
+                return
+            } else {
+                $historyCsvPath = $Settings.'location.historycsv'
+            }
+        }
+
         if ($Settings.'location.thumbcsv' -eq '') {
             $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         } else {
@@ -853,11 +864,11 @@ function Javinizer {
                                     Write-Output $jvData
                                 }
                             } else {
-                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'search' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'sort' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
                                     Import-Module $using:jvModulePath
                                     $jvMovie = $_
                                     $Settings = $using:Settings
-                                    Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                                 }
                             }
 
@@ -887,7 +898,32 @@ function Javinizer {
                                         PartNumber = $movie.PartNumber
                                     }
                                 } elseif ($IsWebType -eq 'Sort') {
-                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                    function Write-JVWebLog {
+                                        param (
+                                            [Parameter()]
+                                            [String]$OriginalPath,
+
+                                            [Parameter()]
+                                            [String]$DestinationPath,
+
+                                            [Parameter()]
+                                            [System.IO.FileInfo]$HistoryPath
+                                        )
+
+                                        $message = [PSCustomObject]@{
+                                            Timestamp       = Get-Date -Format s
+                                            OriginalPath    = $OriginalPath
+                                            DestinationPath = $DestinationPath
+                                        }
+
+                                        $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
+                                        $LogMutex.WaitOne() | Out-Null
+                                        $message | Export-Csv -LiteralPath $HistoryPath -Append -Encoding utf8 -UseQuotes Always
+                                        $LogMutex.ReleaseMutex() | Out-Null
+                                    }
+                                    $pathData = Get-JVSortPath -Data $javAggregatedData.Data -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -Update:$Update -Force:$Force -PartNumber $movie.PartNumber
+                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.PartNumber -Update:$Update -Force:$Force
+                                    Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $pathData.FilePath
                                 }
                             } else {
                                 if ($null -ne $javData) {
