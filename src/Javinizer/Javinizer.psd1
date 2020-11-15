@@ -86,11 +86,13 @@
         'Get-JVData',
         'Get-JVItem',
         'Get-JVNfo',
+        'Get-JVSortData',
         'Get-R18Data',
         'Get-R18Url',
         'Set-JVEmbyThumbs',
         'Set-JVMovie',
-        'Update-JVThumbCsv'
+        'Update-JVThumbCsv',
+        'Write-JVWebLog'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

@@ -898,32 +898,11 @@ function Javinizer {
                                         PartNumber = $movie.PartNumber
                                     }
                                 } elseif ($IsWebType -eq 'Sort') {
-                                    function Write-JVWebLog {
-                                        param (
-                                            [Parameter()]
-                                            [String]$OriginalPath,
-
-                                            [Parameter()]
-                                            [String]$DestinationPath,
-
-                                            [Parameter()]
-                                            [System.IO.FileInfo]$HistoryPath
-                                        )
-
-                                        $message = [PSCustomObject]@{
-                                            Timestamp       = Get-Date -Format s
-                                            OriginalPath    = $OriginalPath
-                                            DestinationPath = $DestinationPath
-                                        }
-
-                                        $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")
-                                        $LogMutex.WaitOne() | Out-Null
-                                        $message | Export-Csv -LiteralPath $HistoryPath -Append -Encoding utf8 -UseQuotes Always
-                                        $LogMutex.ReleaseMutex() | Out-Null
-                                    }
-                                    $pathData = Get-JVSortPath -Data $javAggregatedData.Data -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -Update:$Update -Force:$Force -PartNumber $movie.PartNumber
+                                    $sortData = Get-JVSortData -Data $javAggregatedData.Data -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -Update:$Update -Force:$Force -PartNumber $movie.PartNumber
                                     $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.PartNumber -Update:$Update -Force:$Force
-                                    Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $pathData.FilePath
+                                    if (!($Update)) {
+                                        Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $sortData.Path.FilePath -Data $sortData.Data
+                                    }
                                 }
                             } else {
                                 if ($null -ne $javData) {

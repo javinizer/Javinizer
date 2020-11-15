@@ -1,4 +1,4 @@
-function Get-JVSortPath {
+function Get-JVSortData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
@@ -193,6 +193,11 @@ function Get-JVSortPath {
             FilePath             = $filePath
         }
 
-        Write-Output $pathObject
+        $object = @{
+            Data = $Data
+            Path = $pathObject
+        }
+
+        Write-Output $object
     }
 }
