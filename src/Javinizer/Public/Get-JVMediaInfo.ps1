@@ -5,7 +5,7 @@ function Get-JVMediaInfo {
         [System.IO.FileInfo]$Path
     )
 
-    $fullMetadata = ((MediaInfo --Full $Path --Output=JSON) | ConvertFrom-Json).media.track
+    $fullMetadata = ((mediainfo --Full $Path --Output=JSON) | ConvertFrom-Json).media.track
     $videoMetadata = $fullMetaData | Where-Object { $_.'@type' -eq 'Video' }[0]
     $audioMetadata = ($fullMetaData | Where-Object { $_.'@type' -eq 'Audio' })[0]
     $metadata = [PSCustomObject]@{

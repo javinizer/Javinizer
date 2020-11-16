@@ -1,13 +1,16 @@
 
 FROM ubuntu:18.04
+
+ADD docker-entrypoint.sh /home/
+RUN chmod +x /home/docker-entrypoint.sh
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
 RUN add-apt-repository multiverse
 RUN mkdir /home/Universal
 WORKDIR /home/Universal
-RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.6.rar \
-    && unrar x Universal.linux-x64.1.4.6.rar \
-    && rm Universal.linux-x64.1.4.6.rar
+RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.9.rar \
+    && unrar x Universal.linux-x64.1.4.9.rar \
+    && rm Universal.linux-x64.1.4.9.rar
 RUN chmod +x /home/Universal/Universal.Server
 
 RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && dpkg -i packages-microsoft-prod.deb && apt-get update
@@ -23,11 +26,11 @@ RUN apt-get install -y git
 
 # Add custom UD components
 RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted"
-RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.CodeEditor"
+RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp"
 
 # Clone dev Javinizer branch
 WORKDIR /home
-RUN git clone -b dev https://github.com/jvlflame/Javinizer.git
+RUN git clone https://github.com/jvlflame/Javinizer.git
 
 RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
     && unrar x UniversalDashboard.CodeEditor.rar \
@@ -39,4 +42,4 @@ ENV Data__RepositoryPath ./data/Repository
 ENV Data__ConnectionString ./data/database.db
 ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
 ENV Logging__Path ./data/logs/log.txt
-ENTRYPOINT ["/home/Universal/Universal.Server"]
+ENTRYPOINT ["/home/docker-entrypoint.sh"]

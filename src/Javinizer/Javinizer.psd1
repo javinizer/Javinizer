@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.1.5'
+    ModuleVersion     = '2.1.6'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -71,6 +71,7 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @(
+        'Invoke-JVParallel',
         'Javinizer',
         'Get-CfSession',
         'Get-DmmData',
@@ -85,11 +86,13 @@
         'Get-JVData',
         'Get-JVItem',
         'Get-JVNfo',
+        'Get-JVSortData',
         'Get-R18Data',
         'Get-R18Url',
         'Set-JVEmbyThumbs',
         'Set-JVMovie',
-        'Update-JVThumbCsv'
+        'Update-JVThumbCsv',
+        'Write-JVWebLog'
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

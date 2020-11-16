@@ -310,6 +310,10 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path')]
         [Switch]$IsWeb,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [ValidateSet('Search', 'Sort')]
+        [String]$IsWebType,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -442,6 +446,17 @@ function Javinizer {
             $script:JVLogWriteLevel = $Settings.'admin.log.level'
         } else {
             $script:JVLogWrite = 0
+        }
+
+        if ($Settings.'location.historycsv' -eq '') {
+            $historyCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvHistory.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'location.historycsv' -PathType Leaf)) {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Thumb csv not found at path [$($Settings.'location.historycsv')]"
+                return
+            } else {
+                $historyCsvPath = $Settings.'location.historycsv'
+            }
         }
 
         if ($Settings.'location.thumbcsv' -eq '') {
@@ -833,22 +848,32 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 5) {
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
                         Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-5)"
                     }
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
                         $jvModulePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psm1'
                         if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                            $javMovies | Invoke-Parallel -IsWeb -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
-                                Import-Module $using:jvModulePath
-                                $jvMovie = $_
-                                $Settings = $using:Settings
-                                $a = Javinizer -IsThread -IsWeb -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
-                                Write-Output $a
+                            if ($IsWebType -eq 'Search') {
+                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'search' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                    Import-Module $using:jvModulePath
+                                    $jvMovie = $_
+                                    $Settings = $using:Settings
+                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    Write-Output $jvData
+                                }
+                            } else {
+                                $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'sort' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                    Import-Module $using:jvModulePath
+                                    $jvMovie = $_
+                                    $Settings = $using:Settings
+                                    Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                }
                             }
+
                         } else {
-                            $javMovies | Invoke-Parallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
+                            $javMovies | Invoke-JVParallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 $Settings = $using:Settings
@@ -864,25 +889,34 @@ function Javinizer {
                             }
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
-                            if ($null -ne $javData) {
+                            if ($PSBoundParameters.ContainsKey('IsWeb')) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                if ($javAggregatedData.NullFields -eq '') {
-                                    if ($PSBoundParameters.ContainsKey('IsWeb')) {
-                                        [PSCustomObject]@{
-                                            Path       = $movie.FullName
-                                            Data       = $javAggregatedData.Data
-                                            PartNumber = $movie.PartNumber
-                                        }
-                                    } else {
-                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                if ($IsWebType -eq 'Search') {
+                                    [PSCustomObject]@{
+                                        Path       = $movie.FullName
+                                        Data       = $javAggregatedData.Data
+                                        PartNumber = $movie.PartNumber
                                     }
-                                } else {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
-                                    return
+                                } elseif ($IsWebType -eq 'Sort') {
+                                    $sortData = Get-JVSortData -Data $javAggregatedData.Data -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -Update:$Update -Force:$Force -PartNumber $movie.PartNumber
+                                    $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.PartNumber -Update:$Update -Force:$Force
+                                    if (!($Update)) {
+                                        Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $sortData.Path.FilePath -Data $sortData.Data
+                                    }
                                 }
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
-                                return
+                                if ($null -ne $javData) {
+                                    $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                                    if ($javAggregatedData.NullFields -eq '') {
+                                        $javAggregatedData | Set-JVMovie -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -PartNumber $movie.Partnumber -Update:$Update -Force:$Force
+                                    } else {
+                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- missing required fields [$($javAggregatedData.NullFields)]"
+                                        return
+                                    }
+                                } else {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Skipped -- not matched"
+                                    return
+                                }
                             }
                         }
                     }
