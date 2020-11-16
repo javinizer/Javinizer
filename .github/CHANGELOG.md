@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.1.6]
 
+### Changed
+- Throttlelimit increased from 5 -> 10
+
 ### Fixed
 - MediaInfo now functions correctly on linux
 
