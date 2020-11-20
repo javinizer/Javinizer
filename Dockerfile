@@ -32,7 +32,7 @@ RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module Unive
 WORKDIR /home
 RUN git clone https://github.com/jvlflame/Javinizer.git
 
-RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
+RUN wget https://ftp.jvlflame.net/UniversalDashboard.CodeEditor.rar \
     && unrar x UniversalDashboard.CodeEditor.rar \
     && rm UniversalDashboard.CodeEditor.rar
 
