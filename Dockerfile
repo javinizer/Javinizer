@@ -8,9 +8,9 @@ RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-
 RUN add-apt-repository multiverse
 RUN mkdir /home/Universal
 WORKDIR /home/Universal
-RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.9.rar \
-    && unrar x Universal.linux-x64.1.4.9.rar \
-    && rm Universal.linux-x64.1.4.9.rar
+RUN wget https://ftp.jvlflame/Universal.linux-x64.1.4.7.rar \
+    && unrar x Universal.linux-x64.1.4.7.rar \
+    && rm Universal.linux-x64.1.4.7.rar
 RUN chmod +x /home/Universal/Universal.Server
 
 RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && dpkg -i packages-microsoft-prod.deb && apt-get update
