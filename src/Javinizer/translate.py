@@ -1,8 +1,8 @@
-from googletrans import Translator
+from google_trans_new import google_translator
 import sys
 
-translator = Translator()
-translation = translator.translate(sys.argv[1], dest=sys.argv[2])
+google_translator = google_translator()
+translation = google_translator.translate(sys.argv[1], lang_tgt=sys.argv[2])
 
-text = translation.text.encode('utf8')
+text = translation.encode('utf8')
 sys.stdout.buffer.write(text)
