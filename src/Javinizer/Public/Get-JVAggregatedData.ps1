@@ -114,11 +114,15 @@ function Get-JVAggregatedData {
         [Array]$RequiredField,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translatedescription')]
+        [Alias('sort.metadata.nfo.translate')]
         [Boolean]$Translate,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translatedescription.language')]
+        [Alias('sort.metadata.nfo.translate.field')]
+        [Array]$TranslateFields,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.language')]
         [String]$TranslateLanguage,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -182,8 +186,9 @@ function Get-JVAggregatedData {
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
             $ReplaceGenre = $Settings.'sort.metadata.genrecsv'
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
-            $Translate = $Settings.'sort.metadata.nfo.translatedescription'
-            $TranslateLanguage = $Settings.'sort.metadata.nfo.translatedescription.language'
+            $Translate = $Settings.'sort.metadata.nfo.translate'
+            $TranslateFields = $Settings.'sort.metadata.nfo.translate.field'
+            $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
@@ -272,9 +277,6 @@ function Get-JVAggregatedData {
                 }
             }
         }
-
-        # The displayname value is updated after the previous fields have already been scraped
-        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($ThumbCsv) {
             if (Test-Path -LiteralPath $ThumbCsvPath) {
@@ -546,19 +548,45 @@ function Get-JVAggregatedData {
 
         if ($Translate) {
             if ($TranslateLanguage) {
-                $originalDescription = $aggregatedDataObject.Description
-                [String]$translatedDescription = Get-TranslatedString -String $originalDescription -Language $TranslateLanguage
-                if ($null -eq $translatedDescription -or $translatedDescription -eq '') {
-                    $aggregatedDataObject.Description = $originalDescription
-                } else {
-                    $aggregatedDataObject.Description = $translatedDescription.Trim()
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $originalDescription] translated to [$($aggregatedDataObject.Description)]"
+                $batchTranslateString = ($aggregatedDataObject.Title, $aggregatedDataObject.AlternateTitle, $aggregatedDataObject.Description, $aggregatedDataObject.Director, $aggregatedDataObject.Series, $aggregatedDataObject.Maker, $aggregatedDataObject.Label, ($aggregatedDataObject.Genre -join '__')) -join '||'
+                [String]$batchTranslate = Get-TranslatedString -String $batchTranslateString -Language $TranslateLanguage
+
+                $translatedObject = [PSCustomObject]@{
+                    Title          = $null
+                    AlternateTitle = $null
+                    Description    = $null
+                    Director       = $null
+                    Series         = $null
+                    Maker          = $null
+                    Label          = $null
+                    Genre          = $null
                 }
 
+                $translatedObject.Title, $translatedObject.AlternateTitle, $translatedObject.Description, $translatedObject.Director, $translatedObject.Series, $translatedObject.Maker, $translatedObject.Label, $translatedObject.Genre = $batchTranslate -split '\|\|'
+                $translatedObject.PSObject.Properties | ForEach-Object {
+                    if ($_.Name -in $TranslateFields) {
+                        if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
+                            if ($_.Name -eq 'Genre') {
+                                $genres = @()
+                                $rawGenres = $_.Value -split '__'
+                                foreach ($genre in $rawGenres) {
+                                    $genres += ($genre).Trim()
+                                }
+                                $aggregatedDataObject."$($_.Name)" = $genres
+                            } else {
+                                $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
+                            }
+                        }
+                    }
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
             }
         }
+
+        # The displayname value is updated after the previous fields have already been scraped and translated
+        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
+
 
         if ($null -ne $Tag[0]) {
             $aggregatedDataObject.Tag = @()
