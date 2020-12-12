@@ -154,6 +154,10 @@ function Get-JVAggregatedData {
         [String]$Tagline,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.credits')]
+        [Array]$Credits,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('scraper.option.idpreference')]
         [String]$IdPreference,
 
@@ -200,6 +204,7 @@ function Get-JVAggregatedData {
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
+            $Credits = $Settings.'sort.metadata.nfo.format.credits'
             $IdPreference = $Settings.'scraper.option.idpreference'
             $GroupActress = $Settings.'sort.format.groupactress'
             $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
@@ -227,6 +232,7 @@ function Get-JVAggregatedData {
             Series         = $null
             Tag            = $null
             Tagline        = $null
+            Credits        = $null
             Actress        = $null
             Genre          = $null
             CoverUrl       = $null
@@ -610,6 +616,19 @@ function Get-JVAggregatedData {
             $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
             if ($null -ne $taglineString -and $taglineString -ne '') {
                 $aggregatedDataObject.Tagline += $taglineString
+            }
+        }
+
+        if ($null -ne $Credits[0]) {
+            $aggregatedDataObject.Credits = @()
+            foreach ($entry in $Credits) {
+                $credit = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
+                if ($null -ne $credit -and $credit -ne '') {
+                    $aggregatedDataObject.Credits += $credit
+                }
+            }
+            if ($null -eq $aggregatedDataObject.Credits[0]) {
+                $aggregatedDataObject.Credits = $null
             }
         }
 

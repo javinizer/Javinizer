@@ -73,6 +73,9 @@ function Get-JVNfo {
         [String]$Tagline,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Array]$Credits,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [PSObject]$MediaInfo,
 
         [Parameter()]
@@ -148,6 +151,15 @@ function Get-JVNfo {
             $item = Convert-NfoChar -String $item -ErrorAction SilentlyContinue
             $tagNfoString = @"
     <tag>$item</tag>
+
+"@
+            $nfoString = $nfoString + $tagNfoString
+        }
+
+        foreach ($item in $Credits) {
+            $item = Convert-NfoChar -String $item -ErrorAction SilentlyContinue
+            $tagNfoString = @"
+    <credits>$item</credits>
 
 "@
             $nfoString = $nfoString + $tagNfoString
