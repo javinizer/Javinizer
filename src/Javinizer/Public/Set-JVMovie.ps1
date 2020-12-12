@@ -470,9 +470,17 @@ function Set-JVMovie {
                                     Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                     if ($Force) {
-                                        mv $Path $filePath --force
+                                        try {
+                                            mv $Path $filePath --force
+                                        } catch {
+                                            Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                        }
                                     } else {
-                                        mv $Path $filePath --no-clobber
+                                        try {
+                                            mv $Path $filePath --no-clobber
+                                        } catch {
+                                            Move-Item -LiteralPath $Path -Destination $filePath
+                                        }
                                     }
                                 }
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
@@ -497,9 +505,17 @@ function Set-JVMovie {
                                         Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
                                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                         if ($Force) {
-                                            mv $Path $filePath --force
+                                            try {
+                                                mv $Path $filePath --force
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                            }
                                         } else {
-                                            mv $Path $filePath --no-clobber
+                                            try {
+                                                mv $Path $filePath --no-clobber
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                            }
                                         }
                                     }
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
