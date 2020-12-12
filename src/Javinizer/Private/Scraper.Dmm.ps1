@@ -269,10 +269,12 @@ function Get-DmmActress {
         }
 
         foreach ($actress in $movieActress) {
+            $lastName = $null
+            $firstName = $null
             $engActressUrl = "https://www.dmm.co.jp/en/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
             $jaActressUrl = "https://www.dmm.co.jp/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
             $actressName = $actress.Groups[2].Value
-            if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+            if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 if ($ScrapeActress) {
                     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
                     $cookie = New-Object System.Net.Cookie
