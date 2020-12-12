@@ -1,12 +1,12 @@
-from google_trans_new import google_translator
+from googletrans import Translator
 import sys
 import tempfile
 import os
 
-google_translator = google_translator()
-translation = google_translator.translate(sys.argv[1], lang_tgt=sys.argv[2])
+translator = Translator()
+translation = translator.translate(sys.argv[1], dest=sys.argv[2])
 
-text = translation.encode('utf8')
+text = translation.text.encode('utf8')
 
 # Write the translated text to a temporary file to bypass encoding issues when redirecting the text to PowerShell
 new_file, filename = tempfile.mkstemp()
