@@ -150,7 +150,8 @@ function Convert-JVString {
             -replace '<LABEL>', "$($Data.Label)" `
             -replace '<ACTORS>', "$actresses" `
             -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)" `
-            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)"
+            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)" `
+            -replace '<DIRECTOR>', "$($Data.Director)"
 
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {
