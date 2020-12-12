@@ -118,6 +118,10 @@ function Get-JVAggregatedData {
         [Boolean]$Translate,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.module')]
+        [String]$TranslateModule,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.field')]
         [Array]$TranslateFields,
 
@@ -198,6 +202,7 @@ function Get-JVAggregatedData {
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
             $IdPreference = $Settings.'scraper.option.idpreference'
             $GroupActress = $Settings.'sort.format.groupactress'
+            $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -562,14 +567,14 @@ function Get-JVAggregatedData {
                 $translatedObject.PSObject.Properties | ForEach-Object {
                     if ($_.Name -in $TranslateFields) {
                         if ($_.Name -eq 'Genre') {
-                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage
+                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage -Module $TranslateModule
                             $genres = @()
                             $rawGenres = $_.Value -split '\|'
                             foreach ($genre in $rawGenres) {
                                 $genres += ($genre).Trim()
                             }
                         } else {
-                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage
+                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage -Module $TranslateModule
                         }
                         if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
                             if ($_.Name -eq 'Genre') {

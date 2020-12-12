@@ -5,11 +5,18 @@ function Get-TranslatedString {
         [AllowEmptyString()]
         [String]$String,
 
-        [String]$Language = 'en'
+        [String]$Language = 'en',
+
+        [ValidateSet('googletrans', 'google_trans_new')]
+        [String]$Module
     )
 
     process {
-        $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
+        if ($Module -eq 'googletrans') {
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
+        } else {
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate_new.py'
+        }
 
         if ($null -ne $String -and $String -ne '') {
             try {
