@@ -514,7 +514,7 @@ function Set-JVMovie {
                                             try {
                                                 mv $Path $filePath --no-clobber
                                             } catch {
-                                                Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                                Move-Item -LiteralPath $Path -Destination $filePath
                                             }
                                         }
                                     }
