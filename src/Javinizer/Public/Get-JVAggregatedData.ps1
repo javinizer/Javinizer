@@ -548,30 +548,31 @@ function Get-JVAggregatedData {
 
         if ($Translate) {
             if ($TranslateLanguage) {
-                $batchTranslateString = ($aggregatedDataObject.Title, $aggregatedDataObject.AlternateTitle, $aggregatedDataObject.Description, $aggregatedDataObject.Director, $aggregatedDataObject.Series, $aggregatedDataObject.Maker, $aggregatedDataObject.Label, ($aggregatedDataObject.Genre -join '__')) -join '||'
-                [String]$batchTranslate = Get-TranslatedString -String $batchTranslateString -Language $TranslateLanguage
-
                 $translatedObject = [PSCustomObject]@{
                     Title          = $null
                     AlternateTitle = $null
                     Description    = $null
                     Director       = $null
                     Series         = $null
+                    Genre          = $null
                     Maker          = $null
                     Label          = $null
-                    Genre          = $null
                 }
 
-                $translatedObject.Title, $translatedObject.AlternateTitle, $translatedObject.Description, $translatedObject.Director, $translatedObject.Series, $translatedObject.Maker, $translatedObject.Label, $translatedObject.Genre = $batchTranslate -split '\|\|'
                 $translatedObject.PSObject.Properties | ForEach-Object {
                     if ($_.Name -in $TranslateFields) {
+                        if ($_.Name -eq 'Genre') {
+                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage
+                            $genres = @()
+                            $rawGenres = $_.Value -split '\|'
+                            foreach ($genre in $rawGenres) {
+                                $genres += ($genre).Trim()
+                            }
+                        } else {
+                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage
+                        }
                         if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
                             if ($_.Name -eq 'Genre') {
-                                $genres = @()
-                                $rawGenres = $_.Value -split '__'
-                                foreach ($genre in $rawGenres) {
-                                    $genres += ($genre).Trim()
-                                }
                                 $aggregatedDataObject."$($_.Name)" = $genres
                             } else {
                                 $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
@@ -586,7 +587,6 @@ function Get-JVAggregatedData {
 
         # The displayname value is updated after the previous fields have already been scraped and translated
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
-
 
         if ($null -ne $Tag[0]) {
             $aggregatedDataObject.Tag = @()
