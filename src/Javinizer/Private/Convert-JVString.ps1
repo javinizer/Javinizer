@@ -23,7 +23,10 @@ function Convert-JVString {
         [Boolean]$FirstNameOrder,
 
         [Parameter()]
-        [Boolean]$GroupActress
+        [Boolean]$GroupActress,
+
+        [Parameter()]
+        [Boolean]$IsFileName
     )
 
     process {
@@ -119,11 +122,20 @@ function Convert-JVString {
         if ($GroupActress) {
             if (($actresses -split $Delimiter).Count -gt 1) {
                 $actresses = '@Group'
-            } elseif ($actresses -match 'Unknown') {
+            } elseif ($actresses -match 'Unknown' -or $actresses -eq '') {
                 $actresses = '@Unknown'
             }
         } else {
             $actresses = ($actressObject | Sort-Object) -join $Delimiter
+        }
+
+        # This will set blank data properties as Unknown
+        if ($IsFileName) {
+            $Data.PSObject.Properties | ForEach-Object {
+                if ($null -eq $_.Value -or $_.Value -eq '') {
+                    $Data."$($_.Name)" = 'Unknown'
+                }
+            }
         }
 
         $convertedName = $FormatString `
