@@ -162,6 +162,7 @@ function Get-MgstageRating {
     process {
         try {
             $rating = ($Webrequest.Content | Select-String -Pattern '<span class="star_.*"><\/span>(.*)').Matches.Groups[1].Value
+            $ratingCount = (($Webrequest.Content | Select-String -Pattern '\((\d*) 件\)').Matches.Groups[1].Value).ToString()
         } catch {
             return
         }
@@ -174,12 +175,6 @@ function Get-MgstageRating {
             $rating = $null
         } else {
             $rating = $newRating.ToString()
-        }
-
-        try {
-            $ratingCount = (($Webrequest.Content | Select-String -Pattern '\((\d) 件\)').Matches.Groups[1].Value).ToString()
-        } catch {
-            return
         }
 
         if ($ratingCount -eq 0) {
