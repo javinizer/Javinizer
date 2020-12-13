@@ -165,6 +165,15 @@ function Convert-JVString {
             $convertedName += "-pt$PartNumber"
         }
 
+        # Revert any changed properties to null
+        if ($IsFileName) {
+            $Data.PSObject.Properties | ForEach-Object {
+                if ($_.Value -eq 'Unknown' -or $_.Value -eq '') {
+                    $Data."$($_.Name)" = $null
+                }
+            }
+        }
+
         Write-Output $convertedName
     }
 }
