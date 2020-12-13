@@ -232,9 +232,13 @@ function Get-DmmRating {
         $ratingCount = (($Webrequest.Content -split '<p class="d-review__evaluates">')[1] -split '<\/p>')[0]
         $ratingCount = (($ratingCount -split '<strong>')[1] -split '<\/strong>')[0]
 
-        $ratingObject = [PSCustomObject]@{
-            Rating = $rating
-            Votes  = $ratingCount
+        if ($ratingCount -eq 0) {
+            $ratingObject = $null
+        } else {
+            $ratingObject = [PSCustomObject]@{
+                Rating = $rating
+                Votes  = $ratingCount
+            }
         }
 
         Write-Output $ratingObject
