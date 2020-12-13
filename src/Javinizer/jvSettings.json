@@ -62,6 +62,7 @@
     "sort.metadata.nfo.mediainfo": false,
     "sort.metadata.nfo.altnamerole": false,
     "sort.metadata.nfo.translate": false,
+    "sort.metadata.nfo.translate.module": "googletrans",
     "sort.metadata.nfo.translate.field": ["description"],
     "sort.metadata.nfo.translate.language": "en",
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
