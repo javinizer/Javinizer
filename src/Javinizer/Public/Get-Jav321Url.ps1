@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-Jav321Url {
     [CmdletBinding()]
     param (

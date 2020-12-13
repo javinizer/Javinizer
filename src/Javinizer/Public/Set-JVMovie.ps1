@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Set-JVMovie {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (

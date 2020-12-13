@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-JavlibraryData {
     [CmdletBinding()]
     param (

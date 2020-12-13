@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Set-JVEmbyThumbs {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (

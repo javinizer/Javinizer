@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-JVAggregatedData {
     [CmdletBinding(DefaultParameterSetName = 'Setting')]
     param (

@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-JVData {
     [CmdletBinding(DefaultParameterSetName = 'Id')]
     param (
