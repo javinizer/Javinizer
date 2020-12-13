@@ -178,6 +178,10 @@ function Get-AventertainmentActress {
                     $actress = (($Webrequest.Content | Select-String -Pattern "<a href=.*\/ActressDetail\.aspx\?languageID=\d&actressname=(.*)>(.*)<\/a>").Matches.Value -split '<\/a>') | ForEach-Object { (($_ -split '>')[1]) }
                     $actress = $actress | Where-Object { $null -ne $_ -and $_ -ne '' } | ForEach-Object { ($_).Trim() }
                 } catch {
+                    # Do nothing
+                }
+
+                if ($null -eq $actress -or $actress -eq '') {
                     try {
                         $actress = (($Webrequest.Content | Select-String -Pattern "<a href=.*\/ppv_ActressDetail\.aspx\?languageID=\d&actressname=(.*)>(.*)<\/a>").Matches.Value -split '<\/a>') | ForEach-Object { (($_ -split '>')[1]) }
                         $actress = $actress | Where-Object { $null -ne $_ -and $_ -ne '' } | ForEach-Object { ($_).Trim() }
