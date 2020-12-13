@@ -45,16 +45,23 @@ function Get-MgstageUrl {
                 $count = 1
                 foreach ($result in $searchResults) {
                     try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl]"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
                         $webRequest = Invoke-WebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl]: $PSItem" -Action 'Continue'
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
                     }
 
                     $resultId = Get-MgstageId -WebRequest $webRequest
+
+                    try {
+                        $alternateResultId = ($resultId | Select-String -Pattern '\d*(.*)').Matches.Groups[1].Value
+                    } catch {
+                        return
+                    }
+
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
-                    if ($resultId -eq $Id) {
+                    if ($resultId -eq $Id -or $alternateResultId -eq $Id) {
                         $mgstageUrlJa = $result
                         break
                     }
@@ -68,7 +75,7 @@ function Get-MgstageUrl {
             }
         }
 
-        if ($null -eq $searchResults) {
+        if ($null -eq $mgstageUrlJa) {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on Mgstage"
             return
         } else {
