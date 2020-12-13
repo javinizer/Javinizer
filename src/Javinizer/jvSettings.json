@@ -7,6 +7,8 @@
     "location.uncensorcsv": "",
     "location.historycsv": "",
     "location.log": "",
+    "scraper.movie.aventertainment": false,
+    "scraper.movie.aventertainmentja": false,
     "scraper.movie.dmm": false,
     "scraper.movie.dmmja": true,
     "scraper.movie.jav321ja": false,

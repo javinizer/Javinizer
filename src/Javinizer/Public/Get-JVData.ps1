@@ -59,6 +59,14 @@ function Get-JVData {
         [Boolean]$MgstageJa,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.aventertainment')]
+        [Boolean]$Aventertainment,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.aventertainmentja')]
+        [Boolean]$AventertainmentJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
@@ -111,6 +119,8 @@ function Get-JVData {
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
             $MgstageJa = $Settings.'scraper.movie.mgstageja'
+            $Aventertainment = $Settings.'scraper.movie.aventertainment'
+            $AventertainmentJa = $Settings.'scraper.movie.aventertainmentja'
             $DmmScrapeActress = $Settings.'scraper.option.dmm.scrapeactress'
             if ($Settings.'location.uncensorcsv' -ne '') {
                 $UncensorCsvPath = $Settings.'location.uncensorcsv'
@@ -162,6 +172,38 @@ function Get-JVData {
                             $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         } elseif ($jvDmmUrl) {
                             $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        }
+                    } | Out-Null
+                }
+            }
+
+            if ($Aventertainment -or $AventertainmentJa) {
+                if ($Aventertainment) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Aventertainment] [Url - $AventertainmentUrl]"
+                    Start-ThreadJob -Name "jvdata-Aventertainment" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:AventertainmentUrl)) {
+                            $jvAventertainmentUrl = Get-AventertainmentUrl -Id $using:Id
+                        }
+                        if ($using:AventertainmentUrl) {
+                            $using:AventertainmentUrl | Get-AventertainmentData
+                        } elseif ($jvAventertainmentUrl) {
+                            $jvAventertainmentUrl.En | Get-AventertainmentData
+                        }
+                    } | Out-Null
+                }
+
+                if ($AventertainmentJa) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - AventertainmentJa] [Url - $AventertainmentJaUrl]"
+                    Start-ThreadJob -Name "jvdata-AventertainmentJa" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:AventertainmentJaUrl)) {
+                            $jvAventertainmentUrl = Get-AventertainmentUrl -Id $using:Id
+                        }
+                        if ($using:AventertainmentJaUrl) {
+                            $using:AventertainmentJaUrl | Get-AventertainmentData
+                        } elseif ($jvAventertainmentUrl) {
+                            $jvAventertainmentUrl.Ja | Get-AventertainmentData
                         }
                     } | Out-Null
                 }

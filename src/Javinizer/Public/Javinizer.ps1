@@ -361,6 +361,12 @@ function Javinizer {
         [Switch]$MgstageJa,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$Aventertainment,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$AventertainmentJa,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [PSObject]$CfSession,
@@ -609,6 +615,10 @@ function Javinizer {
                         if ($item.Source -match 'mgstage') {
                             $item.Url | Get-MgstageData
                         }
+
+                        if ($item.Source -match 'aventertainment') {
+                            $item.Url | Get-AventertainmentData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -617,7 +627,7 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -MgstageJa:$MgstageJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
                 }
 
                 if ($Aggregated) {
