@@ -14,9 +14,15 @@ function Get-JavbusUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
+            try {
+                Start-Sleep -Seconds 3
+                $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
+            }
         }
 
-        $Tries = 5
+        $retryCount = 3
         # Get the page search results
         try {
             $searchResults = (($webRequest | ForEach-Object { $_ -split '\n' } | Select-String '<a class="movie-box" href="(.*)">').Matches) | ForEach-Object { $_.Groups[1].Value }
@@ -25,12 +31,12 @@ function Get-JavbusUrl {
         }
         $numResults = $searchResults.Count
 
-        if ($Tries -gt $numResults) {
-            $Tries = $numResults
+        if ($retryCount -gt $numResults) {
+            $retryCount = $numResults
         }
 
         if ($numResults -ge 1) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
             $count = 1
             foreach ($result in $searchResults) {
@@ -49,7 +55,7 @@ function Get-JavbusUrl {
                     break
                 }
 
-                if ($count -eq $Tries) {
+                if ($count -eq $retryCount) {
                     break
                 }
 
@@ -65,7 +71,7 @@ function Get-JavbusUrl {
             } catch {
             }
 
-            $Tries = 5
+            $retryCount = 3
             # Get the page search results
             try {
                 $searchResults = (($webRequest | ForEach-Object { $_ -split '\n' } | Select-String '<a class="movie-box" href="(.*)">').Matches) | ForEach-Object { $_.Groups[1].Value }
@@ -74,12 +80,12 @@ function Get-JavbusUrl {
             }
             $numResults = $searchResults.Count
 
-            if ($Tries -gt $numResults) {
-                $Tries = $numResults
+            if ($retryCount -gt $numResults) {
+                $retryCount = $numResults
             }
 
             if ($numResults -ge 1) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
                 $count = 1
                 foreach ($result in $searchResults) {
@@ -98,7 +104,7 @@ function Get-JavbusUrl {
                         break
                     }
 
-                    if ($count -eq $Tries) {
+                    if ($count -eq $retryCount) {
                         break
                     }
 
@@ -115,7 +121,7 @@ function Get-JavbusUrl {
             } catch {
             }
 
-            $Tries = 5
+            $retryCount = 3
             # Get the page search results
             try {
                 $searchResults = (($webRequest | ForEach-Object { $_ -split '\n' } | Select-String '<a class="movie-box" href="(.*)">').Matches) | ForEach-Object { $_.Groups[1].Value }
@@ -124,12 +130,12 @@ function Get-JavbusUrl {
             }
             $numResults = $searchResults.Count
 
-            if ($Tries -gt $numResults) {
-                $Tries = $numResults
+            if ($retryCount -gt $numResults) {
+                $retryCount = $numResults
             }
 
             if ($numResults -ge 1) {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$Tries] of [$numResults] results for [$Id]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
 
                 $count = 1
                 foreach ($result in $searchResults) {
@@ -148,7 +154,7 @@ function Get-JavbusUrl {
                         break
                     }
 
-                    if ($count -eq $Tries) {
+                    if ($count -eq $retryCount) {
                         break
                     }
 

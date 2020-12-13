@@ -18,7 +18,7 @@ function Get-Jav321Url {
         }
 
 
-        $Tries = 5
+        $Tries = 3
         # Get the page search results
         $searchResults = $webRequest.Links.OuterHtml | Where-Object { $_ -match 'jav321.com/video/' } |
         Select-String -Pattern 'jav321.com/video/(.*)" target' |
