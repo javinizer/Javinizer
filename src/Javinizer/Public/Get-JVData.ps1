@@ -135,6 +135,38 @@ function Get-JVData {
                 Set-Variable -Name "$($item.Source)Url" -Value $item.Url
             }
 
+            if ($Dmm -or $DmmJa) {
+                if ($Dmm) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
+                    Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:DmmUrl)) {
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
+                        }
+                        if ($using:DmmUrl) {
+                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        } elseif ($jvDmmUrl) {
+                            $jvDmmUrl.En | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        }
+                    } | Out-Null
+                }
+
+                if ($DmmJa) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
+                    Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:DmmJaUrl)) {
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
+                        }
+                        if ($using:DmmJaUrl) {
+                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        } elseif ($jvDmmUrl) {
+                            $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
+                        }
+                    } | Out-Null
+                }
+            }
+
             if ($R18 -or $R18Zh) {
                 if ($R18) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
@@ -219,38 +251,6 @@ function Get-JVData {
                             if ($jvJavlibraryUrl) {
                                 $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
                             }
-                        }
-                    } | Out-Null
-                }
-            }
-
-            if ($Dmm -or $DmmJa) {
-                if ($Dmm) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Dmm] [Url - $DmmUrl]"
-                    Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
-                        Import-Module $using:jvModulePath
-                        if (!($using:DmmUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
-                        }
-                        if ($using:DmmUrl) {
-                            $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
-                        } elseif ($jvDmmUrl) {
-                            $jvDmmUrl.En | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
-                        }
-                    } | Out-Null
-                }
-
-                if ($DmmJa) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DmmJa] [Url - $DmmJaUrl]"
-                    Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
-                        Import-Module $using:jvModulePath
-                        if (!($using:DmmJaUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
-                        }
-                        if ($using:DmmJaUrl) {
-                            $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
-                        } elseif ($jvDmmUrl) {
-                            $jvDmmUrl.Ja | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
                         }
                     } | Out-Null
                 }

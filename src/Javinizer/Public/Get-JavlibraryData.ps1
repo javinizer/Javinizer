@@ -36,7 +36,7 @@ function Get-JavlibraryData {
             Maker         = Get-JavlibraryMaker -WebRequest $webRequest
             Label         = Get-JavlibraryLabel -WebRequest $webRequest
             Rating        = Get-JavlibraryRating -WebRequest $webRequest
-            Actress       = Get-JavlibraryActress -WebRequest $webRequest -JavlibraryBaseUrl $JavlibraryBaseUrl -Session:$Session
+            Actress       = Get-JavlibraryActress -WebRequest $webRequest -JavlibraryBaseUrl $JavlibraryBaseUrl -Session:$Session -Url $Url
             Genre         = Get-JavlibraryGenre -WebRequest $webRequest
             CoverUrl      = Get-JavlibraryCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-JavlibraryScreenshotUrl -WebRequest $webRequest

@@ -299,52 +299,109 @@ function Get-R18Genre {
 }
 
 function Get-R18Actress {
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [String]$Url
     )
 
     process {
-        $movieActressObject = @()
+        function Get-Actress {
+            param (
+                [Parameter()]
+                [Object]$Webrequest
+            )
 
-        try {
-            $movieActress = ($Webrequest.Content | Select-String -AllMatches -Pattern '<a href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(\d*)\/(?:.*)\/">\n.*<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>').Matches
-        } catch {
-            return
+            process {
+                $thumbUrl = @()
+                $pattern = '<a href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(\d*)\/(?:.*)\/">\n.*<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>'
+                try {
+                    $movieActress = ($Webrequest.Content | Select-String -Pattern $pattern -AllMatches).Matches | ForEach-Object { ($_.Groups[2].Value).Trim() }
+                    $thumbs = ($Webrequest.Content | Select-String -Pattern $pattern -AllMatches).Matches | ForEach-Object { $_.Groups[3].Value }
+                } catch {
+                    return
+                }
+
+                foreach ($thumb in $thumbs) {
+                    $thumbUrl += 'https://pics.r18.com/mono/actjpgs/' + $thumb
+                }
+
+                $actresses = [PSCustomObject]@{
+                    Actress = $movieActress
+                    Thumbs  = $thumbUrl
+                }
+
+                Write-Output $actresses
+            }
         }
 
-        foreach ($actress in $movieActress) {
-            $engActressUrl = "https://www.r18.com/videos/vod/movies/list/id=$($actress.Groups[1].Value)/pagesize=30/price=all/sort=popular/type=actress/page=1/?lg=en"
-            $zhActressUrl = "https://www.r18.com/videos/vod/movies/list/id=$($actress.Groups[1].Value)/pagesize=30/price=all/sort=popular/type=actress/page=1/?lg=en"
-            $actressName = $actress.Groups[2].Value
-            $thumbUrl = 'https://pics.r18.com/mono/actjpgs/' + ($actress.Groups[3].Value)
-            if ($thumbUrl -like '*nowprinting*' -or $thumbUrl -like '*now_printing*') {
-                $thumbUrl = $null
-            }
+        $movieActressObject = @()
+        if ($Url -notmatch 'lg=(en|zh)') {
+            $Url += '&?lg=en'
+        }
 
-            # Match if the name contains Japanese characters
-            if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                try {
-                    $engActressName = ((Invoke-WebRequest -Uri $engActressUrl).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
-                } catch {
-                    $engActressName = $null
+        $enActressUrl = $Url -replace 'lg=(en|zh)', 'lg=en'
+        $jaActressUrl = $Url -replace 'lg=(en|zh)', 'lg=zh'
+
+        if ($Url -match 'lg=en') {
+            # Create zh language cookie
+            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'lg'
+            $cookie.Value = 'zh'
+            $cookie.Domain = '.r18.com'
+            $session.Cookies.Add($cookie)
+
+            $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession $session -Verbose:$false
+            $enActress = Get-Actress -Webrequest $Webrequest
+            $jaActress = Get-Actress -Webrequest $jaWebrequest
+        } else {
+            # Create en language cookie
+            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'lg'
+            $cookie.Value = 'en'
+            $cookie.Domain = '.r18.com'
+            $session.Cookies.Add($cookie)
+
+            $enWebrequest = Invoke-WebRequest -Uri $enActressUrl -Method Get -WebSession $session -Verbose:$false
+            $enActress = Get-Actress -Webrequest $enWebrequest
+            $jaActress = Get-Actress -Webrequest $Webrequest
+        }
+
+        for ($x = 0; $x -lt $enActress.Actress.Count; $x++) {
+            if ($enActress.Actress.Count -eq 1) {
+                $thumbUrl = $enActress.Thumbs
+                if ($enActress.Thumbs -like '*nowprinting*' -or $enActress.Thumbs -like '*now_printing*') {
+                    $thumbUrl = $null
                 }
+
+                if ($jaActress.Actress -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $jaActress.Actress = $null
+                }
+
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($engActressName -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($engActressName -split ' ')[0] -replace '\\', ''
-                    JapaneseName = ($actressName -replace '（.*）', '' -replace '&amp;', '&').Trim()
+                    LastName     = ($enActress.Actress -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($enActress.Actress -split ' ')[0] -replace '\\', ''
+                    JapaneseName = $jaActress.Actress -replace '（.*）', '' -replace '&amp;', '&'
                     ThumbUrl     = $thumbUrl
                 }
             } else {
-                try {
-                    $jaActressName = ((Invoke-WebRequest -Uri ($zhActressUrl -replace 'lg=en', 'lg=zh')).Content | Select-String -Pattern '<h1 class="txt01">(.*)<\/h1><\/div>').Matches.Groups[1].Value
-                } catch {
-                    $jaActressName = $null
+                $thumbUrl = $enActress.Thumbs[$x]
+                if ($enActress.Thumbs[$x] -like '*nowprinting*' -or $enActress.Thumbs[$x] -like '*now_printing*') {
+                    $thumbUrl = $null
+                }
+
+                if ($jaActress.Actress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $jaActress.Actress[$x] = $null
                 }
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($actressName -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($actressName -split ' ')[0] -replace '\\', ''
-                    JapaneseName = ($jaActressName -replace '（.*）', '' -replace '&amp;', '&').Trim()
+                    LastName     = ($enActress.Actress[$x] -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($enActress.Actress[$x] -split ' ')[0] -replace '\\', ''
+                    JapaneseName = $jaActress.Actress[$x] -replace '（.*）', '' -replace '&amp;', '&'
                     ThumbUrl     = $thumbUrl
                 }
             }
