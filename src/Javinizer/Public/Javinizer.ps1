@@ -358,6 +358,9 @@ function Javinizer {
         [Switch]$Jav321Ja,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$MgstageJa,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [PSObject]$CfSession,
@@ -602,6 +605,10 @@ function Javinizer {
                         if ($item.Source -match 'dlgetchu') {
                             $item.Url | Get-DLgetchuData
                         }
+
+                        if ($item.Source -match 'mgstage') {
+                            $item.Url | Get-MgstageData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -610,7 +617,7 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                        -MgstageJa:$MgstageJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
                 }
 
                 if ($Aggregated) {
@@ -771,7 +778,7 @@ function Javinizer {
                 if ($unowned.Count -ge 1) {
                     $index = 1
                     foreach ($movieId in $unowned) {
-                        Write-Progress -Id 1 -Activity "Javinizer" -Status "Remaining Jobs: $($unowned.Count-$index)" -PercentComplete ($index/$unowned.Count*100) -CurrentOperation "Setting owned: $movieId"
+                        Write-Progress -Id 1 -Activity "Javinizer" -Status "Remaining Jobs: $($unowned.Count-$index)" -PercentComplete ($index / $unowned.Count * 100) -CurrentOperation "Setting owned: $movieId"
                         Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -LoginSession $Settings.'javlibrary.cookie.session' -Session:$CfSession -BaseUrl $javlibraryBaseUrl
                         $index++
                     }

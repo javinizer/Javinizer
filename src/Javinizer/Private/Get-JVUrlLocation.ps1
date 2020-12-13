@@ -81,6 +81,11 @@ function Get-JVUrlLocation {
                     Url    = $link
                     Source = 'dlgetchuja'
                 }
+            } elseif ($link -match 'mgstage') {
+                $testUrlObject += [PSCustomObject]@{
+                    Url = $link
+                    Source = 'mgstageja'
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }

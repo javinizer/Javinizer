@@ -16,6 +16,7 @@
     "scraper.movie.javlibrary": true,
     "scraper.movie.javlibraryja": false,
     "scraper.movie.javlibraryzh": false,
+    "scraper.movie.mgstageja": false,
     "scraper.movie.r18": true,
     "scraper.movie.r18zh": false,
     "scraper.option.dmm.scrapeactress": false,
