@@ -12,10 +12,10 @@ function Get-TranslatedString {
     )
 
     process {
-        if ($Module -eq 'googletrans') {
-            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
-        } else {
+        if ($Module -eq 'google_trans_new') {
             $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate_new.py'
+        } else {
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
         }
 
         if ($null -ne $String -and $String -ne '') {
