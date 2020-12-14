@@ -223,10 +223,10 @@ function Get-JavbusActress {
         foreach ($actress in $actresses) {
             $baseUrl = ($actress.Groups[1].Value) -replace '/ja', '' -replace '/en', ''
             if ($baseUrl -match '/uncensored') {
-                $engActressUrl = "https://www.javbus.com/en/uncensored/star/$($actress.Groups[2].Value)"
+                $enActressUrl = "https://www.javbus.com/en/uncensored/star/$($actress.Groups[2].Value)"
                 $jaActressUrl = "https://www.javbus.com/ja/uncensored/star/$($actress.Groups[2].Value)"
             } else {
-                $engActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
+                $enActressUrl = "$baseUrl/en/star/$($actress.Groups[2].Value)"
                 $jaActressUrl = "$baseUrl/ja/star/$($actress.Groups[2].Value)"
             }
 
@@ -239,19 +239,25 @@ function Get-JavbusActress {
             # Match if the name contains Japanese characters
             if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 try {
-                    $engActressName = ((Invoke-RestMethod -Uri $engactressUrl | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
+                    $wr = Invoke-RestMethod -Uri $enActressUrl | Out-Null
+                    $enActressName = (($wr | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '-')[0].Trim()
                 } catch {
-                    $engActressName = $null
+                    $enActressName = $null
                 }
 
-                if ($engActressName -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                    $nameParts = ($engActressName -split ' ').Count
+                if ($enActressName -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $nameParts = ($enActressName -split ' ').Count
                     if ($nameParts -eq 1) {
                         $lastName = $null
-                        $firstName = $engActressName
+                        $firstName = $enActressName
                     } else {
-                        $lastName = ($engActressName -split ' ')[0]
-                        $firstName = ($engActressName -split ' ')[1]
+                        if ($wr -match 'D\.O\.B:') {
+                            $lastName = ($enActressName -split ' ')[0]
+                            $firstName = ($enActressName -split ' ')[1]
+                        } else {
+                            $lastName = ($enActressName -split ' ')[1]
+                            $firstName = ($enActressName -split ' ')[0]
+                        }
                     }
 
                     if ($null -ne $firstName) {
@@ -284,8 +290,13 @@ function Get-JavbusActress {
                     $lastName = $null
                     $firstName = $actressName
                 } else {
-                    $lastName = ($actressName -split ' ')[0]
-                    $firstName = ($actressName -split ' ')[1]
+                    if ($wr -match 'D\.O\.B:') {
+                        $lastName = ($actressName -split ' ')[0]
+                        $firstName = ($actressName -split ' ')[1]
+                    } else {
+                        $lastName = ($actressName -split ' ')[1]
+                        $firstName = ($actressName -split ' ')[0]
+                    }
                 }
 
                 if ($null -ne $firstName) {

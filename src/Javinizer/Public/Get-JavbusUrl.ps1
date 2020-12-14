@@ -12,12 +12,7 @@ function Get-JavbusUrl {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
             $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
         } catch {
-            try {
-                Start-Sleep -Seconds 3
-                $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-            }
+            # Do nothing
         }
 
         $retryCount = 3
@@ -67,6 +62,7 @@ function Get-JavbusUrl {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
+                # Do nothing
             }
 
             $retryCount = 3
@@ -117,6 +113,7 @@ function Get-JavbusUrl {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
                 $webRequest = Invoke-RestMethod -Uri $searchUrl -Method Get -Verbose:$false
             } catch {
+                # Do nothing
             }
 
             $retryCount = 3
