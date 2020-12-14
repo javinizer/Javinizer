@@ -9,7 +9,8 @@ A command-line or GUI based tool to scrape and sort your local Japanese Adult Vi
 
 ![Demo](media/demo.gif)
 ![Demo-GUI](media/demo-gui.jpg)
-- [View additional GUI screens here](https://github.com/jvlflame/Javinizer/tree/master/media/gui)
+- [View GUI demo video here](https://gfycat.com/spiriteddefenselessgrouper)
+- [View GUI screens here](https://github.com/jvlflame/Javinizer/tree/master/media/gui)
 
 ## Overview
 
@@ -23,7 +24,9 @@ Javinizer currently supports the following scraper sources:
 - R18
 - Dmm
 - Javbus
-- Jav123
+- Jav321
+- AVEntertainment
+- MGStage
 - DLGetchu
 
 ## Installation & Usage
