@@ -5,19 +5,29 @@ function Get-TranslatedString {
         [AllowEmptyString()]
         [String]$String,
 
-        [String]$Language = 'en'
+        [String]$Language = 'en',
+
+        [ValidateSet('googletrans', 'google_trans_new')]
+        [String]$Module
     )
 
     process {
-        $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
-
-        if ($String -eq $null -or $String -eq '') {
-            # Do not translate if empty
+        if ($Module -eq 'google_trans_new') {
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate_new.py'
         } else {
-            if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                $translatedString = python $translatePath $String $Language
-            } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                $translatedString = python3 $translatePath $String $Language
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
+        }
+
+        if ($null -ne $String -and $String -ne '') {
+            try {
+                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                    $tempFile = python $translatePath $String $Language
+                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                    $tempFile = python3 $translatePath $String $Language
+                }
+                $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
+            } finally {
+                Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
             }
         }
 

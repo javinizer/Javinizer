@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.0]
+
+### Added
+- MGStage scraper
+- AVEntertainment scraper
+- Enhanced metadata translation functionality
+    - Multiple fields can now be translated instead of only description
+    - Support multiple Python translation modules (googletrans, google_trans_new)
+- `<DIRECTOR>` is now a supported tag in metadata format strings
+- Added a setting to allow for creation of `<credits>` in nfo metadata
+
+### Changed
+- Metadata format strings will now be output as "Unknown" for null fields
+
+### Fixed
+- MacOS now correctly falls back to `Move-Item` if `mv` command fails
+- DmmJa scraper now returns the correct actresses if an English actress name is present
+- Javbus scrapers now correctly account for actress first/last name on inconsistent actress pages
+- Javlibrary and R18 scrapers now run 40% faster with reduced requests for actress names
+
 ## [2.1.6]
 
 ### Changed
@@ -12,7 +32,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - MediaInfo now functions correctly on linux
-
 
 ## [2.1.5]
 
@@ -36,7 +55,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Jav321Ja now correctly retrieves all genres when scraping (#135)
 - Cookies are now prompted for when cloudflare IUAM is detected and a javlibrary url is specified when using -Find
 
-
 ## [2.1.3]
 
 ### Added
@@ -51,7 +69,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Sort now properly fails when there are missing required metadata fields when using `-Url`
 - Javbus scraper now properly finds uncensored videos when similar search results are found in the censored section
 - Maxtitlelength behavior for Japanese titles now do not cut off at the last whitespace character
-
 
 ## [2.1.2]
 
@@ -113,8 +130,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `<ACTORS>` file rename format now properly falls back to the alternate language when the primary is missing (#103)
 - R18 scraper now properly assigns the genre and label fields for Amateur videos (#108)
 - Extra html on the Description field for the DMM scraper is now removed
-
-
 
 ## [2.0.2]
 

@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Update-JVThumbCsv {
     [CmdletBinding(DefaultParameterSetName = 'None')]
     param(

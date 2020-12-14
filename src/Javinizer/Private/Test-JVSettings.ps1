@@ -95,7 +95,7 @@ function Test-JVSettings {
             'sort.metadata.nfo.altnamerole',
             'sort.metadata.nfo.actresslanguageja',
             'sort.metadata.nfo.firstnameorder',
-            'sort.metadata.nfo.translatedescription',
+            'sort.metadata.nfo.translate',
             'sort.metadata.nfo.originalpath',
             'sort.metadata.thumbcsv.convertalias',
             'sort.metadata.thumbcsv.autoadd',
@@ -134,7 +134,7 @@ function Test-JVSettings {
             'sort.format.trailervid',
             'sort.metadata.nfo.displayname',
             'sort.metadata.nfo.format.tagline',
-            'sort.metadata.nfo.translatedescription.language'
+            'sort.metadata.nfo.translate.language'
         ) | Test-JVSettingsGroup -Settings $Settings -Type String
 
         $arraySettings = @(

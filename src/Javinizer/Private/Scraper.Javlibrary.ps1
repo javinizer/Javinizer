@@ -132,10 +132,16 @@ function Get-JavlibraryRating {
     process {
         $rating = (((($Webrequest.Content -split '<div id="video_review" class="item">')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
         $rating = ($rating -replace '\(', '') -replace '\)', ''
-        $ratingObject = [PSCustomObject]@{
-            Rating = $rating
-            Votes  = $null
+
+        if ($rating -eq 0) {
+            $ratingObject = $null
+        } else {
+            $ratingObject = [PSCustomObject]@{
+                Rating = $rating
+                Votes  = $null
+            }
         }
+
         Write-Output $ratingObject
     }
 }
@@ -175,66 +181,86 @@ function Get-JavlibraryActress {
         [String]$JavlibraryBaseUrl = 'http://www.javlibrary.com',
 
         [Parameter()]
-        [PSObject]$Session
+        [PSObject]$Session,
+
+        [Parameter()]
+        [String]$Url
     )
 
     process {
-        $movieActressObject = @()
-        $movieActress = @()
+        function Get-Actress {
+            param (
+                [Object]$Webrequest
+            )
 
-        try {
-            $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
-                -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches }
-        } catch {
-            return
-        }
-
-        foreach ($actress in $movieActress) {
-            $engActressUrl = "$JavlibraryBaseUrl/en/vl_star.php?s=$($actress.Groups[1].Value)"
-            $jaActressUrl = "$JavlibraryBaseUrl/ja/vl_star.php?s=$($actress.Groups[1].Value)"
-            $actressName = $actress.Groups[2].Value
-            if ($actress -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+            process {
                 try {
-                    $engActressName = ((Invoke-WebRequest -Uri $engActressUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false).Content | Select-String -Pattern '<div class="boxtitle">Videos starring (.*)<\/div>').Matches.Groups[1].Value
+                    $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
+                        -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches } | ForEach-Object { $_.Groups[2].Value}
                 } catch {
-                    $engActressName = $null
+                    return
                 }
 
-                $nameParts = ($engActressName -split ' ').Count
+                Write-Output $movieActress
+            }
+        }
+
+        $movieActressObject = @()
+        $movieActress = @()
+        $enActressUrl = $Url -replace 'javlibrary.com\/(en|ja|cn|tw|)\/', 'javlibrary.com/en/'
+        $jaActressUrl = $Url -replace 'javlibrary.com\/(en|ja|cn|tw|)\/', 'javlibrary.com/ja/'
+
+        if ($Url -match 'javlibrary.com\/en\/') {
+            $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false
+            $enActress = Get-Actress -Webrequest $Webrequest
+            $jaActress = Get-Actress -Webrequest $jaWebrequest
+        } else {
+            $enWebrequest = Invoke-WebRequest -Uri $enActressUrl -Method Get -Verbose:$false
+            $enActress = Get-Actress -Webrequest $enWebrequest
+            $jaActress = Get-Actress -Webrequest $Webrequest
+        }
+
+        for ($x = 0; $x -lt $enActress.Count; $x++) {
+            $firstName, $lastName = $null
+
+            if ($enActress.Count -eq 1) {
+                if ($jaActress -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $jaActress = $null
+                }
+
+                $nameParts = ($enActress -split ' ').Count
                 if ($nameParts -eq 1) {
                     $lastName = $null
-                    $firstName = $engActressName
+                    $firstName = $enActress
                 } else {
-                    $lastName = ($engActressName -split ' ')[0]
-                    $firstName = ($engActressName -split ' ')[1]
+                    $lastName = ($enActress -split ' ')[0]
+                    $firstName = ($enActress -split ' ')[1]
                 }
 
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $lastName
                     FirstName    = $firstName
-                    JapaneseName = $actressName
+                    JapaneseName = $jaActress
                     ThumbUrl     = $null
                 }
             } else {
-                try {
-                    $jaActressName = ((Invoke-WebRequest -Uri $jaActressUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false).Content | Select-String -Pattern '<div class="boxtitle">(.*)のビデオ<\/div>').Matches.Groups[1].Value
-                } catch {
-                    $jaActressName = $null
+                if ($jaActress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                    $jaActress[$x] = $null
                 }
 
-                $nameParts = ($ActressName -split ' ').Count
+                $nameParts = ($enActress[$x] -split ' ').Count
                 if ($nameParts -eq 1) {
                     $lastName = $null
-                    $firstName = $actressName
+                    $firstName = $enActress[$x]
                 } else {
-                    $lastName = ($actressName -split ' ')[0]
-                    $firstName = ($actressName -split ' ')[1]
+                    $lastName = ($enActress[$x] -split ' ')[0]
+                    $firstName = ($enActress[$x] -split ' ')[1]
                 }
 
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $lastName
                     FirstName    = $firstName
-                    JapaneseName = $jaActressName
+                    JapaneseName = $jaActress[$x]
                     ThumbUrl     = $null
                 }
             }

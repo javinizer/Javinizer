@@ -23,7 +23,10 @@ function Convert-JVString {
         [Boolean]$FirstNameOrder,
 
         [Parameter()]
-        [Boolean]$GroupActress
+        [Boolean]$GroupActress,
+
+        [Parameter()]
+        [Boolean]$IsFileName
     )
 
     process {
@@ -119,11 +122,20 @@ function Convert-JVString {
         if ($GroupActress) {
             if (($actresses -split $Delimiter).Count -gt 1) {
                 $actresses = '@Group'
-            } elseif ($actresses -match 'Unknown') {
+            } elseif ($actresses -match 'Unknown' -or $actresses -eq '') {
                 $actresses = '@Unknown'
             }
         } else {
             $actresses = ($actressObject | Sort-Object) -join $Delimiter
+        }
+
+        # This will set blank data properties as Unknown
+        if ($IsFileName) {
+            $Data.PSObject.Properties | ForEach-Object {
+                if ($null -eq $_.Value -or $_.Value -eq '') {
+                    $Data."$($_.Name)" = 'Unknown'
+                }
+            }
         }
 
         $convertedName = $FormatString `
@@ -138,7 +150,8 @@ function Convert-JVString {
             -replace '<LABEL>', "$($Data.Label)" `
             -replace '<ACTORS>', "$actresses" `
             -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)" `
-            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)"
+            -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)" `
+            -replace '<DIRECTOR>', "$($Data.Director)"
 
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {
@@ -150,6 +163,15 @@ function Convert-JVString {
 
         if ($PartNumber) {
             $convertedName += "-pt$PartNumber"
+        }
+
+        # Revert any changed properties to null
+        if ($IsFileName) {
+            $Data.PSObject.Properties | ForEach-Object {
+                if ($_.Value -eq 'Unknown' -or $_.Value -eq '') {
+                    $Data."$($_.Name)" = $null
+                }
+            }
         }
 
         Write-Output $convertedName

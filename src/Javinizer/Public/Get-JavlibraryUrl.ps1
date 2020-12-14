@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-JavlibraryUrl {
     [CmdletBinding()]
     param (
@@ -53,12 +51,12 @@ function Get-JavlibraryUrl {
         }
 
         if ($null -eq $javlibraryUrl) {
-            $Tries = 5
+            $retryCount = 3
             $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
             $numResults = $searchResults.count
 
-            if ($Tries -gt $numResults) {
-                $Tries = $numResults
+            if ($retryCount -gt $numResults) {
+                $retryCount = $numResults
             }
 
             if ($numResults -ge 1) {
@@ -82,7 +80,7 @@ function Get-JavlibraryUrl {
                         break
                     }
 
-                    if ($count -eq $Tries) {
+                    if ($count -eq $retryCount) {
                         break
                     }
 

@@ -1,5 +1,3 @@
-#Requires -PSEdition Core
-
 function Get-JVAggregatedData {
     [CmdletBinding(DefaultParameterSetName = 'Setting')]
     param (
@@ -114,11 +112,19 @@ function Get-JVAggregatedData {
         [Array]$RequiredField,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translatedescription')]
+        [Alias('sort.metadata.nfo.translate')]
         [Boolean]$Translate,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
-        [Alias('sort.metadata.nfo.translatedescription.language')]
+        [Alias('sort.metadata.nfo.translate.module')]
+        [String]$TranslateModule,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.field')]
+        [Array]$TranslateFields,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.language')]
         [String]$TranslateLanguage,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
@@ -144,6 +150,10 @@ function Get-JVAggregatedData {
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.format.tagline')]
         [String]$Tagline,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.format.credits')]
+        [Array]$Credits,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('scraper.option.idpreference')]
@@ -182,8 +192,9 @@ function Get-JVAggregatedData {
             $ThumbCsvAlias = $Settings.'sort.metadata.thumbcsv.convertalias'
             $ReplaceGenre = $Settings.'sort.metadata.genrecsv'
             $IgnoreGenre = $Settings.'sort.metadata.genre.ignore'
-            $Translate = $Settings.'sort.metadata.nfo.translatedescription'
-            $TranslateLanguage = $Settings.'sort.metadata.nfo.translatedescription.language'
+            $Translate = $Settings.'sort.metadata.nfo.translate'
+            $TranslateFields = $Settings.'sort.metadata.nfo.translate.field'
+            $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
@@ -191,8 +202,10 @@ function Get-JVAggregatedData {
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
+            $Credits = $Settings.'sort.metadata.nfo.format.credits'
             $IdPreference = $Settings.'scraper.option.idpreference'
             $GroupActress = $Settings.'sort.format.groupactress'
+            $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -217,6 +230,7 @@ function Get-JVAggregatedData {
             Series         = $null
             Tag            = $null
             Tagline        = $null
+            Credits        = $null
             Actress        = $null
             Genre          = $null
             CoverUrl       = $null
@@ -272,9 +286,6 @@ function Get-JVAggregatedData {
                 }
             }
         }
-
-        # The displayname value is updated after the previous fields have already been scraped
-        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($ThumbCsv) {
             if (Test-Path -LiteralPath $ThumbCsvPath) {
@@ -546,19 +557,45 @@ function Get-JVAggregatedData {
 
         if ($Translate) {
             if ($TranslateLanguage) {
-                $originalDescription = $aggregatedDataObject.Description
-                [String]$translatedDescription = Get-TranslatedString -String $originalDescription -Language $TranslateLanguage
-                if ($null -eq $translatedDescription -or $translatedDescription -eq '') {
-                    $aggregatedDataObject.Description = $originalDescription
-                } else {
-                    $aggregatedDataObject.Description = $translatedDescription.Trim()
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Description - $originalDescription] translated to [$($aggregatedDataObject.Description)]"
+                $translatedObject = [PSCustomObject]@{
+                    Title          = $null
+                    AlternateTitle = $null
+                    Description    = $null
+                    Director       = $null
+                    Series         = $null
+                    Genre          = $null
+                    Maker          = $null
+                    Label          = $null
                 }
 
+                $translatedObject.PSObject.Properties | ForEach-Object {
+                    if ($_.Name -in $TranslateFields) {
+                        if ($_.Name -eq 'Genre') {
+                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage -Module $TranslateModule
+                            $genres = @()
+                            $rawGenres = $_.Value -split '\|'
+                            foreach ($genre in $rawGenres) {
+                                $genres += ($genre).Trim()
+                            }
+                        } else {
+                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage -Module $TranslateModule
+                        }
+                        if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
+                            if ($_.Name -eq 'Genre') {
+                                $aggregatedDataObject."$($_.Name)" = $genres
+                            } else {
+                                $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
+                            }
+                        }
+                    }
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Translation language is missing"
             }
         }
+
+        # The displayname value is updated after the previous fields have already been scraped and translated
+        $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($null -ne $Tag[0]) {
             $aggregatedDataObject.Tag = @()
@@ -577,6 +614,19 @@ function Get-JVAggregatedData {
             $taglineString = (Convert-JVString -Data $aggregatedDataObject -FormatString $Tagline -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
             if ($null -ne $taglineString -and $taglineString -ne '') {
                 $aggregatedDataObject.Tagline += $taglineString
+            }
+        }
+
+        if ($null -ne $Credits[0]) {
+            $aggregatedDataObject.Credits = @()
+            foreach ($entry in $Credits) {
+                $credit = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
+                if ($null -ne $credit -and $credit -ne '') {
+                    $aggregatedDataObject.Credits += $credit
+                }
+            }
+            if ($null -eq $aggregatedDataObject.Credits[0]) {
+                $aggregatedDataObject.Credits = $null
             }
         }
 

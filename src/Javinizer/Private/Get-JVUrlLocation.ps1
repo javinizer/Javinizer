@@ -81,6 +81,23 @@ function Get-JVUrlLocation {
                     Url    = $link
                     Source = 'dlgetchuja'
                 }
+            } elseif ($link -match 'mgstage') {
+                $testUrlObject += [PSCustomObject]@{
+                    Url    = $link
+                    Source = 'mgstageja'
+                }
+            } elseif ($link -match 'aventertainment') {
+                if ($link -match 'languageID=1') {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'aventertainment'
+                    }
+                } else {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'aventertainmentja'
+                    }
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }
