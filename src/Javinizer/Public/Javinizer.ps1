@@ -256,7 +256,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
         [Parameter(ParameterSetName = 'Javlibrary', Position = 0)]
         [AllowEmptyString()]
-        [String]$Path,
+        [System.IO.FileInfo]$Path,
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [AllowEmptyString()]
@@ -804,10 +804,12 @@ function Javinizer {
             }
 
             'Path' {
-                # Default path to location.input in settings if not specified
                 if (!($Path)) {
-                    $Path = $Settings.'location.input'
-                    if ($null -eq $Path -or $Path -eq '') {
+                    try {
+                        # Default path to location.input in settings if not specified
+                        $Path = $Settings.'location.input'
+                    } catch {
+                        # Default path to the current directory if settings not specified
                         $Path = (Get-Location).Path
                     }
                 }
@@ -817,10 +819,12 @@ function Javinizer {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Path [$Path] is not a valid path"
                 }
 
-                # Default destination path to location.output in settings if not specified
                 if (!($DestinationPath)) {
-                    $DestinationPath = $Settings.'location.output'
-                    if ($null -eq $DestinationPath -or $DestinationPath -eq '') {
+                    try {
+                        # Default destination path to location.output in settings if not specified
+                        $DestinationPath = $Settings.'location.output'
+                    } catch {
+                        # Default destination path to the current directory if settings not specified
                         $DestinationPath = (Get-Item -LiteralPath $Path).Directory
                     }
                 }
