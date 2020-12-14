@@ -374,7 +374,7 @@ function Get-R18Actress {
 
         for ($x = 0; $x -lt $enActress.Actress.Count; $x++) {
             if ($enActress.Actress.Count -eq 1) {
-                $thumbUrl = $enActress.Thumbs
+                $thumbUrl = $enActress.Thumbs[$x]
                 if ($enActress.Thumbs -like '*nowprinting*' -or $enActress.Thumbs -like '*now_printing*') {
                     $thumbUrl = $null
                 }
@@ -398,6 +398,7 @@ function Get-R18Actress {
                 if ($jaActress.Actress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                     $jaActress.Actress[$x] = $null
                 }
+
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($enActress.Actress[$x] -split ' ')[1] -replace '\\', ''
                     FirstName    = ($enActress.Actress[$x] -split ' ')[0] -replace '\\', ''
