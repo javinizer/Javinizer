@@ -6,7 +6,7 @@ function Get-DmmContentId {
 
     process {
         try {
-            $contentId = (((($Webrequest.Content -split '<td align="right" valign="top" class="nw">(品番：|Movie Number:)<\/td>')[2] -split '\/td>')[0]) | Select-String -Pattern '>(.*)<').Matches.Groups[1].Value
+            $contentId = ($Webrequest.Content | Select-String -Pattern 'var gaContentId = "(.*)";').Matches.Groups[1].Value
         } catch {
             return
         }
@@ -26,7 +26,7 @@ function Get-DmmId {
             $contentId = Get-DmmContentId $Webrequest
             $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
 
-            if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
+            if ($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
                 $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0') + $m.Groups[3].Value.ToUpper()
             }
         } catch {

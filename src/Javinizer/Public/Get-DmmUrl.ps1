@@ -73,9 +73,9 @@ function Get-DmmUrl {
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem" -Action 'Continue'
                         }
 
-                        $resultId = Get-DmmContentId -WebRequest $webRequest
+                        $resultId = Get-DmmId -WebRequest $webRequest
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                        if ($resultId -match "^(.*_)?\d*$Id") {
+                        if ($resultId -eq "$Id") {
                             $directUrl = $result
                             break
                         }
