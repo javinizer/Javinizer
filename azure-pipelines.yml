@@ -43,22 +43,3 @@ jobs:
         testResultsFiles: '$(Build.SourcesDirectory)\ccReport\codeCoverage.xml'
         testRunTitle: 'pwsh_ubuntuLatest'
         displayName: 'Publish Test Results'
-
-  - job: build_pwsh_macOSLatest
-    pool:
-      vmImage: macOS-latest
-    steps:
-    - script: |
-        brew update
-        brew tap caskroom/cask
-        brew cask install powershell
-      displayName: 'Install PowerShell Core'
-    - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
-      displayName: 'Build and Test'
-    - task: PublishTestResults@2
-      inputs:
-        testRunner: 'NUnit'
-        testResultsFiles: '$(Build.SourcesDirectory)\ccReport\codeCoverage.xml'
-        testRunTitle: 'pwsh_macOSLatest'
-        displayName: 'Publish Test Results'
