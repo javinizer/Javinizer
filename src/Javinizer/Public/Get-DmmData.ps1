@@ -43,8 +43,8 @@ function Get-DmmData {
         $movieDataObject = [PSCustomObject]@{
             Source        = if ($Url -match '/en/') { 'dmm' } else { 'dmmja' }
             Url           = $Url
-            Id            = Get-DmmId -WebRequest $webRequest
-            ContentId     = Get-DmmContentId -WebRequest $webRequest
+            Id            = Get-DmmId -Url $Url
+            ContentId     = Get-DmmContentId -Url $Url
             Title         = Get-DmmTitle -WebRequest $webRequest
             Description   = Get-DmmDescription -WebRequest $webRequest
             ReleaseDate   = Get-DmmReleaseDate -WebRequest $webRequest
