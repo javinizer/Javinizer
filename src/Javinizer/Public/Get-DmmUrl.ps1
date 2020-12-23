@@ -75,7 +75,7 @@ function Get-DmmUrl {
 
                         $resultId = Get-DmmId -Url $result
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                        if ($resultId -eq "$Id") {
+                        if ($resultId -eq $originalId) {
                             $directUrl = $result
                             break
                         }
