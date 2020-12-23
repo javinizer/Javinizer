@@ -260,7 +260,7 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path', Position = 1)]
         [AllowEmptyString()]
-        [String]$DestinationPath,
+        [System.IO.DirectoryInfo]$DestinationPath,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
@@ -827,11 +827,6 @@ function Javinizer {
                         # Default destination path to the current directory if settings not specified
                         $DestinationPath = (Get-Item -LiteralPath $Path).Directory
                     }
-                }
-
-                # This will check that the DestinationPath is a valid directory
-                if (Test-Path -LiteralPath $DestinationPath -PathType Leaf) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] DestinationPath [$DestinationPath] is not a valid directory path"
                 }
 
                 try {

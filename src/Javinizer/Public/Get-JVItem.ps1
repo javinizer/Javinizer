@@ -2,7 +2,7 @@ function Get-JVItem {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [String]$Path,
+        [System.IO.FileInfo]$Path,
 
         [Parameter()]
         [Switch]$Recurse,
