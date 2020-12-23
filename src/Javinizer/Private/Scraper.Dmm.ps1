@@ -6,7 +6,7 @@ function Get-DmmContentId {
 
     process {
         try {
-            $contentId = ($Url | Select-String -Pattern 'cid=(.*)(\/)?').Matches.Groups[1].Value
+            $contentId = (($Url | Select-String -Pattern 'cid=(.*)(\/)?').Matches.Groups[1].Value -split '/')[0]
         } catch {
             return
         }
