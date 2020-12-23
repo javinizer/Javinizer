@@ -5,267 +5,299 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.2]
+
+### Fixed
+
+-   Resolved DMM ID match error
+-   Path and Destination path now resolve correctly for standard console paths when null or using "."
+-   Javinizer no longer throws an error when `sort.format.screenshotfolder` or `sort.format.actressimgfolder` are blank
+
 ## [2.2.1]
 
 ### Fixed
-- Actress thumburl for movies with a single actress are now scraped correctly following scraper optimizations
-- Setting `"sort.metadata.nfo.translate.module": "google_trans_new"` now correctly uses the google_trans_new module
+
+-   Actress thumburl for movies with a single actress are now scraped correctly following scraper optimizations
+-   Setting `"sort.metadata.nfo.translate.module": "google_trans_new"` now correctly uses the google_trans_new module
 
 ## [2.2.0]
 
 ### Added
-- MGStage scraper
-- AVEntertainment scraper
-- Enhanced metadata translation functionality
-    - Multiple fields can now be translated instead of only description
-    - Support multiple Python translation modules (googletrans, google_trans_new)
-- `<DIRECTOR>` is now a supported tag in metadata format strings
-- Added a setting to allow for creation of `<credits>` in nfo metadata
+
+-   MGStage scraper
+-   AVEntertainment scraper
+-   Enhanced metadata translation functionality
+    -   Multiple fields can now be translated instead of only description
+    -   Support multiple Python translation modules (googletrans, google_trans_new)
+-   `<DIRECTOR>` is now a supported tag in metadata format strings
+-   Added a setting to allow for creation of `<credits>` in nfo metadata
 
 ### Changed
-- Metadata format strings will now be output as "Unknown" for null fields
+
+-   Metadata format strings will now be output as "Unknown" for null fields
 
 ### Fixed
-- MacOS now correctly falls back to `Move-Item` if `mv` command fails
-- DmmJa scraper now returns the correct actresses if an English actress name is present
-- Javbus scrapers now correctly account for actress first/last name on inconsistent actress pages
-- Javlibrary and R18 scrapers now run 40% faster with reduced requests for actress names
+
+-   MacOS now correctly falls back to `Move-Item` if `mv` command fails
+-   DmmJa scraper now returns the correct actresses if an English actress name is present
+-   Javbus scrapers now correctly account for actress first/last name on inconsistent actress pages
+-   Javlibrary and R18 scrapers now run 40% faster with reduced requests for actress names
 
 ## [2.1.6]
 
 ### Changed
-- Throttlelimit increased from 5 -> 10
+
+-   Throttlelimit increased from 5 -> 10
 
 ### Fixed
-- MediaInfo now functions correctly on linux
+
+-   MediaInfo now functions correctly on linux
 
 ## [2.1.5]
 
 ### Changed
-- Parameter `-SetOwned` now uses default path from settings
+
+-   Parameter `-SetOwned` now uses default path from settings
 
 ### Fixed
-- Multiple tags are now created properly from setting `sort.metadata.nfo.format.tag`
-- Aggregated data object actress is now always created as an array
+
+-   Multiple tags are now created properly from setting `sort.metadata.nfo.format.tag`
+-   Aggregated data object actress is now always created as an array
 
 ## [2.1.4]
 
 ### Changed
-- Url scraper now run within threads to increase sort speed
-- Setting `sort.format.outputfolder` changed to array to allow nested output folders (#136)
-- Parameter `-SetOwned` now uses the `javlibrary.baseurl` setting when setting owned movies
-- Javlibrary re-added in settings as a default scraper, Javbus removed
+
+-   Url scraper now run within threads to increase sort speed
+-   Setting `sort.format.outputfolder` changed to array to allow nested output folders (#136)
+-   Parameter `-SetOwned` now uses the `javlibrary.baseurl` setting when setting owned movies
+-   Javlibrary re-added in settings as a default scraper, Javbus removed
 
 ### Fixed
-- R18 Url scraper now correctly finds movies that match ID value XXX-00X (#138)
-- Jav321Ja now correctly retrieves all genres when scraping (#135)
-- Cookies are now prompted for when cloudflare IUAM is detected and a javlibrary url is specified when using -Find
+
+-   R18 Url scraper now correctly finds movies that match ID value XXX-00X (#138)
+-   Jav321Ja now correctly retrieves all genres when scraping (#135)
+-   Cookies are now prompted for when cloudflare IUAM is detected and a javlibrary url is specified when using -Find
 
 ## [2.1.3]
 
 ### Added
-- Function `Get-CfSession` to create a websession object to access the Javlibrary scraper
-- Settings `javlibrary.browser.useragent`, `javlibrary.cookie.cfduid`, and `javlibrary.cookie.cfclearance` to persist Javlibrary websession
+
+-   Function `Get-CfSession` to create a websession object to access the Javlibrary scraper
+-   Settings `javlibrary.browser.useragent`, `javlibrary.cookie.cfduid`, and `javlibrary.cookie.cfclearance` to persist Javlibrary websession
 
 ### Changed
-- Javinizer out-of-box-experience (OOBE) updated to remove Javlibrary as a default scraper due to Cloudflare IAUM protection
-    - Javbus is now enabled as a default scraper
+
+-   Javinizer out-of-box-experience (OOBE) updated to remove Javlibrary as a default scraper due to Cloudflare IAUM protection
+    -   Javbus is now enabled as a default scraper
 
 ### Fixed
-- Sort now properly fails when there are missing required metadata fields when using `-Url`
-- Javbus scraper now properly finds uncensored videos when similar search results are found in the censored section
-- Maxtitlelength behavior for Japanese titles now do not cut off at the last whitespace character
+
+-   Sort now properly fails when there are missing required metadata fields when using `-Url`
+-   Javbus scraper now properly finds uncensored videos when similar search results are found in the censored section
+-   Maxtitlelength behavior for Japanese titles now do not cut off at the last whitespace character
 
 ## [2.1.2]
 
 ### Added
-- Setting `sort.format.groupactress` to convert the `<ACTORS>` format string. If enabled:
-    - Multiple actresses => `@Group`
-    - Unknown actress => `@Unknown`
-- `-Strict` parameter is now available during `-Find` usage for R18 scraper only (#125)
-    - R18 scraper does automatic conversion from ContentID => Id which failed for certain movie IDs ( MBR-AA063)
+
+-   Setting `sort.format.groupactress` to convert the `<ACTORS>` format string. If enabled:
+    -   Multiple actresses => `@Group`
+    -   Unknown actress => `@Unknown`
+-   `-Strict` parameter is now available during `-Find` usage for R18 scraper only (#125)
+    -   R18 scraper does automatic conversion from ContentID => Id which failed for certain movie IDs ( MBR-AA063)
 
 ### Fixed
-- Aliases for actresses with a single-word name are now properly replaced by the thumb csv
-- Tags and tagline fields in the nfo now correctly replace invalid xml characters (#124)
-    - Sort no longer fails when trying to download actress images
-- Downloading actress images no longer fails when
-- R18 title metadata is now properly uncensored
+
+-   Aliases for actresses with a single-word name are now properly replaced by the thumb csv
+-   Tags and tagline fields in the nfo now correctly replace invalid xml characters (#124)
+    -   Sort no longer fails when trying to download actress images
+-   Downloading actress images no longer fails when
+-   R18 title metadata is now properly uncensored
 
 ## [2.1.1]
 
 ### Added
-- Setting `sort.format.outputfolder` to create a static or dynamic output folder for sorted movies in the destination path (#115)
-    - This setting accepts a format string (i.e. `"sort.format.outputfolder": "<STUDIO>"` will sort movies into a folder of their studio name in the destination path)
-- Setting `sort.metadata.nfo.altnamerole` to add the actress `<altname>` as the actress role (#110)
-- Setting `javlibrary.cookie.session` and `javlibrary.cookie.userid` to set a path of movies as 'Owned' on JavLibrary. This runs on a single thread and is not affected by throttlelimit (#119)
-    - Log into JavLibrary and view browser cookies [www.javlibrary.com / Cookies / session] and [www.javlibrary.com / Cookies / userid] and define them in your settings
-    - Usage: `Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned`
-- Setting `sort.metadata.nfo.originalpath` to add the path the movie was last sorted from to the nfo file under field `<originalpath>` (#116)
+
+-   Setting `sort.format.outputfolder` to create a static or dynamic output folder for sorted movies in the destination path (#115)
+    -   This setting accepts a format string (i.e. `"sort.format.outputfolder": "<STUDIO>"` will sort movies into a folder of their studio name in the destination path)
+-   Setting `sort.metadata.nfo.altnamerole` to add the actress `<altname>` as the actress role (#110)
+-   Setting `javlibrary.cookie.session` and `javlibrary.cookie.userid` to set a path of movies as 'Owned' on JavLibrary. This runs on a single thread and is not affected by throttlelimit (#119)
+    -   Log into JavLibrary and view browser cookies [www.javlibrary.com / Cookies / session] and [www.javlibrary.com / Cookies / userid] and define them in your settings
+    -   Usage: `Javinizer -Path 'C:\JAV\Sorted' -Recurse -SetOwned`
+-   Setting `sort.metadata.nfo.originalpath` to add the path the movie was last sorted from to the nfo file under field `<originalpath>` (#116)
 
 ### Changed
-- `<altname>` in the actress metadata in the nfo is now dynamic based on the selected actress name language (#110)
+
+-   `<altname>` in the actress metadata in the nfo is now dynamic based on the selected actress name language (#110)
 
 ### Fixed
-- Sort no longer fails when newlines are present in R18 maker and label metadata output (#121)
+
+-   Sort no longer fails when newlines are present in R18 maker and label metadata output (#121)
 
 ## [2.1.0]
 
 ### Added
-- **EXPERIMENTAL** Dl.getchu scraper (#51)
-    - This is scraper is only available via the `-Url` parameter when sorting a single file or using `-Find` to search the Url
-- Setting `sort.metadata.nfo.mediainfo` added to allow user to add video/audio metadata to nfo (#94)
-    - [MediaInfo](https://mediaarea.net/en/MediaInfo) required for use. MediaInfo will need to be added to your system PATH
-    - `<RESOLUTION>` added to file formats
-- Setting `sort.metadata.nfo.unknownactress` to allow `Unknown` actress to be written to nfo file when no actresses are scraped (#105)
-- Setting `sort.metadata.nfo.format.tagline` to allow user to set a tagline which accepts file format strings (#106)
-- Setting `sort.metadata.priority.contentid` to set the priority of the ContentId displayed by aggregated data object
-    - `<CONTENTID>` added to file formats
+
+-   **EXPERIMENTAL** Dl.getchu scraper (#51)
+    -   This is scraper is only available via the `-Url` parameter when sorting a single file or using `-Find` to search the Url
+-   Setting `sort.metadata.nfo.mediainfo` added to allow user to add video/audio metadata to nfo (#94)
+    -   [MediaInfo](https://mediaarea.net/en/MediaInfo) required for use. MediaInfo will need to be added to your system PATH
+    -   `<RESOLUTION>` added to file formats
+-   Setting `sort.metadata.nfo.unknownactress` to allow `Unknown` actress to be written to nfo file when no actresses are scraped (#105)
+-   Setting `sort.metadata.nfo.format.tagline` to allow user to set a tagline which accepts file format strings (#106)
+-   Setting `sort.metadata.priority.contentid` to set the priority of the ContentId displayed by aggregated data object
+    -   `<CONTENTID>` added to file formats
 
 ### Changed
-- Default file matcher updated to better match multipart videos and support DMM ContentId (#111)
-- Setting `sort.metadata.nfo.seriesastag` is now `sort.metadata.nfo.format.tag`
-    - This setting is now an array, which allows multiple file format strings to be created as separate tags (#106)
-- Javinizer now performs a retry on the Javlibrary URL scraper and continues to run despite webrequest errors (#109)
-- AggregatedData object now contains `ContentId`
+
+-   Default file matcher updated to better match multipart videos and support DMM ContentId (#111)
+-   Setting `sort.metadata.nfo.seriesastag` is now `sort.metadata.nfo.format.tag`
+    -   This setting is now an array, which allows multiple file format strings to be created as separate tags (#106)
+-   Javinizer now performs a retry on the Javlibrary URL scraper and continues to run despite webrequest errors (#109)
+-   AggregatedData object now contains `ContentId`
 
 ### Fixed
-- Get-DmmUrl now correctly assigns the URLs when searching for a movie with ID with a letter suffix (#107)
-- Manually sorting with a DmmJa URL now functions properly (#111)
-- Nfo file now correctly renames to the movie name when `sort.renamefile` is set to false, and `sort.create.nfoperfile` is true (#102)
-- `<ACTORS>` file rename format now properly falls back to the alternate language when the primary is missing (#103)
-- R18 scraper now properly assigns the genre and label fields for Amateur videos (#108)
-- Extra html on the Description field for the DMM scraper is now removed
+
+-   Get-DmmUrl now correctly assigns the URLs when searching for a movie with ID with a letter suffix (#107)
+-   Manually sorting with a DmmJa URL now functions properly (#111)
+-   Nfo file now correctly renames to the movie name when `sort.renamefile` is set to false, and `sort.create.nfoperfile` is true (#102)
+-   `<ACTORS>` file rename format now properly falls back to the alternate language when the primary is missing (#103)
+-   R18 scraper now properly assigns the genre and label fields for Amateur videos (#108)
+-   Extra html on the Description field for the DMM scraper is now removed
 
 ## [2.0.2]
 
 ### Fixed
-- Dmm/DmmJa scraper
-    - Aliases are now removed from the Japanese actress name
-    - TrailerUrl no longer contains an invalid url with duplicate "https"
-    - Actresses are now fully scraped if there are 10+ actresses in a movie
-    - Maker, Series, and Label no longer pulls inaccurate data
-- Javbus scraper
-    - Search no longer fails when title html spans multiple lines
-    - Both Japanese and English actress names are now pulled when scraping an uncensored movie
-- Javinizer no longers fails to scrape when running in PowerShell 6
+
+-   Dmm/DmmJa scraper
+    -   Aliases are now removed from the Japanese actress name
+    -   TrailerUrl no longer contains an invalid url with duplicate "https"
+    -   Actresses are now fully scraped if there are 10+ actresses in a movie
+    -   Maker, Series, and Label no longer pulls inaccurate data
+-   Javbus scraper
+    -   Search no longer fails when title html spans multiple lines
+    -   Both Japanese and English actress names are now pulled when scraping an uncensored movie
+-   Javinizer no longers fails to scrape when running in PowerShell 6
 
 ## [2.0.1]
 
 ### Added
-- Setting `location.uncensorcsv` to allow user-defined uncensor csv path
+
+-   Setting `location.uncensorcsv` to allow user-defined uncensor csv path
 
 ### Changed
-- Dmm scraper now includes TrailerUrl
-- `-Update` parameter now downloads metadata items in addition to updating the nfo file
-- Actress matcher logic updated for more accurate results
-- Default file matcher logic updated to better clean filenames downloaded from torrent sites
+
+-   Dmm scraper now includes TrailerUrl
+-   `-Update` parameter now downloads metadata items in addition to updating the nfo file
+-   Actress matcher logic updated for more accurate results
+-   Default file matcher logic updated to better clean filenames downloaded from torrent sites
 
 ### Fixed
-- Javlibrary ratings are now properly assigned to the nfo
-- Dmm scraper now correctly gets actresses
-- Regex file match no longer incorrectly changes the movie ID during sort
-- `sort.metadata.nfo.firstnameorder` now correctly applies to `<ACTORS>` in sort formats
+
+-   Javlibrary ratings are now properly assigned to the nfo
+-   Dmm scraper now correctly gets actresses
+-   Regex file match no longer incorrectly changes the movie ID during sort
+-   `sort.metadata.nfo.firstnameorder` now correctly applies to `<ACTORS>` in sort formats
 
 ## [2.0.0]
 
 ### Added
 
-- Added `-Update` parameter to only update nfo when sorting a directory
-    - This can replace v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
-- English 'dmm' scraper added
-    - Somewhat unreliable as not all videos on the DMM Japanese site are available on the English site
-    - Original 'dmm' scraper renamed to 'dmmja'
-- Setting `scraper.option.dmm.scrapeactress` added to turn on/off both English/Japanese actress name scraping for dmm scrapers
-    - Only enable this if you want to use Dmm as a primary scraper for your actress metadata as it greatly increases time taken to sort
-- Parameter `-EmbyUrl` and `-EmbyApiKey` added to assign values in the commandline
-- Parameter `-OpenUncensor` to open the R18 uncensored word replacement csv
+-   Added `-Update` parameter to only update nfo when sorting a directory
+    -   This can replace v1.x.x functionality of using `-MoveToFolder:$false -RenameFile:$false`
+-   English 'dmm' scraper added
+    -   Somewhat unreliable as not all videos on the DMM Japanese site are available on the English site
+    -   Original 'dmm' scraper renamed to 'dmmja'
+-   Setting `scraper.option.dmm.scrapeactress` added to turn on/off both English/Japanese actress name scraping for dmm scrapers
+    -   Only enable this if you want to use Dmm as a primary scraper for your actress metadata as it greatly increases time taken to sort
+-   Parameter `-EmbyUrl` and `-EmbyApiKey` added to assign values in the commandline
+-   Parameter `-OpenUncensor` to open the R18 uncensored word replacement csv
 
 ### Changed
 
-- JapaneseName added to nfo file as altname
-- Setting `throttlelimit` limited to 5
-- R18 uncensored words and replacements are now moved to a file at module root `jvUncensor.csv`
-- Path will default to your current commandline location if `-Path` is not specified and setting `location.input` is blank
-- DestinationPath will default to the sorted file's current directory if `-DestinationPath` is not specified and setting `location.output` is blank
-- Setting `sort.metadata.thumbcsv.autoadd` no longer adds actresses with a missing thumburl
-- Add warning if custom thumb or genre csv is not found at specified path
+-   JapaneseName added to nfo file as altname
+-   Setting `throttlelimit` limited to 5
+-   R18 uncensored words and replacements are now moved to a file at module root `jvUncensor.csv`
+-   Path will default to your current commandline location if `-Path` is not specified and setting `location.input` is blank
+-   DestinationPath will default to the sorted file's current directory if `-DestinationPath` is not specified and setting `location.output` is blank
+-   Setting `sort.metadata.thumbcsv.autoadd` no longer adds actresses with a missing thumburl
+-   Add warning if custom thumb or genre csv is not found at specified path
 
 ### Fixed
 
-- Fixed scraped R18 actress names containing aliases in parentheses
-- Writing thumbs to Emby/Jellyfin is now functional again with `-SetEmbyThumbs` following R18 resource restrictions
-- Fixed failing screenshot download requests from R18 resources
-- Parameter `-Find` with Javlibrary when using a custom javlibrary baseurl in your settings
+-   Fixed scraped R18 actress names containing aliases in parentheses
+-   Writing thumbs to Emby/Jellyfin is now functional again with `-SetEmbyThumbs` following R18 resource restrictions
+-   Fixed failing screenshot download requests from R18 resources
+-   Parameter `-Find` with Javlibrary when using a custom javlibrary baseurl in your settings
 
 ## [2.0.0-alpha9]
 
 ### Fixed
 
-- Fixed failing download requests from R18 resources
+-   Fixed failing download requests from R18 resources
 
 ## [2.0.0-alpha8]
 
 ### Changed
 
-- Default matcher now supports IDs ending with a letter (IBW-###z, KTRA-###e)
-- Logging messages updated to be more consistent
+-   Default matcher now supports IDs ending with a letter (IBW-###z, KTRA-###e)
+-   Logging messages updated to be more consistent
 
 ### Fixed
 
-- Jav321 scraper not running properly
-- Javinizer now properly uses the thumb csv when a custom path is set in `location.thumbcsv`
-- Error thrown when scraped genres are null and ignored genres are present
-
+-   Jav321 scraper not running properly
+-   Javinizer now properly uses the thumb csv when a custom path is set in `location.thumbcsv`
+-   Error thrown when scraped genres are null and ignored genres are present
 
 ## [2.0.0-alpha7]
 
 ### Added
 
-- Setting `sort.metadata.thumbcsv.autoadd` added
-    - If enabled, actresses scraped from R18 and R18Zh scrapers are automatically added to the thumb csv if missing
+-   Setting `sort.metadata.thumbcsv.autoadd` added
+    -   If enabled, actresses scraped from R18 and R18Zh scrapers are automatically added to the thumb csv if missing
 
 ### Changed
 
-- Setting `sort.metadata.genre.ignore` changed to regex match
-- Actresses are now only matched using JapaneseName while sorting
-- Additional words added to r18 uncensor list
+-   Setting `sort.metadata.genre.ignore` changed to regex match
+-   Actresses are now only matched using JapaneseName while sorting
+-   Additional words added to r18 uncensor list
 
 ### Fixed
 
-- Actresses being matched incorrectly due to false positives with FirstName/LastName matching
-- Dmm match when searching for IDs ending with a letter (IBW-###z, KTRA-###e)
-- Error being thrown when trying to trim a null translated description
-- Actress names containing backslash `\` in R18 fixed
+-   Actresses being matched incorrectly due to false positives with FirstName/LastName matching
+-   Dmm match when searching for IDs ending with a letter (IBW-###z, KTRA-###e)
+-   Error being thrown when trying to trim a null translated description
+-   Actress names containing backslash `\` in R18 fixed
 
 ### Removed
 
-- Parameter `-UpdateNfo` removed pending further testing/development
+-   Parameter `-UpdateNfo` removed pending further testing/development
 
 ## [2.0.0-alpha6]
 
 ### Added
 
-- `<YEAR>` re-added as a nfo field
-- `<RATING>` re-added as nfo field
+-   `<YEAR>` re-added as a nfo field
+-   `<RATING>` re-added as nfo field
 
 ### Changed
 
-- Javbus scraper now updated to 2.0.0 standards
-- Jav321 scraper now updated to 2.0.0 standards
-- `jav321` scraper setting now named `jav321ja`
-- All javlibrary urls converted from http to https
-- Allow `-SettingsPath` on `-Find` parameter set
+-   Javbus scraper now updated to 2.0.0 standards
+-   Jav321 scraper now updated to 2.0.0 standards
+-   `jav321` scraper setting now named `jav321ja`
+-   All javlibrary urls converted from http to https
+-   Allow `-SettingsPath` on `-Find` parameter set
 
 ### Fixed
 
-- Javinizer erroring when using `-Url` due to logic errors
-- JavbusJa and JavbusZh scrapers not running unless Javbus en scraper activated
-- Javbus scraper erroneously being matched as JavbusZh
-- Jav321 scraper failing due to incorrect variable call
-- Jav321 actress output to match the rest of the scrapers
-- Dmm not matching videos where content ID starts with string like `d_123`
-- Nfo failing to create if translated description output a newline character
+-   Javinizer erroring when using `-Url` due to logic errors
+-   JavbusJa and JavbusZh scrapers not running unless Javbus en scraper activated
+-   Javbus scraper erroneously being matched as JavbusZh
+-   Jav321 scraper failing due to incorrect variable call
+-   Jav321 actress output to match the rest of the scrapers
+-   Dmm not matching videos where content ID starts with string like `d_123`
+-   Nfo failing to create if translated description output a newline character
 
 ## [2.0.0-alpha5]
 
