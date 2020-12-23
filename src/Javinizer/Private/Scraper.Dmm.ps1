@@ -1,12 +1,12 @@
 function Get-DmmContentId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [String]$Url
     )
 
     process {
         try {
-            $contentId = (((($Webrequest.Content -split '<td align="right" valign="top" class="nw">(品番：|Movie Number:)<\/td>')[2] -split '\/td>')[0]) | Select-String -Pattern '>(.*)<').Matches.Groups[1].Value
+            $contentId = ($Url | Select-String -Pattern 'cid=(.*)(\/)?').Matches.Groups[1].Value
         } catch {
             return
         }
@@ -17,22 +17,28 @@ function Get-DmmContentId {
 function Get-DmmId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [String]$Url
     )
 
     process {
         try {
             # Expects ###ID##### or ID#####
-            $contentId = Get-DmmContentId $Webrequest
-            $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
+            $contentId = Get-DmmContentId -Url $Url
 
-            if($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
-                $Id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0') + $m.Groups[3].Value.ToUpper()
+            try {
+                $m = ($contentId | Select-String -Pattern '\d*([a-z]+)(\d+)(.*)$' -AllMatches).Matches
+            } catch {
+                return
             }
+
+            if ($m.Groups.Count -gt 2 -and $m.Groups[1] -and $m.Groups[2]) {
+                $id = $m.Groups[1].Value.ToUpper() + "-" + ($m.Groups[2].Value -replace '^0{1,5}', '').PadLeft(3, '0') + $m.Groups[3].Value.ToUpper()
+            }
+
         } catch {
             return
         }
-        Write-Output $Id
+        Write-Output $id
     }
 }
 

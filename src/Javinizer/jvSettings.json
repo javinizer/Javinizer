@@ -48,7 +48,7 @@
     "sort.download.actressimg": false,
     "sort.download.thumbimg": true,
     "sort.download.posterimg": true,
-    "sort.download.screenshotimg": true,
+    "sort.download.screenshotimg": false,
     "sort.download.trailervid": false,
     "sort.format.groupactress": true,
     "sort.format.delimiter": ", ",
