@@ -5,6 +5,7 @@ function Convert-JVString {
         [PSObject]$Data,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
         [String]$FormatString,
 
         [Parameter()]
