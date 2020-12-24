@@ -89,7 +89,7 @@ function Convert-JVString {
 
         $actressObject = @()
         if ($ActressLanguageJa) {
-            if ($null -ne $Data.Actress.Japanese) {
+            if ($null -ne $Data.Actress.JapaneseName) {
                 $actressObject = $Data.Actress.JapaneseName
             } elseif ($FirstNameOrder) {
                 foreach ($actress in $Data.Actress) {
