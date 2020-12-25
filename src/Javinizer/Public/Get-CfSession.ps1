@@ -15,12 +15,14 @@ function Get-CfSession {
     )
 
     process {
+        $BaseUrl = $BaseUrl -replace 'http(s)?:\/\/(www)?'
         $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
         $cookie = New-Object System.Net.Cookie('__cfduid', "$Cfduid", '/', "$BaseUrl")
         $session.Cookies.Add($cookie)
         $cookie = New-Object System.Net.Cookie('cf_clearance', "$Cfclearance", '/', "$BaseUrl")
         $session.Cookies.Add($cookie)
         $session.UserAgent = $UserAgent
+
         Write-Output $session
     }
 }
