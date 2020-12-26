@@ -235,6 +235,9 @@ function Set-JVMovie {
         }
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
+            # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
+            $folderPath = $folderPath.TrimEnd('.')
+
             # We do not want to recreate the destination folder if it already exists
             try {
                 if (!(Test-Path -LiteralPath $folderPath) -and (!($Update))) {
@@ -469,13 +472,13 @@ function Set-JVMovie {
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                     if ($Force) {
                                         try {
-                                            mv $Path $filePath --force
+                                            Move-Item $Path $filePath --force
                                         } catch {
                                             Move-Item -LiteralPath $Path -Destination $filePath -Force
                                         }
                                     } else {
                                         try {
-                                            mv $Path $filePath --no-clobber
+                                            Move-Item $Path $filePath --no-clobber
                                         } catch {
                                             Move-Item -LiteralPath $Path -Destination $filePath
                                         }
@@ -504,13 +507,13 @@ function Set-JVMovie {
                                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                         if ($Force) {
                                             try {
-                                                mv $Path $filePath --force
+                                                Move-Item $Path $filePath --force
                                             } catch {
                                                 Move-Item -LiteralPath $Path -Destination $filePath -Force
                                             }
                                         } else {
                                             try {
-                                                mv $Path $filePath --no-clobber
+                                                Move-Item $Path $filePath --no-clobber
                                             } catch {
                                                 Move-Item -LiteralPath $Path -Destination $filePath
                                             }
