@@ -103,7 +103,7 @@ function Get-JVData {
         $Id = $Id.ToUpper()
 
         if ($Url) {
-            $urlObject = $Url | Get-JVUrlLocation
+            $urlObject = $Url | Get-JVUrlLocation -Settings $Settings
         } elseif ($Settings) {
             $R18 = $Settings.'scraper.movie.r18'
             $R18Zh = $Settings.'scraper.movie.r18zh'

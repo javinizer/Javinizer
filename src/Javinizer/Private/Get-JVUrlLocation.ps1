@@ -2,7 +2,10 @@ function Get-JVUrlLocation {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [PSObject]$Url
+        [PSObject]$Url,
+
+        [Parameter()]
+        [PSObject]$Settings
     )
 
     process {
@@ -20,7 +23,7 @@ function Get-JVUrlLocation {
                         Source = 'r18'
                     }
                 }
-            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com') {
+            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com' -or $link -or $link -match ($Settings.'javlibrary.baseurl' -replace 'http(s)?:\/\/')) {
                 if ($link -match '/ja/') {
                     $testUrlObject += [PSCustomObject]@{
                         Url    = $link

@@ -76,7 +76,7 @@ function Get-JavlibraryUrl {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
 
                     if ($resultId -eq $Id) {
-                        $javlibraryUrl = (Get-JVUrlLocation -Url $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri).Url
+                        $javlibraryUrl = $directUrl
                         break
                     }
 

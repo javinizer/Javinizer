@@ -584,7 +584,7 @@ function Javinizer {
         switch ($PsCmdlet.ParameterSetName) {
             'Info' {
                 if ($Find -match 'https?:\/\/') {
-                    $urlObject = Get-JVUrlLocation -Url $Find
+                    $urlObject = Get-JVUrlLocation -Url $Find -Settings $Settings
                     $data = foreach ($item in $urlObject) {
                         if ($item.Source -match 'dmm') {
                             $item.Url | Get-DmmData -ScrapeActress:$Settings.'scraper.option.dmm.scrapeactress'
