@@ -236,7 +236,7 @@ function Set-JVMovie {
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
-            $folderPath = $folderPath.TrimEnd('.')
+            $folderPath = ([String]$folderPath).TrimEnd('.')
 
             # We do not want to recreate the destination folder if it already exists
             try {
