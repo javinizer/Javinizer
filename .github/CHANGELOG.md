@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.4]
+
+### Fixed
+
+-   JAVLibrary scraper now works correctly with b49t.com mirror
+-   Get-CfSession function now successfully accepts the \_\_cfduid, cf_clearance, and browser useragent when scraping from cloudflare protected JAVLibrary site
+-   Dynamic directory names with trailing periods are now trimmed to resolve terminating error during sort (Thanks @amdishigh)
+-   Japanese actress names are now correctly added to the format string when `sort.metadata.nfo.actresslanguageja` is true (Thanks @amdishigh)
+
 ## [2.2.3]
 
 ### Fixed
