@@ -8,7 +8,7 @@ RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-
 RUN add-apt-repository multiverse
 RUN mkdir /home/Universal
 WORKDIR /home/Universal
-RUN wget https://ftp.jeff-server.com/Universal.linux-x64.1.4.9.rar \
+RUN wget https://ftp.jvlflame.net/Universal.linux-x64.1.4.9.rar \
     && unrar x Universal.linux-x64.1.4.9.rar \
     && rm Universal.linux-x64.1.4.9.rar
 RUN chmod +x /home/Universal/Universal.Server
@@ -21,20 +21,16 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update -y
 RUN apt-get install -y python3.8 python3-pip
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
-RUN pip3 install pillow googletrans
+RUN pip3 install pillow google_trans_new googletrans==4.0.0rc1
 RUN apt-get install -y git
 
 # Add custom UD components
 RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted"
-RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp"
+RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp; Install-Moduel UniversalDashboard.CodeEditor"
 
-# Clone dev Javinizer branch
+# Clone Javinizer master branch
 WORKDIR /home
 RUN git clone https://github.com/jvlflame/Javinizer.git
-
-RUN wget https://ftp.jeff-server.com/UniversalDashboard.CodeEditor.rar \
-    && unrar x UniversalDashboard.CodeEditor.rar \
-    && rm UniversalDashboard.CodeEditor.rar
 
 EXPOSE 5000
 VOLUME ["/data"]
