@@ -10,11 +10,14 @@ New-UDPage -Name "Settings" -Content {
     )
 
     $scraperSettings = @(
+        'AVEntertainment',
+        'AVEntertainmentJa'
         'Dmm',
         'DmmJa',
         'Javlibrary',
         'JavlibraryJa',
         'JavlibraryZh',
+        'MGStageJa',
         'R18',
         'R18Zh',
         'Javbus',
@@ -72,6 +75,7 @@ New-UDPage -Name "Settings" -Content {
         'sort.metadata.nfo.displayname',
         'sort.metadata.nfo.format.tag',
         'sort.metadata.nfo.format.tagline'
+        'sort.metadata.nfo.format.credits'
     )
 
     $sortSettings = @(
@@ -87,7 +91,6 @@ New-UDPage -Name "Settings" -Content {
         'sort.format.groupactress',
         'sort.metadata.nfo.mediainfo',
         'sort.metadata.nfo.altnamerole',
-        'sort.metadata.nfo.translatedescription',
         'sort.metadata.nfo.firstnameorder',
         'sort.metadata.nfo.actresslanguageja',
         'sort.metadata.nfo.unknownactress',
@@ -203,7 +206,9 @@ New-UDPage -Name "Settings" -Content {
                                 $cache:settings.'match.regex.idmatch' = (Get-UDElement -Id 'textbox-settings-regexidmatch').value
                                 $cache:settings.'match.regex.ptmatch' = (Get-UDElement -Id 'textbox-settings-regexptmatch').value
                                 $cache:settings.'sort.maxtitlelength' = [Int](Get-UDElement -Id 'autocomplete-settings-maxtitlelength').value
-                                $cache:settings.'sort.metadata.nfo.translatedescription.language' = (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value
+                                $cache:settings.'sort.metadata.nfo.translate.language' = (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value
+                                $cache:settings.'sort.metadata.nfo.translate.module' = (Get-UDElement -Id 'autocomplete-settings-translatemodule').value
+                                $cache:settings.'sort.metadata.nfo.translate.field' = ((Get-UDElement -Id 'textbox-settings-translatefield').value -split '\\').Trim()
                                 $cache:settings.'admin.log' = (Get-UDElement -Id 'checkbox-settings-adminlog').checked
                                 $cache:settings.'admin.log.level' = (Get-UDElement -Id 'autocomplete-settings-adminloglevel').value
                                 $cache:settings | ConvertTo-Json | Out-File $cache:settingsPath
@@ -429,15 +434,6 @@ New-UDPage -Name "Settings" -Content {
                         }
                         New-UDGrid -Container -Content {
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
-                                New-UDAutocomplete -Id 'autocomplete-settings-translatelanguage' -Label 'Translate Language' -Options $translateLanguages -Value ($cache:settings.'sort.metadata.nfo.translatedescription.language') -OnChange {
-                                    if ($null -eq (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value) {
-                                        Set-UDElement -Id 'autocomplete-settings-translatelanguage' -Properties @{
-                                            value = 'en'
-                                        }
-                                    }
-                                }
-                            }
-                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                                 $lengthOptions = @()
                                 $lengthChoices = 1..500
                                 $lengthChoices | ForEach-Object { $lengthOptions += [String]$_ }
@@ -446,6 +442,38 @@ New-UDPage -Name "Settings" -Content {
                                         Set-UDElement -Id 'autocomplete-settings-maxtitlelength' -Properties @{
                                             value = '100'
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                New-UDCard -Title 'Translate' -Content {
+                    New-UDGrid -Container -Content {
+                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                            New-UDCheckBox -Label 'sort.metadata.nfo.translate' -Id 'sort.metadata.nfo.translate' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
+                        }
+
+                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                            New-UDTextbox -Placeholder 'sort.metadata.nfo.translate.field' -Id 'textbox-settings-translatefield' -Value ($cache:settings.'sort.metadata.nfo.translate.field' -join ' \ ') -FullWidth
+                        }
+
+                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                            New-UDAutocomplete -Id 'autocomplete-settings-translatelanguage' -Label 'Translate Language' -Options $translateLanguages -Value ($cache:settings.'sort.metadata.nfo.translate.language') -OnChange {
+                                if ($null -eq (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value) {
+                                    Set-UDElement -Id 'autocomplete-settings-translatelanguage' -Properties @{
+                                        value = 'en'
+                                    }
+                                }
+                            }
+                        }
+
+                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                            New-UDAutocomplete -Id 'autocomplete-settings-translatemodule' -Label 'Translate Module' -Options @('googletrans', 'google_trans_new') -Value ($cache:settings.'sort.metadata.nfo.translate.module') -OnChange {
+                                if ($null -eq (Get-UDElement -Id 'autocomplete-settings-translatemodule').value) {
+                                    Set-UDElement -Id 'autocomplete-settings-translatemodule' -Properties @{
+                                        value = 'googletrans'
                                     }
                                 }
                             }

@@ -627,7 +627,7 @@ New-UDPage -Name "Sort" -Content {
                                     if ($null -ne $cache:findData[$cache:index].Data.TrailerUrl) {
                                         New-UDButton -Icon $iconVideo -Text 'Trailer' -Size small -FullWidth -OnClick {
                                             Show-UDModal -FullWidth -MaxWidth lg -Content {
-                                                New-UDPlayer -Url $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
+                                                New-UDPlayer -URL $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
                                             }
                                         }
                                     }
@@ -1372,6 +1372,8 @@ New-UDPage -Name "Sort" -Content {
                                 New-UDButton -Icon $iconSearch -Text 'Manual Search' -FullWidth -OnClick {
                                     Show-UDModal -FullWidth -MaxWidth xl -Content {
                                         $scrapers = @(
+                                            'aventertainment',
+                                            'aventertainmentja'
                                             'dmm',
                                             'dmmja',
                                             'jav321ja',
@@ -1381,6 +1383,7 @@ New-UDPage -Name "Sort" -Content {
                                             'javlibrary',
                                             'javlibraryja',
                                             'javlibraryzh',
+                                            'mgstageja'
                                             'r18',
                                             'r18zh'
                                         )
