@@ -10,9 +10,9 @@ function Start-JVGui {
     $jvPsuPath = Join-Path -Path $jvModulePath -ChildPath 'GUI'
     $jvPsuExePath = Join-Path -Path $jvPsuPath -ChildPath 'Universal.Server.exe'
     $jvPsuSettingsPath = Join-Path -Path $jvPsuPath -ChildPath 'appsettings.json'
-    $jvPsuRepositoryPath = Join-Path -Path $jvPsuPath -ChildPath 'Universal' -AdditionalChildPath 'Repository'
-    $jvPsuDatabasePath = Join-Path -Path $jvPsuPath -ChildPath 'Universal' -AdditionalChildPath 'database.db'
-    $jvPsuAssetsFolderPath = Join-Path -Path $jvPsuPath -ChildPath 'Universal' -AdditionalChildPath 'Dashboard'
+    $jvPsuRepositoryPath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'Repository'
+    $jvPsuDatabasePath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'database.db'
+    $jvPsuAssetsFolderPath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'Dashboard'
 
     # Customize the default appsettings.json for Javinizer specific usage
     $jvPsuSettings = Get-Content -Path $jvPsuSettingsPath | ConvertFrom-Json -Depth 32
