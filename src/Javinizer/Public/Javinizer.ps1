@@ -422,7 +422,17 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Help', Mandatory = $true)]
         [Alias('h')]
-        [Switch]$Help
+        [Switch]$Help,
+
+        [Parameter(ParameterSetName = 'Gui')]
+        [Switch]$InstallGUI,
+
+        [Parameter(ParameterSetName = 'Gui')]
+        [Switch]$OpenGUI,
+
+        [Parameter(ParameterSetName = 'Gui')]
+        [ValidateRange(0, 65353)]
+        [Int]$Port = 5000
     )
 
     process {
@@ -582,6 +592,15 @@ function Javinizer {
         }
 
         switch ($PsCmdlet.ParameterSetName) {
+            'Gui' {
+                if ($InstallGUI) {
+                    Install-JVGui
+                } elseif ($OpenGUI) {
+                    Start-JVGui -Port:$Port
+                }
+            }
+
+
             'Info' {
                 if ($Find -match 'https?:\/\/') {
                     $urlObject = Get-JVUrlLocation -Url $Find -Settings $Settings
