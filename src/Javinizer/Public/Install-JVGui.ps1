@@ -34,7 +34,7 @@ function Install-JVGui {
         foreach ($module in $requiredPSModules) {
             if ($installedPSModules.Name -notcontains $module) {
                 Write-Host "    [-] PowerShell module $module not detected, installing" -ForegroundColor Yellow
-                Install-Module -Name $module -Force -Confirm:$false
+                Install-Module -Name $module -Force -AllowClobber -Confirm:$false
             } else {
                 Write-Host "    [+] PowerShell module $module is already installed" -ForegroundColor Green
             }
@@ -57,25 +57,6 @@ function Install-JVGui {
             Expand-Archive -Path $psuDownloadPath -DestinationPath $javinizerPsuPath -Force
         } else {
             Write-Host "    [+] PowerShell Universal is already installed" -ForegroundColor Green
-        }
-
-        Write-Host "Checking additional Javinizer dependencies..."
-        $pythonVersion = python --version
-        $pythonModules = pip list | Out-Null
-
-        if ($pythonVersion -like 'Python 3*') {
-            Write-Host "    [+] Python 3 is already installed" -ForegroundColor Green
-        } else {
-            Write-Host "    [-] Python 3 not installed, install Python 3 before using Javinizer." -ForegroundColor Red
-        }
-
-        foreach ($module in $requiredPyModules) {
-            try {
-                $pythonModules | Select-String -Pattern $module | Out-Null
-                Write-Host "    [+] Python module $module is already installed" -ForegroundColor Green
-            } catch {
-                Write-Host "    [-] Python module $module not detected, install using pip." -ForegroundColor Red
-            }
         }
 
         Write-Host "If all modules are installed, open the GUI using 'Javinizer -OpenGUI'"
