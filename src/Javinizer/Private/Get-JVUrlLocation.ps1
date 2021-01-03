@@ -23,7 +23,7 @@ function Get-JVUrlLocation {
                         Source = 'r18'
                     }
                 }
-            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com' -or $link -or $link -match ($Settings.'javlibrary.baseurl' -replace 'http(s)?:\/\/')) {
+            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com' -or $link -match ($Settings.'javlibrary.baseurl' -replace 'http(s)?:\/\/')) {
                 if ($link -match '/ja/') {
                     $testUrlObject += [PSCustomObject]@{
                         Url    = $link
