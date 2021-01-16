@@ -443,6 +443,9 @@ function Javinizer {
         try {
             if (!($SettingsPath)) {
                 $SettingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
+            } else {
+                # We need to get the full path of the SettingsPath to define it in the runspaces otherwise relative paths will fail
+                $SettingsPath = (Get-Item -Path $SettingsPath).FullName
             }
             $Settings = Get-Content -LiteralPath $SettingsPath | ConvertFrom-Json -Depth 32
         } catch {
