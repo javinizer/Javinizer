@@ -719,7 +719,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                     if ($null -ne $cache:findData[$cache:index].Data.TrailerUrl) {
                                         New-UDButton -Icon $iconVideo -Text 'Trailer' -Size small -FullWidth -OnClick {
                                             Show-UDModal -FullWidth -MaxWidth lg -Content {
-                                                New-UDPlayer -URL $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
+                                                New-UDPlayer -Url $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
                                             }
                                         }
                                     }
@@ -1971,7 +1971,8 @@ $Pages += New-UDPage -Name "Settings" -Content {
         'sort.metadata.thumbcsv',
         'sort.metadata.thumbcsv.autoadd',
         'sort.metadata.thumbcsv.convertalias',
-        'sort.metadata.genrecsv'
+        'sort.metadata.genrecsv',
+        'sort.metadata.genrecsv.autoadd'
     )
 
     $translateLanguages = @(
@@ -2079,9 +2080,11 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                 $cache:settings.'match.regex.idmatch' = (Get-UDElement -Id 'textbox-settings-regexidmatch').value
                                 $cache:settings.'match.regex.ptmatch' = (Get-UDElement -Id 'textbox-settings-regexptmatch').value
                                 $cache:settings.'sort.maxtitlelength' = [Int](Get-UDElement -Id 'autocomplete-settings-maxtitlelength').value
+                                $cache:settings.'sort.metadata.nfo.translate' = (Get-UDElement -Id 'checkbox-settings-translate').checked
                                 $cache:settings.'sort.metadata.nfo.translate.language' = (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value
                                 $cache:settings.'sort.metadata.nfo.translate.module' = (Get-UDElement -Id 'autocomplete-settings-translatemodule').value
                                 $cache:settings.'sort.metadata.nfo.translate.field' = ((Get-UDElement -Id 'textbox-settings-translatefield').value -split '\\').Trim()
+                                $cache:settings.'sort.metadata.nfo.translate.keeporiginaldescription' = (Get-UDElement -Id 'checkbox-settings-translate-originaldescription').checked
                                 $cache:settings.'admin.log' = (Get-UDElement -Id 'checkbox-settings-adminlog').checked
                                 $cache:settings.'admin.log.level' = (Get-UDElement -Id 'autocomplete-settings-adminloglevel').value
                                 $cache:settings | ConvertTo-Json | Out-File $cache:settingsPath
@@ -2325,11 +2328,15 @@ $Pages += New-UDPage -Name "Settings" -Content {
                 New-UDCard -Title 'Translate' -Content {
                     New-UDGrid -Container -Content {
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
-                            New-UDCheckBox -Label 'sort.metadata.nfo.translate' -Id 'sort.metadata.nfo.translate' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
+                            New-UDCheckBox -Label 'sort.metadata.nfo.translate' -Id 'checkbox-settings-translate' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
                         }
 
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                             New-UDTextbox -Placeholder 'sort.metadata.nfo.translate.field' -Id 'textbox-settings-translatefield' -Value ($cache:settings.'sort.metadata.nfo.translate.field' -join ' \ ') -FullWidth
+                        }
+
+                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                            New-UDCheckBox -Label 'sort.metadata.nfo.translate.keeporiginaldescription' -Id 'checkbox-settings-translate-originaldescription' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
                         }
 
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {

@@ -100,6 +100,10 @@ function Get-JVAggregatedData {
         [Boolean]$ReplaceGenre,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.genrecsv.autoadd')]
+        [Boolean]$GenreCsvAutoAdd,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('location.genrecsv')]
         [System.IO.FileInfo]$GenreCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'),
 
@@ -126,6 +130,10 @@ function Get-JVAggregatedData {
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.language')]
         [String]$TranslateLanguage,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.keeporiginaldescription')]
+        [String]$KeepOriginalDescription,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.delimiter')]
@@ -195,9 +203,11 @@ function Get-JVAggregatedData {
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateFields = $Settings.'sort.metadata.nfo.translate.field'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $KeepOriginalDescription = $Settings.'sort.metadata.nfo.translate.keeporiginaldescription'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
+            $GenreCsvAutoAdd = $Settings.'sort.metadata.genrecsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
@@ -519,6 +529,33 @@ function Get-JVAggregatedData {
             }
         }
 
+        if ($GenreCsvAutoAdd) {
+            $newGenres = @()
+            if (Test-Path -LiteralPath $GenreCsvPath) {
+                try {
+                    $replaceGenres = Import-Csv -LiteralPath $GenreCsvPath
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing genre csv [$GenreCsvPath]: $PSItem"
+                }
+
+                $currentGenres = $aggregatedDataObject.Genre
+
+                foreach ($genre in $currentGenres) {
+                    if ($genre -notin $replaceGenres.Original) {
+                        $newGenres += [PSCustomObject]@{
+                            Original    = $genre
+                            Replacement = ''
+                        }
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genre)] added as a new genre"
+                    }
+                }
+
+                $newGenres | Export-Csv -LiteralPath $GenreCsvPath -Append
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
+            }
+        }
+
         if ($ReplaceGenre) {
             if (Test-Path -LiteralPath $GenreCsvPath) {
                 try {
@@ -530,8 +567,10 @@ function Get-JVAggregatedData {
                 $newGenres = $aggregatedDataObject.Genre
                 foreach ($genrePair in $replaceGenres) {
                     if ($($genrePair.Original -in $newGenres)) {
-                        $newGenres = $newGenres -replace "$($genrePair.Original)", "$($genrePair.Replacement)"
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
+                        if ($genrePair.Replacement -ne '' -and $null -ne $genrePair.Repalcement) {
+                            $newGenres = $newGenres -replace "$($genrePair.Original)", "$($genrePair.Replacement)"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
+                        }
                     }
                 }
 
@@ -583,6 +622,13 @@ function Get-JVAggregatedData {
                         if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
                             if ($_.Name -eq 'Genre') {
                                 $aggregatedDataObject."$($_.Name)" = $genres
+                            } elseif ($_.Name -eq 'Description') {
+                                if ($KeepOriginalDescription) {
+                                    $description = ($_.Value).Trim() + "`n`n" + $aggregatedDataObject."$($_.Name)"
+                                    $aggregatedDataObject."$($_.Name)" = $description
+                                } else {
+                                    $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
+                                }
                             } else {
                                 $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
                             }

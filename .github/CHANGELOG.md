@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.2.8]
+## [2.2.9]
+
+### Added
+
+-   Added setting `sort.metadata.genrecsv.autoadd` to automatically add unknown genres to the genre csv file (#181)
+    -   `sort.metadata.genrecsv` functionality has been updated to ignore genres with a null `Replacement` value
+-   Added setting `sort.metadata.nfo.translate.keeporiginaldescription` to append the original description to the translated one (#182)
+
+### Changed
+
+-   Changed default Javinizer GUI (PowerShell Universal) web port to 8600 to alleviate conflicts with Synology NAS ports
+-   `-OpenGUI` now checks for a valid Javinizer dashboard and self-fixes if missing
+
+### Fixed
+
+-   Fixed the `-Url` parameter defaulting to JavLibrary detection when sorting manually with urls
+-   Fixed JavLibrary actress scraper not capturing Japanese names when using a mirror site
 
 ### Added
 
@@ -13,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
     -   `Javinizer -InstallGUI`
     -   `Javinizer -OpenGUI`
 
-## [2.2.5]
+## [2.2.8]
 
 ### Fixed
 
