@@ -1,8 +1,8 @@
 
 FROM ubuntu:18.04
 
-ADD docker-entrypoint.sh /home/
-ADD src/Javinizer/Universal/Repository/javinizergui.ps1 /home/
+ADD docker-entrypoint.sh /home
+ADD src/Javinizer/Universal/Repository/javinizergui.ps1 /home
 RUN chmod +x /home/docker-entrypoint.sh
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
@@ -31,9 +31,7 @@ RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Truste
 RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp; Install-Module UniversalDashboard.CodeEditor"
 RUN pwsh -Command "Install-Module Javinizer"
 
-
-
-WORKDIR /
+WORKDIR /home
 EXPOSE 8600
 VOLUME ["/data"]
 ENV Data__RepositoryPath ./data/Repository
