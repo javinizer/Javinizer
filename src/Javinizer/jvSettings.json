@@ -68,7 +68,7 @@
     "sort.metadata.nfo.translate.module": "googletrans",
     "sort.metadata.nfo.translate.field": ["description"],
     "sort.metadata.nfo.translate.language": "en",
-    "sort.metadata.nfo.translate.keeporiginal": true,
+    "sort.metadata.nfo.translate.keeporiginaldescription": true,
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
     "sort.metadata.nfo.firstnameorder": false,
     "sort.metadata.nfo.actresslanguageja": false,
