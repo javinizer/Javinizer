@@ -432,7 +432,7 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Gui')]
         [ValidateRange(0, 65353)]
-        [Int]$Port = 5000
+        [Int]$Port = 8600
     )
 
     process {
