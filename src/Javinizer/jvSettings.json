@@ -80,6 +80,7 @@
     "sort.metadata.thumbcsv.autoadd": true,
     "sort.metadata.thumbcsv.convertalias": true,
     "sort.metadata.genrecsv": false,
+    "sort.metadata.genrecsv.autoadd": false,
     "sort.metadata.genre.ignore": ["^Featured Actress", "^Hi-Def", ".*sale.*"],
     "sort.metadata.requiredfield": ["id", "coverurl", "genre", "maker", "releaseDate", "title"],
     "sort.metadata.priority.actress": ["r18", "javlibrary", "javbus", "mgstageja", "aventertainment"],
