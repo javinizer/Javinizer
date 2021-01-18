@@ -133,7 +133,7 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.keeporiginaldescription')]
-        [String]$KeepOriginalDescription,
+        [Boolean]$KeepOriginalDescription,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.delimiter')]
