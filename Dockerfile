@@ -2,6 +2,7 @@
 FROM ubuntu:18.04
 
 ADD docker-entrypoint.sh /home/
+ADD src/Javinizer/Universal/Repository/javinizergui.ps1 /home/
 RUN chmod +x /home/docker-entrypoint.sh
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
@@ -24,17 +25,16 @@ RUN apt-get update -y
 RUN apt-get install -y python3.8 python3-pip
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
 RUN pip3 install pillow google_trans_new googletrans==4.0.0rc1
-RUN apt-get install -y git
 
 # Add custom UD components
 RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted"
 RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp; Install-Module UniversalDashboard.CodeEditor"
+RUN pwsh -Command "Install-Module Javinizer"
 
-# Clone Javinizer master branch
-WORKDIR /home
-RUN git clone https://github.com/jvlflame/Javinizer.git
 
-EXPOSE 5000
+
+WORKDIR /
+EXPOSE 8600
 VOLUME ["/data"]
 ENV Data__RepositoryPath ./data/Repository
 ENV Data__ConnectionString ./data/database.db
