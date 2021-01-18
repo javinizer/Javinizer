@@ -196,7 +196,7 @@ function Get-JavlibraryActress {
             process {
                 try {
                     $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
-                        -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches } | ForEach-Object { $_.Groups[2].Value}
+                        -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches } | ForEach-Object { $_.Groups[2].Value }
                 } catch {
                     return
                 }
@@ -207,10 +207,10 @@ function Get-JavlibraryActress {
 
         $movieActressObject = @()
         $movieActress = @()
-        $enActressUrl = $Url -replace 'javlibrary.com\/(en|ja|cn|tw|)\/', 'javlibrary.com/en/'
-        $jaActressUrl = $Url -replace 'javlibrary.com\/(en|ja|cn|tw|)\/', 'javlibrary.com/ja/'
+        $enActressUrl = $Url -replace '.com\/(en|ja|cn|tw|)\/', '.com/en/'
+        $jaActressUrl = $Url -replace '.com\/(en|ja|cn|tw|)\/', '.com/ja/'
 
-        if ($Url -match 'javlibrary.com\/en\/') {
+        if ($Url -match '.com\/en\/') {
             $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false
             $enActress = Get-Actress -Webrequest $Webrequest
             $jaActress = Get-Actress -Webrequest $jaWebrequest
