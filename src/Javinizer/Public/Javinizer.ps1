@@ -452,6 +452,33 @@ function Javinizer {
             Write-Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when loading settings file [$SettingsPath]: $PSItem" -ErrorAction Stop
         }
 
+        if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
+            if ($MoveToFolder -eq $true) {
+                $Settings.'sort.movetofolder' = 1
+            } elseif ($MoveToFolder -eq $false) {
+                $Settings.'sort.movetofolder' = 0
+            }
+        }
+
+        if ($PSBoundParameters.ContainsKey('RenameFile')) {
+            if ($RenameFile -eq $true) {
+                $Settings.'sort.renamefile' = 1
+            } elseif ($RenameFile -eq $false) {
+                $Settings.'sort.renamefile' = 0
+            }
+        }
+
+        if ($Set) {
+            try {
+                foreach ($item in $Set.GetEnumerator()) {
+                    $Settings."$($item.Key)" = $item.Value
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
+                }
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when defining settings using -Set: $PSItem"
+            }
+        }
+
         if ($Settings.'admin.log' -eq '1') {
             if ($Settings.'location.log' -eq '') {
                 $script:JVLogPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
@@ -509,33 +536,6 @@ function Javinizer {
                 return
             } else {
                 $uncensorCsvPath = $Settings.'location.uncensorcsv'
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('MoveToFolder')) {
-            if ($MoveToFolder -eq $true) {
-                $Settings.'sort.movetofolder' = 1
-            } elseif ($MoveToFolder -eq $false) {
-                $Settings.'sort.movetofolder' = 0
-            }
-        }
-
-        if ($PSBoundParameters.ContainsKey('RenameFile')) {
-            if ($RenameFile -eq $true) {
-                $Settings.'sort.renamefile' = 1
-            } elseif ($RenameFile -eq $false) {
-                $Settings.'sort.renamefile' = 0
-            }
-        }
-
-        if ($Set) {
-            try {
-                foreach ($item in $Set.GetEnumerator()) {
-                    $Settings."$($item.Key)" = $item.Value
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] [Setting - $($item.Key)] replaced as [$($item.Value)]"
-                }
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when defining settings using -Set: $PSItem"
             }
         }
 
