@@ -132,6 +132,10 @@ function Get-JVAggregatedData {
         [String]$TranslateLanguage,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.keeporiginaldescription')]
+        [String]$KeepOriginalDescription,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.delimiter')]
         [String]$DelimiterFormat,
 
@@ -199,6 +203,7 @@ function Get-JVAggregatedData {
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateFields = $Settings.'sort.metadata.nfo.translate.field'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $KeepOriginalDescription = $Settings.'sort.metadata.nfo.translate.keeporiginaldescription'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $ThumbCsvAutoAdd = $Settings.'sort.metadata.thumbcsv.autoadd'
@@ -617,6 +622,13 @@ function Get-JVAggregatedData {
                         if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
                             if ($_.Name -eq 'Genre') {
                                 $aggregatedDataObject."$($_.Name)" = $genres
+                            } elseif ($_.Name -eq 'Description') {
+                                if ($KeepOriginalDescription) {
+                                    $description = ($_.Value).Trim() + "`n`n" + $aggregatedDataObject."$($_.Name)"
+                                    $aggregatedDataObject."$($_.Name)" = $description
+                                } else {
+                                    $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
+                                }
                             } else {
                                 $aggregatedDataObject."$($_.Name)" = ($_.Value).Trim()
                             }
