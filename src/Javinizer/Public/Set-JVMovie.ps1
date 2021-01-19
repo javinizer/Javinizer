@@ -171,7 +171,7 @@ function Set-JVMovie {
             $GroupActress = $Settings.'sort.format.groupactress'
         }
 
-        if ($RenameFile) {
+        if ($RenameFile -and (!($Update))) {
             $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
         } else {
             $fileName = (Get-Item -LiteralPath $Path).BaseName
