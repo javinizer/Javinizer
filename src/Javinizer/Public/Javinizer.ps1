@@ -444,7 +444,10 @@ function Javinizer {
         [Switch]$UpdateModule,
 
         [Parameter(ParameterSetName = 'Preview')]
-        [Switch]$Preview
+        [Switch]$Preview,
+
+        [Parameter(ParameterSetName = 'Passthru')]
+        [Switch]$OutSettings
     )
 
     process {
@@ -626,6 +629,12 @@ function Javinizer {
                     Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
                 } else {
                     Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Strict:$Strict
+                }
+            }
+
+            'Passthru' {
+                if ($OutSettings) {
+                    Get-JVSettings
                 }
             }
 
