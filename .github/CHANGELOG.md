@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.10]
+
+### Added
+
+-   Added `-Preview` parameter to display file matcher details
+-   Added `-OutSettings` parameter to passthru Javinizer settings object to shell
+-   Added `admin.updates.check` setting to check for module updates on first run
+-   **Experimental** Added `-UpdateModule` parameter to perform Javinizer module update with settings persistence
+
+### Fixed
+
+-   `sort.metadata.nfo.translate.keeporiginaldescription` no longer fails to check true/false value
+-   Using `-Update` will no longer recreate the nfo file with a filename title
+-   Directories with a file extension appended to the path name will no longer be detected as a movie
+
 ## [2.2.9]
 
 ### Added

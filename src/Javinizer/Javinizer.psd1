@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.2.9'
+    ModuleVersion     = '2.2.10'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -74,6 +74,7 @@
         'Invoke-JVParallel',
         'Javinizer',
         'Get-CfSession',
+        'Get-DLgetchuData',
         'Get-DmmData',
         'Get-DmmUrl',
         'Get-Jav321Data',
@@ -86,11 +87,18 @@
         'Get-JVData',
         'Get-JVItem',
         'Get-JVNfo',
+        'Get-JVSettings',
         'Get-JVSortData',
+        'Get-MgstageData',
+        'Get-MgstageUrl',
         'Get-R18Data',
         'Get-R18Url',
+        'Install-JVGui',
+        'Set-JavlibraryOwned',
         'Set-JVEmbyThumbs',
         'Set-JVMovie',
+        'Start-JVGUI',
+        'Update-JVModule',
         'Update-JVThumbCsv',
         'Write-JVWebLog'
     )

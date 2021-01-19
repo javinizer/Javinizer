@@ -133,7 +133,7 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.keeporiginaldescription')]
-        [String]$KeepOriginalDescription,
+        [Boolean]$KeepOriginalDescription,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.delimiter')]
@@ -643,7 +643,7 @@ function Get-JVAggregatedData {
         # The displayname value is updated after the previous fields have already been scraped and translated
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
-        if ($null -ne $Tag[0]) {
+        if ($Tag[0]) {
             $aggregatedDataObject.Tag = @()
             foreach ($entry in $Tag) {
                 $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
@@ -663,7 +663,7 @@ function Get-JVAggregatedData {
             }
         }
 
-        if ($null -ne $Credits[0]) {
+        if ($Credits[0]) {
             $aggregatedDataObject.Credits = @()
             foreach ($entry in $Credits) {
                 $credit = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)

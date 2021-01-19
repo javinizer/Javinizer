@@ -57,20 +57,21 @@ function Get-JVItem {
             $RegexPtMatch = $Settings.'match.regex.ptmatch'
         }
 
-        $extensions = @()
         $ExcludedStrings = $ExcludedStrings -join '|'
 
         if ($Depth) {
             $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse -Depth:$Depth | Where-Object {
                 $_.Extension -in $IncludedExtensions `
                     -and $_.Length -ge ($MinimumFileSize * 1MB) `
-                    -and $_.Name -notmatch $ExcludedStrings
+                    -and $_.Name -notmatch $ExcludedStrings `
+                    -and $_.Mode -notlike '*d*'
             }
         } else {
             $files = Get-ChildItem -LiteralPath $Path -Recurse:$Recurse | Where-Object {
                 $_.Extension -in $IncludedExtensions `
                     -and $_.Length -ge ($MinimumFileSize * 1MB) `
-                    -and $_.Name -notmatch $ExcludedStrings
+                    -and $_.Name -notmatch $ExcludedStrings `
+                    -and $_.Mode -notlike '*d*'
             }
         }
 

@@ -68,7 +68,7 @@
     "sort.metadata.nfo.translate.module": "googletrans",
     "sort.metadata.nfo.translate.field": ["description"],
     "sort.metadata.nfo.translate.language": "en",
-    "sort.metadata.nfo.translate.keeporiginaldescription": true,
+    "sort.metadata.nfo.translate.keeporiginaldescription": false,
     "sort.metadata.nfo.displayname": "[<ID>] <TITLE>",
     "sort.metadata.nfo.firstnameorder": false,
     "sort.metadata.nfo.actresslanguageja": false,
@@ -131,5 +131,6 @@
     "web.sort.manualsearch.r18zh": false,
     "web.navigation.pagesize": 5,
     "admin.log": true,
-    "admin.log.level": "info"
+    "admin.log.level": "info",
+    "admin.updates.check": true
 }
