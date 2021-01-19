@@ -131,5 +131,6 @@
     "web.sort.manualsearch.r18zh": false,
     "web.navigation.pagesize": 5,
     "admin.log": true,
-    "admin.log.level": "info"
+    "admin.log.level": "info",
+    "admin.updates.check": true
 }
