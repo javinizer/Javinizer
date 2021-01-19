@@ -255,6 +255,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path', Position = 0)]
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
         [Parameter(ParameterSetName = 'Javlibrary', Position = 0)]
+        [Parameter(ParameterSetName = 'Preview')]
         [AllowEmptyString()]
         [System.IO.FileInfo]$Path,
 
@@ -265,11 +266,13 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Preview')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Preview')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -279,11 +282,13 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Info')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Preview')]
         [System.IO.FileInfo]$SettingsPath,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetNAme = 'Info')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Preview')]
         [Switch]$Strict,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -414,6 +419,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Emby')]
         [Parameter(ParameterSetName = 'Thumbs')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Preview')]
         [Hashtable]$Set,
 
         [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
@@ -432,7 +438,13 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Gui')]
         [ValidateRange(0, 65353)]
-        [Int]$Port = 8600
+        [Int]$Port = 8600,
+
+        [Parameter(ParameterSetName = 'Update')]
+        [Switch]$UpdateModule,
+
+        [Parameter(ParameterSetName = 'Preview')]
+        [Switch]$Preview
     )
 
     process {
@@ -543,6 +555,12 @@ function Javinizer {
         $Settings = $Settings | Test-JVSettings
 
         if (!($IsThread)) {
+            if ($Settings.'admin.updates.check') {
+                Update-JVModule -CheckUpdates
+            }
+        }
+
+        if (!($IsThread)) {
             if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or ($Find -like '*javlibrary*' -or $Find -like '*g46e*' -or $Find -like '*m45e*') -or $SetOwned) {
                 if (!($CfSession)) {
                     try {
@@ -603,6 +621,17 @@ function Javinizer {
                 }
             }
 
+            'Preview' {
+                if ($Depth) {
+                    Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
+                } else {
+                    Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Strict:$Strict
+                }
+            }
+
+            'Update' {
+                Update-JVModule -Update
+            }
 
             'Info' {
                 if ($Find -match 'https?:\/\/') {
@@ -714,14 +743,7 @@ function Javinizer {
             }
 
             'Version' {
-                $moduleManifest = Get-Content -LiteralPath (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'Javinizer.psd1')
-                [PSCustomObject]@{
-                    Version      = ($moduleManifest | Select-String -Pattern "ModuleVersion\s*= '(.*)'").Matches.Groups[1].Value
-                    Prerelease   = ($moduleManifest | Select-String -Pattern "Prerelease\s*= '(.*)'").Matches.Groups[1].Value
-                    Project      = ($moduleManifest | Select-String -Pattern "ProjectUri\s*= '(.*)'").Matches.Groups[1].Value
-                    License      = ($moduleManifest | Select-String -Pattern "LicenseUri\s*= '(.*)'").Matches.Groups[1].Value
-                    ReleaseNotes = ($moduleManifest | Select-String -Pattern "ReleaseNotes\s*= '(.*)'").Matches.Groups[1].Value
-                }
+                Get-JVModuleInfo
             }
 
             'Emby' {
