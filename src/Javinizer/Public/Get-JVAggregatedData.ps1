@@ -567,7 +567,7 @@ function Get-JVAggregatedData {
                 $newGenres = $aggregatedDataObject.Genre
                 foreach ($genrePair in $replaceGenres) {
                     if ($($genrePair.Original -in $newGenres)) {
-                        if ($genrePair.Replacement -ne '' -and $null -ne $genrePair.Repalcement) {
+                        if ($genrePair.Replacement -ne '' -and $null -ne $genrePair.Replacement) {
                             $newGenres = $newGenres -replace "$($genrePair.Original)", "$($genrePair.Replacement)"
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($genrePair.Original)] replaced as [$($genrePair.Replacement)]"
                         }
