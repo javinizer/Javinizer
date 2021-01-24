@@ -121,7 +121,7 @@ function Get-JVNfo {
     <title>$DisplayName</title>
     <originaltitle>$AlternateTitle</originaltitle>
     <id>$Id</id>
-    <releasedate>$ReleaseDate</releasedate>
+    <premiered>$ReleaseDate</premiered>
     <year>$releaseYear</year>
     <director>$Director</director>
     <studio>$Maker</studio>
