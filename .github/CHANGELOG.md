@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.2.11]
 
+### Changed
+
+-   `<releasedate>` changed to `<premiered>` to match updated Kodi NFO standard
+
 ### Fixed
 
 -   Fixed typo causing genre csv to not function correctly
+-   Fixed a bug in the filematcher where invalid part numbers were detected causing the script the fail
+-   Added a character replacement to mgstage metadata causing actress image downloads to fail
 
 ## [2.2.10]
 
