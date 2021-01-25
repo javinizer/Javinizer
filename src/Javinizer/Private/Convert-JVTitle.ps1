@@ -83,7 +83,7 @@ function Convert-JVTitle {
                     $partNum = ($file | Select-String $RegexString).Matches.Groups[$RegexPtMatch].Value
 
                     # If ID#### and there's no hypen, subsequent searches will fail
-                    if($id -match '^([a-z]+)(\d+)$') {
+                    if ($id -match '^([a-z]+)(\d+)$') {
                         $id = $Matches[1] + "-" + ($Matches[2] -replace '^0{1,5}', '').PadLeft(3, '0')
                     }
                 } catch {
@@ -200,7 +200,9 @@ function Convert-JVTitle {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?\s?[-])"
                 $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').Trim().PadLeft(3, '0')
                 $filePartNum = ((($fileP3.Trim() -replace '-', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
-                $filePartNumber = [int]$filePartNum
+                if ($filePartNum -match '^\d+$') {
+                    $filePartNumber = [int]$filePartNum
+                }
             }
 
             # Match everything else
