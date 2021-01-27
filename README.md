@@ -31,8 +31,10 @@
   <a href="https://docs.jvlflame.net/">Documentation</a>
 </p>
 
-<img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo.gif" width="1280">
-<img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo-gui.jpg" width="1280">
+<p align="center">
+  <img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo.gif" width="1280">
+  <img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo-gui.jpg" width="1280">
+</p>
 
 <p align="center">
   <a href="https://gfycat.com/spiriteddefenselessgrouper">View GUI demo video (NSFW)</a>
