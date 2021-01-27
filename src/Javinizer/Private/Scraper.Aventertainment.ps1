@@ -88,7 +88,7 @@ function Get-AventertainmentRuntime {
             $length = ($hours * 60 + $minutes).ToString()
         } catch {
             try {
-                $length = ($Webrequest.Content | Select-String -Pattern 'Apx\. (\d*) Min\.').Matches.Groups[1].Value
+                $length = ($Webrequest.Content | Select-String -Pattern 'Apx\.? (\d*) Min\.?').Matches.Groups[1].Value
             } catch {
                 return
             }
