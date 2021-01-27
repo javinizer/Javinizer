@@ -26,20 +26,21 @@
 </p>
 
 <p align="center">
-  <a href="#key-features">Features</a> •
-  <a href="#installation-&-usage">Installation</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
   <a href="https://docs.jvlflame.net/">Documentation</a>
 </p>
 
 <img src="https://github.com/jvlflame/Javinizer/blob/master/media/demo.gif" width="1280">
 <img src="https://github.com/jvlflame/Javinizer/blob/master/media/demo-gui.jpg" width="1280">
 
--   [View GUI demo video here](https://gfycat.com/spiriteddefenselessgrouper)
--   [View GUI screens here](https://github.com/jvlflame/Javinizer/tree/master/media/gui)
+<p align="center">
+  <a href="https://gfycat.com/spiriteddefenselessgrouper">View GUI demo video (NSFW)</a>
+</p>
 
 ## Features
 
-**Highly customizable**. An array of scrapers are available for you to mix-and-match metadata with. Scrapers sources include sites such as Javlibrary, R18, Dmm (Fanza), JavBus, Jav321, AVEntertainment, MGStage, and DLGetchu. Various _.csv_ settings files are also provided to customize your metadata even further.
+**Highly customizable**. An assortment of scrapers are available for you to mix-and-match metadata with. Scrapers sources include sites such as Javlibrary, R18, Dmm (Fanza), JavBus, Jav321, AVEntertainment, MGStage, and DLGetchu. Various _.csv_ settings files are also provided to customize your metadata even further.
 
 **Flexible file detection**. Multiple methods are provided to detect your local JAV files such as the built-in file matcher as well as a customizable regex string.
 
@@ -61,33 +62,62 @@ To run Javinizer, you will need to install following prerequisities:
 
 **NOTE**: You will need to add Python to your system PATH. Windows calls `python`, while Unix/MacOS calls `python3`.
 
-After installing the required prereuquisites, run the following command in an administrator PowerShell 7 console to install the Javinizer module:
+```python
+# Install the python modules using pip. If running Unix/MacOS, use pip3/python3
+> pip install pillow
+> pip install googletrans==4.0.0rc1
+> pip install google_trans_new
+```
+
+After installing the required prerequisites, run the following command in an administrator PowerShell 7 console to install the Javinizer module:
 
 ```powershell
 # Install the module from PowerShell gallery
-C:\> Install-Module Javinizer
+> Install-Module Javinizer
 
 # Check that the module has been installed; if error, restart your console
-C:\> Javinizer -v
+> Javinizer -v
 ```
 
-### Quick start
+### Quick start (CLI)
 
 Here are some common commands that you will be running with Javinizer:
 
 ```powershell
 # Run a command to find metadata
-C:\> Javinizer -Find "ABP-420" -Javlibrary
+> Javinizer -Find "ABP-420" -Javlibrary
 
 # Run a command to sort your JAV files using default settings
-C:\> Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
+> Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
 
 # Open the Javinizer settings configuration
-C:\> Javinizer -OpenSettings
+> Javinizer -OpenSettings
 
 # Update your Javinizer module
-C:\> Javinizer -UpdateModule
+> Javinizer -UpdateModule
 
-# View the Javinizer commandline help (may not be fully up-to-date)
-C:\> Javinizer -Help
+# View the Javinizer commandline help (may not be up to date)
+> Javinizer -Help
+```
+
+### Quick start (GUI)
+
+After running the GUI, [view the docs](https://docs.jvlflame.net/installation/install-javinizer-web-gui#import-the-javinizer-dashboard) for first-time setup to import the Javinizer dashboard into PowerShell Universal.
+
+#### Windows
+
+```powershell
+# Install PowerShell Universal to Javinizer module folder
+> Javinizer -InstallGUI
+
+# Runs the PowerShell Universal application and opens the Javinizer GUI
+> Javinizer -OpenGUI
+```
+
+#### Docker
+
+Run the container
+
+```
+docker run --name javinizer -p 5000:5000 -d jvlflame/javinizer:latest
 ```
