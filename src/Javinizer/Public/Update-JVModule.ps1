@@ -69,7 +69,7 @@ function Update-JVModule {
                         if (Test-Path -Path $origSettings.'location.historycsv') {
                             $origHistoryPath = (Get-Item -Path $origSettings.'location.historycsv').FullName
                         } else {
-                            $origHistoryPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvHistory'
+                            $origHistoryPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvHistory.csv'
                         }
 
                         # Write all settings configurations to memory
