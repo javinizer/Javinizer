@@ -31,8 +31,8 @@
   <a href="https://docs.jvlflame.net/">Documentation</a>
 </p>
 
-<img src="https://github.com/jvlflame/Javinizer/blob/master/media/demo.gif" width="1280">
-<img src="https://github.com/jvlflame/Javinizer/blob/master/media/demo-gui.jpg" width="1280">
+<img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo.gif" width="1280">
+<img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo-gui.jpg" width="1280">
 
 <p align="center">
   <a href="https://gfycat.com/spiriteddefenselessgrouper">View GUI demo video (NSFW)</a>
@@ -44,9 +44,9 @@
 
 **Flexible file detection**. Multiple methods are provided to detect your local JAV files such as the built-in file matcher as well as a customizable regex string.
 
-**Multi-language support**. Scraper sources provide Japanese, English, and occasionally Chinese language support. Machine translation modules are also available to translate individual metadata fields of your choosing.
+**Multi-language support**. Scraper sources provide English, Japanese, and occasionally Chinese language support. Machine translation modules are also available to translate individual metadata fields of your choice.
 
-**You manage your data**. Metadata _.nfo_ files are created for each JAV file to be read by a media library application. Contrary to a metadata plugin, if an online scraper suddenly disappears, you still keep your metadata.
+**You own the data**. Metadata _.nfo_ files are created for each JAV file to be read by a media library application. Contrary to a media library metadata plugin, if an online scraper suddenly disappears, you still keep your metadata.
 
 ## Installation
 
@@ -115,8 +115,6 @@ After running the GUI, [view the docs](https://docs.jvlflame.net/installation/in
 ```
 
 #### Docker
-
-Run the container
 
 ```
 docker run --name javinizer -p 5000:5000 -d jvlflame/javinizer:latest
