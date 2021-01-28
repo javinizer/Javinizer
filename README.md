@@ -3,32 +3,36 @@
   <br>
 </h1>
 
-<h4 align="center">A commandline or GUI based PowerShell module used to scrape metadata and sort your local Japanese Adult Video (JAV) files into media library compatible formats.</h4>
+<h4 align="center"><strong>A commandline and GUI based PowerShell module used to scrape metadata and sort your local Japanese Adult Video (JAV) files into a media library compatible format.</strong></h4>
 
 <br>
 
 <p align="center">
   <a href="https://github.com/jvlflame/Javinizer/releases">
-    <img src="https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=flat&label=release"
+    <img src="https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=for-the-badge&label=release"
          alt="GitHub">
   </a>
-  <a href="https://www.powershellgallery.com/packages/Javinizer/y"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery%20downloads&style=flat"
+  <a href="https://www.powershellgallery.com/packages/Javinizer/"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery&style=for-the-badge"
   alt="PSGallery">
   </a>
   <a href="https://hub.docker.com/r/jvlflame/javinizer">
-      <img src="https://img.shields.io/docker/pulls/jvlflame/javinizer?color=red"
-      alt="Docker Hub">
+      <img src="https://img.shields.io/docker/pulls/jvlflame/javinizer?style=for-the-badge&color=red&label=docker"
+      alt="Docker">
   </a>
   <a href="https://discord.gg/Pds7xCpzpc">
-    <img src="https://img.shields.io/discord/608449512352120834?color=brightgreen&style=flat&label=discord%20chat"
+    <img src="https://img.shields.io/discord/608449512352120834?color=brightgreen&style=for-the-badge&label=discord"
+    alt="Discord">
+  </a>
+    <a href="https://discord.gg/Pds7xCpzpc">
+    <img src="https://img.shields.io/github/commits-since/jvlflame/javinizer/latest/dev?color=yellow&style=for-the-badge"
     alt="Discord">
   </a>
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
-  <a href="https://docs.jvlflame.net/">Documentation</a>
+  <a href="#features"><strong>Features</strong></a> •
+  <a href="#getting-started"><strong>Getting Started</strong></a> •
+  <a href="https://docs.jvlflame.net/"><strong>Documentation</strong></a>
 </p>
 
 <p align="center">
@@ -42,27 +46,29 @@
 
 ## Features
 
-**Highly customizable**. An assortment of scrapers are available for you to mix-and-match metadata with. Scrapers sources include sites such as Javlibrary, R18, Dmm (Fanza), JavBus, Jav321, AVEntertainment, MGStage, and DLGetchu. Various _.csv_ settings files are also provided to customize your metadata even further.
+-   **Highly customizable**. An assortment of scrapers are available for you to mix-and-match metadata with. Scrapers sources include sites such as Javlibrary, R18, Dmm (Fanza), JavBus, Jav321, AVEntertainment, MGStage, and DLGetchu. Various _.csv_ settings files are also provided to customize your metadata even further.
 
-**Flexible file detection**. Multiple methods are provided to detect your local JAV files such as the built-in file matcher as well as a customizable regex string.
+-   **Flexible file detection**. Multiple methods are provided to detect your local JAV files such as the built-in file matcher as well as a customizable regex string.
 
-**Multi-language support**. Scraper sources provide English, Japanese, and occasionally Chinese language support. Machine translation modules are also available to translate individual metadata fields of your choice.
+-   **Multi-language support**. Scraper sources provide English, Japanese, and occasionally Chinese language support. Machine translation modules are also available to translate individual metadata fields of your choice.
 
-**You own the data**. Metadata _.nfo_ files are created for each JAV file to be read by a media library application. Contrary to a media library metadata plugin, if an online scraper suddenly disappears, you still keep your metadata.
+-   **You own the data**. Metadata _.nfo_ files are created for each JAV file to be read by a media library application. Contrary to a media library metadata plugin, if an online scraper suddenly disappears, you still keep your metadata.
 
-## Installation
+## Getting Started
 
 View the full Javinizer installation and usage documentation on [GitBook](https://docs.jvlflame.net/).
 
-To run Javinizer, you will need to install following prerequisities:
+### Prerequisites
+
+To run Javinizer, you will need to install following:
+
+**NOTE**: You will need to add Python and MediaInfo to your system PATH. Windows calls `python`, while Unix/MacOS calls `python3`.
 
 -   [PowerShell 7](https://github.com/PowerShell/PowerShell)
 -   [Python 3](https://www.python.org/downloads/)
     -   [Pillow](https://pypi.org/project/Pillow/)
     -   [googletrans >= 4.0.0rc1](https://pypi.org/project/googletrans/) or [google_trans_new](https://pypi.org/project/google-trans-new/)
 -   [MediaInfo](https://mediaarea.net/en/MediaInfo/Download) (Optional)
-
-**NOTE**: You will need to add Python to your system PATH. Windows calls `python`, while Unix/MacOS calls `python3`.
 
 ```python
 # Install the python modules using pip. If running Unix/MacOS, use pip3/python3
@@ -71,7 +77,9 @@ To run Javinizer, you will need to install following prerequisities:
 > pip install google_trans_new
 ```
 
-After installing the required prerequisites, run the following command in an administrator PowerShell 7 console to install the Javinizer module:
+### Installation
+
+After installing the required prerequisites, run the following command in an administrator PowerShell 7 console to install the Javinizer module. If this is your first time using PowerShell, you may run into some prompts about security policies. Follow the instructions given in the prompts to unrestrict the code.
 
 ```powershell
 # Install the module from PowerShell gallery
