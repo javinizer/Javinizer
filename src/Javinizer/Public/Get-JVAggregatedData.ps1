@@ -173,7 +173,11 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.groupactress')]
-        [Boolean]$GroupActress
+        [Boolean]$GroupActress,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.actressastag')]
+        [Boolean]$ActressAsTag
     )
 
     process {
@@ -210,6 +214,7 @@ function Get-JVAggregatedData {
             $GenreCsvAutoAdd = $Settings.'sort.metadata.genrecsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
+            $ActressAsTag = $Settings.'sort.metadata.nfo.actressastag'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
             $Credits = $Settings.'sort.metadata.nfo.format.credits'
@@ -644,7 +649,9 @@ function Get-JVAggregatedData {
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($Tag[0]) {
-            $aggregatedDataObject.Tag = @()
+            if ($null -eq $aggregatedDataObject.Tag) {
+                $aggregatedDataObject.Tag = @()
+            }
             foreach ($entry in $Tag) {
                 $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
                 if ($null -ne $tagString -and $tagstring -ne '') {
@@ -653,6 +660,60 @@ function Get-JVAggregatedData {
             }
             if ($null -eq $aggregatedDataObject.Tag[0]) {
                 $aggregatedDataObject.Tag = $null
+            }
+        }
+
+        if ($ActressAsTag) {
+            if ($null -eq $aggregatedDataObject.Tag) {
+                $aggregatedDataObject.Tag = @()
+            }
+            foreach ($actress in $aggregatedDataObject.Actress) {
+                $actressName = $null
+                if ($ActressLanguageJa) {
+                    if ($null -ne $actress.JapaneseName) {
+                        $actressName = ($actress.JapaneseName)
+                        if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                            if ($FirstNameOrder) {
+                                $altName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                            } else {
+                                $altName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                            }
+                        }
+                    }
+
+                    if ($null -eq $actressName) {
+                        if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                            if ($FirstNameOrder) {
+                                $actressName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                            } else {
+                                $actressName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                            }
+                            $altName = $null
+                        }
+                    }
+                } else {
+                    if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                        if ($FirstNameOrder) {
+                            $actressName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                        } else {
+                            $actressName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                        }
+
+                        if ($null -ne $actress.JapaneseName) {
+                            $altName = ($actress.JapaneseName)
+                        }
+                    }
+
+                    if ($null -eq $actressName) {
+                        if ($null -ne $actress.JapaneseName) {
+                            $actressName = ($actress.JapaneseName).Trim()
+                        }
+                        $altName = $null
+                    }
+                }
+                if ($null -ne $actressName) {
+                    $aggregatedDataObject.Tag += $actressName
+                }
             }
         }
 

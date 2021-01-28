@@ -74,6 +74,7 @@
     "sort.metadata.nfo.actresslanguageja": false,
     "sort.metadata.nfo.unknownactress": true,
     "sort.metadata.nfo.originalpath": false,
+    "sort.metadata.nfo.actressastag": true,
     "sort.metadata.nfo.format.tag": ["<SET>"],
     "sort.metadata.nfo.format.tagline": "",
     "sort.metadata.nfo.format.credits": [],
