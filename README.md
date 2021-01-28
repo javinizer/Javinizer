@@ -32,7 +32,7 @@
 <p align="center">
   <a href="#features"><strong>Features</strong></a> •
   <a href="#getting-started"><strong>Getting Started</strong></a> •
-  <a href="https://docs.jvlflame.net/"><strong>Documentation</strong></a>
+  <a href="https://docs.jvlflame.net/" target="_blank"><strong>Documentation</strong></a>
 </p>
 
 <p align="center">
