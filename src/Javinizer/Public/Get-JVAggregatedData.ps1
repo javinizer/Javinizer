@@ -682,12 +682,12 @@ function Get-JVAggregatedData {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing tag csv [$TagCsvPath]: $PSItem"
                 }
 
-                $currentTags = $aggregatedDataObject.Tags
+                $currentTags = $aggregatedDataObject.Tag
 
                 foreach ($tag in $currentTags) {
                     if ($tag -notin $replaceTags.Original) {
                         $newTags += [PSCustomObject]@{
-                            Original    = $tag
+                            Original    = if ($tag.Count -gt 1) { $tag } else { $tag[0] }
                             Replacement = ''
                         }
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($tag)] added as a new tag"
