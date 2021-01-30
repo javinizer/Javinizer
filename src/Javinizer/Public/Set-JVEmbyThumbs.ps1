@@ -77,7 +77,7 @@ function Set-JVEmbyThumbs {
                 if ($FirstNameOrder) {
                     $actressObject = [PSCustomObject]@{
                         LastName  = ($actress.Name -split ' ')[1]
-                        FirstName = ($actress.name -split ' ')[0]
+                        FirstName = ($actress.Name -split ' ')[0]
                     }
 
                     if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
@@ -87,10 +87,26 @@ function Set-JVEmbyThumbs {
                             $thumbUrl = $matched[0].ThumbUrl
                         }
                     }
+
+                    # Add a second check for alternate name order
+                    if ($null -eq $thumbUrl) {
+                        $actressObject = [PSCustomObject]@{
+                            LastName  = ($actress.Name -split ' ')[0]
+                            FirstName = ($actress.Name -split ' ')[1]
+                        }
+
+                        if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
+                            if ($matched.Count -eq 1) {
+                                $thumbUrl = $matched.ThumbUrl
+                            } elseif ($matched.Count -gt 1) {
+                                $thumbUrl = $matched[0].ThumbUrl
+                            }
+                        }
+                    }
                 } else {
                     $actressObject = [PSCustomObject]@{
                         LastName  = ($actress.Name -split ' ')[0]
-                        FirstName = ($actress.name -split ' ')[1]
+                        FirstName = ($actress.Name -split ' ')[1]
                     }
 
                     if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
@@ -98,6 +114,22 @@ function Set-JVEmbyThumbs {
                             $thumbUrl = $matched.ThumbUrl
                         } elseif ($matched.Count -gt 1) {
                             $thumbUrl = $matched[0].ThumbUrl
+                        }
+                    }
+
+                    # Add a second check for alternate name order
+                    if ($null -eq $thumbUrl) {
+                        $actressObject = [PSCustomObject]@{
+                            LastName  = ($actress.Name -split ' ')[1]
+                            FirstName = ($actress.Name -split ' ')[0]
+                        }
+
+                        if ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $actressObject -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
+                            if ($matched.Count -eq 1) {
+                                $thumbUrl = $matched.ThumbUrl
+                            } elseif ($matched.Count -gt 1) {
+                                $thumbUrl = $matched[0].ThumbUrl
+                            }
                         }
                     }
                 }
