@@ -276,7 +276,7 @@ function Javinizer {
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
-        [Array]$Url,
+        [String[]]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
@@ -411,7 +411,7 @@ function Javinizer {
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
-        [Array]$Pages,
+        [String[]]$Pages,
 
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Switch]$SetOwned,
