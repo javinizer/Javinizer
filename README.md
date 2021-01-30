@@ -9,30 +9,32 @@
 
 <p align="center">
   <a href="https://github.com/jvlflame/Javinizer/releases">
-    <img src="https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=for-the-badge&label=release"
+    <img src="https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=plastic&label=release"
          alt="GitHub">
   </a>
-  <a href="https://www.powershellgallery.com/packages/Javinizer/"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery&style=for-the-badge"
+  <a href="https://www.powershellgallery.com/packages/Javinizer/"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery&style=plastic"
   alt="PSGallery">
   </a>
   <a href="https://hub.docker.com/r/jvlflame/javinizer">
-      <img src="https://img.shields.io/docker/pulls/jvlflame/javinizer?style=for-the-badge&color=red&label=docker"
+      <img src="https://img.shields.io/docker/pulls/jvlflame/javinizer?style=plastic&color=red&label=docker"
       alt="Docker">
   </a>
   <a href="https://discord.gg/Pds7xCpzpc">
-    <img src="https://img.shields.io/discord/608449512352120834?color=brightgreen&style=for-the-badge&label=discord"
+    <img src="https://img.shields.io/discord/608449512352120834?color=brightgreen&style=plastic&label=discord"
     alt="Discord">
   </a>
-    <a href="https://discord.gg/Pds7xCpzpc">
-    <img src="https://img.shields.io/github/commits-since/jvlflame/javinizer/latest/dev?color=yellow&style=for-the-badge"
-    alt="Discord">
+    <a href="https://github.com/jvlflame/Javinizer/compare/dev">
+    <img src="https://img.shields.io/github/commits-since/jvlflame/javinizer/latest/dev?style=plastic"
+    alt="Commits">
   </a>
 </p>
 
 <p align="center">
   <a href="#features"><strong>Features</strong></a> •
   <a href="#getting-started"><strong>Getting Started</strong></a> •
+  <a href="example-output"><strong>Examples</strong></a> •
   <a href="https://docs.jvlflame.net/" target="_blank"><strong>Documentation</strong></a>
+
 </p>
 
 <p align="center">
@@ -94,11 +96,17 @@ After installing the required prerequisites, run the following command in an adm
 Here are some common commands that you will be running with Javinizer:
 
 ```powershell
+# Run a command to sort your JAV files using default settings
+> Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
+
 # Run a command to find metadata
 > Javinizer -Find "ABP-420" -Javlibrary
 
-# Run a command to sort your JAV files using default settings
-> Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
+# Run a command to find metadata and aggregate it according to your settings file
+> Javinizer -Find "ABP-420" -Javlibrary -R18 -DmmJa -Aggregated
+
+# Run a command to find metadata, aggregate it according to your settings file, and output the nfo
+> Javinizer -Find "ABP-420" -Javlibrary -R18 -DmmJa -Aggregated -Nfo
 
 # Open the Javinizer settings configuration
 > Javinizer -OpenSettings
@@ -128,4 +136,131 @@ After running the GUI, [view the docs](https://docs.jvlflame.net/installation/in
 
 ```
 docker run --name javinizer -p 5000:5000 -d jvlflame/javinizer:latest
+```
+
+## Example Output
+
+A few examples of Javinizer's sort output are listed below.
+
+### Basic Folder Structures
+
+```json
+"sort.format.folder": "<ID> [<STUDIO>] - <TITLE> (<YEAR>)",
+"sort.format.outputfolder": []
+```
+
+```
+├─IDBD-979 [Idea Pocket] - Yume Nishinomiya Ultimate Blowjob... (2020)
+│      fanart.jpg
+│      folder.jpg
+│      IDBD-979.mp4
+│      IDBD-979.nfo
+│
+├─IPX-399 [Idea Pocket] - Shes Luring You To Temptation... (2019)
+│      fanart.jpg
+│      folder.jpg
+│      IPX-399.mp4
+│      IPX-399.nfo
+│
+├─IPX-485 [Idea Pocket] - A Big Tits Wife Who Got Fucked... (2020)
+│      fanart.jpg
+│      folder.jpg
+│      IPX-485.mp4
+│      IPX-485.nfo
+```
+
+### Advanced Folder Structures
+
+```json
+"sort.format.folder": "<ID> [<STUDIO>] - <TITLE>",
+"sort.format.outputfolder": ["<ACTORS>", "<YEAR>"]
+```
+
+```
+├─Nishimiya Yume
+│  └─2020
+│      └─IDBD-979 [Idea Pocket] - Yume Nishinomiya Ultimate Blowjob...
+│          │  fanart.jpg
+│          │  folder.jpg
+│          │  IDBD-979-trailer.mp4
+│          │  IDBD-979.mp4
+│          │  IDBD-979.nfo
+│          │
+│          ├─.actors
+│          │      Nishimiya_Yume.jpg
+│          │
+│          └─extrafanart
+│                  fanart1.jpg
+│                  fanart2.jpg
+│                  fanart3.jpg
+│
+└─Sakura Momo
+    ├─2019
+    │  └─IPX-399 [Idea Pocket] - Shes Luring You To Temptation...
+    │      │  fanart.jpg
+    │      │  folder.jpg
+    │      │  IPX-399-trailer.mp4
+    │      │  IPX-399.mp4
+    │      │  IPX-399.nfo
+    │      │
+    │      ├─.actors
+    │      │      Sakura_Momo.jpg
+    │      │
+    │      └─extrafanart
+    │              fanart1.jpg
+    │              fanart2.jpg
+    │              fanart3.jpg
+    │
+    └─2020
+        └─IPX-485 [Idea Pocket] - A Big Tits Wife Who Got Fucked...
+            │  fanart.jpg
+            │  folder.jpg
+            │  IPX-485-trailer.mp4
+            │  IPX-485.mp4
+            │  IPX-485.nfo
+            │
+            ├─.actors
+            │      Sakura_Momo.jpg
+            │
+            └─extrafanart
+                    fanart1.jpg
+                    fanart2.jpg
+                    fanart3.jpg
+```
+
+### Metadata Output .nfo
+
+A .nfo metadata file is created for each movie.
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<movie>
+    <title>[IDBD-979] Yume Nishinomiya Ultimate Blowjoc Complete BEST - Lots of Cum, 40 Shots!</title>
+    <originaltitle>西宮ゆめ 至高のフェラチオコンプリートBEST 大量射精40発！</originaltitle>
+    <id>IDBD-979</id>
+    <premiered>2020-09-12</premiered>
+    <year>2020</year>
+    <director></director>
+    <studio>Idea Pocket</studio>
+    <rating></rating>
+    <votes></votes>
+    <plot>デビュー4周年を迎えたアイポケの小悪魔美少女’’西宮ゆめ’’のフェラチオシーンのみを集めたベストが登場！</plot>
+    <runtime>237</runtime>
+    <trailer>https://awscc3001.r18.com/litevideo/freepv/i/idb/idbd00979/idbd00979_dmb_w.mp4</trailer>
+    <mpaa>XXX</mpaa>
+    <tagline></tagline>
+    <set></set>
+    <genre>Beautiful Girl</genre>
+    <genre>Blowjob</genre>
+    <genre>Facial</genre>
+    <genre>Deep Throat</genre>
+    <genre>Digital Mosaic</genre>
+    <genre>Actress Best Compilation</genre>
+    <actor>
+        <name>Nishimiya Yume</name>
+        <altname>西宮ゆめ</altname>
+        <thumb>https://pics.r18.com/mono/actjpgs/nisimiya_yume.jpg</thumb>
+        <role>Actress</role>
+    </actor>
+</movie>
 ```
