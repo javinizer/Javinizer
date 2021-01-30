@@ -401,6 +401,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenUncensor,
 
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenTags,
+
         [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
         [Switch]$UpdateNfo,
 
@@ -540,6 +543,17 @@ function Javinizer {
                 return
             } else {
                 $genreCsvPath = $Settings.'location.genrecsv'
+            }
+        }
+
+        if ($Settings.'location.tagcsv' -eq '') {
+            $tagCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvTags.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'location.tagcsv' -PathType Leaf)) {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Tag csv not found at path [$($Settings.'location.tagcsv')]"
+                return
+            } else {
+                $tagCsvPath = $Settings.'location.tagcsv'
             }
         }
 
@@ -734,6 +748,15 @@ function Javinizer {
                         Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$genreCsvPath]: $PSItem"
+                    }
+                }
+
+                if ($OpenTags) {
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [TagCsvPath - $tagCsvPath]"
+                        Invoke-Item -LiteralPath $tagCsvPath
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$tagCsvPath]: $PSItem"
                     }
                 }
 
