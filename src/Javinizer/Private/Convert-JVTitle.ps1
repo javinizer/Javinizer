@@ -255,6 +255,12 @@ function Convert-JVTitle {
                 $filePartNumber = if ($RegexEnabled) { $partNum } else { $filePartNumber }
             }
 
+            # Turn on strict filematching if the movie does not appear to be a standard DVD Id format
+            # This will require less reliance on using -Strict during commandline usage
+            if ($movieId -notmatch '([a-zA-Z|tT28]+-\d+[zZ]?[eE]?)') {
+                $Strict = $true
+            }
+
             if ($Strict.IsPresent) {
                 $dataObject += [PSCustomObject]@{
                     Id         = $originalBaseName
