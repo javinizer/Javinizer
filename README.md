@@ -93,11 +93,17 @@ After installing the required prerequisites, run the following command in an adm
 
 ### Quick start (CLI)
 
-Here are some common commands that you will be running with Javinizer:
+Here are some common commands that you can run with Javinizer:
 
 ```powershell
 # Run a command to sort your JAV files using default settings
 > Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
+
+# Run a command to sort your JAV files while searching folders recursively
+> Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted" -Recurse
+
+# Run a command to sort a JAV file using direct URLs
+> Javinizer -Path "C:\JAV\Unsorted\IPX-535.mp4" -Url 'https://www.javlibrary.com/en/?v=javmeza7s4', 'https://www.r18.com/videos/vod/movies/detail/-/id=ipx00535/'
 
 # Run a command to find metadata
 > Javinizer -Find "ABP-420" -Javlibrary
