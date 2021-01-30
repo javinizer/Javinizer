@@ -231,20 +231,20 @@ function Get-R18Series {
     process {
         $series = ((($Webrequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
         if ($null -ne $series) {
-            $series = Convert-HtmlCharacter -String $series
-            $series = $series -replace '\n', ' ' -replace "`t", ''
-
             $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
             $seriesUrl = ($Webrequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
-            if ($series -like '*...') {
-                try {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
-                    $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
-                }
-                $series = (Convert-HtmlCharacter -String ((((($seriesSearch.Content -split '<div class="breadcrumbs">')[1]) -split '<\/span>')[0]) -split '<span>')[1]) -replace "`t", ''
+            try {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
+                $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
+            }
+
+            try {
+                $series = Convert-HtmlCharacter -String ($seriesSearch.Content | Select-String -Pattern '<meta name="description" content="(.*) \(\d*\) movies').Matches.Groups[1].Value
+            } catch {
+                return
             }
 
             if ($Replace) {
