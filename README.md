@@ -232,7 +232,7 @@ A few examples of Javinizer's sort output are listed below.
 
 A .nfo metadata file is created for each movie.
 
-```xml
+```
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <movie>
     <title>[IDBD-979] Yume Nishinomiya Ultimate Blowjoc Complete BEST - Lots of Cum, 40 Shots!</title>
