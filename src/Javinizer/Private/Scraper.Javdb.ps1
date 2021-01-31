@@ -170,7 +170,7 @@ function Get-JavdbGenre {
     process {
         $genres = @()
         try {
-            $rawGenres = (($Webrequest.Content | Select-String -Pattern '<a href="\/tags\?.*">(.*)<\/a>').Matches.Groups[0].Value) -split '<\/a>'
+            $rawGenres = (($Webrequest.Content | Select-String -Pattern '<a href="(?:https:\/\/javdb\.com)?\/tags\/.*">(.*)<\/a>').Matches.Groups[0].Value) -split '<\/a>'
             $rawGenres = ($rawGenres | Select-String -Pattern '>(.*)' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
@@ -213,7 +213,7 @@ function Get-JavdbActress {
                 try {
                     $thumbUrl = ((Invoke-WebRequest -Uri "https://javdb.com/actors/$($actress.Id)" -Verbose:$false).Content | Select-String -Pattern '<span class="avatar" style="background-image: url\((.*)\)"><\/span>').Matches.Groups[1].Value
                 } catch {
-                    return
+                    # Do nothing
                 }
 
                 if ($thumbUrl) {
@@ -283,7 +283,12 @@ function Get-JavdbTrailerUrl {
 
     process {
         try {
-            $trailerUrl = "https:" + ($Webrequest.Content | Select-String -Pattern 'src="(.*)" type="video\/mp4"').Matches.Groups[1].Value
+            $rawTrailerUrl = ($Webrequest.Content | Select-String -Pattern 'src="(.*)" type="video\/mp4"').Matches.Groups[1].Value
+            if ($rawTrailerUrl -notlike "https*") {
+                $trailerUrl = 'https:' + $rawtrailerUrl
+            } else {
+                $trailerUrl = $rawTrailerUrl
+            }
         } catch {
             return
         }

@@ -2,15 +2,27 @@ function Get-JavdbData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [String]$Url
+        [String]$Url,
+
+        [Parameter(Position = 1)]
+        [String]$Session
     )
 
     process {
         $movieDataObject = @()
 
+        if ($Session) {
+            $loginSession = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = '_jdb_session'
+            $cookie.Value = $Session
+            $cookie.Domain = 'javdb.com'
+            $loginSession.Cookies.Add($cookie)
+        }
+
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -WebSession $loginSession -Verbose:$false
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
         }
