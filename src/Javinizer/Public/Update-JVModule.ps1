@@ -72,11 +72,18 @@ function Update-JVModule {
                             $origHistoryPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvHistory.csv'
                         }
 
+                        if (Test-Path -Path $origSettings.'location.tagcsv') {
+                            $origTagsPath = (Get-Item -Path $origSettings.'location.tagcsv').FullName
+                        } else {
+                            $origTagsPath = Join-Path -Path ((Get-Item $PSSCriptRoot).Parent) -ChildPath 'jvTags.csv'
+                        }
+
                         # Write all settings configurations to memory
                         $origThumbs = Import-Csv -Path $origThumbsPath -Encoding utf8
                         $origGenres = Import-Csv -Path $origGenresPath -Encoding utf8
                         $origUncensor = Import-Csv -Path $origUncensorPath -Encoding utf8
                         $origHistory = Import-Csv -Path $origHistoryPath -Encoding utf8
+                        $origTags = Import-Csv -Path $origTagsPath -Encoding utf8
 
                     } catch {
                         Write-Error "Error occurred when retrieving existing settings: $PSItem" -ErrorAction Stop
@@ -100,24 +107,54 @@ function Update-JVModule {
                     $newSettings | ConvertTo-Json -Depth 32 | Out-File -FilePath $newSettingsPath -Force -ErrorAction Continue
 
                     # Update jvThumbs
-                    $newThumbsPath = Join-Path -Path $newModulePath -ChildPath 'jvThumbs.csv'
-                    $newThumbs = Import-Csv -Path $newThumbsPath -Encoding utf8
-                    $thumbsDifference = (Compare-Object -ReferenceObject $origThumbs -DifferenceObject $newThumbs).InputObject
-                    $thumbsDifference | Export-Csv -Path $newThumbsPath -Append -Encoding utf8 -ErrorAction Continue
+                    try {
+                        $newThumbsPath = Join-Path -Path $newModulePath -ChildPath 'jvThumbs.csv'
+                        $newThumbs = Import-Csv -Path $newThumbsPath -Encoding utf8
+                        $thumbsDifference = (Compare-Object -ReferenceObject $origThumbs -DifferenceObject $newThumbs).InputObject
+                        $thumbsDifference | Export-Csv -Path $newThumbsPath -Append -Encoding utf8 -ErrorAction Continue
+                    } catch {
+                        Write-Error "Error: $PSItem. You will need to manually update using the original file: [$origThumbsPath]"
+                    }
 
                     # Update jvGenres
-                    $newGenresPath = Join-Path -Path $newModulePath -ChildPath 'jvGenres.csv'
-                    $newGenres = Import-Csv -Path $newGenresPath -Encoding utf8
-                    $genresDifference = (Compare-Object -ReferenceObject $origGenres -DifferenceObject $newGenres).InputObject
-                    $genresDifference | Export-Csv -Path $newGenresPath -Append -Encoding utf8 -ErrorAction Continue
+                    try {
+                        $newGenresPath = Join-Path -Path $newModulePath -ChildPath 'jvGenres.csv'
+                        $newGenres = Import-Csv -Path $newGenresPath -Encoding utf8
+                        $genresDifference = (Compare-Object -ReferenceObject $origGenres -DifferenceObject $newGenres).InputObject
+                        $genresDifference | Export-Csv -Path $newGenresPath -Append -Encoding utf8 -ErrorAction Continue
+                    } catch {
+                        Write-Error "Error: $PSItem. You will need to manually update using the original file: [$origGenresPath]"
+                    }
 
                     # Update jvUncensor
+                    try {
+                        $newUncensorPath = Join-Path -Path $newModulePath -ChildPath 'jvGenres.csv'
+                        $newUncensor = Import-Csv -Path $newUncensorPath -Encoding utf8
+                        $uncensorDifference = (Compare-Object -ReferenceObject $origUncensor -DifferenceObject $newUncensor).InputObject
+                        $uncensorDifference | Export-Csv -Path $newUncensorPath -Append -Encoding utf8 -ErrorAction Continue
+                    } catch {
+                        Write-Error "Error: $PSItem. You will need to manually update using the original file: [$origUncensorPath]"
+                    }
 
                     # Update jvHistory
-                    $newHistoryPath = Join-Path -Path $newModulePath -ChildPath 'jvHistory.csv'
-                    $newHistory = Import-Csv -Path $newHistoryPath -Encoding utf8
-                    $historyDifference = (Compare-Object -ReferenceObject $origHistory -DifferenceObject $newHistory).InputObject
-                    $historyDifference | Export-Csv -Path $newHistoryPath -Append -Encoding utf8 -ErrorAction Continue
+                    try {
+                        $newHistoryPath = Join-Path -Path $newModulePath -ChildPath 'jvHistory.csv'
+                        $newHistory = Import-Csv -Path $newHistoryPath -Encoding utf8
+                        $historyDifference = (Compare-Object -ReferenceObject $origHistory -DifferenceObject $newHistory).InputObject
+                        $historyDifference | Export-Csv -Path $newHistoryPath -Append -Encoding utf8 -ErrorAction Continue
+                    } catch {
+                        Write-Error "Error: $PSItem. You will need to manually update using the original file: [$origHistoryPath]"
+                    }
+
+                    # Update jvTags
+                    try {
+                        $newTagsPath = Join-Path -Path $newModulePath -ChildPath 'jvTags.csv'
+                        $newTags = Import-Csv -Path $newTagsPath -Encoding utf8
+                        $tagsDifference = (Compare-Object -ReferenceObject $origTags -DifferenceObject $newTags).InputObject
+                        $tagsDifference | Export-Csv -Path $newTagsPath -Append -Encoding utf8 -ErrorAction Continue
+                    } catch {
+                        Write-Error "Error: $PSItem. You will need to manually update using the original file: [$origTagsPath]"
+                    }
                 } else {
                     Write-Warning "You already have the latest version of Javinizer! [$installedVersion]"
                 }
