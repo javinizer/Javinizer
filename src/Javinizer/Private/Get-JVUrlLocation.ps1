@@ -101,6 +101,18 @@ function Get-JVUrlLocation {
                         Source = 'aventertainmentja'
                     }
                 }
+            } elseif ($link -match 'javdb') {
+                if ($link -match 'locale=zh') {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'javdbzh'
+                    }
+                } else {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'javdb'
+                    }
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }

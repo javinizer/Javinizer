@@ -358,6 +358,12 @@ function Javinizer {
         [Switch]$JavbusZh,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$Javdb,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$JavdbZh,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321Ja,
 
         [Parameter(ParameterSetName = 'Info')]
@@ -691,6 +697,10 @@ function Javinizer {
                         if ($item.Source -match 'aventertainment') {
                             $item.Url | Get-AventertainmentData
                         }
+
+                        if ($item.Source -match 'javdb') {
+                            $item.Url | Get-JavdbData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -699,7 +709,8 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
+                        -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                 }
 
                 if ($Aggregated) {
@@ -927,7 +938,7 @@ function Javinizer {
                         $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                     }
 
-                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession
+                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($javAggregatedData.NullFields -eq '') {
@@ -978,7 +989,7 @@ function Javinizer {
                                 $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                             }
 
-                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                             if ($PSBoundParameters.ContainsKey('IsWeb')) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($IsWebType -eq 'Search') {
