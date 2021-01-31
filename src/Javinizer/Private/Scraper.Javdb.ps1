@@ -170,7 +170,7 @@ function Get-JavdbGenre {
     process {
         $genres = @()
         try {
-            $rawGenres = (($Webrequest.Content | Select-String -Pattern '<a href="(?:https:\/\/javdb\.com)?\/tags\/.*">(.*)<\/a>').Matches.Groups[0].Value) -split '<\/a>'
+            $rawGenres = (($Webrequest.Content | Select-String -Pattern '<a href="(?:https:\/\/javdb\.com)?\/tags\/?.*">(.*)<\/a>').Matches.Groups[0].Value) -split '<\/a>'
             $rawGenres = ($rawGenres | Select-String -Pattern '>(.*)' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
