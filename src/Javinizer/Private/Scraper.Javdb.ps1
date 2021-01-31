@@ -115,6 +115,24 @@ function Get-JavdbMaker {
     }
 }
 
+function Get-JavdbSeries {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+        try {
+            $series = ($Webrequest.Content | Select-String -Pattern '<a href=".*\/series\/.*">(.*)<\/a>').Matches.Groups[1].Value
+        } catch {
+            return
+        }
+
+        $series = Convert-HtmlCharacter -String $series
+        Write-Output $series
+    }
+}
+
 function Get-JavdbRating {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
