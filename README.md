@@ -126,6 +126,8 @@ Here are some common commands that you can run with Javinizer:
 
 ### Quick start (GUI)
 
+**NOTE** The GUI version of Javinizer is not updated at the same rate as the CLI version. For a more streamlined experience, I recommend using the CLI version unless you require the visual feedback and customization during your sorts.
+
 After running the GUI, [view the docs](https://docs.jvlflame.net/installation/install-javinizer-web-gui#import-the-javinizer-dashboard) for first-time setup to import the Javinizer dashboard into PowerShell Universal.
 
 #### Windows
@@ -142,6 +144,10 @@ After running the GUI, [view the docs](https://docs.jvlflame.net/installation/in
 
 ```
 docker run --name javinizer -p 5000:5000 -d jvlflame/javinizer:latest
+
+# Optional
+-v path/to/appdata:/home/data
+-v path/to/settingsFile:/home/Javinizer/src/Javinizer/jvSettings.json
 ```
 
 ## Example Output
