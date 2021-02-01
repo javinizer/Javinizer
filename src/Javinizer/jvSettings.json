@@ -88,7 +88,7 @@
     "sort.metadata.genrecsv.autoadd": false,
     "sort.metadata.tagcsv": false,
     "sort.metadata.tagcsv.autoadd": false,
-    "sort.metadata.genre.ignore": ["^Featured Actress", "^Hi-Def", ".*sale.*"],
+    "sort.metadata.genre.ignore": ["^Featured Actress", "^Hi-Def", ".*sale.*", ".*mosaic.*"],
     "sort.metadata.requiredfield": ["id", "coverurl", "genre", "maker", "releaseDate", "title"],
     "sort.metadata.priority.actress": ["r18", "javlibrary", "javbus", "mgstageja", "aventertainment"],
     "sort.metadata.priority.alternatetitle": ["dmmja"],
