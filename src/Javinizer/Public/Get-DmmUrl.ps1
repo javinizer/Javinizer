@@ -8,115 +8,58 @@ function Get-DmmUrl {
         [String]$r18Url,
 
         [Parameter()]
-        [Switch]$Strict
+        [Switch]$Strict,
+
+        [Parameter()]
+        [Switch]$AllResults
     )
 
     process {
-        $originalId = $Id
         # The digital/videoa URL is not being caught by the html for movie IDs matching '0001 - 0009'
-        if ($Id -match '00\d') {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Movie ID using 00X format, falling back to R18 scraper"
-            $url = Get-R18Url -Id $Id -Strict:$Strict
-            try {
-                $cid = ($url.En | Select-String -Pattern 'id=(.*)\/').Matches.Groups[1].Value
-            } catch {
-                $cid = $null
+        # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
+        <# if (!($Strict)) {
+            if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
+                $splitId = $Id -split '-'
+                if (($splitId[1])[-1] -match '\D') {
+                    $appendChar = ($splitId[1])[-1]
+                    $splitId[1] = $splitId[1] -replace '\D', ''
+                }
+                $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
+                $Id = $Id.Trim()
             }
-            if ($null -ne $cid) {
-                $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$cid/?i3_ref=search&amp;i3_ord=5"
-            }
-        } else {
-            if ($r18Url) {
-                $r18Id = (($r18Url -split 'id=')[1] -split '\/')[0]
-                $directUrl = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$r18Id"
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Converting R18 Id to Dmm: [$r18Id] -> [$directUrl]"
-            } else {
-                # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
-                if (!($Strict)) {
-                    if ($Id -match '([a-zA-Z|tT28|rR18]+-\d+z{0,1}Z{0,1}e{0,1}E{0,1})') {
-                        $splitId = $Id -split '-'
-                        if (($splitId[1])[-1] -match '\D') {
-                            $appendChar = ($splitId[1])[-1]
-                            $splitId[1] = $splitId[1] -replace '\D', ''
-                        }
-                        $Id = $splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar
-                        $Id = $Id.Trim()
-                    }
-                }
+        } #>
 
-                $searchUrl = "https://www.dmm.co.jp/search/?redirect=1&enc=UTF-8&category=&searchstr=$Id"
-
-                try {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-                    $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-                }
-
-                $retryCount = 3
-                $searchResults = ($webrequest.links.href | Where-Object { $_ -like '*digital/videoa/*' })
-                $numResults = $searchResults.count
-
-                if ($retryCount -gt $numResults) {
-                    $retryCount = $numResults
-                }
-
-                if ($numResults -ge 1) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$originalId]"
-
-                    $count = 1
-                    foreach ($result in $searchResults) {
-                        <# try {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                            $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
-                        } catch {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Error occurred on [GET] on URL [$result]: $PSItem" -Action 'Continue'
-                        } #>
-
-                        $resultId = Get-DmmId -Url $result
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                        if ($resultId -eq $originalId) {
-                            $directUrl = $result
-                            break
-                        }
-
-                        if ($count -eq $retryCount) {
-                            break
-                        }
-
-                        $count++
-                    }
-                }
+        $r18Results = Get-R18Url -Id $Id -AllResults
+        $resultObject = foreach ($entry in $r18Results) {
+            $cid = (($entry.En -split 'id=')[1] -split '\/')[0]
+            [PSCustomObject]@{
+                Id        = $Id
+                ContentId = $cid
+                Title     = $entry.Title
+                Url       = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$cid"
             }
         }
 
-        if ($null -eq $directUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
-            return
-        } else {
-            try {
-                $jaId = ($directUrl | Select-String -Pattern 'cid=(.*)\/\?').Matches.Groups[1].Value
-                $jaIdPart = $jaId -replace '\d{5}[zZ]?[eE]?', ''
+        if ($Id -in $resultObject.Id) {
+            $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id }
 
-                $splitJaIdNum = (($jaId | Select-String -Pattern '\d{5}[zZ]?[eE]?').Matches.Groups[0].Value) -replace '^0*', ''
-                if (($splitJaIdNum)[-1] -match '\D') {
-                    $appendChar = ($splitJaIdNum)[-1]
-                    $splitJaIdNum = $splitJaIdNum -replace '\D', ''
-                }
-
-                $enIdNum = $splitJaIdNum.PadLeft(3, '0') + $appendChar
-                $enId = $jaIdPart + $enIdNum
-            } catch {
-                return
+            if ($matchedResult.Count -gt 1 -and !($AllResults)) {
+                $matchedResult = $matchedResult[0]
             }
 
-            $enDirectUrl = "https://www.dmm.co.jp/en/mono/dvd/-/detail/=/cid=$enId"
-            $urlObject = [PSCustomObject]@{
-                En = $enDirectUrl
-                Ja = $directUrl
+            $urlObject = foreach ($entry in $matchedResult) {
+                [PSCustomObject]@{
+                    En    = "https://www.dmm.co.jp/en/mono/dvd/-/detail/=/cid=$($entry.ContentId)"
+                    Ja    = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$($entry.ContentId)"
+                    Id    = $entry.Id
+                    Title = $entry.Title
+                }
             }
 
             Write-Output $urlObject
+        } else {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$originalId] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
+            return
         }
     }
 }
