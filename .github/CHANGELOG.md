@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.1]
+
+### Fixed
+
+-   Fixed R18 url scraper failing to find movies that are listed on sale
+-   Fixed Dmm scraper warning output not displaying movie Id
+
 ## [2.3.0]
 
 ### Added
