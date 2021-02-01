@@ -40,13 +40,20 @@ function Get-JavlibraryUrl {
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match "\?v=") {
             $resultId = Get-JavlibraryId -WebRequest $webRequest
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
             if ($resultId -eq $Id) {
-                $javlibraryUrl = $searchResultUrl
+                $urlObject = [PSCustomObject]@{
+                    En    = $searchResultUrl
+                    Ja    = $searchResultUrl -replace '/en/', '/ja/'
+                    Zh    = $searchResultUrl -replace '/en/', '/cn/'
+                    Id    = Get-JavlibraryId -Webrequest $webRequest
+                    Title = Get-JavlibraryTitle -Webrequest $webRequest
+                }
+                Write-Output $urlObject
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
+                return
             }
-        }
-
-        if ($null -eq $javlibraryUrl) {
+        } else {
             try {
                 $results = ($webRequest.Content | Select-String -Pattern '<a href="\.\/\?v=(.*)" title="(.*)"><div class="id">(.*-.*)<\/div>' -AllMatches).Matches
                 $resultObject = $results | ForEach-Object {
