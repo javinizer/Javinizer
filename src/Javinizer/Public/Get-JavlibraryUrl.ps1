@@ -8,7 +8,10 @@ function Get-JavlibraryUrl {
         [String]$BaseUrl = 'http://www.javlibrary.com',
 
         [Parameter(Position = 2)]
-        [PSObject]$Session
+        [PSObject]$Session,
+
+        [Parameter()]
+        [Switch]$AllResults
     )
 
     process {
@@ -35,74 +38,65 @@ function Get-JavlibraryUrl {
         # Check if the search uniquely matched a video page
         # If not, we will check the search results and check a few for if they are a match
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
-        if ($searchResultUrl -match "$BaseUrl?v=") {
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchResultUrl]"
-                $webRequest = Invoke-WebRequest -Uri $searchResultUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchResultUrl]: $PSItem" -Action 'Continue'
-            }
-
+        if ($searchResultUrl -match "\?v=") {
             $resultId = Get-JavlibraryId -WebRequest $webRequest
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
             if ($resultId -eq $Id) {
-                $javlibraryUrl = $searchResultUrl
-            }
-        }
-
-        if ($null -eq $javlibraryUrl) {
-            $retryCount = 3
-            $searchResults = $webRequest.Links.href | Where-Object { $_ -match '\.\/\?v=(.*)' }
-            $numResults = $searchResults.count
-
-            if ($retryCount -gt $numResults) {
-                $retryCount = $numResults
-            }
-
-            if ($numResults -ge 1) {
-                $count = 1
-                foreach ($result in $searchResults) {
-                    $videoId = ($result -split '=')[1]
-                    $directUrl = "$BaseUrl/en/?v=$videoId"
-
-                    try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$directUrl]"
-                        $webRequest = Invoke-WebRequest -Uri $directUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$directUrl]: $PSItem" -Action 'Continue'
-                    }
-
-                    $resultId = Get-JavlibraryId -WebRequest $webRequest
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-
-                    if ($resultId -eq $Id) {
-                        $javlibraryUrl = $directUrl
-                        break
-                    }
-
-                    if ($count -eq $retryCount) {
-                        break
-                    }
-
-                    $count++
+                $urlObject = [PSCustomObject]@{
+                    En    = $searchResultUrl
+                    Ja    = $searchResultUrl -replace '/en/', '/ja/'
+                    Zh    = $searchResultUrl -replace '/en/', '/cn/'
+                    Id    = Get-JavlibraryId -Webrequest $webRequest
+                    Title = Get-JavlibraryTitle -Webrequest $webRequest
                 }
+                Write-Output $urlObject
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
+                return
             }
-        }
-
-        if ($null -eq $javlibraryUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
-            return
         } else {
-            $javlibraryUrlJa = $javlibraryUrl -replace '/en/', '/ja/'
-            $javlibraryUrlZh = $javlibraryUrl -replace '/en/', '/cn/'
-
-            $urlObject = [PSCustomObject]@{
-                En = $javlibraryUrl
-                Ja = $javlibraryUrlJa
-                Zh = $javlibraryUrlZh
+            try {
+                $results = ($webRequest.Content | Select-String -Pattern '<a href="\.\/\?v=(.*)" title="(.*)"><div class="id">(.*-.*)<\/div>' -AllMatches).Matches
+                $resultObject = $results | ForEach-Object {
+                    $splitTitle = ($_.Groups[2].Value -split ' ')
+                    [PSCustomObject]@{
+                        Id    = ($_.Groups[3].Value -split '<\/div>')[0]
+                        Title = ($splitTitle[1..($splitTitle.Length - 1)]) -join ' '
+                        Url   = $BaseUrl + "/en/?v=" + $_.Groups[1].Value
+                    }
+                }
+            } catch {
+                # Do nothing
             }
 
-            Write-Output $urlObject
+            if ($Id -in $resultObject.Id) {
+                $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id }
+
+                if ($matchedResult.Count -gt 1 -and !($AllResults)) {
+                    $checkResult = $matchedResult | Where-Object { $_.Title -notlike '*Blu-ray Disc*' }
+                    if ($checkResult.Count -eq 0) {
+                        $matchedResult = $matchedResult[0]
+                    } elseif ($checkResult.Count -gt 1) {
+                        $matchedResult = $checkResult[0]
+                    } else {
+                        $matchedResult = $checkResult
+                    }
+                }
+
+                $urlObject = foreach ($entry in $matchedResult) {
+                    [PSCustomObject]@{
+                        En    = $entry.Url
+                        Ja    = $entry.Url -replace '/en/', '/ja/'
+                        Zh    = $entry.Url -replace '/en/', '/cn/'
+                        Id    = $entry.Id
+                        Title = $entry.Title
+                    }
+                }
+
+                Write-Output $urlObject
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
+                return
+            }
         }
     }
 }

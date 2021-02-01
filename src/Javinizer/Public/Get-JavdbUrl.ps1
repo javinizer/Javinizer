@@ -5,7 +5,10 @@ function Get-JavdbUrl {
         [String]$Id,
 
         [Parameter(Position = 1)]
-        [String]$Session
+        [String]$Session,
+
+        [Parameter()]
+        [Switch]$AllResults
     )
 
     process {
@@ -38,8 +41,9 @@ function Get-JavdbUrl {
         try {
             $resultObject = $results | ForEach-Object {
                 [PSCustomObject]@{
-                    Id  = (($_.outerHTML) | Select-String -Pattern '<div class="uid">(.*)<\/div>').Matches.Groups[1].Value
-                    Url = "https://javdb.com" + $_.href
+                    Id    = (($_.outerHTML) | Select-String -Pattern '<div class="uid">(.*)<\/div>').Matches.Groups[1].Value
+                    Title = (($_.outerHTML) | Select-String -Pattern '<div class="video-title">(.*)<\/div>').Matches.Groups[1].Value
+                    Url   = "https://javdb.com" + $_.href
                 }
             }
         } catch {
@@ -50,13 +54,17 @@ function Get-JavdbUrl {
             $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id }
 
             # If we have more than one exact match, select the first option
-            if ($matchedResult.Count -gt 1) {
+            if ($matchedResult.Count -gt 1 -and !($AllResults)) {
                 $matchedResult = $matchedResult[0]
             }
 
-            $urlObject = [PSCustomObject]@{
-                En = $matchedResult.Url + "?locale=en"
-                Zh = $matchedResult.Url + "?locale=zh"
+            $urlObject = foreach ($entry in $matchedResult) {
+                [PSCustomObject]@{
+                    En    = $entry.Url + "?locale=en"
+                    Zh    = $entry.Url + "?locale=zh"
+                    Id    = $entry.Id
+                    Title = $entry.Title
+                }
             }
 
             Write-Output $urlObject
