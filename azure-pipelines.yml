@@ -26,17 +26,6 @@ jobs:
     - pwsh: |
         Get-ChildItem . -Recurse -Depth 4
 
-  - job: build_pwsh_ubuntuLatest
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - script: |
-        sudo dpkg -i powershell_6.2.0-1.ubuntu.16.04_amd64.deb
-        sudo apt-get install -f
-      displayName: 'Install PowerShell Core'
-    - script: |
-        pwsh -c '$PSVersionTable;.\actions_bootstrap.ps1;Invoke-Build -File $(Build.SourcesDirectory)/src/Javinizer.build.ps1'
-      displayName: 'Build and Test - Linux'
     - task: PublishTestResults@2
       inputs:
         testRunner: 'NUnit'
