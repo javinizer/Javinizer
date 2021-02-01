@@ -43,7 +43,7 @@ function Get-R18Url {
         }
 
         try {
-            $rawHtml = $webRequest.Content -split '<li class="item-list"'
+            $rawHtml = $webRequest.Content -split '<li class="item-list'
             if ($rawHtml.Count -gt 1) {
                 $results = $rawHtml[1..($rawHtml.Count - 1)]
                 $resultObject = $results | ForEach-Object {
