@@ -583,8 +583,11 @@ function Javinizer {
             }
         }
 
+        # Set default progress preference to a variable since we want to silence the webrequest check for javlibrary
+        $tempProgressPreference = $ProgressPreference
         if (!($IsThread)) {
             if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or ($Find -like '*javlibrary*' -or $Find -like '*g46e*' -or $Find -like '*m45e*') -or $SetOwned) {
+                $ProgressPreference = 'SilentlyContinue'
                 if (!($CfSession)) {
                     try {
                         Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
@@ -634,6 +637,8 @@ function Javinizer {
                 }
             }
         }
+
+        $ProgressPreference = $tempProgressPreference
 
         switch ($PsCmdlet.ParameterSetName) {
             'Gui' {
