@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.0]
+
+### Added
+
+-   Added javdb.com scraper (#184)
+    -   Settings:
+        -   `scraper.movie.javdb` - Enable English javdb scraper
+        -   `scraper.movie.javdbzh` - Enable Chinese javdb scraper
+        -   `javdb.cookie.session` - Allows you to specify `_jdb_session` login session cookie to scrape fc2 titles
+-   Added tag csv settings file (#193)
+    -   Settings:
+        -   `location.tagcsv` - Defines external tagcsv location
+        -   `sort.metadata.tagcsv` - Enables tag csv to replace tag values
+        -   `sort.metadata.tagcsv.autoadd` - Adds new tags to tag csv automatically on scrape
+-   Added feature to add actress as tags (#194)
+    -   Settings:
+        -   `sort.metadata.nfo.actressastag` - Adds each actress as an individual `<tag>` in the nfo
+
+### Changed
+
+-   The JAVLibrary url scraper now prefers the non-bluray release if an alternative is available
+-   The default Javinizer file matcher now falls back to `-Strict` matchmaking automatically if the movie file is not detected as a standard DVD ID (#196)
+-   `-SetEmbyThumbs` now checks both Actress naming orders instead of only the selected one (#192)
+-   All url scrapers rewritten and optimized
+    -   DMM url scraper now defaults to using the R18 url scraper to match the `contentId` value
+-   `.*mosaic.*` added as a default ignored genre in the settings file
+-   Dmm/Mgstage rating metadata changed to round to 2 decimal points
+
+### Fixed
+
+-   Fixed some series metadata value on R18 being displayed as an invalid html value (#202)
+-   Fixed AVEntertainments failing to retrieve runtime metadata for some movies
+-   `-UpdateModule` should now function properly
+
 ## [2.2.11]
 
 ### Changed
