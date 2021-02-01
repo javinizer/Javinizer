@@ -29,7 +29,7 @@ function Get-DmmUrl {
             }
         } #>
 
-        $r18Results = Get-R18Url -Id $Id -AllResults
+        $r18Results = Get-R18Url -Id $Id -AllResults -WarningAction SilentlyContinue
         $resultObject = foreach ($entry in $r18Results) {
             $cid = (($entry.En -split 'id=')[1] -split '\/')[0]
             [PSCustomObject]@{
