@@ -227,7 +227,7 @@ function Get-DmmRating {
 
         # Multiply the rating value by 2 to conform to 1-10 rating standard
         $newRating = [Decimal]$rating * 2
-        $integer = [Math]::Round($newRating, 1)
+        $integer = [Math]::Round($newRating, 2)
 
         if ($integer -eq 0) {
             $integer = $null

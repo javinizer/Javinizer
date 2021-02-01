@@ -169,7 +169,7 @@ function Get-MgstageRating {
 
         # Multiply the rating value by 2 to conform to 1-10 rating standard
         $newRating = [Decimal]$rating * 2
-        $newRating = [Math]::Round($newRating, 1)
+        $newRating = [Math]::Round($newRating, 2)
 
         if ($newRating -eq 0) {
             $rating = $null
@@ -222,7 +222,7 @@ function Get-MgstageActress {
     process {
         $movieActressObject = @()
         $movieActress = (((($Webrequest.Content -split '<th>出演：<\/th>')[1] -split '<\/td>')[0]) -replace '<td>' -replace '<\/a>' -replace '<a href="\/search\/search\.php\?image_word_ids\[\]=.*">') -split '\n' `
-        | ForEach-Object { ($_).Trim() } | Where-Object {$_ -ne ''}
+        | ForEach-Object { ($_).Trim() } | Where-Object { $_ -ne '' }
 
         foreach ($actress in $movieActress) {
             # Match if the name contains Japanese characters
