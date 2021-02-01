@@ -5,12 +5,13 @@ function Get-R18Url {
         [String]$Id,
 
         [Parameter()]
-        [Switch]$Strict
+        [Switch]$Strict,
+
+        [Parameter()]
+        [Switch]$AllResults
     )
 
     process {
-        $searchResults = @()
-        $altSearchResults = @()
         $searchUrl = "https://www.r18.com/common/search/searchword=$Id/"
 
         # If contentId is given, convert it back to standard movie ID to validate
@@ -41,43 +42,24 @@ function Get-R18Url {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
         }
 
-        $retryCount = 3
-        $searchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/*/detail/-/id=*" }).href)
-        $numResults = $searchResults.count
-
-        if ($retryCount -gt $numResults) {
-            $retryCount = $numResults
-        }
-
-        if ($numResults -ge 1) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Searching [$retryCount] of [$numResults] results for [$Id]"
-
-            $count = 1
-            foreach ($result in $searchResults) {
-                try {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                    $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
+        try {
+            $rawHtml = $webRequest.Content -split '<li class="item-list"'
+            if ($rawHtml.Count -gt 1) {
+                $results = $rawHtml[1..($rawHtml.Count - 1)]
+                $resultObject = $results | ForEach-Object {
+                    [PSCustomObject]@{
+                        Id    = (($_ -split '<img alt="')[1] -split '"')[0]
+                        Title = (($_ -split '<dt>')[1] -split '<\/dt>')[0]
+                        Url   = (($_ -split '<a href="')[1] -split '">')[0]
+                    }
                 }
-
-                $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                if ($resultId -eq $Id) {
-                    $directUrl = $result
-                    break
-                }
-
-                if ($count -eq $retryCount) {
-                    break
-                }
-
-                $count++
             }
+        } catch {
+            # Do nothing
         }
 
         # If not matched by Video ID, try matching the video with Content ID
-        if ($null -eq $directUrl) {
+        if ($null -eq $resultObject) {
             $searchUrl = "https://www.r18.com/common/search/searchword=$contentId/"
 
             try {
@@ -87,40 +69,25 @@ function Get-R18Url {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
             }
 
-            $retryCount = 5
-            $altSearchResults = (($webRequest.Links | Where-Object { $_.href -like "*/videos/vod/movies/detail/-/id=*" }).href)
-            $numResults = $altSearchResults.count
-
-            if ($retryCount -gt $numResults) {
-                $retryCount = $numResults
-            }
-
-            $count = 1
-            foreach ($result in $altSearchResults) {
-                try {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                    $webRequest = Invoke-WebRequest -Uri $result -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
+            try {
+                $rawHtml = $webRequest.Content -split '<li class="item-list"'
+                if ($rawHtml.Count -gt 1) {
+                    $results = $rawHtml[1..($rawHtml.Count - 1)]
+                    $resultObject = $results | ForEach-Object {
+                        [PSCustomObject]@{
+                            Id    = (($_ -split '<img alt="')[1] -split '"')[0]
+                            Title = (($_ -split '<dt>')[1] -split '<\/dt>')[0]
+                            Url   = (($_ -split '<a href="')[1] -split '">')[0]
+                        }
+                    }
                 }
-
-                $resultId = Get-R18Id -WebRequest $webRequest
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result [$count] is [$resultId]"
-                if ($resultId -eq $Id) {
-                    $directUrl = $result
-                    break
-                }
-
-                if ($count -eq $retryCount) {
-                    break
-                }
-
-                $count++
+            } catch {
+                # Do nothing
             }
         }
 
         # If not matched by Video ID or Content ID, try matching the video with generic R18 URL
-        if ($null -eq $directUrl) {
+        if ($Id -notin $resultObject.Id) {
             $testUrl = "https://www.r18.com/videos/vod/movies/detail/-/id=$contentId/"
 
             try {
@@ -134,22 +101,35 @@ function Get-R18Url {
                 $resultId = Get-R18Id -WebRequest $webRequest
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Result is [$resultId]"
                 if ($resultId -eq $Id) {
-                    $directUrl = $testUrl
+                    $resultObject = [PSCustomObject]@{
+                        Id    = $resultId
+                        Title = Get-R18Title -Webrequest $webRequest
+                        Url   = $testUrl
+                    }
                 }
             }
         }
 
-        if ($null -eq $directUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on R18"
-            return
-        } else {
-            $directUrlZh = $directUrl + '&lg=zh'
-            $urlObject = [PSCustomObject]@{
-                En = $directUrl
-                Zh = $directUrlZh
+        if ($Id -in $resultObject.Id) {
+            $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id }
+
+            if ($matchedResult.Count -gt 1 -and !($AllResults)) {
+                $matchedResult = $matchedResult[0]
+            }
+
+            $urlObject = foreach ($entry in $matchedResult) {
+                [PSCustomObject]@{
+                    En    = $entry.Url
+                    Zh    = $entry.Url + '&lg=zh'
+                    Id    = $entry.Id
+                    Title = $entry.Title
+                }
             }
 
             Write-Output $urlObject
+        } else {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on R18"
+            return
         }
     }
 }

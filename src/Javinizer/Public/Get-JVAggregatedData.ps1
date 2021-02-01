@@ -173,7 +173,22 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.format.groupactress')]
-        [Boolean]$GroupActress
+        [Boolean]$GroupActress,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.actressastag')]
+        [Boolean]$ActressAsTag,
+        
+        [Alias('sort.metadata.tagcsv')]
+        [Boolean]$ReplaceTag,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.tagcsv.autoadd')]
+        [Boolean]$TagCsvAutoAdd,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('location.tagcsv')]
+        [System.IO.FileInfo]$TagCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvTags.csv')
     )
 
     process {
@@ -210,17 +225,24 @@ function Get-JVAggregatedData {
             $GenreCsvAutoAdd = $Settings.'sort.metadata.genrecsv.autoadd'
             $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
             $UnknownActress = $Settings.'sort.metadata.nfo.unknownactress'
+            $ActressAsTag = $Settings.'sort.metadata.nfo.actressastag'
             $Tag = $Settings.'sort.metadata.nfo.format.tag'
             $Tagline = $Settings.'sort.metadata.nfo.format.tagline'
             $Credits = $Settings.'sort.metadata.nfo.format.credits'
             $IdPreference = $Settings.'scraper.option.idpreference'
             $GroupActress = $Settings.'sort.format.groupactress'
+            $TagCsvAutoAdd = $Settings.'sort.metadata.tagcsv.autoadd'
+            $ReplaceTag = $Settings.'sort.metadata.tagcsv'
             $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
             if ($Settings.'location.thumbcsv' -ne '') {
                 $ThumbCsvPath = $Settings.'location.thumbcsv'
+            }
+
+            if ($Settings.'location.tagcsv' -ne '') {
+                $TagCsvPath = $Settings.'location.tagcsv'
             }
         }
 
@@ -552,7 +574,7 @@ function Get-JVAggregatedData {
 
                 $newGenres | Export-Csv -LiteralPath $GenreCsvPath -Append
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$genreCsvPath]"
             }
         }
 
@@ -578,7 +600,6 @@ function Get-JVAggregatedData {
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
             }
-
         }
 
         if ($IgnoreGenre) {
@@ -644,7 +665,9 @@ function Get-JVAggregatedData {
         $aggregatedDataObject.DisplayName = Convert-JVString -Data $aggregatedDataObject -FormatString $DisplayNameFormat -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress
 
         if ($Tag[0]) {
-            $aggregatedDataObject.Tag = @()
+            if ($null -eq $aggregatedDataObject.Tag) {
+                $aggregatedDataObject.Tag = @()
+            }
             foreach ($entry in $Tag) {
                 $tagString = (Convert-JVString -Data $aggregatedDataObject -FormatString $entry -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress)
                 if ($null -ne $tagString -and $tagstring -ne '') {
@@ -653,6 +676,111 @@ function Get-JVAggregatedData {
             }
             if ($null -eq $aggregatedDataObject.Tag[0]) {
                 $aggregatedDataObject.Tag = $null
+            }
+        }
+
+        if ($ActressAsTag) {
+            if ($null -eq $aggregatedDataObject.Tag) {
+                $aggregatedDataObject.Tag = @()
+            }
+            foreach ($actress in $aggregatedDataObject.Actress) {
+                $actressName = $null
+                if ($ActressLanguageJa) {
+                    if ($null -ne $actress.JapaneseName) {
+                        $actressName = ($actress.JapaneseName)
+                        if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                            if ($FirstNameOrder) {
+                                $altName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                            } else {
+                                $altName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                            }
+                        }
+                    }
+
+                    if ($null -eq $actressName) {
+                        if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                            if ($FirstNameOrder) {
+                                $actressName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                            } else {
+                                $actressName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                            }
+                            $altName = $null
+                        }
+                    }
+                } else {
+                    if ($null -ne $actress.FirstName -or $null -ne $actress.LastName) {
+                        if ($FirstNameOrder) {
+                            $actressName = ("$($actress.FirstName) $($actress.LastName)").Trim()
+                        } else {
+                            $actressName = ("$($actress.LastName) $($actress.FirstName)").Trim()
+                        }
+
+                        if ($null -ne $actress.JapaneseName) {
+                            $altName = ($actress.JapaneseName)
+                        }
+                    }
+
+                    if ($null -eq $actressName) {
+                        if ($null -ne $actress.JapaneseName) {
+                            $actressName = ($actress.JapaneseName).Trim()
+                        }
+                        $altName = $null
+                    }
+                }
+                if ($null -ne $actressName) {
+                    $aggregatedDataObject.Tag += $actressName
+                }
+            }
+        }
+
+        if ($TagCsvAutoAdd) {
+            $newTags = @()
+            if (Test-Path -LiteralPath $TagCsvPath) {
+                try {
+                    $replaceTags = Import-Csv -LiteralPath $TagCsvPath
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing tag csv [$TagCsvPath]: $PSItem"
+                }
+
+                $currentTags = $aggregatedDataObject.Tag
+
+                foreach ($tag in $currentTags) {
+                    if ($tag -notin $replaceTags.Original) {
+                        $newTags += [PSCustomObject]@{
+                            Original    = if ($tag.Count -gt 1) { $tag } else { $tag[0] }
+                            Replacement = ''
+                        }
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($tag)] added as a new tag"
+                    }
+                }
+
+                $newTags | Export-Csv -LiteralPath $TagCsvPath -Append
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Tag csv file is missing or cannot be found at path [$tagCsvPath]"
+            }
+        }
+
+        if ($ReplaceTag) {
+            if (Test-Path -LiteralPath $TagCsvPath) {
+                try {
+                    $replaceTags = Import-Csv -LiteralPath $TagCsvPath
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when importing tag csv [$TagCsvPath]: $PSItem"
+                }
+
+                $newTags = $aggregatedDataObject.Tag
+                foreach ($tagPair in $replaceTags) {
+                    if ($($tagPair.Original -in $newTags)) {
+                        if ($tagPair.Replacement -ne '' -and $null -ne $tagPair.Replacement) {
+                            $newTags = $newTags -replace "$($tagPair.Original)", "$($tagPair.Replacement)"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($tagPair.Original)] replaced as [$($tagPair.Replacement)]"
+                        }
+                    }
+                }
+
+                $aggregatedDataObject.Tag = $newTags
+            } else {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Tag csv file is missing or cannot be found at path [$tagCsvPath]"
             }
         }
 

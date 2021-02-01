@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.2.11'
+    ModuleVersion     = '2.3.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -79,8 +79,10 @@
         'Get-DmmUrl',
         'Get-Jav321Data',
         'Get-Jav321Url',
-        'Get-JavBusData',
+        'Get-JavbusData',
         'Get-JavbusUrl',
+        'Get-JavdbUrl',
+        'Get-JavdbData',
         'Get-JavlibraryData',
         'Get-JavlibraryUrl',
         'Get-JVAggregatedData',

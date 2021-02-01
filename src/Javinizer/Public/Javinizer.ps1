@@ -276,7 +276,7 @@ function Javinizer {
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
-        [Array]$Url,
+        [String[]]$Url,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
@@ -358,6 +358,12 @@ function Javinizer {
         [Switch]$JavbusZh,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$Javdb,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$JavdbZh,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Switch]$Jav321Ja,
 
         [Parameter(ParameterSetName = 'Info')]
@@ -401,6 +407,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenUncensor,
 
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenTags,
+
         [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
         [Switch]$UpdateNfo,
 
@@ -408,7 +417,7 @@ function Javinizer {
         [Switch]$UpdateThumbs,
 
         [Parameter(ParameterSetName = 'Thumbs')]
-        [Array]$Pages,
+        [String[]]$Pages,
 
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Switch]$SetOwned,
@@ -543,6 +552,17 @@ function Javinizer {
             }
         }
 
+        if ($Settings.'location.tagcsv' -eq '') {
+            $tagCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvTags.csv'
+        } else {
+            if (!(Test-Path -LiteralPath $Settings.'location.tagcsv' -PathType Leaf)) {
+                Write-Warning "[$($MyInvocation.MyCommand.Name)] Tag csv not found at path [$($Settings.'location.tagcsv')]"
+                return
+            } else {
+                $tagCsvPath = $Settings.'location.tagcsv'
+            }
+        }
+
         if ($Settings.'location.uncensorcsv' -eq '') {
             $uncensorCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'
         } else {
@@ -563,8 +583,11 @@ function Javinizer {
             }
         }
 
+        # Set default progress preference to a variable since we want to silence the webrequest check for javlibrary
+        $tempProgressPreference = $ProgressPreference
         if (!($IsThread)) {
             if (($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh' -and $Path) -or ($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or ($Find -like '*javlibrary*' -or $Find -like '*g46e*' -or $Find -like '*m45e*') -or $SetOwned) {
+                $ProgressPreference = 'SilentlyContinue'
                 if (!($CfSession)) {
                     try {
                         Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
@@ -614,6 +637,8 @@ function Javinizer {
                 }
             }
         }
+
+        $ProgressPreference = $tempProgressPreference
 
         switch ($PsCmdlet.ParameterSetName) {
             'Gui' {
@@ -677,6 +702,10 @@ function Javinizer {
                         if ($item.Source -match 'aventertainment') {
                             $item.Url | Get-AventertainmentData
                         }
+
+                        if ($item.Source -match 'javdb') {
+                            $item.Url | Get-JavdbData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -685,7 +714,8 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
+                        -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                 }
 
                 if ($Aggregated) {
@@ -734,6 +764,15 @@ function Javinizer {
                         Invoke-Item -LiteralPath $genreCsvPath
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$genreCsvPath]: $PSItem"
+                    }
+                }
+
+                if ($OpenTags) {
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [TagCsvPath - $tagCsvPath]"
+                        Invoke-Item -LiteralPath $tagCsvPath
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$tagCsvPath]: $PSItem"
                     }
                 }
 
@@ -904,7 +943,7 @@ function Javinizer {
                         $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                     }
 
-                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession
+                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($javAggregatedData.NullFields -eq '') {
@@ -955,7 +994,7 @@ function Javinizer {
                                 $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                             }
 
-                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession
+                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                             if ($PSBoundParameters.ContainsKey('IsWeb')) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                                 if ($IsWebType -eq 'Search') {

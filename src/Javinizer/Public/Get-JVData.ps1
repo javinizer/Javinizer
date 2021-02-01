@@ -45,6 +45,14 @@ function Get-JVData {
         [Boolean]$JavbusZh,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.javdb')]
+        [Boolean]$Javdb,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.javdbzh')]
+        [Boolean]$JavdbZh,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.jav321ja')]
         [Boolean]$Jav321Ja,
 
@@ -89,7 +97,11 @@ function Get-JVData {
 
         [Parameter(ParameterSetName = 'Url')]
         [Parameter(ParameterSetName = 'Id')]
-        [PSObject]$Session
+        [PSObject]$Session,
+
+        [Parameter(ParameterSetName = 'Url')]
+        [Parameter(ParameterSetName = 'Id')]
+        [PSObject]$JavdbSession
     )
 
     process {
@@ -116,6 +128,8 @@ function Get-JVData {
             $Javbus = $Settings.'scraper.movie.javbus'
             $JavbusJa = $Settings.'scraper.movie.javbusja'
             $JavbusZh = $Settings.'scraper.movie.javbuszh'
+            $Javdb = $Settings.'scraper.movie.javdb'
+            $JavdbZh = $Settings.'scraper.movie.javdbzh'
             $MgstageJa = $Settings.'scraper.movie.mgstageja'
             $Aventertainment = $Settings.'scraper.movie.aventertainment'
             $AventertainmentJa = $Settings.'scraper.movie.aventertainmentja'
@@ -358,6 +372,42 @@ function Get-JVData {
                 } | Out-Null
             }
 
+            if ($Javdb -or $JavdbZh) {
+                if ($Javdb) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javdb] [Url - $JavdbUrl]"
+                    Start-ThreadJob -Name "jvdata-Javdb" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:JavdbUrl)) {
+                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession
+                        }
+                        if ($using:JavdbUrl) {
+                            $using:JavdbUrl | Get-JavdbData -Session $using:JavdbSession
+                        } elseif ($jvJavdbUrl) {
+                            if ($jvJavdbUrl) {
+                                $jvJavdbUrl.En | Get-JavdbData -Session $using:JavdbSession
+                            }
+                        }
+                    } | Out-Null
+                }
+
+                if ($JavdbZh) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - JavdbZh] [Url - $JavdbZhUrl]"
+                    Start-ThreadJob -Name "jvdata-JavdbZh" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:JavdbZhUrl)) {
+                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession
+                        }
+                        if ($using:JavdbZhUrl) {
+                            $using:JavdbZhUrl | Get-JavdbData -Session $using:JavdbSession
+                        } elseif ($jvJavdbUrl) {
+                            if ($jvJavdbUrl) {
+                                $jvJavdbUrl.Zh | Get-JavdbData -Session $using:JavdbSession
+                            }
+                        }
+                    } | Out-Null
+                }
+            }
+
             if ($MgstageJa) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - MgstageJa] [Url - $MgstageJaUrl]"
                 Start-ThreadJob -Name "jvdata-MgstageJa" -ThrottleLimit $throttleLimit -ScriptBlock {
@@ -377,7 +427,7 @@ function Get-JVData {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DLgetchuJa] [Url - $DLgetchuJaUrl]"
                 Start-ThreadJob -Name "jvdata-DLgetchuJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                     Import-Module $using:jvModulePath
-                    $using:DLgetchuJaUrl | Get-DLGetchuData
+                    $using:DLgetchuJaUrl | Get-DLgetchuData
                 } | Out-Null
             }
 
