@@ -58,7 +58,7 @@ function Get-MgstageUrl {
 
             $urlObject = foreach ($entry in $matchedResult) {
                 [PSCustomObject]@{
-                    Ja    = $entry.Url
+                    Ja    = if ($entry.Url[-1] -ne '/') { $entry.Url + '/' } else { $entry.Url }
                     Id    = $entry.Id
                     Title = $entry.Title
                 }
