@@ -44,6 +44,7 @@ function Convert-JVTitle {
             'Watch ',
             # Suffixes (obsolete(?))
             '-h264',
+            '\..*$',
             '-AV',
             '_www.avcens.download'
             '_JAV.1399.net',
@@ -61,6 +62,7 @@ function Convert-JVTitle {
             '.1080p',
             '.720p',
             '.480p',
+            '.HD',
             '-HD',
             'wmv',
             '.wmv',
