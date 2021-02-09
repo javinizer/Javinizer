@@ -50,8 +50,14 @@ function Get-JavdbUrl {
             # Do nothing
         }
 
-        if ($Id -in $resultObject.Id) {
-            $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id }
+        try {
+            $cleanId = ($Id | Select-String -Pattern '\d+(\D+-\d+)').Matches.Groups[1].Value
+        } catch {
+            # Do nothing
+        }
+
+        if ($Id -in $resultObject.Id -or $cleanId -in $resultObject.Id) {
+            $matchedResult = $resultObject | Where-Object { $Id -eq $_.Id -or $cleanId -eq $_.Id }
 
             # If we have more than one exact match, select the first option
             if ($matchedResult.Count -gt 1 -and !($AllResults)) {
