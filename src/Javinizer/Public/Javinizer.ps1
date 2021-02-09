@@ -921,12 +921,7 @@ function Javinizer {
                     }
                 }
 
-                try {
-                    $javMovies = $Settings | Get-JVItem -Path $Path -MinimumFileSize $Settings.'match.minimumfilesize' -RegexEnabled:$Settings.'match.regex' -RegexString $Settings.'match.regex.string' -RegexIdMatch $Settings.'match.regex.idmatch' -RegexPtMatch $Settings.'match.regex.ptmatch' -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when getting local movies in [$Path]: $PSItem"
-                    return
-                }
+                $javMovies = $Settings | Get-JVItem -Path $Path -MinimumFileSize $Settings.'match.minimumfilesize' -RegexEnabled:$Settings.'match.regex' -RegexString $Settings.'match.regex.string' -RegexIdMatch $Settings.'match.regex.idmatch' -RegexPtMatch $Settings.'match.regex.ptmatch' -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
 
                 if ($null -eq $javMovies) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- no valid movies detected"

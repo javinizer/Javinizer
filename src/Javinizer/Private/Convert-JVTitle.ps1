@@ -176,7 +176,11 @@ function Convert-JVTitle {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
                 $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').PadLeft(3, '0')
                 $fileP3 = ($fileP3 -replace '-', '').Trim()
-                $asciiP3 = [int][char]$fileP3
+                try {
+                    $asciiP3 = [int][char]$fileP3
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Invalid multi-part format for file: [$file]"
+                }
                 if ($asciiP3 -gt 64 -and $asciiP3 -lt 69) {
                     $filePartNumber = $asciiP3 - 64
                 }
