@@ -152,6 +152,11 @@ function Convert-JVTitle {
                             # Write modified filename to $fileBaseNameHyphen, inserting a '-' at the specified
                             # index between the alphabetical and numerical character, and appending extension
                             $fileBaseNameHyphen = ($file.Insert($x + 1, '-'))
+
+                            # Clean content id values to their dvd id
+                            if ($fileBaseNameHyphen -match '((?!-).)*00\d{3,3}') {
+                                $fileBaseNameHyphen = ($fileBaseNameHyphen -split '00', 2) -join ''
+                            }
                             break
                         }
                     }
