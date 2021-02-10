@@ -133,7 +133,7 @@ function Get-JavlibraryRating {
         $rating = (((($Webrequest.Content -split '<div id="video_review" class="item">')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
         $rating = ($rating -replace '\(', '') -replace '\)', ''
 
-        if ($rating -eq 0) {
+        if ($rating -eq 0 -or $rating -eq '') {
             $ratingObject = $null
         } else {
             $ratingObject = [PSCustomObject]@{
