@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.2]
+
+### Changed
+- Javdb scraper now accepts relative ID match rather than exact ID match to support matching mgstage titles
+    - mgstage `406FSDSS-169` <-> `FSDSS-169` javdb
+
+### Fixed
+- Additional fixes for -UpdateModule
+- Filematcher now properly cleans ContentId (ID00123) to Id (ID-123) value
+- `-Strict` now properly works on updated Dmm url scraper
+- Added better debugging error when filematcher breaks on invalid multi-part format (#215)
+- Javlibrary ratings now properly return null when there is no rating value
+
 ## [2.3.1]
 
 ### Fixed

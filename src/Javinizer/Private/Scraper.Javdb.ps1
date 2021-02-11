@@ -284,7 +284,7 @@ function Get-JavdbTrailerUrl {
     process {
         try {
             $rawTrailerUrl = ($Webrequest.Content | Select-String -Pattern 'src="(.*)" type="video\/mp4"').Matches.Groups[1].Value
-            if ($rawTrailerUrl -notlike "https*") {
+            if ($rawTrailerUrl -notlike "https*" -and $rawTrailerUrl -ne '') {
                 $trailerUrl = 'https:' + $rawtrailerUrl
             } else {
                 $trailerUrl = $rawTrailerUrl

@@ -133,7 +133,7 @@ function Get-JavlibraryRating {
         $rating = (((($Webrequest.Content -split '<div id="video_review" class="item">')[1]) -split '<\/span>')[0] -split '<span class="score">')[1]
         $rating = ($rating -replace '\(', '') -replace '\)', ''
 
-        if ($rating -eq 0) {
+        if ($rating -eq 0 -or $rating -eq '') {
             $ratingObject = $null
         } else {
             $ratingObject = [PSCustomObject]@{
@@ -278,17 +278,15 @@ function Get-JavlibraryCoverUrl {
 
     process {
         $coverUrl = (($Webrequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
-        if ($coverUrl -like '*pixhost*') {
-            try {
-                $testConnection = Invoke-WebRequest -Uri "http:$coverUrl" -ErrorAction 'SilentlyContinue' -Verbose:$false
-            } catch {
+
+        try {
+            # We want to always check the Javlibrary cover due to removed images on pixhost and r18/dmm
+            $testUrl = (Invoke-WebRequest -Uri $coverUrl -Verbose:$false).BaseResponse.RequestMessage.RequestUri.AbsoluteUri
+            if ($testUrl -like '*now_printing*' -or $testUrl -like '*removed*') {
                 $coverUrl = $null
             }
-            if ($null -ne $testConnection) {
-                $coverUrl = 'http:' + $coverUrl
-            }
-        } else {
-            $coverUrl = 'https:' + $coverUrl
+        } catch {
+            return
         }
         Write-Output $coverUrl
     }

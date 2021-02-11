@@ -44,6 +44,7 @@ function Convert-JVTitle {
             'Watch ',
             # Suffixes (obsolete(?))
             '-h264',
+            '\..*$',
             '-AV',
             '_www.avcens.download'
             '_JAV.1399.net',
@@ -61,6 +62,7 @@ function Convert-JVTitle {
             '.1080p',
             '.720p',
             '.480p',
+            '.HD',
             '-HD',
             'wmv',
             '.wmv',
@@ -150,6 +152,11 @@ function Convert-JVTitle {
                             # Write modified filename to $fileBaseNameHyphen, inserting a '-' at the specified
                             # index between the alphabetical and numerical character, and appending extension
                             $fileBaseNameHyphen = ($file.Insert($x + 1, '-'))
+
+                            # Clean content id values to their dvd id
+                            if ($fileBaseNameHyphen -match '((?!-).)*00\d{3,3}') {
+                                $fileBaseNameHyphen = ($fileBaseNameHyphen -split '00', 2) -join ''
+                            }
                             break
                         }
                     }
@@ -174,7 +181,11 @@ function Convert-JVTitle {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
                 $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').PadLeft(3, '0')
                 $fileP3 = ($fileP3 -replace '-', '').Trim()
-                $asciiP3 = [int][char]$fileP3
+                try {
+                    $asciiP3 = [int][char]$fileP3
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Invalid multi-part format for file: [$file]"
+                }
                 if ($asciiP3 -gt 64 -and $asciiP3 -lt 69) {
                     $filePartNumber = $asciiP3 - 64
                 }

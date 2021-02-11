@@ -163,7 +163,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:DmmUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict
                         }
                         if ($using:DmmUrl) {
                             $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
@@ -178,7 +178,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:DmmJaUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict
                         }
                         if ($using:DmmJaUrl) {
                             $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
