@@ -62,7 +62,7 @@ function Convert-JVTitle {
             '.1080p',
             '.720p',
             '.480p',
-            '.HD',
+            '\.HD',
             '-HD',
             'wmv',
             '.wmv',
