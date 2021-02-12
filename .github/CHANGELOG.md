@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.3.3]
+
+### Changed
+- `admin.updates.check` now checks on a 24 hour interval instead of on every run
+- Removed local dependencies on `-UpdateModule` - now runs properly
+
+### Fixed
+- Fixed JAVLibrary scraper not returning cover urls for certain movies
+- Fixed file matcher cleaning regex ".HD" => "\.HD"
+
 ## [2.3.2]
 
 ### Changed
