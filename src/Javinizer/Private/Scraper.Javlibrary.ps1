@@ -279,6 +279,10 @@ function Get-JavlibraryCoverUrl {
     process {
         $coverUrl = (($Webrequest.Content -split '<img id="video_jacket_img" src="')[1] -split '"')[0]
 
+        if ($coverUrl -match '^\/\/') {
+            $coverUrl = "https:" + $coverUrl
+        }
+
         try {
             # We want to always check the Javlibrary cover due to removed images on pixhost and r18/dmm
             $testUrl = (Invoke-WebRequest -Uri $coverUrl -Verbose:$false).BaseResponse.RequestMessage.RequestUri.AbsoluteUri
