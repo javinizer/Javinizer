@@ -44,9 +44,8 @@ function Update-JVModule {
                     Write-Warning "Starting update process, please make sure to close all related Javinizer settings files before continuing"
                     Write-Warning "Updating from version [$installedVersion => $latestVersion]"
                     Pause
-
+                    
                     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($UpdateUrl))
-
                 } else {
                     Write-Warning "You already have the latest version of Javinizer! [$installedVersion]"
                 }
