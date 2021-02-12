@@ -581,25 +581,21 @@ function Javinizer {
             $updateCheckPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUpdateCheck')
             if ($Settings.'admin.updates.check') {
                 if (!(Test-Path -Path $updateCheckPath)) {
-                    New-Item -Path $updateCheckPath
+                    New-Item -Path $updateCheckPath | Out-Null
                 }
 
-                $lastUpdateCheck = Get-Content -Path $updateCheckPath
-                if ($null -eq $lastUpdateCheck -or $lastUpdateCheck -eq '') {
-                    Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
-                }
 
                 try {
-                    $lastUpdateCheck = Get-Date (Get-Content $updateCheckPath)
+                    $lastUpdateCheck = Get-Date (Get-Content -Path $updateCheckPath)
+                    $lastCheckedSpan = New-TimeSpan -Start $lastUpdateCheck -End (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
                 } catch {
-                    $lastUpdateCheck = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
+                    Update-JVModule -CheckUpdates
                     Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
                 }
-
-                $lastCheckedSpan = New-TimeSpan -Start $lastUpdateCheck -End (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
 
                 if ($lastCheckedSpan.Hours -gt 24) {
                     Update-JVModule -CheckUpdates
+                    Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
                 }
             }
         }
