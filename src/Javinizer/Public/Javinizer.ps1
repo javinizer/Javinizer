@@ -577,9 +577,30 @@ function Javinizer {
         # Validate the values in the settings file following all command-line transformations
         $Settings = $Settings | Test-JVSettings
 
-        if (!($IsThread)) {
+        if (!($IsThread) -and !($PSboundParameters.ContainsKey('UpdateModule'))) {
+            $updateCheckPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUpdateCheck')
             if ($Settings.'admin.updates.check') {
-                Update-JVModule -CheckUpdates
+                if (!(Test-Path -Path $updateCheckPath)) {
+                    New-Item -Path $updateCheckPath
+                }
+
+                $lastUpdateCheck = Get-Content -Path $updateCheckPath
+                if ($null -eq $lastUpdateCheck -or $lastUpdateCheck -eq '') {
+                    Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
+                }
+
+                try {
+                    $lastUpdateCheck = Get-Date (Get-Content $updateCheckPath)
+                } catch {
+                    $lastUpdateCheck = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
+                    Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
+                }
+
+                $lastCheckedSpan = New-TimeSpan -Start $lastUpdateCheck -End (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
+
+                if ($lastCheckedSpan.Hours -gt 24) {
+                    Update-JVModule -CheckUpdates
+                }
             }
         }
 
