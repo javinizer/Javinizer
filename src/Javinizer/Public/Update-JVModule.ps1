@@ -8,12 +8,8 @@ function Update-JVModule {
         [Switch]$Update,
 
         [Parameter(ParameterSetName = 'Update')]
-        [String]$UpdateUrl = 'https://gist.githubusercontent.com/jvlflame/0e8293198e59c286ccf1a438ea8a76e9/raw/8f4ab21c462590145be91aad2ff456c748dbc5eb/Update-JVModule.ps1'
+        [String]$UpdateUrl = 'https://gist.githubusercontent.com/jvlflame/0e8293198e59c286ccf1a438ea8a76e9/raw'
     )
-
-    begin {
-
-    }
 
     process {
         switch ($PsCmdlet.ParameterSetName) {
@@ -28,6 +24,7 @@ function Update-JVModule {
 
                     if ($installedVersion -ne $latestVersion) {
                         Write-Warning "There is a newer version of Javinizer available! (Set 'admin.updates.check' to false to hide this message)"
+                        Write-Warning "You can update your module using 'Javinizer -UpdateModule'"
                         Write-Warning "$installedVersion => $latestVersion"
                     }
                 }
@@ -35,7 +32,7 @@ function Update-JVModule {
 
             'Update' {
                 try {
-                    Get-InstalledModule -Name 'Javinizer' | Out-Null
+                    Get-InstalledModule -Name 'Javinizer' -ErrorAction Stop | Out-Null
                 } catch {
                     Write-Error "You can only use this method to update if you installed Javinizer using 'Install-Module'" -ErrorAction Stop
                 }
@@ -49,6 +46,7 @@ function Update-JVModule {
                     Pause
 
                     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($UpdateUrl))
+
                 } else {
                     Write-Warning "You already have the latest version of Javinizer! [$installedVersion]"
                 }
