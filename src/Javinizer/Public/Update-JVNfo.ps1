@@ -4,14 +4,23 @@ function Update-JVNfo {
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [System.IO.DirectoryInfo]$Path,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [PSObject]$Settings,
 
         [Parameter()]
-        [Switch]$Preview
+        [Switch]$Preview,
+
+        [Parameter()]
+        [Int]$Total
     )
 
     begin {
+        $index = 1
+        if ($Preview) {
+            # Don't write to the log file if the function is run in Preview mode
+            $script:JVLogWrite = '0'
+        }
+
         $thumbCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvThumbs.csv'
         $genreCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvGenres.csv'
         $uncensorCsvPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvUncensor.csv'
@@ -43,25 +52,29 @@ function Update-JVNfo {
         }
 
         if ($Settings.'sort.metadata.thumbcsv') {
-            $thumbCsv = Import-Csv -Path $ThumbCsvPath
+            $thumbCsv = Import-Csv -Path $thumbCsvPath
         }
 
         if ($Settings.'sort.metadata.genrecsv') {
-            $genreCsv = Import-Csv -Path $GenreCsvPath
+            $genreCsv = Import-Csv -Path $genreCsvPath
         }
 
         if ($Settings.'sort.metadata.tagcsv') {
-            $tagCsv = Import-Csv -Path $TagCsvPath
+            $tagCsv = Import-Csv -Path $tagCsvPath
         }
 
         if ($Settings.'sort.metadata.genre.ignore') {
             $ignoreGenre = $Settings.'sort.metadata.genre.ignore'
         }
 
+        $uncensorCsv = Import-Csv -Path $uncensorCsvPath
+
         # $translateLanguage = $Settings.'sort.metadata.nfo.translate.language'
     }
 
     process {
+        $percentComplete = [math]::Round($index / $Total * 100)
+        Write-Progress -Id 1 -Activity "Checking nfo: $Path" -Status "$percentComplete% Complete: $index / $total" -PercentComplete $percentComplete
         try {
             [xml]$nfo = Get-Content -LiteralPath $Path
         } catch {
@@ -73,8 +86,15 @@ function Update-JVNfo {
             Votes  = $nfo.movie.votes
         }
 
+        if ($nfo.movie.premiered) {
+            $releaseDate = $nfo.movie.premiered
+        } else {
+            $releaseDate = $nfo.movie.releasedate
+        }
+
         $actressObject = foreach ($actress in $nfo.movie.actor) {
-            if ($Settings.'sort.metadata.nfo.actresslanguageja') {
+
+            if ($actress.Name -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 if ($Settings.'sort.metadata.nfo.firstnameorder') {
                     $firstName = ($actress.altname -split ' ')[0]
                     $lastName = ($actress.altname -split ' ')[1]
@@ -126,7 +146,7 @@ function Update-JVNfo {
             AlternateTitle = $nfo.movie.originaltitle
             Description    = $nfo.movie.plot
             Rating         = $ratingObject
-            ReleaseDate    = $nfo.movie.premiered
+            ReleaseDate    = $releaseDate
             Runtime        = $nfo.movie.runtime
             Director       = $nfo.movie.director
             Maker          = $nfo.movie.studio
@@ -402,27 +422,45 @@ function Update-JVNfo {
             }
         } #>
 
-        $updatedNfo = $aggregatedDataObject | Get-JVNfo
+        try {
+            $updatedNfo = $aggregatedDataObject | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AltNameRole:$Settings.'sort.metadata.nfo.altnamerole' -ErrorAction Stop
 
-        # Reassign variable $updatedNfo using content read from a file
-        # So we can properly compare it to the original using Compare-Object
-        $tempFile = New-TemporaryFile
-        Set-Content -Path $tempFile -Value $updatedNfo
-        $updatedNfo = Get-Content -LiteralPath $tempFile
-        Remove-Item -Path $tempFile
-
-        # We only want to rewrite files that have been modified from the original
-        if (Compare-Object -ReferenceObject (Get-Content -LiteralPath $Path) -DifferenceObject $updatedNfo) {
-            if (!($Preview)) {
-                try {
-                    Set-Content -LiteralPath $Path -Value $updatedNfo
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Error updating nfo [$Path]: $PSItem"
+            if ($uncensorCsv) {
+                foreach ($string in $uncensorCsv.GetEnumerator()) {
+                    if ($updatedNfo | Select-String -Pattern $string.Original -SimpleMatch) {
+                        $updatedNfo = $updatedNfo -replace [regex]::Escape($string.Original), $string.Replacement
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Uncensor - $($string.Original)] replaced as [$($string.Replacement)]"
+                    }
                 }
-                Write-Host "Updated [$Path]"
-            } else {
-                Write-Host "Preview: Updating [$Path]"
             }
+
+            # Reassign variable $updatedNfo using content read from a file
+            # So we can properly compare it to the original using Compare-Object
+            $tempFile = New-TemporaryFile
+            Set-Content -Path $tempFile -Value $updatedNfo
+            $updatedNfo = Get-Content -LiteralPath $tempFile
+            Remove-Item -Path $tempFile
+
+            # We only want to rewrite files that have been modified from the original
+            if (Compare-Object -ReferenceObject (Get-Content -LiteralPath $Path) -DifferenceObject $updatedNfo) {
+                if (!($Preview)) {
+                    try {
+                        $updatedNfo | Out-File -FilePath $Path
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Error updating nfo [$Path]: $PSItem"
+                    }
+                    Write-Host "Updated [$Path]"
+                } else {
+                    Write-Host "Preview: Updated [$Path]"
+                }
+            }
+        } catch {
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Error recreating nfo [$Path]: $PSItem" -Action Continue
         }
+        $index++
+    }
+
+    end {
+        Write-Progress -Id 1 -Activity "Checking nfo: $Path" -Completed
     }
 }

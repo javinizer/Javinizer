@@ -302,6 +302,7 @@ function Javinizer {
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Javlibrary')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Switch]$HideProgress,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -834,9 +835,14 @@ function Javinizer {
             }
 
             'Nfo' {
-                $nfoFiles = (Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object { $_.Extension -eq '.nfo' }).FullName
+                if ($Depth) {
+                    $nfoFiles = (Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object { $_.Extension -eq '.nfo' }).FullName
+                } else {
+                    $nfoFiles = (Get-ChildItem -Path $Path -Recurse:$Recurse -Depth:$Depth | Where-Object { $_.Extension -eq '.nfo' }).FullName
+                }
+
                 if ($nfoFiles) {
-                    $nfoFiles | Update-JVNfo -Settings:$Settings -Preview:$Preview
+                    $nfoFiles | Update-JVNfo -Settings:$Settings -Preview:$Preview -Total $nfoFiles.Count
                 } else {
                     Write-Warning "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- no valid nfos detected"
                 }
