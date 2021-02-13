@@ -453,6 +453,7 @@ function Javinizer {
         [Switch]$UpdateModule,
 
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Nfo')]
         [Switch]$Preview,
 
         [Parameter(ParameterSetName = 'Passthru')]
@@ -820,22 +821,12 @@ function Javinizer {
             }
 
             'Nfo' {
-                Write-Warning "Feature is currently in progress. Check back in a future release."
-                <# $nfoParams = @{
-                    Path              = $Path
-                    Recurse           = $Recurse
-                    Depth             = $Depth
-                    GenreCsv          = $Settings.'sort.metadata.genrecsv'
-                    GenreCsvPath      = $genreCsvPath
-                    GenreIgnore       = $Settings.'sort.metadata.genre.ignore'
-                    FirstNameOrder    = $Settings.'sort.metadata.nfo.firstnameorder'
-                    ThumbCsv          = $Settings.'sort.metadata.thumbcsv'
-                    ThumbCsvAlias     = $Settings.'sort.metadata.thumbcsv.convertalias'
-                    ThumbCsvPath      = $thumbCsvPath
-                    ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+                $nfoFiles = (Get-ChildItem -Path $Path -Recurse:$Recurse | Where-Object { $_.Extension -eq '.nfo' }).FullName
+                if ($nfoFiles) {
+                    $nfoFiles | Update-JVNfo -Settings:$Settings -Preview:$Preview
+                } else {
+                    Write-Warning "[$($MyInvocation.MyCommand.Name)] [$Path] Exiting -- no valid nfos detected"
                 }
-
-                Update-JVNfo @nfoParams #>
             }
 
             'Javlibrary' {
