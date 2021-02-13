@@ -410,6 +410,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Settings')]
         [Switch]$OpenTags,
 
+        [Parameter(ParameterSetName = 'Settings')]
+        [Switch]$OpenModule,
+
         [Parameter(ParameterSetName = 'Nfo', Mandatory = $true)]
         [Switch]$UpdateNfo,
 
@@ -800,6 +803,16 @@ function Javinizer {
                         Invoke-Item -LiteralPath $uncensorCsvPath
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening thumbcsv file [$uncensorCsvPath]: $PSItem"
+                    }
+                }
+
+                if ($OpenModule) {
+                    $modulePath = (Get-Item $PSScriptRoot).Parent
+                    try {
+                        Write-Host "[$($MyInvocation.MyCommand.Name)] [ModulePath - $modulePath]"
+                        Invoke-Item -LiteralPath $modulePath
+                    } catch {
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when opening module folder [$modulePath]: $PSItem"
                     }
                 }
             }
