@@ -26,6 +26,7 @@
     "scraper.movie.r18zh": false,
     "scraper.option.dmm.scrapeactress": false,
     "scraper.option.idpreference": "id",
+    "scraper.option.addmaleactors": false,
     "match.minimumfilesize": 0,
     "match.includedfileextension": [
         ".asf",

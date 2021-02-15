@@ -168,6 +168,10 @@ function Get-JVAggregatedData {
         [String]$IdPreference,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('scraper.option.addmaleactors')]
+        [Boolean]$AVDanyu,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.mediainfo')]
         [PSObject]$MediaInfo,
 
@@ -234,6 +238,7 @@ function Get-JVAggregatedData {
             $TagCsvAutoAdd = $Settings.'sort.metadata.tagcsv.autoadd'
             $ReplaceTag = $Settings.'sort.metadata.tagcsv'
             $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
+            $AvDanyu = $Settings.'scraper.option.addmaleactors'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -316,6 +321,14 @@ function Get-JVAggregatedData {
                     }
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
                 }
+            }
+        }
+
+        if ($AvDanyu) {
+            $maleActors = (Get-AVDanyuData -ContentId $aggregatedDataObject.ContentId).Actors
+
+            if ($maleActors) {
+                $aggregatedDataObject.Actress += $maleActors
             }
         }
 
