@@ -230,7 +230,7 @@ function Get-MgstageActress {
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $null
                     FirstName    = $null
-                    JapaneseName = $actress
+                    JapaneseName = Convert-JVCleanString -String $actress
                     ThumbUrl     = $null
                 }
             } else {
