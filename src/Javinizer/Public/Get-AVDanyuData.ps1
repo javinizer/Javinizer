@@ -25,7 +25,7 @@ function Get-AVDanyuData {
                 $vidId = ($vid | Select-String -Pattern '品番：(.*)<').Matches.Groups[1].Value
                 $vidActors = (($vid | Select-String -Pattern '出演男優：(.*)<').Matches.Groups[1].Value).Trim()
                 $id = $vidId.Trim()
-                $actors = $vidActors -split ' '
+                $actors = ($vidActors -replace ' ,', '') -split ' '
 
                 $actorObject = foreach ($actor in $actors) {
                     [PSCustomObject]@{
