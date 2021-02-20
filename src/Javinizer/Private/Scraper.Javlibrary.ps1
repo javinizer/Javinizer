@@ -215,7 +215,7 @@ function Get-JavlibraryActress {
             $enActress = Get-Actress -Webrequest $Webrequest
             $jaActress = Get-Actress -Webrequest $jaWebrequest
         } else {
-            $enWebrequest = Invoke-WebRequest -Uri $enActressUrl -Method Get -Verbose:$false
+            $enWebrequest = Invoke-WebRequest -Uri $enActressUrl -Method Get -WebSession:$Session -UserAgent:$Session.UserAgent -Verbose:$false
             $enActress = Get-Actress -Webrequest $enWebrequest
             $jaActress = Get-Actress -Webrequest $Webrequest
         }

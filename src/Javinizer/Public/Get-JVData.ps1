@@ -283,10 +283,10 @@ function Get-JVData {
                             $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         }
                         if ($using:JavlibraryJaUrl) {
-                            $using:JavlibraryJaUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                            $using:JavlibraryJaUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         } elseif ($jvJavlibraryUrl) {
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Ja | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                                $jvJavlibraryUrl.Ja | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                             }
                         }
                     } | Out-Null
@@ -300,10 +300,10 @@ function Get-JVData {
                             $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         }
                         if ($using:JavlibraryZhUrl) {
-                            $using:JavlibraryZhUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                            $using:JavlibraryZhUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         } elseif ($jvJavlibraryUrl) {
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                                $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                             }
                         }
                     } | Out-Null
