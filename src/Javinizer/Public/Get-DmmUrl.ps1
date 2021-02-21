@@ -29,7 +29,7 @@ function Get-DmmUrl {
             }
         } #>
 
-        $r18Results = Get-R18Url -Id $Id -Strict:$Strict -AllResults -WarningAction SilentlyContinue
+        $r18Results = Get-R18Url -Id $Id -Strict:$Strict -AllResults -WarningAction SilentlyContinue -Verbose:$false
         $resultObject = foreach ($entry in $r18Results) {
             $cid = (($entry.En -split 'id=')[1] -split '\/')[0]
             [PSCustomObject]@{
@@ -58,7 +58,7 @@ function Get-DmmUrl {
 
             Write-Output $urlObject
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on DMM"
             return
         }
     }

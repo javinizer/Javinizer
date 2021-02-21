@@ -8,13 +8,7 @@ function Get-AventertainmentUrl {
 
     process {
         $jaPpvUrl = "https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=1&vodtypeid=1&keyword=$Id"
-
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$jaPpvUrl]"
-            $webRequest = Invoke-WebRequest -Uri $jaPpvUrl -Method Get -WebSession $session -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$jaPpvUrl]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $jaPpvUrl -Method Get -WebSession $session -Verbose:$false
 
         $searchResults = $webRequest.links.href | Where-Object { $_ -like '*new_detail*' } | Select-Object -Unique
 
@@ -28,13 +22,7 @@ function Get-AventertainmentUrl {
 
             $count = 1
             foreach ($result in $searchResults) {
-                try {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                    $webRequest = Invoke-WebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
-                }
-
+                $webRequest = Invoke-JVWebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
                 $resultId = Get-AventertainmentId -WebRequest $webRequest
 
                 try {
@@ -60,13 +48,7 @@ function Get-AventertainmentUrl {
 
         if ($null -eq $enAventertainmentUrl) {
             $enPpvUrl = "https://www.aventertainments.com/ppv/ppv_searchproducts.aspx?languageID=1&vodtypeid=2&keyword=$Id"
-
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$enPpvUrl]"
-                $webRequest = Invoke-WebRequest -Uri $enPpvUrl -Method Get -WebSession $session -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$enPpvUrl]: $PSItem" -Action 'Continue'
-            }
+            $webRequest = Invoke-JVWebRequest -Uri $enPpvUrl -Method Get -WebSession $session -Verbose:$false
 
             $searchResults = $webRequest.links.href | Where-Object { $_ -like '*new_detail*' } | Select-Object -Unique
 
@@ -80,13 +62,7 @@ function Get-AventertainmentUrl {
 
                 $count = 1
                 foreach ($result in $searchResults) {
-                    try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                        $webRequest = Invoke-WebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
-                    }
-
+                    $webRequest = Invoke-JVWebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
                     $resultId = Get-AventertainmentId -WebRequest $webRequest
 
                     try {
@@ -113,13 +89,7 @@ function Get-AventertainmentUrl {
 
         if ($null -eq $enAventertainmentUrl) {
             $jaDvdUrl = "https://www.aventertainments.com/search_Products.aspx?languageID=1&dept_id=29&keyword=$Id&searchby=keyword"
-
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$jaDvdUrl]"
-                $webRequest = Invoke-WebRequest -Uri $jaDvdUrl -Method Get -WebSession $session -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$jaDvdUrl]: $PSItem" -Action 'Continue'
-            }
+            $webRequest = Invoke-JVWebRequest -Uri $jaDvdUrl -Method Get -WebSession $session -Verbose:$false
 
             $searchResults = $webRequest.links.href | Where-Object { $_ -like '*product_lists*' } | Select-Object -Unique
 
@@ -133,12 +103,7 @@ function Get-AventertainmentUrl {
 
                 $count = 1
                 foreach ($result in $searchResults) {
-                    try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                        $webRequest = Invoke-WebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
-                    }
+                    $webRequest = Invoke-JVWebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
 
                     $resultId = Get-AventertainmentId -WebRequest $webRequest
 
@@ -166,13 +131,7 @@ function Get-AventertainmentUrl {
 
         if ($null -eq $enAventertainmentUrl) {
             $enDvdUrl = "https://www.aventertainments.com/search_Products.aspx?languageID=1&dept_id=43&keyword=$Id&searchby=keyword"
-
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$enDvdUrl]"
-                $webRequest = Invoke-WebRequest -Uri $enDvdUrl -Method Get -WebSession $session -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$enDvdUrl]: $PSItem" -Action 'Continue'
-            }
+            $webRequest = Invoke-JVWebRequest -Uri $enDvdUrl -Method Get -WebSession $session -Verbose:$false
 
             $searchResults = $webRequest.links.href | Where-Object { $_ -like '*product_lists*' } | Select-Object -Unique
 
@@ -186,12 +145,7 @@ function Get-AventertainmentUrl {
 
                 $count = 1
                 foreach ($result in $searchResults) {
-                    try {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$result]"
-                        $webRequest = Invoke-WebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-                    } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$result]: $PSItem" -Action 'Continue'
-                    }
+                    $webRequest = Invoke-JVWebRequest -Uri $result -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
 
                     $resultId = Get-AventertainmentId -WebRequest $webRequest
 
@@ -218,7 +172,7 @@ function Get-AventertainmentUrl {
         }
 
         if ($null -eq $enAventertainmentUrl) {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on AVEntertainment"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on AVEntertainment"
             return
         } else {
             $urlObject = [PSCustomObject]@{

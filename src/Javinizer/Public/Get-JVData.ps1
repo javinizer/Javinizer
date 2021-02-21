@@ -101,7 +101,10 @@ function Get-JVData {
 
         [Parameter(ParameterSetName = 'Url')]
         [Parameter(ParameterSetName = 'Id')]
-        [PSObject]$JavdbSession
+        [PSObject]$JavdbSession,
+
+        [Parameter()]
+        [Switch]$IgnoreFailures
     )
 
     process {
@@ -444,21 +447,31 @@ function Get-JVData {
                 Wait-Job -Id $jobId | Out-Null
 
                 Write-Debug "[$Id] [$($MyInvocation.MyCommand.Name)] [Completed - Scraper jobs] [$jobName]"
-                $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
 
-                $hasData = ($javinizerDataObject | Select-Object Source).Source
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
+                # We need to check if any errors occurred in the threaded scraper jobs
+                # If errors occurred, we want to skip the file
+                $failedJobs = Get-Job | Where-Object { $_.State -eq 'Failed' }
+                if ($failedJobs.Count -lt 1 -or $IgnoreFailures) {
+                    $javinizerDataObject = Get-Job -Id $jobId | Receive-Job
+                    $hasData = ($javinizerDataObject | Select-Object Source).Source
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Success - Scraper jobs] [$hasData]"
 
-                $dataObject = [PSCustomObject]@{
-                    Data = $javinizerDataObject
-                }
+                    $dataObject = [PSCustomObject]@{
+                        Data = $javinizerDataObject
+                    }
 
-                if ($null -ne $javinizerDataObject) {
-                    Write-Output $dataObject
+                    if ($null -ne $javinizerDataObject) {
+                        Write-Output $dataObject
+                    }
+                } else {
+                    $failedScrapers = ($failedJobs.Name -replace 'jvdata-', '') -join ', '
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Failure(s) detected in scraper jobs: [$failedScrapers]"
+                    return
                 }
             }
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured during scraper jobs: $PSItem"
+            return
         } finally {
             # Remove all completed or running jobs before exiting this script
             # If jobs remain after closure, it may cause issues in concurrent runs

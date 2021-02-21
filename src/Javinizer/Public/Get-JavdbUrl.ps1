@@ -23,18 +23,8 @@ function Get-JavdbUrl {
             $loginSession.Cookies.Add($cookie)
         }
 
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $loginSession -Verbose:$false
-        } catch {
-            try {
-                # Add a retry to the URL search due to 500 errors occurring randomly when scraping Javdb
-                Start-Sleep -Seconds 3
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $loginSession -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-            }
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Get -WebSession $loginSession -Verbose:$false
+
 
         $results = $webRequest.Links | Where-Object { $null -ne $_.title }
 
@@ -75,7 +65,7 @@ function Get-JavdbUrl {
 
             Write-Output $urlObject
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on Javdb"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on Javdb"
             return
         }
     }

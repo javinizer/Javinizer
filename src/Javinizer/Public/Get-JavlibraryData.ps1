@@ -13,13 +13,7 @@ function Get-JavlibraryData {
 
     process {
         $movieDataObject = @()
-
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $Url -Method Get -WebSession $Session -UserAgent $Session.UserAgent -Verbose:$false
 
         $movieDataObject = [PSCustomObject]@{
             Source        = if ($Url -match '/ja/') { 'javlibraryja' } elseif ($Url -match '/cn/' -or $Url -match '/tw/') { 'javlibraryzh' } else { 'javlibrary' }

@@ -16,12 +16,7 @@ function Get-R18Data {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when import uncensor csv at path [$UncensorCsvPath]: $PSItem"
         }
 
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $Url -Method Get -Verbose:$false
 
         $movieDataObject = [PSCustomObject]@{
             Source        = if ($Url -match 'lg=zh') { 'r18zh' } else { 'r18' }

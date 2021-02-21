@@ -22,18 +22,8 @@ function Get-JavlibraryUrl {
 
         $searchUrl = "$BaseUrl/en/vl_searchbyid.php?keyword=$Id"
 
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-        } catch {
-            try {
-                # Add a retry to the URL search due to 500 errors occurring randomly when scraping Javlibrary
-                Start-Sleep -Seconds 3
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-            }
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -WebSession:$Session -UserAgent:$Session.UserAgent -Method Get -Verbose:$false
+
 
         # Check if the search uniquely matched a video page
         # If not, we will check the search results and check a few for if they are a match
@@ -50,7 +40,7 @@ function Get-JavlibraryUrl {
                 }
                 Write-Output $urlObject
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
                 return
             }
         } else {
@@ -94,7 +84,7 @@ function Get-JavlibraryUrl {
 
                 Write-Output $urlObject
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on JavLibrary"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on JavLibrary"
                 return
             }
         }

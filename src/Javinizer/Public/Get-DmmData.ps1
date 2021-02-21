@@ -30,15 +30,7 @@ function Get-DmmData {
             $session.Cookies.Add($cookie)
         }
 
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            $webRequest = Invoke-WebRequest -Uri $Url -WebSession $session -Method Get -Verbose:$false
-        } catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Not found on DMM [$Url]"
-            continue
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $Url -WebSession $session -Method Get -Verbose:$false
 
         $movieDataObject = [PSCustomObject]@{
             Source        = if ($Url -match '/en/') { 'dmm' } else { 'dmmja' }

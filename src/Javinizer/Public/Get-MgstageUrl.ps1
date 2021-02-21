@@ -19,18 +19,7 @@ function Get-MgstageUrl {
 
     process {
         $searchUrl = "https://www.mgstage.com/search/cSearch.php?search_word=$Id"
-
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $session -Verbose:$false
-        } catch {
-            try {
-                Start-Sleep -Seconds 3
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -WebSession $session -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-            }
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Get -WebSession $session -Verbose:$false
 
         try {
             $rawHtml = $webRequest.Content -split '<p class="tag">'
@@ -66,7 +55,7 @@ function Get-MgstageUrl {
 
             Write-Output $urlObject
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on Mgstage"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on Mgstage"
             return
         }
     }

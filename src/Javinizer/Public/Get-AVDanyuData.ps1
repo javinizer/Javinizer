@@ -9,12 +9,7 @@ function Get-AVDanyuData {
 
     process {
         $searchUrl = "https://avdanyuwiki.com/?s=$contentId"
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$ContentId] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$ContentId] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Get -Verbose:$false
 
         if ($webRequest.Content -notmatch 'NOT FOUND') {
             # This will retrieve and split all results displayed on the search page to parse
@@ -53,10 +48,10 @@ function Get-AVDanyuData {
 
                 Write-Output $matchedResult
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$ContentId] [$($MyInvocation.MyCommand.Name)] not matched on avdanyuwiki"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$ContentId] not matched on avdanyuwiki"
             }
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$ContentId] [$($MyInvocation.MyCommand.Name)] not matched on avdanyuwiki"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$ContentId] not matched on avdanyuwiki"
         }
     }
 }

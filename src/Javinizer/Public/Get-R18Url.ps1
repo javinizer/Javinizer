@@ -35,12 +35,7 @@ function Get-R18Url {
         }
 
         # Try matching the video with Video ID
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Get -Verbose:$false
 
         try {
             $rawHtml = $webRequest.Content -split '<li class="item-list'
@@ -62,12 +57,8 @@ function Get-R18Url {
         if ($null -eq $resultObject) {
             $searchUrl = "https://www.r18.com/common/search/searchword=$contentId/"
 
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-            }
+            $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Get -Verbose:$false
+
 
             try {
                 $rawHtml = $webRequest.Content -split '<li class="item-list"'
@@ -128,7 +119,7 @@ function Get-R18Url {
 
             Write-Output $urlObject
         } else {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on R18"
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] not matched on R18"
             return
         }
     }

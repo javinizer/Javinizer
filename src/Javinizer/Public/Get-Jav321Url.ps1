@@ -10,13 +10,7 @@ function Get-Jav321Url {
 
     process {
         $searchUrl = "https://jp.jav321.com/search"
-
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Post -Body "sn=$Id" -Verbose:$false
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
-        }
+        $webRequest = Invoke-JVWebRequest -Uri $searchUrl -Method Post -Body "sn=$Id" -Verbose:$false
 
         $searchResultUrl = $webRequest.BaseResponse.RequestMessage.RequestUri.AbsoluteUri
         if ($searchResultUrl -match '/video/') {
