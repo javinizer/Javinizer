@@ -318,6 +318,12 @@ function Javinizer {
         [ValidateSet('Search', 'Sort')]
         [String]$IsWebType,
 
+        [Parameter(ParameterSetName = 'Path')]
+        [System.IO.FileInfo]$WebTempPath,
+
+        [Parameter(ParameterSetName = 'Path')]
+        [Switch]$Search,
+
         [Parameter(ParameterSetName = 'Info', Mandatory = $true, Position = 0)]
         [Alias ('f')]
         [PSObject]$Find,
@@ -987,9 +993,10 @@ function Javinizer {
                             if ($IsWebType -eq 'Search') {
                                 $javMovies | Invoke-JVParallel -IsWeb -IsWebType 'search' -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
                                     Import-Module $using:jvModulePath
+
                                     $jvMovie = $_
                                     $Settings = $using:Settings
-                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -WebTempPath:$using:WebTempPath -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                                     Write-Output $jvData
                                 }
                             } else {
@@ -1001,6 +1008,14 @@ function Javinizer {
                                 }
                             }
 
+                        } elseif ($PSBoundParameters.ContainsKey('Search')) {
+                            $javMovies | Invoke-JVParallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$true -ScriptBlock {
+                                Import-Module $using:jvModulePath
+                                $jvMovie = $_
+                                $Settings = $using:Settings
+                                $jvData = Javinizer -IsThread -Search -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                Write-Output $jvData
+                            }
                         } else {
                             $javMovies | Invoke-JVParallel -MaxQueue $Settings.'throttlelimit' -Throttle $Settings.'throttlelimit' -Quiet:$HideProgress -ScriptBlock {
                                 Import-Module $using:jvModulePath
@@ -1018,13 +1033,20 @@ function Javinizer {
                             }
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
-                            if ($PSBoundParameters.ContainsKey('IsWeb')) {
+                            if ($PSBoundParameters.ContainsKey('IsWeb') -or $PSBoundParameters.ContainsKey('Search')) {
                                 $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                                if ($IsWebType -eq 'Search') {
+                                if ($IsWebType -eq 'Search' -or $PSBoundParameters.ContainsKey('Search')) {
                                     [PSCustomObject]@{
                                         Path       = $movie.FullName
                                         Data       = $javAggregatedData.Data
                                         PartNumber = $movie.PartNumber
+                                    }
+
+                                    if ($IsWebType -eq 'Search') {
+                                        # Write non-matched movies to a file so we can reference it in our GUI progress modal
+                                        if ($null -eq $javAggregatedData.Data.Id) {
+                                            (Get-Item -Path $movie.FullName).BaseName | Out-File -FilePath $WebTempPath -Append
+                                        }
                                     }
                                 } elseif ($IsWebType -eq 'Sort') {
                                     $sortData = Get-JVSortData -Data $javAggregatedData.Data -Path $movie.FullName -DestinationPath $DestinationPath -Settings $Settings -Update:$Update -Force:$Force -PartNumber $movie.PartNumber
