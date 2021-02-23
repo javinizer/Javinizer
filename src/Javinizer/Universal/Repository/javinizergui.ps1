@@ -32,17 +32,178 @@ if (Test-Path -LiteralPath $cache:settings.'location.uncensorcsv') { $cache:unce
 $cache:actressArray = @()
 $cache:actressObject = Import-Csv $cache:thumbCsvPath | Sort-Object FullName
 $cache:actressArray += $cache:actressObject | ForEach-Object { "$($_.FullName) ($($_.JapaneseName)) [$actressIndex]"; $actressIndex++ }
+$scraperSettings = @(
+    'AVEntertainment',
+    'AVEntertainmentJa',
+    'Dmm',
+    'DmmJa',
+    'Jav321Ja',
+    'Javdb',
+    'JavdbZh',
+    'Javbus',
+    'JavbusJa',
+    'JavbusZh',
+    'Javlibrary',
+    'JavlibraryJa',
+    'JavlibraryZh',
+    'MGStageJa',
+    'R18',
+    'R18Zh'
+)
+
+$prioritySettings = @(
+    'Actress',
+    'AlternateTitle',
+    'CoverURL',
+    'Description',
+    'Director',
+    'Genre',
+    'ID',
+    'ContentID',
+    'Label',
+    'Maker',
+    'Rating',
+    'ReleaseDate',
+    'Runtime',
+    'Series',
+    'ScreenshotURL',
+    'Title',
+    'TrailerURL'
+)
+
+$locationSettings = @(
+    'input',
+    'output',
+    'thumbcsv',
+    'genrecsv',
+    'uncensorcsv',
+    'historycsv',
+    'tagcsv',
+    'log'
+)
+
+$embySettings = @(
+    'emby.url',
+    'emby.apikey'
+)
+
+$javlibrarySettings = @(
+    'javlibrary.baseurl',
+    'javlibrary.browser.useragent',
+    'javlibrary.cookie.cfduid',
+    'javlibrary.cookie.cfclearance',
+    'javlibrary.cookie.session',
+    'javlibrary.cookie.userid',
+    'javdb.cookie.session'
+)
+
+$formatStringSettings = @(
+    'sort.format.delimiter',
+    'sort.format.file',
+    'sort.format.folder',
+    'sort.format.outputfolder',
+    'sort.format.posterimg',
+    'sort.format.thumbimg',
+    'sort.format.trailervid',
+    'sort.format.nfo',
+    'sort.format.screenshotimg',
+    'sort.format.screenshotfolder',
+    'sort.format.actressimgfolder',
+    'sort.metadata.nfo.displayname',
+    'sort.metadata.nfo.format.tag',
+    'sort.metadata.nfo.format.tagline',
+    'sort.metadata.nfo.format.credits'
+)
+
+$sortSettings = @(
+    'sort.movetofolder',
+    'sort.renamefile',
+    'sort.create.nfo',
+    'sort.create.nfoperfile',
+    'sort.download.actressimg',
+    'sort.download.thumbimg',
+    'sort.download.posterimg',
+    'sort.download.screenshotimg',
+    'sort.download.trailervid',
+    'sort.format.groupactress',
+    'sort.metadata.nfo.mediainfo',
+    'sort.metadata.nfo.altnamerole',
+    'sort.metadata.nfo.firstnameorder',
+    'sort.metadata.nfo.actresslanguageja',
+    'sort.metadata.nfo.unknownactress',
+    'sort.metadata.nfo.actressastag',
+    'sort.metadata.nfo.originalpath',
+    'sort.metadata.thumbcsv',
+    'sort.metadata.thumbcsv.autoadd',
+    'sort.metadata.thumbcsv.convertalias',
+    'sort.metadata.genrecsv',
+    'sort.metadata.genrecsv.autoadd',
+    'sort.metadata.tagcsv',
+    'sort.metadata.tagcsv.autoadd'
+)
+
+$translateLanguages = @(
+    'am',
+    'ar',
+    'bg',
+    'bn',
+    'ca',
+    'chr',
+    'cs',
+    'cy'
+    'da',
+    'de',
+    'el',
+    'en-GB',
+    'en',
+    'es',
+    'et',
+    'eu',
+    'fi',
+    'fil',
+    'fr',
+    'gu',
+    'hi',
+    'hr',
+    'hu',
+    'id',
+    'is',
+    'it',
+    'iw',
+    'ja',
+    'kn',
+    'ko',
+    'lt',
+    'lv',
+    'ml',
+    'mr',
+    'ms',
+    'nl',
+    'no',
+    'pl',
+    'pt-BR',
+    'pt-PT',
+    'ro',
+    'ru',
+    'sk',
+    'sl',
+    'sr',
+    'sv',
+    'sw',
+    'ta',
+    'te',
+    'th',
+    'tr',
+    'uk',
+    'ur',
+    'vi',
+    'zh-CN',
+    'zh-TW'
+)
 
 # Set other Javinizer dashboard defaults
 $cache:inProgress = $false
 $cache:inProgressEmby = $false
-$cache:findData = @()
-$cache:originalFindData = @()
-$cache:filePath = ''
-$cache:index = 0
-$cache:currentIndex = 0
-$actressIndex = 0
-$cache:tablePageSize = 5
 $iconSearch = New-UDIcon -Icon 'search' -Size lg
 $iconRightArrow = New-UDIcon -Icon 'arrow_right' -Size lg
 $iconLeftArrow = New-UDIcon -Icon 'arrow_left' -Size lg
@@ -436,18 +597,23 @@ function Invoke-JavinizerWeb {
         if ($cache:settings.'scraper.movie.javlibrary' -or $cache:settings.'scraper.movie.javlibraryja' -or $cache:settings.'scraper.movie.javlibraryzh') {
             if (-not ($cache:cfSession)) {
                 try {
-                    Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
+                    Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
                 } catch {
                     try {
                         # Test with persisted settings
-                        $cache:cfSession = Get-CfSession -Cfduid:$cache:settings.'javlibrary.cookie.cfduid' -Cfclearance:$cache:settings.'javlibrary.cookie.cfclearance' `
-                            -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
+                        if ($cache:settings.'javlibrary.cookie.cfduid' -and $cache:settings.'javlibrary.cookie.cfclearance' -and $cache:settings.'javlibrary.browser.useragent') {
+                            $cache:cfSession = Get-CfSession -Cfduid:$cache:settings.'javlibrary.cookie.cfduid' -Cfclearance:$cache:settings.'javlibrary.cookie.cfclearance' `
+                                -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
 
-                        # Testing with the newly created session sometimes fails if there is no wait time
-                        Start-Sleep -Seconds 1
-                        Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
+                            # Testing with the newly created session sometimes fails if there is no wait time
+                            Start-Sleep -Seconds 1
+
+                            Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
+                        } else {
+                            Show-JVCfModal
+                            return
+                        }
                     } catch {
-                        # Display the JAVLibrary cloudflare modal due to webrequest error
                         Show-JVCfModal
                         return
                     }
@@ -456,7 +622,6 @@ function Invoke-JavinizerWeb {
                 try {
                     Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
                 } catch {
-                    # Display the JAVLibrary cloudflare modal due to webrequest error
                     Show-JVCfModal
                     return
                 }
@@ -484,6 +649,7 @@ function Invoke-JavinizerWeb {
                     value = $movieId
                 }
                 $jvData = Javinizer -Path $Item.FullName -Strict:$strict -HideProgress -IsWeb -IsWebType 'Search'
+
                 if ($null -ne $jvData) {
                     $cache:findData = $jvData
                 } else {
@@ -491,8 +657,10 @@ function Invoke-JavinizerWeb {
                 }
             }
 
-            # We want to clone the data here so we can reset to default if necessary
-            $cache:originalFindData = $cache:findData.Clone()
+            # We want to clone the data here so we can reset specific metadata to default if desired
+            # Since there is no easy way to clone a PSCustomObject, we need to convert the object into a plaintext json so we can then assign it to the new variable
+            $tempData = $jvData | ConvertTo-Json -Depth 32
+            $cache:originalFindData = ($tempData | ConvertFrom-Json -Depth 32) | Sort-Object { $_.Data.Id }
 
             #if ($null -in $jvData.Data) {
             <# $skipped = ($jvData | Where-Object { $null -eq $_.Data })
@@ -541,15 +709,669 @@ function Get-EmbyActors {
     Write-Output $request
 }
 
+<# function Show-JVSettingsModal {
+    New-UDStyle -Style '
+    .MuiDialogContent-root {
+        height: 500px;
+    }' -Content {
+        Show-UDModal -FullWidth -MaxWidth md -Content {
+            # Apply/Json/Reload
+            New-UDGrid -Container -Content {
+                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 4 -Content {
+                    New-UDButton -Icon $iconCheck -Text 'Apply' -Size large -FullWidth -OnClick {
+                        foreach ($scraper in $scraperSettings) {
+                            $cache:settings."scraper.movie.$scraper" = (Get-UDElement -Id "checkbox-settings-$scraper").checked
+                        }
+                        foreach ($field in $prioritySettings) {
+                            $cache:settings."sort.metadata.priority.$field" = ((Get-UDElement -Id "textbox-settings-$field").value -split '\\').Trim()
+                        }
+                        foreach ($setting in $locationSettings) {
+                            $cache:settings."location.$setting" = ((Get-UDElement -Id "textbox-settings-location-$setting")).value
+                        }
+
+                        foreach ($setting in $sortSettings) {
+                            $cache:settings."$setting" = (Get-UDElement -Id $setting).checked
+                        }
+
+                        foreach ($setting in $embySettings) {
+                            $cache:settings."$setting" = (Get-UDElement -Id $setting).value
+                        }
+                        foreach ($setting in $formatStringSettings) {
+                            if ($setting -eq 'sort.format.posterimg' -or $setting -eq 'sort.metadata.nfo.format.tag' -or $setting -eq 'sort.format.outputfolder') {
+                                $cache:settings."$setting" = ((Get-UDElement -Id "$setting").value -split '\\').Trim()
+                            } else {
+                                $cache:settings."$setting" = (Get-UDElement -Id "$setting").value
+                            }
+                        }
+                        $cache:settings.'throttlelimit' = [Int](Get-UDElement -Id 'autocomplete-settings-throttlelimit').value
+                        $cache:settings.'sort.metadata.requiredfield' = ((Get-UDElement -Id 'textbox-settings-requiredfields').value -split '\\').Trim()
+                        $cache:settings.'scraper.option.idpreference' = (Get-UDElement -Id 'autocomplete-settings-idpreference').value
+                        $cache:settings.'scraper.option.dmm.scrapeactress' = (Get-UDElement -Id 'checkbox-settings-scrapeactress').checked
+                        $cache:settings.'scraper.option.addmaleactors' = (Get-UDElement -Id 'checkbox-settings-addmaleactors').checked
+                        $cache:settings.'match.minimumfilesize' = [Int](Get-UDElement -Id 'textbox-settings-minfilesize').value
+                        $cache:settings.'match.regex' = (Get-UDElement -Id 'checkbox-settings-regexmatch').checked
+                        $cache:settings.'match.regex.string' = (Get-UDElement -Id 'textbox-settings-regexmatchstring').value
+                        $cache:settings.'match.regex.idmatch' = (Get-UDElement -Id 'textbox-settings-regexidmatch').value
+                        $cache:settings.'match.regex.ptmatch' = (Get-UDElement -Id 'textbox-settings-regexptmatch').value
+                        $cache:settings.'sort.maxtitlelength' = [Int](Get-UDElement -Id 'autocomplete-settings-maxtitlelength').value
+                        $cache:settings.'sort.metadata.nfo.translate' = (Get-UDElement -Id 'checkbox-settings-translate').checked
+                        $cache:settings.'sort.metadata.nfo.translate.language' = (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value
+                        $cache:settings.'sort.metadata.nfo.translate.module' = (Get-UDElement -Id 'autocomplete-settings-translatemodule').value
+                        $cache:settings.'sort.metadata.nfo.translate.field' = ((Get-UDElement -Id 'textbox-settings-translatefield').value -split '\\').Trim()
+                        $cache:settings.'sort.metadata.nfo.translate.keeporiginaldescription' = (Get-UDElement -Id 'checkbox-settings-translate-originaldescription').checked
+                        $cache:settings.'admin.log' = (Get-UDElement -Id 'checkbox-settings-adminlog').checked
+                        $cache:settings.'admin.log.level' = (Get-UDElement -Id 'autocomplete-settings-adminloglevel').value
+                        $cache:settings | ConvertTo-Json | Out-File $cache:settingsPath
+                        $cache:settings = Get-Content -Path $cache:settingsPath | ConvertFrom-Json
+
+                        # Require these settings to be edited in the json due to regex formatting
+                        #$cache:settings.'match.includedfileextension' = ((Get-UDElement -Id 'textbox-settings-includedfileext').value -split '\\')
+                        #$cache:settings.'match.excludedfilestring' = ((Get-UDElement -Id 'textbox-settings-excludedfilestr').value -split '\\')
+
+                        if (Test-Path -LiteralPath ($cache:settings.'location.log')) {
+                            $cache:logPath = $cache:settings.'location.log'
+                        } elseif (($cache:settings.'location.log') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultLogPath -Destination $cache:settings.'location.log'
+                                $cache:logPath = $cache:settings.'location.log'
+                                Show-JVToast -Type Info -Message "Created missing log path: [$($cache:settings.'location.log')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting log location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:logPath = $cache:defaultLogPath
+                        }
+
+                        if (Test-Path -LiteralPath ($cache:settings.'location.historycsv')) {
+                            $cache:historyCsvPath = $cache:settings.'location.historycsv'
+                        } elseif (($cache:settings.'location.historycsv') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultHistoryPath -Destination $cache:settings.'location.historycsv'
+                                $cache:historyCsvPath = $cache:settings.'location.historycsv'
+                                Show-JVToast -Type Info -Message "Created missing historycsv path: [$($cache:settings.'location.historycsv')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting history location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:historyCsvPath = $cache:defaultHistoryPath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.thumbcsv') {
+                            $cache:thumbCsvPath = $cache:settings.'location.thumbcsv'
+                        } elseif (($cache:settings.'location.thumbcsv') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultThumbPath -Destination $cache:settings.'locationthumbcsv'
+                                $cache:thumbCsvPath = $cache:settings.'location.thumbcsv'
+                                Show-JVToast -Type Info -Message "Created missing thumbcsv path: [$($cache:settings.'location.thumbcsv')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting thumb location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:thumbCsvPath = $cache:defaultThumbPath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.genrecsv') {
+                            $cache:genreCsvPath = $cache:settings.'location.genrecsv'
+                        } elseif (($cache:settings.'location.genrecsv') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultGenrePath -Destination $cache:settings.'location.genrecsv'
+                                $cache:thumbCsvPath = $cache:settings.'location.genrecsv'
+                                Show-JVToast -Type Info -Message "Created missing genrecsv path: [$($cache:settings.'location.genrecsv')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting thumb location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:genreCsvPath = $cache:defaultGenrePath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.tagcsv') {
+                            $cache:tagCsvPath = $cache:settings.'location.tagcsv'
+                        } elseif (($cache:settings.'location.tagcsv') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultTagPath -Destination $cache:settings.'location.tagcsv'
+                                $cache:thumbCsvPath = $cache:settings.'location.tagcsv'
+                                Show-JVToast -Type Info -Message "Created missing tagcsv path: [$($cache:settings.'location.tagcsv')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting thumb location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:tagCsvPath = $cache:defaultTagPath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.uncensorcsv') {
+                            $cache:uncensorCsvPath = $cache:settings.'location.uncensorcsv'
+                        } elseif (($cache:settings.'location.uncensorcsv') -ne '') {
+                            try {
+                                Copy-Item -Path $cache:defaultUncensorPath -Destination $cache:settings.'location.uncensorcsv'
+                                $cache:thumbCsvPath = $cache:settings.'location.uncensorcsv'
+                                Show-JVToast -Type Info -Message "Created missing uncensorcsv path: [$($cache:settings.'location.uncensorcsv')]"
+                            } catch {
+                                Show-JVToast -Type Error -Message "Error setting thumb location: $PSItem"
+                                return
+                            }
+                        } else {
+                            $cache:uncensorCsvPath = $cache:defaultUncensorPath
+                        }
+                        Update-JVPage -Settings
+                        Show-JVToast -Type Success -Message "Settings updated"
+                    }
+                }
+
+                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 4 -Content {
+                    New-UDButton -Icon $iconEdit -Text 'Json' -Size large -FullWidth -OnClick {
+                        Show-UDModal -FullWidth -MaxWidth md -Persistent -Content {
+                            $settingsContent = (Get-Content -LiteralPath $cache:settingsPath) -join "`r`n"
+                            New-UDCodeEditor -Id 'editor-settings-json' -Width '115ch' -Height '115ch' -Language json -Theme vs-dark -Code $settingsContent
+                        } -Header {
+                            "jvSettings.json"
+                        } -Footer {
+                            New-UDButton -Text 'Ok' -OnClick {
+                                try {
+                                    # Validate that the settings json format before writing
+                                    (Get-UDElement -Id 'editor-settings-json').code | ConvertFrom-Json
+                                    (Get-UDElement -Id 'editor-settings-json').code | Out-File $cache:settingsPath -Force
+                                    Show-JVToast -Type Success -Message "Settings updated"
+                                    $cache:settings = Get-Content -Path $cache:settingsPath | ConvertFrom-Json
+                                    Update-JVPage -Settings
+                                    Show-JVSettingsModal
+                                } catch {
+                                    Show-JVToast -Type Error -Message "Error occurred when saving settings: $PSItem"
+                                }
+                            }
+                            New-UDButton -Text "Cancel" -OnClick {
+                                Update-JVPage -Settings
+                                Show-JVSettingsModal
+                            }
+                        }
+                    }
+                }
+
+                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 4 -Content {
+                    New-UDButton -Icon $iconUndo -Text 'Reload' -Size large -FullWidth -OnClick {
+                        if (Test-Path -LiteralPath ($cache:settings.'location.log')) {
+                            $cache:logPath = $cache:settings.'location.log'
+                        } else {
+                            $cache:logPath = $cache:defaultLogPath
+                        }
+                        if (Test-Path -LiteralPath ($cache:settings.'location.historycsv')) {
+                            $cache:historyCsvPath = $cache:settings.'location.historycsv'
+                        } else {
+                            $cache:historyCsvPath = $cache:defaultHistorypath
+                        }
+                        if (Test-Path -LiteralPath $cache:settings.'location.thumbcsv') {
+                            $cache:thumbCsvPath = $cache:settings.'location.thumbcsv'
+                        } else {
+                            $cache:thumbCsvPath = $cache:defaultThumbPath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.genrecsv') {
+                            $cache:genreCsvPath = $cache:settings.'location.genrecsv'
+                        } else {
+                            $cache:genreCsvPath = $cache:defaultGenrePath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.tagcsv') {
+                            $cache:tagCsvPath = $cache:settings.'location.tagcsv'
+                        } else {
+                            $cache:tagCsvPath = $cache:defaultTagPath
+                        }
+
+                        if (Test-Path -LiteralPath $cache:settings.'location.uncensorcsv') {
+                            $cache:uncensorCsvPath = $cache:settings.'location.uncensorcsv'
+                        } else {
+                            $cache:uncensorCsvPath = $cache:defaultUncensorPath
+                        }
+
+                        $cache:settings = Get-Content -Path $cache:settingsPath | ConvertFrom-Json
+                        $cache:actressObject = Import-Csv $cache:thumbCsvPath | Sort-Object FullName
+                        $cache:actressArray += $cache:actressObject | ForEach-Object { "$($_.FullName) ($($_.JapaneseName)) [$actressIndex]"; $actressIndex++ }
+                        Update-JVPage -Settings
+                    }
+                }
+
+                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                    New-UDButton -Text 'View Javinizer docs' -Variant text -FullWidth -OnClick {
+                        Invoke-UDRedirect -OpenInNewWindow -Url 'https://docs.jvlflame.net'
+                    }
+                }
+
+                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                    New-UDButton -Text 'View default settings' -Variant text -FullWidth -OnClick {
+                        Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer/blob/master/src/Javinizer/jvSettings.json'
+                    }
+                }
+            }
+
+            New-UDDynamic -Id 'dynamic-settings-page' -Content {
+                New-UDTabs -Tabs {
+                    New-UDTab -Text 'Metadata' -Content {
+                        New-UDCard -Title 'Scrapers' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Container -Content {
+                                    foreach ($scraper in $scraperSettings) {
+                                        $scraperTooltip = switch ($scraper) {
+                                            'AVEntertainment' { 'English AVEntertainment scraper' }
+                                            'AVEntertainmentJa' { 'Japanese AVEntertainment scraper' }
+                                            'Dmm' { 'English Dmm scraper' }
+                                            'DmmJa' { 'Japanese Dmm scraper' }
+                                            'Jav321Ja' { 'Japanese Jav321 scraper' }
+                                            'Javdb' { 'English JavDB scraper' }
+                                            'JavdbZh' { 'Chinese JavDB scraper' }
+                                            'Javbus' { 'English Javbus scraper' }
+                                            'JavbusJa' { 'Japanese Javbus scraper' }
+                                            'JavbusZh' { 'Chinese Javbus scraper' }
+                                            'Javlibrary' { 'English Javlibrary scraper' }
+                                            'JavlibraryJa' { 'Japanese Javlibrary scraper' }
+                                            'JavlibraryZh' { 'Chinese Javlibrary scraper' }
+                                            'MgStageJa' { 'Japanese Mgstage scraper' }
+                                            'R18' { 'English R18 scraper' }
+                                            'R18Zh' { 'Chinese R18 scraper' }
+                                            default { $null }
+                                        }
+
+                                        New-UDGrid -Item -ExtraSmallSize 6 -Content {
+                                            if ($scraperTooltip) {
+                                                New-UDTooltip -TooltipContent { $scraperTooltip } -Content {
+                                                    New-UDCheckBox -Label $scraper -Id "checkbox-settings-$scraper" -LabelPlacement end -Checked ($cache:settings."scraper.movie.$scraper")
+                                                } -Place right -Type dark -Effect float
+                                            } else {
+                                                New-UDCheckBox -Label $scraper -Id "checkbox-settings-$scraper" -LabelPlacement end -Checked ($cache:settings."scraper.movie.$scraper")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            New-UDCard -Title 'Options' -Content {
+                                New-UDGrid -Container -Content {
+                                    New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                                        New-UDTooltip -TooltipContent { 'Specifies the maximum limit Javinizer will run sorting threads' } -Content {
+                                            New-UDAutocomplete -Id 'autocomplete-settings-throttlelimit' -Label ThrottleLimit -Options @('1', '2', '3', '4', '5', '6', '7', '8', '9', '10') -Value $cache:settings.'throttlelimit' -OnChange {
+                                                if ($null -eq (Get-UDElement -Id 'autocomplete-settings-throttlelimit').value) {
+                                                    Set-UDElement -Id 'autocomplete-settings-throttlelimit' -Properties @{
+                                                        value = '3'
+                                                    }
+                                                }
+                                            }
+                                        } -Place right -Effect float -Type dark
+
+                                        New-UDTooltip -TooltipContent { 'Specifies which ID type to prefer (ID = ID-123, ContentID = ID00123)' } -Content {
+                                            New-UDAutocomplete -Id 'autocomplete-settings-idpreference' -Label 'ID Preference' -Options @('id', 'contentid') -Value $cache:settings.'scraper.option.idpreference' -OnChange {
+                                                if ($null -eq (Get-UDElement -Id 'autocomplete-settings-idpreference').value) {
+                                                    Set-UDElement -Id 'autocomplete-settings-idpreference' -Properties @{
+                                                        value = 'id'
+                                                    }
+                                                }
+                                            }
+                                        } -Place right -Effect float -Type dark
+                                    }
+
+                                    New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                                        New-UDTooltip -TooltipContent { 'Leave this off in 99% of cases, this should only be used if you want dmm to be your primary actress scraper' } -Content {
+                                            New-UDCheckBox -Label 'scraper.option.dmm.scrapeactress' -Id 'checkbox-settings-scrapeactress' -LabelPlacement end -Checked ($cache:settings.'scraper.option.dmm.scrapeactress')
+                                        } -Place right -Effect float -Type dark
+
+                                        New-UDTooltip -TooltipContent { 'Specifies whether to turn on/off scraping for avdanyuwiki to populate the nfo with male actors' } -Content {
+                                            New-UDCheckBox -Label 'scraper.option.addmaleactors' -Id 'checkbox-settings-addmaleactors' -LabelPlacement end -Checked ($cache:settings.'scraper.option.addmaleactors')
+                                        } -Place right -Effect float -Type dark
+                                    }
+                                }
+                            }
+
+                        }
+                        ## Scraper priorities card
+                        New-UDCard -Title "Metadata Priorities" -Content {
+                            New-UDGrid -Container -Content {
+                                ## Field priorities
+                                New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                                    New-UDGrid -Container -Content {
+                                        foreach ($field in $prioritySettings) {
+                                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                                New-UDTextbox -Label $field -Id "textbox-settings-$field" -Value ($cache:settings."sort.metadata.priority.$field" -join ' \ ') -FullWidth
+                                            }
+                                        }
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDTextbox -Label 'Required Fields' -Id 'textbox-settings-requiredfields' -Value ($cache:settings."sort.metadata.requiredfield" -join ' \ ') -FullWidth
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        New-UDCard -Title 'Translate' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTooltip -TooltipContent { 'Specifies to enable the machine translation service.' } -Content {
+                                        New-UDCheckBox -Label 'sort.metadata.nfo.translate' -Id 'checkbox-settings-translate' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
+                                    } -Place right -Type dark -Effect float
+                                }
+
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTextbox -Label 'sort.metadata.nfo.translate.field' -Id 'textbox-settings-translatefield' -Value ($cache:settings.'sort.metadata.nfo.translate.field' -join ' \ ') -FullWidth
+                                }
+
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTooltip -TooltipContent { 'Specifies to append the original Japanese description to the nfo file when translating the description.' } -Content {
+                                        New-UDCheckBox -Label 'sort.metadata.nfo.translate.keeporiginaldescription' -Id 'checkbox-settings-translate-originaldescription' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
+                                    }  -Place right -Type dark -Effect float
+                                }
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
+                                    New-UDAutocomplete -Id 'autocomplete-settings-translatelanguage' -Label 'Translate Language' -Options $translateLanguages -Value ($cache:settings.'sort.metadata.nfo.translate.language') -OnChange {
+                                        if ($null -eq (Get-UDElement -Id 'autocomplete-settings-translatelanguage').value) {
+                                            Set-UDElement -Id 'autocomplete-settings-translatelanguage' -Properties @{
+                                                value = 'en'
+                                            }
+                                        }
+                                    }
+                                }
+
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
+                                    New-UDAutocomplete -Id 'autocomplete-settings-translatemodule' -Label 'Translate Module' -Options @('googletrans', 'google_trans_new') -Value ($cache:settings.'sort.metadata.nfo.translate.module') -OnChange {
+                                        if ($null -eq (Get-UDElement -Id 'autocomplete-settings-translatemodule').value) {
+                                            Set-UDElement -Id 'autocomplete-settings-translatemodule' -Properties @{
+                                                value = 'googletrans'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
+                    New-UDTab -Text 'File Matcher' -Content {
+                        New-UDCard -Title 'File Matcher' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                                    New-UDGrid -Container -Content {
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDTextbox -Label 'match.minimumfilesize (MB)' -Id 'textbox-settings-minfilesize' -Value ($cache:settings.'match.minimumfilesize') -FullWidth
+                                        }
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDTextbox -Label 'match.includedfileextension (Edit in JSON)' -Id 'textbox-settings-includedfileext' -Value ($cache:settings.'match.includedfileextension' -join ' \ ') -FullWidth -Disabled
+                                        }
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDTextbox -Label 'match.excludedfilestring (Edit in JSON)' -Id 'textbox-settings-excludedfilestr' -Value ($cache:settings.'match.excludedfilestring' -join ' \ ') -FullWidth -Disabled
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        New-UDCard -Title 'Regex' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTooltip -TooltipContent { 'Specifies that Javinizer will perform the directory search using regex rather than the default matcher.' } -Content {
+                                        New-UDCheckBox -Label 'match.regex' -Id 'checkbox-settings-regexmatch' -Checked ($cache:settings.'match.regex')
+                                    }  -Place right -Type dark -Effect float
+                                }
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTextbox -Label 'match.regex.string (Edit in JSON)' -Id 'textbox-settings-regexmatchstring' -Value ($cache:settings.'match.regex.string') -FullWidth -Disabled
+                                }
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTextbox -Label 'match.regex.idmatch' -Id 'textbox-settings-regexidmatch' -Value ($cache:settings.'match.regex.idmatch') -FullWidth
+                                }
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                    New-UDTextbox -Label 'match.regex.ptmatch' -Id 'textbox-settings-regexptmatch' -Value ($cache:settings.'match.regex.ptmatch') -FullWidth
+                                }
+                            }
+                        }
+                    }
+                    New-UDTab -Text 'Sort Preferences' -Content {
+                        ## Metadata options card
+                        New-UDCard -Title 'Sort' -Content {
+                            New-UDGrid -Container -Content {
+                                foreach ($setting in $sortSettings) {
+                                    $sortTooltip = switch ($setting) {
+                                        'sort.movetofolder' { 'Specifies to move the movie to its own folder after being sorted' }
+                                        'sort.renamefile' { 'Specifies to rename the movie file after being sorted' }
+                                        'sort.create.nfo' { 'Specifies to create the nfo file when sorting a movie' }
+                                        'sort.create.nfoperfile' { 'Specifies to create a nfo file for every movie file, this will force the nfo to be renamed using the filename' }
+                                        'sort.download.actressimg' { 'Specifies to download actress images when sorting a movie' }
+                                        'sort.download.thumbimg' { 'Specifies to download the thumbnail image when sorting a movie' }
+                                        'sort.download.posterimg' { 'Specifies to create the poster image when sorting a movie. Sort.download.thumbimg is required for this to function' }
+                                        'sort.download.screenshotimg' { 'Specifies to download screenshot images when sorting a movie' }
+                                        'sort.download.trailervid' { 'Specifies to download the trailer video when sorting a movie' }
+                                        'sort.format.groupactress' { 'Specifies to convert the format string for when there is more than one actress to "@Group" and if unknown, to "@Unknown"' }
+                                        'sort.metadata.nfo.mediainfo' { 'Specifies to add media metadata information to the nfo file, this requires the MediaInfo command line application' }
+                                        'sort.metadata.nfo.altnamerole' { 'Specifies to set the actress role in the nfo as the altname' }
+                                        'sort.metadata.nfo.firstnameorder' { 'Specifies to set the actress name order to FirstName LastName' }
+                                        'sort.metadata.nfo.actresslanguageja' { 'Specifies to prefer Japanese names when creating the metadata nfo' }
+                                        'sort.metadata.nfo.unknownactress' { 'Specifies to add an "Unknown" actress to sorted movies without any actresses' }
+                                        'sort.metadata.nfo.actressastag' { 'Specifies to add actresses as tags in the nfo file' }
+                                        'sort.metadata.nfo.originalpath' { 'Specifies to add an "originalpath" field to the nfo specifying the location the movie was last sorted from' }
+                                        'sort.metadata.thumbcsv' { 'Specifies to use the thumbnail csv to replace actor names and thumbs when aggregating metadata' }
+                                        'sort.metadata.thumbcsv.autoadd' { 'Specifies to automatically add missing actor to the thumbnail csv when scraping using the R18 or R18Zh scrapers' }
+                                        'sort.metadata.thumbcsv.convertalias' { 'Specifies to use the thumbnail csv alias field to replace actresses in the metadata' }
+                                        'sort.metadata.genrecsv' { 'Specifies to use the genre csv to replace genres in the metadata' }
+                                        'sort.metadata.genrecsv.autoadd' { 'Specifies to automatically add missing genres to the genre csv' }
+                                        'sort.metadata.tagcsv' { 'Specifies to use the tag csv to replace tags in the metadata' }
+                                        'sort.metadata.tagcsv.autoadd' { 'Specifies to automatically add missing tags to the tag csv' }
+                                        default { $null }
+                                    }
+
+                                    if ($sortTooltip) {
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDTooltip -Type dark -Place right -Effect float -TooltipContent { "$sortTooltip" } -Content {
+                                                New-UDCheckBox -Label $setting -Id "$setting" -LabelPlacement end -Checked ($cache:settings."$setting")
+                                            }
+                                        }
+                                    } else {
+                                        New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                            New-UDCheckBox -Label $setting -Id "$setting" -LabelPlacement end -Checked ($cache:settings."$setting")
+                                        }
+                                    }
+                                }
+                                New-UDGrid -Container -Content {
+                                    New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                        $lengthOptions = @()
+                                        $lengthChoices = 1..500
+                                        $lengthChoices | ForEach-Object { $lengthOptions += [String]$_ }
+                                        New-UDAutocomplete -Id 'autocomplete-settings-maxtitlelength' -Label 'sort.maxtitlelength' -Value ($cache:settings.'sort.maxtitlelength') -Options $lengthOptions -OnChange {
+                                            if ($null -eq (Get-UDElement -Id 'autocomplete-settings-maxtitlelength').value) {
+                                                Set-UDElement -Id 'autocomplete-settings-maxtitlelength' -Properties @{
+                                                    value = '100'
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        New-UDCard -Title 'Locations & Persistent Settings Files' -Content {
+                            New-UDGrid -Container -Content {
+                                foreach ($setting in $locationSettings) {
+                                    New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                        New-UDTextbox -Label "location.$setting" -Id "textbox-settings-location-$setting" -Value ($cache:settings."location.$setting") -FullWidth
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    New-UDTab -Text 'Renaming' -Content {
+                        New-UDCard -Title 'Format Strings' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
+                                    New-UDGrid -Container -Content {
+                                        foreach ($setting in $formatStringSettings) {
+                                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                                if ($setting -eq 'sort.format.posterimg' -or $setting -eq 'sort.metadata.nfo.format.tag' -or $setting -eq 'sort.format.outputfolder') {
+                                                    New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting" -join ' \ ') -FullWidth
+                                                } else {
+                                                    New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting") -FullWidth
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                # ! TODO
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
+                                        New-UDButton -Text 'Preview Output' -OnClick {
+                                            Show-UDModal -FullWidth -MaxWidth xl -Content {
+                                                New-UDTypography -Variant 'h6' -Text 'Enter a full path to a movie file'
+                                                New-UDTextbox -Id 'textbox-settings-previewfile' -Label 'Movie Path'
+                                                $data = Javinizer -Find ($cache:settings | Get-JVItem (Get-UDElement -Id 'textbox-settings-previewfile').value) -Javlibrary -R18 -DmmJa -Aggregated
+                                                Get-JVSortData
+                                            } -Footer {
+                                                New-UDButton 'Close' -OnClick {
+                                                    Hide-UDModal
+                                                }
+                                            }
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                    New-UDTab -Text 'Other' -Content {
+                        New-UDCard -Title 'Emby/Jellyfin' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
+                                    New-UDGrid -Container -Content {
+                                        foreach ($setting in $embySettings) {
+                                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                                New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting") -FullWidth
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        New-UDCard -Title 'Javlibrary/Javdb' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
+                                    New-UDGrid -Container -Content {
+                                        foreach ($setting in $javlibrarySettings) {
+                                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
+                                                New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting") -FullWidth
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        New-UDCard -Title 'Admin' -Content {
+                            New-UDGrid -Container -Content {
+                                New-UDGrid -Item -SmallSize 6 -Content {
+                                    New-UDCheckBox -Id 'checkbox-settings-adminlog' -Label 'admin.log' -LabelPlacement end -Checked ($cache:settings.'admin.log')
+                                }
+                                New-UDGrid -Item -SmallSize 6 -Content {
+                                    New-UDTypography -Variant 'body2' -Text 'admin.log.level'
+                                    New-UDAutocomplete -Id 'autocomplete-settings-adminloglevel' -Options @('debug', 'info', 'warning', 'error') -Value ($cache:settings.'admin.log.level')
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}#>
+
 function ConvertTo-Reverse {
     $arr = @($input)
     [array]::Reverse($arr)
     $arr
 }
 
+function New-JVAppBar {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [String]$Title
+    )
+
+    $Drawer = New-UDDrawer -Children {
+        New-UDList -Children {
+            New-UDListItem -Label 'Sort' -OnClick {
+                Invoke-UDRedirect -Url '/sort'
+            }
+            New-UDListItem -Label 'Settings' -OnClick {
+                Invoke-UDRedirect -Url '/settings'
+            }
+            New-UDListItem -Label 'History' -OnClick {
+                Invoke-UDRedirect -Url '/history'
+            }
+            New-UDListItem -Label "Admin" -OnClick {
+                Invoke-UDRedirect -Url '/admin'
+            }
+            New-UDListItem -Label "Emby" -OnClick {
+                Invoke-UDRedirect -Url '/emby'
+            }
+            New-UDListItem -Label "About" -OnClick {
+                Invoke-UDRedirect -Url '/about'
+            }
+            New-UDListItem -Label "Docs" -OnClick {
+                Invoke-UDRedirect -Url 'https://docs.jvlflame.net' -OpenInNewWindow
+            }
+            New-UDListItem -Label "GitHub" -OnClick {
+                Invoke-UDRedirect -Url 'https://github.com/jvlflame/Javinizer' -OpenInNewWindow
+            }
+        }
+    }
+
+    New-UDStyle -Style '
+    .MuiButton-text {
+        padding: 6px 8px;
+    }
+    .MuiButton-label {
+        color: white;
+    }
+    .MuiIconButton-edgeStart {
+        position: fixed;
+        left: 20px;
+    }
+    .MuiPaper-root {
+        align-items: flex-end;
+    }' -Content {
+        New-UDAppBar -Position fixed -Drawer $Drawer -Children {
+            #New-UDTypography -Text "$Title" -Variant h6
+            # New-UDElement -Tag 'div' -Content { "$Title" }
 
 
-$Pages += New-UDPage -Name "Javinizer" -Content {
+            New-UDButton -Text 'Sort' -Variant text -OnClick {
+                Invoke-UDRedirect -Url '/sort'
+            }
+            New-UDButton -Text 'Settings' -Variant text -OnClick {
+                Invoke-UDRedirect -Url '/settings'
+                #Show-JVSettingsModal
+            }
+            New-UDButton -Text 'History' -Variant text -OnClick {
+                Invoke-UDRedirect -Url '/history'
+            }
+            <#             New-UDButton -Text 'Admin' -Variant text -OnClick {
+                    Invoke-UDRedirect -Url '/admin'
+                }
+                New-UDButton -Text 'Emby' -Variant text -OnClick {
+                    Invoke-UDRedirect -Url '/emby'
+                }
+                New-UDButton -Text 'About' -Variant text -OnClick {
+                    Invoke-UDRedirect -Url '/about'
+                }
+                New-UDButton -Text 'Docs' -Variant text -OnClick {
+                    Invoke-UDRedirect -Url 'https://docs.jvlflame.net' -OpenInNewWindow
+                }
+
+                New-UDButton -Text 'GitHub' -Variant text -OnClick {
+                    Invoke-UDRedirect -Url 'https://github.com/jvlflame/Javinizer' -OpenInNewWindow
+                } #>
+
+        }
+    }
+}
+
+$Pages += New-UDPage -Name "Sort" -Content {
+    $cache:findData = @()
+    $cache:originalFindData = @()
+    $cache:filePath = ''
+    $cache:index = 0
+    $cache:currentIndex = 0
+    $actressIndex = 0
+    $cache:tablePageSize = 5
+    New-JVAppBar -Title "Javinizer"
     New-UDScrollUp
     New-UDStyle -Style '
     .MuiFormHelperText-root {
@@ -570,7 +1392,16 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                     } else {
                         $cache:currentIndex = $cache:index + 1
                     }
-                    New-UDCard -Title "($cache:currentIndex of $(($cache:findData).Count)) $($cache:findData[$cache:index].Data.Id)" -Content {
+
+                    if (-not ($($cache:findData[$cache:index].Data.Id))) {
+                        $baseName = (Get-Item -Path $cache:findData[$cache:index].Path).BaseName
+                        $cardTitle = "($cache:currentIndex of $(($cache:findData).Count) $baseName"
+                    } elseif ($($cache:findData[$cache:index].PartNumber)) {
+                        $cardTitle = "($cache:currentIndex of $(($cache:findData).Count)) $($cache:findData[$cache:index].Data.Id) - pt$($cache:findData[$cache:index].PartNumber)"
+                    } else {
+                        $cardTitle = "($cache:currentIndex of $(($cache:findData).Count) $($cache:findData[$cache:index].Data.Id)"
+                    }
+                    New-UDCard -Title $cardTitle -Content {
                         New-UDGrid -Container -Content {
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 7 -Content {
                                 $findDataArray = @()
@@ -790,9 +1621,9 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                 }
                             }
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
-                                New-UDTooltip -TooltipContent { 'Open grid view' } -Content {
+                                New-UDTooltip -TooltipContent { 'Open grid view' } -Place top -Effect solid -Type dark -Content {
                                     New-UDButton -Text 'Grid View' -FullWidth -OnClick {
-                                        Show-UDModal -Persistent -FullWidth -MaxWidth xl -Content {
+                                        Show-UDModal -FullWidth -MaxWidth xl -Content {
                                             New-UDDynamic -Id 'dynamic-sort-gridview' -Content {
                                                 New-UDGrid -Container -Content {
                                                     $count = 0
@@ -830,11 +1661,11 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                                                         New-UDButton -Icon $iconTrash -Size medium -FullWidth -OnClick {
                                                                             if ((($cache:findData).Count) -gt 1) {
                                                                                 $tempFindData = [System.Collections.ArrayList]$cache:findData
-                                                                                $tempOriginalFindData = [System.Collections.ArrayList]($cache:originalFindData | ConvertFrom-Json -Depth 32)
+                                                                                $tempOriginalFindData = [System.Collections.ArrayList]($cache:originalFindData)
                                                                                 $tempFindData.RemoveAt($count)
                                                                                 $tempOriginalFindData.RemoveAt($count)
                                                                                 $cache:findData = $tempFindData
-                                                                                $cache:originalFindData = ($tempOriginalFindData | ConvertTo-Json -Depth 32)
+                                                                                $cache:originalFindData = ($tempOriginalFindData)
                                                                             } else {
                                                                                 $cache:findData = @()
                                                                                 $cache:originalFindData = @()
@@ -856,13 +1687,9 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                                 }
                                             }
 
-                                        } -Footer {
-                                            New-UDButton -Text 'Cancel' -OnClick {
-                                                Hide-UDModal
-                                            }
                                         }
                                     }
-                                } -Place top -Effect solid -Type dark
+                                }
                             }
                         }
                     }
@@ -915,7 +1742,6 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                                         foreach ($img in $cache:findData[$cache:index].Data.ScreenshotUrl) {
                                                             New-UDGrid -Item -ExtraSmallSize 6 -SmallSize 6 -MediumSize 6 -Content {
                                                                 New-UDCard -Content {
-
                                                                     New-UDImage -Url $img -Height 150
                                                                 }
                                                             }
@@ -932,13 +1758,13 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                 }
 
                 New-UDDynamic -Content {
-                    New-UDCard -Title 'Sort' -Content {
+                    New-UDCard -Title 'Javinizer Sort' -Content {
                         New-UDGrid -Container -Content {
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 8 -Content {
                                 New-UDTextbox -Id 'textbox-sort-filepath' -Placeholder 'Enter a path (Defaults to setting "location.input")' -Value $cache:settings.'location.input' -FullWidth
                             }
                             New-UDGrid -Item -ExtraSmallSize 6 -SmallSize 6 -MediumSize 2 -Content {
-                                New-UDTooltip -TooltipContent { "Start Javinizer on the specified directory" } -Content {
+                                New-UDTooltip -TooltipContent { "Start sort on the specified directory" } -Content {
                                     New-UDButton -Icon $iconSearch -FullWidth -OnClick {
                                         Invoke-JavinizerWeb -Path (Get-UDElement -Id 'textbox-sort-filepath').value
                                     }
@@ -947,9 +1773,9 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                             New-UDGrid -Item -ExtraSmallSize 6 -SmallSize 6 -MediumSize 2 -Content {
                                 New-UDTooltip -TooltipContent { 'Clear current sort' } -Content {
                                     New-UDButton -Icon $iconTrash -FullWidth -OnClick {
-                                        Show-UDModal -Content {
+                                        Show-UDModal -FullWidth -MaxWidth sm -Content {
                                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
-                                                New-UDTypography -Variant h6 -Text "Remove all movies from the current sort? (This does not affect your local files)"
+                                                New-UDTypography -Variant h6 -Text "Clear your current sort? (This does not affect your local files)"
                                             }
                                         } -Footer {
                                             New-UDButton -Text 'Ok' -OnClick {
@@ -1059,7 +1885,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                                 New-UDDynamic -Id 'dynamic-sort-filebrowser' -Content {
                                     $cache:filePath = (Get-UDElement -Id 'textbox-sort-directorypath').value
-                                    $search = Get-ChildItem -LiteralPath $cache:filePath | Select-Object Name, Length, FullName, Mode, Extension, LastWriteTime
+                                    $search = Get-ChildItem -LiteralPath $cache:filePath | Select-Object Name, Length, FullName, Mode, Extension, LastWriteTime | ConvertTo-Reverse
                                     $searchColumns = @(
                                         New-UDTableColumn -Property Name -Title 'Name' -IncludeInSearch -Render {
                                             if ($EventData.Mode -like 'd*') {
@@ -1103,7 +1929,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                         }
                                     )
 
-                                    New-UDTable -Id 'table-filebrowser' -Data $search -Columns $searchColumns -Title "$cache:filePath" -Search -PageSize $cache:tablePageSize -ShowPagination
+                                    New-UDTable -Id 'table-filebrowser' -Data $search -Columns $searchColumns -Title "Path: $cache:filePath" -Search -PageSize $cache:tablePageSize -ShowPagination -ShowSort
                                 }
 
                                 New-UDGrid -Container -Content {
@@ -1275,6 +2101,17 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-description' -Label 'Description' -FullWidth -Value $cache:findData[$cache:index].Data.Description
                                 }
                             }
+                            New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                                if ($cache:originalFindData) {
+                                    if ($cache:findData[$cache:index].Data.Director -ne ((($cache:originalFindData)[$cache:index]).Data.Director)) {
+                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Icon $iconExclamation -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
+                                    } else {
+                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
+                                    }
+                                } else {
+                                    New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
+                                }
+                            }
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 6 -Content {
                                 if ($cache:originalFindData) {
                                     if ($cache:findData[$cache:index].Data.ReleaseDate -ne ((($cache:originalFindData)[$cache:index]).Data.ReleaseDate)) {
@@ -1295,17 +2132,6 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     }
                                 } else {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-runtime' -Label 'Runtime' -FullWidth -Value $cache:findData[$cache:index].Data.Runtime
-                                }
-                            }
-                            New-UDGrid -Item -ExtraSmallSize 12 -Content {
-                                if ($cache:originalFindData) {
-                                    if ($cache:findData[$cache:index].Data.Director -ne ((($cache:originalFindData)[$cache:index]).Data.Director)) {
-                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Icon $iconExclamation -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
-                                    } else {
-                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
-                                    }
-                                } else {
-                                    New-UDTextbox -Id 'textbox-sort-aggregateddata-director' -Label 'Director' -FullWidth -Value $cache:findData[$cache:index].Data.Director
                                 }
                             }
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 6 -Content {
@@ -1330,7 +2156,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-label' -Label 'Label' -FullWidth -Value $cache:findData[$cache:index].Data.Label
                                 }
                             }
-                            New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 6 -Content {
                                 if ($cache:originalFindData) {
                                     if ($cache:findData[$cache:index].Data.Series -ne ((($cache:originalFindData)[$cache:index]).Data.Series)) {
                                         New-UDTextbox -Id 'textbox-sort-aggregateddata-series' -Icon $iconExclamation -Label 'Series' -FullWidth -Value $cache:findData[$cache:index].Data.Series
@@ -1339,25 +2165,6 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     }
                                 } else {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-series' -Label 'Series' -FullWidth -Value $cache:findData[$cache:index].Data.Series
-                                }
-                            }
-                            New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 6 -Content {
-                                if ($cache:originalFindData) {
-                                    if ($null -ne $cache:findData[$cache:index].Data.Tag) {
-                                        if ($null -ne ($cache:originalFindData)[$cache:index].Data.Tag) {
-                                            if (Compare-Object -ReferenceObject $cache:findData[$cache:index].Data.Tag -DifferenceObject ((($cache:originalFindData)[$cache:index]).Data.Tag)) {
-                                                New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Icon $iconExclamation -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
-                                            } else {
-                                                New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
-                                            }
-                                        } else {
-                                            New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Icon $iconExclamation -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
-                                        }
-                                    } else {
-                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
-                                    }
-                                } else {
-                                    New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
                                 }
                             }
                             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 6 -Content {
@@ -1393,7 +2200,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-votes' -Label 'Votes' -FullWidth -Value $cache:findData[$cache:index].Data.Rating.Votes
                                 }
                             }
-                            New-UDGrid -Item -ExtraSmallSize 12 -Content {
+                            New-UDGrid -Item -ExtraSmallSize 10 -Content {
                                 if ($cache:originalFindData) {
                                     if ($null -ne $cache:findData[$cache:index].Data.Genre) {
                                         if ($null -ne ($cache:originalFindData)[$cache:index].Data.Genre) {
@@ -1410,6 +2217,91 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     }
                                 } else {
                                     New-UDTextbox -Id 'textbox-sort-aggregateddata-genre' -Label 'Genre' -FullWidth -Value (($cache:findData[$cache:index].Data.Genre | Sort-Object) -join ' \ ')
+                                }
+                            }
+                            New-UDGrid -Item -ExtraSmallSize 2 -Content {
+                                New-UDTooltip -TooltipContent { 'Edit Genres' } -Type dark -Place top -Effect solid -Content {
+                                    New-UDStyle -Style '
+                                    .MuiButton-root {
+                                        padding: 10px 16px;
+                                    }' -Content {
+                                        New-UDButton -Icon $iconEdit -Text 'Edit' -FullWidth -Variant outlined -OnClick {
+                                            Show-UDModal
+                                        }
+                                    }
+                                }
+                            }
+                            New-UDGrid -Item -ExtraSmallSize 10 -Content {
+                                if ($cache:originalFindData) {
+                                    if ($null -ne $cache:findData[$cache:index].Data.Tag) {
+                                        if ($null -ne ($cache:originalFindData)[$cache:index].Data.Tag) {
+                                            if (Compare-Object -ReferenceObject $cache:findData[$cache:index].Data.Tag -DifferenceObject ((($cache:originalFindData)[$cache:index]).Data.Tag)) {
+                                                New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Icon $iconExclamation -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
+                                            } else {
+                                                New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
+                                            }
+                                        } else {
+                                            New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Icon $iconExclamation -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
+                                        }
+                                    } else {
+                                        New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
+                                    }
+                                } else {
+                                    New-UDTextbox -Id 'textbox-sort-aggregateddata-tag' -Label 'Tag' -FullWidth -Value (($cache:findData[$cache:index].Data.Tag | Sort-Object) -join ' \ ')
+                                }
+                            }
+                            New-UDGrid -Item -ExtraSmallSize 2 -Content {
+                                New-UDTooltip -TooltipContent { 'Edit Tags' } -Type dark -Place top -Effect solid -Content {
+                                    New-UDStyle -Style '
+                                    .MuiPaper-root {
+                                        text-align: center;
+                                    }
+                                    .MuiButton-root {
+                                        padding: 10px 16px;
+                                    }' -Content {
+                                        New-UDButton -Icon $iconEdit -Text 'Edit' -FullWidth -Variant outlined -OnClick {
+                                            function Show-JVEditorModal {
+                                                param (
+                                                    [Array]$Data
+                                                )
+                                                Show-UDModal -FullWidth -MaxWidth md -Content {
+                                                    New-UDGrid -Container -Content {
+                                                        New-UDGrid -Item -ExtraSmallSize 4 -Content {
+                                                            New-UDCard -Title 'Add Tags' -Content {
+
+                                                            }
+                                                        }
+                                                        New-UDGrid -Item -ExtraSmallSize 4 -Content {
+                                                            New-UDCard -Title 'Favorites' -Content {
+                                                                New-UDList -Content {
+                                                                    New-UDListItem -Label 'Inbox' -Icon (New-UDIcon -Icon envelope -Size 3x) -SubTitle 'New Stuff'
+                                                                    New-UDListItem -Label 'Drafts' -Icon (New-UDIcon -Icon edit -Size 3x) -SubTitle "Stuff I'm working on "
+                                                                    New-UDListItem -Label 'Trash' -Icon (New-UDIcon -Icon trash -Size 3x) -SubTitle 'Stuff I deleted'
+                                                                    New-UDListItem -Label 'Spam' -Icon (New-UDIcon -Icon bug -Size 3x) -SubTitle "Stuff I didn't want" -OnClick {
+                                                                        Show-UDToast -Message 'Clicked'
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        New-UDGrid -Item -ExtraSmallSize 4 -Content {
+                                                            New-UDCard -Title 'List' -Content {
+
+                                                            }
+                                                        }
+                                                    }
+                                                    New-UDCard -Title 'Tags' -Content {
+                                                        New-UDList -Content {
+                                                            foreach ($item in $Data) {
+                                                                New-UDListItem -Label $item
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            Show-JVEditorModal -Data $cache:findData[$cache:index].Data.Tag
+                                        }
+                                    }
                                 }
                             }
                             New-UDGrid -Item -ExtraSmallSize 12 -Content {
@@ -1606,7 +2498,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                             New-UDGrid -Item -ExtraSmallSize 4 -Content {
                                 New-UDTooltip -TooltipContent { 'Edit metadata using JSON' } -Content {
                                     New-UDButton -Icon $iconEdit -Text 'Json' -FullWidth -OnClick {
-                                        Show-UDModal -FullWidth -MaxWidth lg -Persistent -Content {
+                                        Show-UDModal -FullWidth -MaxWidth md -Persistent -Content {
                                             if ($null -eq $cache:findData[$cache:index].Data) {
                                                 $aggregatedData = [PSCustomObject]@{
                                                     Id             = $null
@@ -1634,7 +2526,7 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                             } else {
                                                 $aggregatedData = $cache:findData[$cache:index].Data
                                             }
-                                            New-UDCodeEditor -Id 'dynamic-sort-aggregateddataeditor' -HideCodeLens -Language 'json' -Width '155ch' -Height '85ch' -Theme vs-dark -Code ($aggregatedData | ConvertTo-Json)
+                                            New-UDCodeEditor -Id 'dynamic-sort-aggregateddataeditor' -HideCodeLens -Language 'json' -Width '120ch' -Height '85ch' -Theme vs-dark -Code ($aggregatedData | ConvertTo-Json)
                                         } -Header {
                                             New-UDTypography -Text (Get-UDElement -Id 'textbox-sort-manualsearch').value.ToUpper()
                                         } -Footer {
@@ -1667,11 +2559,13 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                 New-UDTooltip -TooltipContent { 'Reset metadata changes to default' } -Content {
                                     New-UDButton -Icon $iconUndo -Text 'Reset' -FullWidth -OnClick {
                                         if (($cache:findData).Length -eq 1) {
-                                            $cache:findData = ($cache:originalFindData)
+                                            $tempData = $cache:OriginalFindData | ConvertTo-Json -Depth 32
+                                            $cache:findData = $tempData | ConvertFrom-Json -Depth 32
                                             Update-JVPage -Sort
 
                                         } else {
-                                            ($cache:findData)[$cache:index] = ($cache:originalFindData)[$cache:index]
+                                            $tempData = $cache:OriginalFindData[$cache:index] | ConvertTo-Json -Depth 32
+                                            $cache:findData[$cache:index] = $tempData | ConvertFrom-Json -Depth 32
                                             Update-JVPage -Sort
                                         }
                                     }
@@ -1754,6 +2648,19 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
                                     }
                                 } -Place top -Type dark -Effect solid
 
+                            }
+
+                            New-UDButton -Text 'FindData' -OnClick {
+                                Show-UDModal -Content {
+                                    New-UDCard -Content {
+                                        $code = $cache:findData | ConvertTo-Json -Depth 32
+                                        New-UDCodeEditor -Height '150ch' -Width '100ch' -Code $code
+
+                                        $code2 = $cache:originalFindData | ConvertTo-Json -Depth 32
+                                        New-UDCodeEditor -Height '150ch' -Width '100ch' -Code $code2
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -2036,7 +2943,8 @@ $Pages += New-UDPage -Name "Javinizer" -Content {
     }
 }
 
-$Pages += New-UDPage -Name 'Emby/Jellyfin' -Content {
+$Pages += New-UDPage -Name 'Emby' -Content {
+    New-JVAppBar -Title "Emby"
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -2134,6 +3042,9 @@ $Pages += New-UDPage -Name 'Emby/Jellyfin' -Content {
 }
 
 $Pages += New-UDPage -Name "Settings" -Content {
+    New-JVAppBar -Title "Settings"
+    New-UDScrollUp
+
     $scraperSettings = @(
         'AVEntertainment',
         'AVEntertainmentJa',
@@ -2304,7 +3215,6 @@ $Pages += New-UDPage -Name "Settings" -Content {
     )
 
     New-UDDynamic -Id 'dynamic-settings-page' -Content {
-        New-UDScrollUp
         New-UDGrid -Container -Content {
             ## Left Column
             New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
@@ -2868,6 +3778,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
 }
 
 $Pages += New-UDPage -Name 'History' -Content {
+    New-JVAppBar -Title "History"
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3028,6 +3939,8 @@ $Pages += New-UDPage -Name 'History' -Content {
 }
 
 $Pages += New-UDPage -Name 'Admin' -Content {
+    New-JVAppBar -Title "Admin"
+    New-UDScrollUp
     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
         New-UDCard -Title 'Console' -Content {
             New-UDGrid -Container -Content {
@@ -3126,6 +4039,8 @@ $Pages += New-UDPage -Name 'Admin' -Content {
 }
 
 $Pages += New-UDPage -Name 'About' -Content {
+    New-JVAppBar -Title "About"
+    New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
             New-UDCard -Title 'About Javinizer' -Content {
