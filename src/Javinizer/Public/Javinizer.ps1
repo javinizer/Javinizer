@@ -298,6 +298,7 @@ function Javinizer {
         [Boolean]$RenameFile,
 
         [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Gui')]
         [Switch]$Force,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -677,7 +678,7 @@ function Javinizer {
         switch ($PsCmdlet.ParameterSetName) {
             'Gui' {
                 if ($InstallGUI) {
-                    Install-JVGui
+                    Install-JVGui -Force:$Force
                 } elseif ($OpenGUI) {
                     Start-JVGui -Port:$Port
                 }

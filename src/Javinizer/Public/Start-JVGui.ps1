@@ -3,10 +3,7 @@ function Start-JVGui {
     param (
         [Parameter(Position = 0)]
         [ValidateRange(0, 65353)]
-        [Int]$Port = 8600,
-
-        [Parameter()]
-        [Switch]$FirstRun
+        [Int]$Port = 8600
     )
 
     # Get module details
@@ -62,6 +59,7 @@ function Start-JVGui {
         # Needing to remap them in an administrator scope
         explorer.exe $psuBinaryPath
         Write-Host "Javinizer GUI started at [http://localhost:$Port/javinizer]"
+        Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
     } catch {
         Write-Error "Error starting Javinizer PowerShell Universal: $PSItem"
         return

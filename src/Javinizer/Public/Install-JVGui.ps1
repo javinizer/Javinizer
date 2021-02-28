@@ -11,6 +11,7 @@ function Install-JVGui {
     if (Test-Administrator) {
         if ($IsWindows) {
             Write-Host "Starting Javinizer GUI install..."
+            Write-Host "Use the -Force parameter if you want to overwrite the existing PowerShell Universal install"
             Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted
 
             # Get module details
