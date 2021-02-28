@@ -13,11 +13,11 @@ function Set-JVMovie {
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [PSObject]$Data,
 
-        [Parameter()]
-        [Switch]$Update,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$SortData,
 
         [Parameter()]
-        [Int]$PartNumber,
+        [Switch]$Update,
 
         [Parameter()]
         [Switch]$Force,
@@ -60,75 +60,7 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.trailervid')]
-        [Boolean]$DownloadTrailerVid,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.file')]
-        [String]$FileFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.folder')]
-        [String]$FolderFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.outputfolder')]
-        [Array]$OutputFolderFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.posterimg')]
-        [Array]$PosterFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.thumbimg')]
-        [String]$ThumbnailFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.trailervid')]
-        [String]$TrailerFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.nfo')]
-        [String]$NfoFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.screenshotimg')]
-        [String]$ScreenshotImgFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.screenshotfolder')]
-        [String]$ScreenshotFolderFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.actressimgfolder')]
-        [String]$ActressFolderFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.displayname')]
-        [String]$DisplayName,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.firstnameorder')]
-        [Boolean]$FirstNameOrder,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.delimiter')]
-        [String]$DelimiterFormat,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.actresslanguageja')]
-        [Boolean]$ActressLanguageJa,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.originalpath')]
-        [Boolean]$OriginalPath,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.metadata.nfo.altnamerole')]
-        [Boolean]$AltNameRole,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [Alias('sort.format.groupactress')]
-        [Boolean]$GroupActress
+        [Boolean]$DownloadTrailerVid
     )
 
     begin {
@@ -152,27 +84,10 @@ function Set-JVMovie {
             $DownloadPosterImg = $Settings.'sort.download.posterimg'
             $DownloadScreenshotImg = $Settings.'sort.download.screenshotimg'
             $DownloadTrailerVid = $Settings.'sort.download.trailervid'
-            $FileFormat = $Settings.'sort.format.file'
-            $FolderFormat = $Settings.'sort.format.folder'
-            $OutputFolderFormat = $Settings.'sort.format.outputfolder'
-            $PosterFormat = $Settings.'sort.format.posterimg'
-            $ThumbnailFormat = $Settings.'sort.format.thumbimg'
-            $TrailerFormat = $Settings.'sort.format.trailervid'
-            $NfoFormat = $Settings.'sort.format.nfo'
-            $ScreenshotImgFormat = $Settings.'sort.format.screenshotimg'
-            $ScreenshotFolderFormat = $Settings.'sort.format.screenshotfolder'
-            $ActorFolderFormat = $Settings.'sort.format.actressimgfolder'
-            $DisplayName = $Settings.'sort.metadata.nfo.displayname'
-            $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
-            $DelimiterFormat = $Settings.'sort.format.delimiter'
-            $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
-            $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
-            $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
-            $GroupActress = $Settings.'sort.format.groupactress'
         }
 
-        if ($RenameFile -and (!($Update))) {
-            $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
+        <# if ($RenameFile -and (!($Update))) {
+            $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $sortData.PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
         } else {
             $fileName = (Get-Item -LiteralPath $Path).BaseName
         }
@@ -182,79 +97,72 @@ function Set-JVMovie {
                 $outputFolders += Convert-JVstring -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
             }
             $outputFolderName = $outputFolders -join '/'
-        }
-        $folderName = Convert-JVString -Data $Data -Format $FolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        $thumbName = Convert-JVString -Data $Data -Format $ThumbnailFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        $trailerName = Convert-JVString -Data $Data -Format $TrailerFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        $screenshotImgName = Convert-JVString -Data $Data -Format $ScreenshotImgFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        $screenshotFolderName = Convert-JVString -Data $Data -Format $ScreenshotFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        $actorFolderName = Convert-JVString -Data $Data -Format $ActorFolderFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
+        } #>
 
-        $posterName = @()
+        <# $sortData.PosterName = @()
         foreach ($format in $PosterFormat) {
-            $posterName += Convert-JVString -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        }
+            $sortData.PosterName += Convert-JVString -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
+        } #>
 
-        if ($CreateNfo) {
+        <# if ($CreateNfo) {
             $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
             if ($CreateNfoPerFile) {
                 $nfoName = $fileName
             }
-        }
+        } #>
 
-        if ($OriginalPath) {
+        <# if ($OriginalPath) {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
         } else {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
-        }
+        } #>
 
-        if ($MoveToFolder) {
+        <# if ($MoveToFolder) {
             if ($DestinationPath) {
                 if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
-                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                    $sortData.FolderPath = Join-Path -Path $DestinationPath -ChildPath $outputFolderName -AdditionalChildPath $sortData.FolderName
                 } else {
-                    $folderPath = Join-Path -Path $DestinationPath -ChildPath $folderName
+                    $sortData.FolderPath = Join-Path -Path $DestinationPath -ChildPath $sortData.FolderName
                 }
             } else {
                 if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
-                    $folderPath = Join-Path -Path $Path -ChildPath $outputFolderName -AdditionalChildPath $folderName
+                    $sortData.FolderPath = Join-Path -Path $Path -ChildPath $outputFolderName -AdditionalChildPath $sortData.FolderName
                 } else {
-                    $folderPath = Join-Path -Path $Path -ChildPath $folderName
+                    $sortData.FolderPath = Join-Path -Path $Path -ChildPath $sortData.FolderName
                 }
             }
         } else {
             if ($DestinationPath) {
-                $folderPath = $DestinationPath
+                $sortData.FolderPath = $DestinationPath
             } else {
-                $folderPath = (Get-Item -LiteralPath $Path).Directory
+                $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
             }
-        }
+        } #>
 
-        if ($Update) {
-            $folderPath = (Get-Item -LiteralPath $Path).Directory
-        }
+        <# if ($Update) {
+            $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
+        } #>
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
-            $folderPath = ([String]$folderPath).TrimEnd('.')
+            $sortData.FolderPath = ([String]$sortData.FolderPath).TrimEnd('.')
 
             # We do not want to recreate the destination folder if it already exists
             try {
-                if (!(Test-Path -LiteralPath $folderPath) -and (!($Update))) {
-                    New-Item -Path $folderPath -ItemType Directory -Force:$Force | Out-Null
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$folderPath]"
+                if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
+                    New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$($sortData.FolderPath)]"
                 }
             } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$folderPath]: $PSItem"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$($sortData.FolderPath)]: $PSItem"
             }
 
             if ($CreateNfo) {
                 try {
-                    $nfoPath = Join-Path -Path $folderPath -ChildPath "$nfoName.nfo"
-                    $nfoContents | Out-File -LiteralPath $nfoPath -Force:$Force
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$nfoPath]"
+                    $nfoContents | Out-File -LiteralPath $sortData.NfoPath -Force:$Force
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Nfo] created at path [$($sortData.NfoPath)]"
                 } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating nfo file [$nfoPath]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating nfo file [$($sortData.NfoPath)]: $PSItem"
                 }
             }
 
@@ -263,71 +171,68 @@ function Set-JVMovie {
                     try {
                         $webClient = New-Object System.Net.WebClient
                         $webclient.Headers.Add("User-Agent: Other")
-                        $thumbPath = Join-Path -Path $folderPath -ChildPath "$thumbName.jpg"
-                        if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                        if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force) {
-                                if (Test-Path -LiteralPath $thumbPath) {
-                                    Remove-Item -LiteralPath $thumbPath -Force
+                                if (Test-Path -LiteralPath $sortData.ThumbPath) {
+                                    Remove-Item -LiteralPath $sortData.ThumbPath -Force
                                 }
-                                $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
-                            } elseif (!(Test-Path -LiteralPath $thumbPath)) {
-                                $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
+                                $webClient.DownloadFile(($Data.CoverUrl).ToString(), $sortData.ThumbPath)
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$($sortData.ThumbPath)]"
+                            } elseif (!(Test-Path -LiteralPath $sortData.ThumbPath)) {
+                                $webClient.DownloadFile(($Data.CoverUrl).ToString(), $sortData.ThumbPath)
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$($sortData.ThumbPath)]"
                             }
                         } else {
-                            if (!(Test-Path -LiteralPath $thumbPath)) {
+                            if (!(Test-Path -LiteralPath $sortData.ThumbPath)) {
                                 Start-Sleep -Seconds 2
-                                if (!(Test-Path -LiteralPath $thumbPath)) {
-                                    $webClient.DownloadFile(($Data.CoverUrl).ToString(), $thumbPath)
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$thumbPath]"
+                                if (!(Test-Path -LiteralPath $sortData.ThumbPath)) {
+                                    $webClient.DownloadFile(($Data.CoverUrl).ToString(), $sortData.ThumbPath)
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Thumbnail - $($Data.CoverUrl)] downloaded to path [$($sortData.ThumbPath)]"
                                 }
                             }
                         }
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$thumbPath]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating thumbnail image file [$($sortData.ThumbPath)]: $PSItem"
                     }
 
                     if ($DownloadPosterImg) {
                         try {
                             $cropScriptPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'crop.py'
                             if (Test-Path -LiteralPath $cropScriptPath) {
-                                foreach ($poster in $posterName) {
-                                    $posterPath = Join-Path $folderPath -ChildPath "$poster.jpg"
-                                    $pythonThumbPath = $thumbPath -replace '\\', '/'
-                                    $pythonPosterPath = $posterPath -replace '\\', '/'
-                                    if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                                foreach ($poster in $sortData.PosterName) {
+                                    $pythonThumbPath = $sortData.ThumbPath -replace '\\', '/'
+                                    $pythonPosterPath = $sortData.PosterPath -replace '\\', '/'
+                                    if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                                         if ($Force) {
-                                            if (Test-Path -LiteralPath $posterPath) {
-                                                Remove-Item -LiteralPath $posterPath -Force
+                                            if (Test-Path -LiteralPath $sortData.PosterPath) {
+                                                Remove-Item -LiteralPath $sortData.PosterPath -Force
                                             }
                                             if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                                 python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $($sortData.ThumbPath)] cropped to path [$($sortData.PosterPath)]"
                                             } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                                 python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $($sortData.ThumbPath)] cropped to path [$($sortData.PosterPath)]"
                                             }
-                                        } elseif (!(Test-Path -LiteralPath $posterPath)) {
+                                        } elseif (!(Test-Path -LiteralPath $sortData.PosterPath)) {
                                             if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                                 python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $($sortData.ThumbPath)] cropped to path [$($sortData.PosterPath)]"
                                             } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                                 python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
-
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $($sortData.ThumbPath)] cropped to path [$($sortData.PosterPath)]"
                                             }
                                         }
                                     } else {
-                                        if (!(Test-Path -LiteralPath $posterPath)) {
+                                        if (!(Test-Path -LiteralPath $sortData.PosterPath)) {
                                             Start-Sleep -Seconds 2
-                                            if (!(Test-Path -LiteralPath $posterPath)) {
+                                            if (!(Test-Path -LiteralPath $sortData.PosterPath)) {
                                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
                                                     python $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $sortData.ThumbPath] cropped to path [$sortData.PosterPath]"
                                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                                     python3 $cropScriptPath $pythonThumbPath $pythonPosterPath
-                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $thumbPath] cropped to path [$posterPath]"
+                                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Poster - $sortData.ThumbPath] cropped to path [$sortData.PosterPath]"
                                                 }
                                             }
                                         }
@@ -338,7 +243,7 @@ function Set-JVMovie {
                                 Write-JLog -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Crop.py file is missing or cannot be found at path [$cropScriptPath]"
                             }
                         } catch {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating poster image file [$posterPath]: $PSItem"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating poster image file [$($sortData.PosterPath)]: $PSItem"
                         }
                     }
                 }
@@ -347,9 +252,8 @@ function Set-JVMovie {
             if ($DownloadActressImg) {
                 if ($null -ne $Data.Actress) {
                     try {
-                        $actorFolderPath = Join-Path -Path $folderPath -ChildPath $actorFolderName
-                        if (!(Test-Path -LiteralPath $actorFolderPath)) {
-                            New-Item -Path $actorFolderPath -ItemType Directory -Force:$Force | Out-Null
+                        if (!(Test-Path -LiteralPath $sortData.ActorFolderPath)) {
+                            New-Item -Path $sortData.ActorFolderPath -ItemType Directory -Force:$Force | Out-Null
                         }
 
                         $nfoXML = [xml]$nfoContents
@@ -358,9 +262,9 @@ function Set-JVMovie {
                                 $webClient = New-Object System.Net.WebClient
                                 $webclient.Headers.Add("User-Agent: Other")
                                 $newName = ($actress.name -split ' ') -join '_'
-                                $actressThumbPath = Join-Path -Path $actorFolderPath -ChildPath "$newName.jpg"
+                                $actressThumbPath = Join-Path -Path $sortData.ActorFolderPath -ChildPath "$newName.jpg"
 
-                                if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                                if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                                     if ($Force) {
                                         if (Test-Path -LiteralPath $actressThumbPath) {
                                             Remove-Item -LiteralPath $actressThumbPath -Force
@@ -392,16 +296,15 @@ function Set-JVMovie {
                 if ($null -ne $Data.ScreenshotUrl) {
                     try {
                         $index = 1
-                        $screenshotFolderPath = Join-Path $folderPath -ChildPath $screenshotFolderName
-                        if (!(Test-Path -LiteralPath $screenshotFolderPath)) {
-                            New-Item -Path $screenshotFolderPath -ItemType Directory -Force:$Force -ErrorAction SilentlyContinue | Out-Null
+                        if (!(Test-Path -LiteralPath $sortData.ScreenshotFolderPath)) {
+                            New-Item -Path $sortData.ScreenshotFolderPath -ItemType Directory -Force:$Force -ErrorAction SilentlyContinue | Out-Null
                         }
 
                         foreach ($screenshot in $Data.ScreenshotUrl) {
                             $webClient = New-Object System.Net.WebClient
                             $webclient.Headers.Add("User-Agent: Other")
-                            $screenshotPath = Join-Path -Path $screenshotFolderPath -ChildPath "$screenshotImgName$index.jpg"
-                            if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                            $screenshotPath = Join-Path -Path $sortData.ScreenshotFolderPath -ChildPath "$sortData.ScreenshotImgName$index.jpg"
+                            if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                                 if ($Force.IsPresent) {
                                     if (Test-Path -LiteralPath $screenshotPath) {
                                         Remove-Item -LiteralPath $screenshotPath -Force
@@ -434,57 +337,55 @@ function Set-JVMovie {
                     try {
                         $webClient = New-Object System.Net.WebClient
                         $webclient.Headers.Add("User-Agent: Other")
-                        $trailerPath = Join-Path -Path $folderPath -ChildPath "$trailerName.mp4"
-                        if ($PartNumber -eq 0 -or $PartNumber -eq 1) {
+                        if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force.IsPresent) {
-                                if (Test-Path -LiteralPath $trailerPath) {
-                                    Remove-Item -LiteralPath $trailerPath
+                                if (Test-Path -LiteralPath $sortData.TrailerPath) {
+                                    Remove-Item -LiteralPath $sortData.TrailerPath
                                 }
-                                $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$trailerPath]"
-                            } elseif (!(Test-Path -LiteralPath $trailerPath)) {
-                                $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$trailerPath]"
+                                $webClient.DownloadFile($Data.TrailerUrl, $sortData.TrailerPath)
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$($sortData.TrailerPath)]"
+                            } elseif (!(Test-Path -LiteralPath $sortData.TrailerPath)) {
+                                $webClient.DownloadFile($Data.TrailerUrl, $sortData.TrailerPath)
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$($sortData.TrailerPath)]"
                             }
                         } else {
-                            if (!(Test-Path -LiteralPath $trailerPath)) {
+                            if (!(Test-Path -LiteralPath $sortData.TrailerPath)) {
                                 Start-Sleep -Seconds 2
-                                if (!(Test-Path -LiteralPath $trailerPath)) {
-                                    $webClient.DownloadFile($Data.TrailerUrl, $trailerPath)
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$trailerPath]"
+                                if (!(Test-Path -LiteralPath $sortData.TrailerPath)) {
+                                    $webClient.DownloadFile($Data.TrailerUrl, $sortData.TrailerPath)
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [TrailerVid - $($Data.TrailerUrl)] downloaded to path [$($sortData.TrailerPath)]"
                                 }
                             }
                         }
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating trailer video file [$($Data.TrailerUrl)] to [$trailerName]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating trailer video file [$($Data.TrailerUrl)] to [$($sortData.TrailerName)]: $PSItem"
                     }
                 }
             }
 
             if ($RenameFile -and (!($Update))) {
                 try {
-                    $filePath = Join-Path -Path $folderPath -ChildPath "$fileName$((Get-Item -LiteralPath $Path).Extension)"
                     if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
-                            if (!(Test-Path -LiteralPath $filePath)) {
+                        if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
+                            if (!(Test-Path -LiteralPath $sortData.FilePath)) {
                                 if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
                                 } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                     if ($Force) {
                                         try {
-                                            Move-Item $Path $filePath --force
+                                            Move-Item $Path $sortData.FilePath --force
                                         } catch {
-                                            Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
                                         }
                                     } else {
                                         try {
-                                            Move-Item $Path $filePath --no-clobber
+                                            Move-Item $Path $sortData.FilePath --no-clobber
                                         } catch {
-                                            Move-Item -LiteralPath $Path -Destination $filePath
+                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath
                                         }
                                     }
                                 }
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
                             } else {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
                             }
@@ -493,33 +394,32 @@ function Set-JVMovie {
                         }
                     }
                 } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$($sortData.FilePath)]: $PSItem"
                 }
             } else {
                 if (!($Update)) {
                     try {
-                        $filePath = Join-Path -Path $folderPath -ChildPath (Get-Item -LiteralPath $Path).Name
                         if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                            if ((Get-Item -LiteralPath $Path).FullName -ne $filePath) {
-                                if (!(Test-Path -LiteralPath $filePath)) {
+                            if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
+                                if (!(Test-Path -LiteralPath $sortData.FilePath)) {
                                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                        Move-Item -LiteralPath $Path -Destination $filePath -Force:$Force
+                                        Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
                                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
                                         if ($Force) {
                                             try {
-                                                Move-Item $Path $filePath --force
+                                                Move-Item $Path $sortData.FilePath --force
                                             } catch {
-                                                Move-Item -LiteralPath $Path -Destination $filePath -Force
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
                                             }
                                         } else {
                                             try {
-                                                Move-Item $Path $filePath --no-clobber
+                                                Move-Item $Path $sortData.FilePath --no-clobber
                                             } catch {
-                                                Move-Item -LiteralPath $Path -Destination $filePath
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath
                                             }
                                         }
                                     }
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$filePath]"
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
                                 } else {
                                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
                                 }
@@ -528,7 +428,7 @@ function Set-JVMovie {
                             }
                         }
                     } catch {
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$filePath]: $PSItem"
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [$($MyInvocation.MyCommand.Name)] Error occurred when renaming and moving file [$Path] to [$($sortData.FilePath)]: $PSItem"
                     }
                 }
             }

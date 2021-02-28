@@ -177,25 +177,25 @@ function Get-JVSortData {
         $pathObject = [PSCustomObject]@{
             FolderName           = $folderName
             ThumbName            = $thumbName
+            PosterName           = $posterName
             TrailerName          = $trailerName
             ScreenshotImgName    = $screenshotImgName
             ScreenshotFolderName = $screenshotFolderName
             ActorFolderName      = $actorFolderName
+            FilePath             = $filePath
             FolderPath           = $folderPath
             NfoPath              = $nfoPath
             ThumbPath            = $thumbPath
             PosterPath           = $posterPath
             ActorFolderPath      = $actorFolderPath
-            ActressThumbPath     = $actressThumbPath
             ScreenshotFolderPath = $screenshotFolderPath
-            ScreenshotPath       = $screenshotPath
             TrailerPath          = $trailerPath
-            FilePath             = $filePath
+            PartNumber           = $PartNumber
         }
 
         $object = @{
-            Data = $Data
-            Path = $pathObject
+            Data     = $Data
+            SortData = $pathObject
         }
 
         Write-Output $object
