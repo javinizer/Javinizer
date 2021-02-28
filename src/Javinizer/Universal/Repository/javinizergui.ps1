@@ -2561,7 +2561,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                         'source' {}
                                                                         'url' {}
                                                                         'ajaxid' {}
-                                                                        'releasedate' {}
+                                                                        'releaseyear' {}
                                                                         'actress' {
                                                                             New-UDButton -Text 'Replace' -Variant outlined -Size medium -OnClick {
                                                                                 $cache:findData[$cache:index].Data.($prop.Name) = @($prop.Value)
