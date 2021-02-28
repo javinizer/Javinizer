@@ -80,11 +80,6 @@ function Get-JVSortData {
             }
         }
 
-        if ($OriginalPath) {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
-        } else {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
-        }
 
         if ($MoveToFolder) {
             if ($DestinationPath) {

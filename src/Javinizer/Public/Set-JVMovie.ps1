@@ -60,7 +60,23 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.download.trailervid')]
-        [Boolean]$DownloadTrailerVid
+        [Boolean]$DownloadTrailerVid,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.firstnameorder')]
+        [Boolean]$FirstNameOrder,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.actresslanguageja')]
+        [Boolean]$ActressLanguageJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.originalpath')]
+        [Boolean]$OriginalPath,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.metadata.nfo.altnamerole')]
+        [Boolean]$AltNameRole
     )
 
     begin {
@@ -84,6 +100,10 @@ function Set-JVMovie {
             $DownloadPosterImg = $Settings.'sort.download.posterimg'
             $DownloadScreenshotImg = $Settings.'sort.download.screenshotimg'
             $DownloadTrailerVid = $Settings.'sort.download.trailervid'
+            $FirstNameOrder = $Settings.'sort.metadata.nfo.firstnameorder'
+            $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
+            $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
+            $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
         }
 
         <# if ($RenameFile -and (!($Update))) {
@@ -111,11 +131,11 @@ function Set-JVMovie {
             }
         } #>
 
-        <# if ($OriginalPath) {
+        if ($OriginalPath) {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
         } else {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
-        } #>
+        }
 
         <# if ($MoveToFolder) {
             if ($DestinationPath) {
