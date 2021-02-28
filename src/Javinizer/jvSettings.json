@@ -107,43 +107,46 @@
     "title"
   ],
   "sort.metadata.priority.actress": [
-    "r18",
     "javlibrary",
+    "r18",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
-  "sort.metadata.priority.alternatetitle": "dmmja",
+  "sort.metadata.priority.alternatetitle": [
+    "javlibraryja",
+    "dmmja"
+  ],
   "sort.metadata.priority.coverurl": [
     "r18",
-    "dmmja",
     "javlibrary",
+    "dmmja",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.description": [
+    "r18",
     "dmmja",
-    "dmm",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.director": [
-    "r18",
     "javlibrary",
+    "r18",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.genre": [
-    "r18",
     "javlibrary",
+    "r18",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.id": [
-    "r18",
     "javlibrary",
+    "r18",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -153,21 +156,21 @@
     "dmmja"
   ],
   "sort.metadata.priority.label": [
-    "r18",
     "javlibrary",
+    "r18",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.maker": [
-    "r18",
     "javlibrary",
+    "r18",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.releasedate": [
-    "r18",
     "javlibrary",
+    "r18",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -175,11 +178,12 @@
   ],
   "sort.metadata.priority.rating": [
     "dmmja",
+    "javlibrary",
     "mgstageja"
   ],
   "sort.metadata.priority.runtime": [
-    "r18",
     "javlibrary",
+    "r18",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -220,7 +224,7 @@
   "javdb.cookie.session": "",
   "web.favorites.genre": [],
   "web.favorites.tag": [],
-  "web.sort.recurse": true,
+  "web.sort.recurse": false,
   "web.sort.strict": false,
   "web.sort.interactive": true,
   "web.sort.update": false,
