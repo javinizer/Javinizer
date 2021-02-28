@@ -1,4 +1,6 @@
-﻿# Define Javinizer module file paths
+﻿$cache:guiVersion = '2.4.0-1'
+
+# Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
 $cache:fullModulePath = Join-Path -Path $cache:modulePath -ChildPath 'Javinizer.psm1'
 $cache:defaultSettingsPath = Join-Path -Path $cache:modulePath -ChildPath 'jvSettings.json'
@@ -721,7 +723,7 @@ function Show-JVToast {
 
     switch ($Type) {
         'Info' {
-            Show-UDToast -CloseOnClick -Message $Message -Title 'Info' -Duration 3000 -Position bottomCenter
+            Show-UDToast -CloseOnClick -Message $Message -Title 'Info' -Duration 5000 -Position bottomCenter
         }
 
         'Error' {
@@ -729,7 +731,7 @@ function Show-JVToast {
         }
 
         'Success' {
-            Show-UDToast -CloseOnClick -Message $Message -Title 'Success' -TitleColor green -Duration 3000 -Position bottomCenter
+            Show-UDToast -CloseOnClick -Message $Message -Title 'Success' -TitleColor green -Duration 5000 -Position bottomCenter
         }
     }
 }
@@ -1374,7 +1376,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                     if ($null -ne $cache:findData[$cache:index].Data.TrailerUrl) {
                                         New-UDButton -Icon $iconVideo -Text 'Trailer' -Size small -FullWidth -OnClick {
                                             Show-UDModal -FullWidth -MaxWidth sm -Content {
-                                                New-UDPlayer -Url $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
+                                                New-UDPlayer -URL $cache:findData[$cache:index].Data.TrailerUrl -Width '550px'
                                             }
                                         }
                                     }
@@ -2559,6 +2561,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                         'source' {}
                                                                         'url' {}
                                                                         'ajaxid' {}
+                                                                        'releasedate' {}
                                                                         'actress' {
                                                                             New-UDButton -Text 'Replace' -Variant outlined -Size medium -OnClick {
                                                                                 $cache:findData[$cache:index].Data.($prop.Name) = @($prop.Value)
@@ -4080,12 +4083,13 @@ $Pages += New-UDPage -Name 'About' -Content {
                 New-UDGrid -Container -Content {
                     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                         New-UDButton -Text 'Check for Updates' -OnClick {
-                            Update-JVModule -CheckUpdates -IsWeb
+                            Update-JVModule -CheckUpdates -IsWeb -GuiVersion $cache:guiVersion
                         }
                     }
                     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                         New-UDList -Content {
                             New-UDListItem -Label $cache:javinizerInfo.Version -SubTitle 'Module Version'
+                            New-UDListItem -Label $cache:guiVersion -SubTitle 'GUI Version'
                             New-UDListItem -Label $cache:javinizerInfo.Prerelease -SubTitle 'Prerelease'
                             New-UDListItem -Label $cache:javinizerInfo.Project -SubTitle 'Project' -OnClick {
                                 Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer'
