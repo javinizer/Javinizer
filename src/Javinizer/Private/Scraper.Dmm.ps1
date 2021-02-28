@@ -272,7 +272,7 @@ function Get-DmmActress {
         } else {
             try {
                 $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
-                $movieActress = ($actressBlock | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+                $movieActress = ($actressBlock | Select-String -Pattern ' >(.*)</a>' -AllMatches).Matches
             } catch {
                 return
             }
@@ -283,7 +283,7 @@ function Get-DmmActress {
             $firstName = $null
             $engActressUrl = "https://www.dmm.co.jp/en/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
             $jaActressUrl = "https://www.dmm.co.jp/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
-            $actressName = $actress.Groups[2].Value
+            $actressName = $actress.Groups[1].Value
             if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 if ($ScrapeActress) {
                     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
