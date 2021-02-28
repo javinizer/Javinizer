@@ -245,13 +245,37 @@ function Get-JVAggregatedData {
             if ($Settings.'location.thumbcsv' -ne '') {
                 $ThumbCsvPath = $Settings.'location.thumbcsv'
             }
-
             if ($Settings.'location.tagcsv' -ne '') {
                 $TagCsvPath = $Settings.'location.tagcsv'
             }
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
+            Id             = $null
+            ContentId      = $null
+            DisplayName    = $null
+            Title          = $null
+            AlternateTitle = $null
+            Description    = $null
+            Rating         = $null
+            ReleaseDate    = $null
+            Runtime        = $null
+            Director       = $null
+            Maker          = $null
+            Label          = $null
+            Series         = $null
+            Tag            = $null
+            Tagline        = $null
+            Credits        = $null
+            Actress        = $null
+            Genre          = $null
+            CoverUrl       = $null
+            ScreenshotUrl  = $null
+            TrailerUrl     = $null
+            MediaInfo      = $MediaInfo
+        }
+
+        $selectedDataObject = [PSCustomObject]@{
             Id             = $null
             ContentId      = $null
             DisplayName    = $null
@@ -302,6 +326,7 @@ function Get-JVAggregatedData {
                 $sourceData = $Data | Where-Object { $_.Source -eq $priority }
 
                 if ($null -eq $aggregatedDataObject.$field) {
+                    $selectedDataObject.$field = $priority
                     if ($field -eq 'AlternateTitle') {
                         $aggregatedDataObject.$field = $sourceData.Title
                     } elseif ($field -eq 'Id') {
@@ -824,7 +849,9 @@ function Get-JVAggregatedData {
         }
 
         $dataObject = [PSCustomObject]@{
-            Data = $aggregatedDataObject
+            Data     = $aggregatedDataObject
+            AllData  = $Data
+            Selected = $selectedDataObject
         }
 
         Write-Output $dataObject
