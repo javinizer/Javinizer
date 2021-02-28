@@ -10,7 +10,10 @@ function Write-JVWebLog {
         [System.IO.FileInfo]$HistoryPath,
 
         [Parameter()]
-        [PSObject]$Data
+        [PSObject]$Data,
+
+        [Parameter()]
+        [PSObject]$AllData
     )
 
     process {
@@ -48,6 +51,7 @@ function Write-JVWebLog {
             ScreenshotUrl   = $Data.ScreenshotUrl | ConvertTo-Json -Compress
             TrailerUrl      = $Data.TrailerUrl
             MediaInfo       = $Data.MediaInfo | ConvertTo-Json -Compress
+            AllData         = $AllData | ConvertTo-Json -Depth 32 -Compress
         }
 
         $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")

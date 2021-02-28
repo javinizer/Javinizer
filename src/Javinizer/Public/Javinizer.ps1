@@ -1140,7 +1140,7 @@ function Javinizer {
                                 }
                             }
                             if (!($Update) -and !($IsWeb) -and ($null -ne $sortData.Data.Id -and $sortData.Data.Id -ne '')) {
-                                Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $sortData.SortData.FilePath -Data $sortData.Data
+                                Write-JVWebLog -HistoryPath $historyCsvPath -OriginalPath $movie.FullName -DestinationPath $sortData.SortData.FilePath -Data $sortData.Data -AllData $javAggregatedData.AllData
                             }
                         }
                     }
