@@ -58,18 +58,23 @@ function Start-JVGui {
         # This allows users to access network drives more easily without
         # Needing to remap them in an administrator scope
         explorer.exe $psuBinaryPath
-        Write-Host "Javinizer GUI started at [http://localhost:$Port/javinizer]"
-        Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
     } catch {
         Write-Error "Error starting Javinizer PowerShell Universal: $PSItem"
         return
     }
 
-    try {
-        Start-Process "http://localhost:$Port/javinizer"
-    } catch {
-        Write-Error "Error occurred opening browser to [http://localhost:$Port/javinizer]: $PSItem"
-        return
-    }
+    Write-Host "Waiting for Javinizer dashboard to start..." -NoNewline
+    $timeout = New-TimeSpan -Seconds 15
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    do {
+        $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/javinizer")
+        $httpResponse = $httpRequest.GetResponse()
+        $httpStatusCode = [int]$httpResponse.StatusCode
+        Write-Host '.'
+        Start-Sleep -Seconds 2
+    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout)
 
+    Start-Process "http://localhost:$Port/javinizer"
+    Write-Host "Javinizer GUI started at [http://localhost:$Port/javinizer]"
+    Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
 }
