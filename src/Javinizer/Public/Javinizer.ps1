@@ -602,7 +602,6 @@ function Javinizer {
                     New-Item -Path $updateCheckPath | Out-Null
                 }
 
-
                 try {
                     $lastUpdateCheck = Get-Date (Get-Content -Path $updateCheckPath)
                     $lastCheckedSpan = New-TimeSpan -Start $lastUpdateCheck -End (Get-Date -Format "MM/dd/yyyy HH:mm:ss")
@@ -611,7 +610,7 @@ function Javinizer {
                     Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
                 }
 
-                if ($lastCheckedSpan.Hours -gt 24) {
+                if ($lastCheckedSpan.TotalHours -gt 24) {
                     Update-JVModule -CheckUpdates
                     Get-Date -Format "MM/dd/yyyy HH:mm:ss" | Out-File $updateCheckPath
                 }
