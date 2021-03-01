@@ -2892,7 +2892,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
             }
         }
     }
-    New-UDButton -Text 'Debug' -OnClick {
+    <# New-UDButton -Text 'Debug' -OnClick {
         Show-UDModal -Content {
             New-UDCard -Content {
                 $scraperOutput = $cache:originalFindData[$cache:index].AllData | ConvertTo-Json -Depth 32
@@ -2906,7 +2906,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                 New-UDCodeEditor -Height '150ch' -Width '100ch' -Code $code2
             }
         }
-    }
+    } #>
 }
 
 $Pages += New-UDPage -Name 'Emby' -Content {
