@@ -945,8 +945,8 @@ function New-JVAppBar {
             New-UDListItem -Label 'Stats' -Icon $iconTable -OnClick {
                 Invoke-UDRedirect -Url '/stats'
             }
-            New-UDListItem -Label "Admin" -Icon $iconTerminal -OnClick {
-                Invoke-UDRedirect -Url '/admin'
+            New-UDListItem -Label "Console" -Icon $iconTerminal -OnClick {
+                Invoke-UDRedirect -Url '/console'
             }
             New-UDListItem -Label "Emby" -Icon $iconServer -OnClick {
                 Invoke-UDRedirect -Url '/emby'
@@ -997,7 +997,6 @@ function New-JVAppBar {
 }
 
 $Pages += New-UDPage -Name "Sort" -Content {
-    New-JVAppBar -Title "Javinizer"
     New-UDScrollUp
     $cache:fileBrowserType = 'Sort'
     New-UDStyle -Style '
@@ -2558,10 +2557,10 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                             foreach ($prop in ($scraperOutput.PSObject.Properties)) {
                                                                 New-UDGrid -Item -ExtraSmallSize 2 -SmallSize 2 -Content {
                                                                     switch ($prop.Name) {
-                                                                        'source' {}
-                                                                        'url' {}
-                                                                        'ajaxid' {}
-                                                                        'releaseyear' {}
+                                                                        'source' { }
+                                                                        'url' { }
+                                                                        'ajaxid' { }
+                                                                        'releaseyear' { }
                                                                         'actress' {
                                                                             New-UDButton -Text 'Replace' -Variant outlined -Size medium -OnClick {
                                                                                 $cache:findData[$cache:index].Data.($prop.Name) = @($prop.Value)
@@ -2911,7 +2910,6 @@ $Pages += New-UDPage -Name "Sort" -Content {
 }
 
 $Pages += New-UDPage -Name 'Emby' -Content {
-    New-JVAppBar -Title "Emby"
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3010,7 +3008,6 @@ $Pages += New-UDPage -Name 'Emby' -Content {
 }
 
 $Pages += New-UDPage -Name "Settings" -Content {
-    New-JVAppBar -Title "Settings"
     New-UDScrollUp
 
     New-UDDynamic -Id 'dynamic-settings-page' -Content {
@@ -3767,7 +3764,6 @@ $Pages += New-UDPage -Name "Settings" -Content {
 }
 
 $Pages += New-UDPage -Name 'Stats' -Content {
-    New-JVAppBar -Title 'Stats'
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3989,8 +3985,7 @@ $Pages += New-UDPage -Name 'Stats' -Content {
     }
 }
 
-$Pages += New-UDPage -Name 'Admin' -Content {
-    New-JVAppBar -Title "Admin"
+$Pages += New-UDPage -Name 'Console' -Content {
     New-UDScrollUp
     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
         New-UDCard -Title 'Console' -Content {
@@ -4075,7 +4070,6 @@ $Pages += New-UDPage -Name 'Admin' -Content {
 }
 
 $Pages += New-UDPage -Name 'About' -Content {
-    New-JVAppBar -Title "About"
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
