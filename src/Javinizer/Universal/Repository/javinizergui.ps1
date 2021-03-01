@@ -997,6 +997,7 @@ function New-JVAppBar {
 }
 
 $Pages += New-UDPage -Name "Sort" -Content {
+    New-JVAppBar
     New-UDScrollUp
     $cache:fileBrowserType = 'Sort'
     New-UDStyle -Style '
@@ -2910,6 +2911,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
 }
 
 $Pages += New-UDPage -Name 'Emby' -Content {
+    New-JVAppBar
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3008,6 +3010,7 @@ $Pages += New-UDPage -Name 'Emby' -Content {
 }
 
 $Pages += New-UDPage -Name "Settings" -Content {
+    New-JVAppBar
     New-UDScrollUp
 
     New-UDDynamic -Id 'dynamic-settings-page' -Content {
@@ -3764,6 +3767,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
 }
 
 $Pages += New-UDPage -Name 'Stats' -Content {
+    New-JVAppBar
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3986,6 +3990,7 @@ $Pages += New-UDPage -Name 'Stats' -Content {
 }
 
 $Pages += New-UDPage -Name 'Console' -Content {
+    New-JVAppBar
     New-UDScrollUp
     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
         New-UDCard -Title 'Console' -Content {
@@ -4070,6 +4075,7 @@ $Pages += New-UDPage -Name 'Console' -Content {
 }
 
 $Pages += New-UDPage -Name 'About' -Content {
+    New-JVAppBar
     New-UDScrollUp
     New-UDGrid -Container -Content {
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
