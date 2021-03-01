@@ -930,8 +930,6 @@ function ConvertTo-Reverse {
 function New-JVAppBar {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0)]
-        [String]$Title
     )
 
     $drawer = New-UDDrawer -Children {
