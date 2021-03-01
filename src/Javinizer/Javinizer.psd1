@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.3.3'
+    ModuleVersion     = '2.4.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -73,6 +73,9 @@
     FunctionsToExport = @(
         'Invoke-JVParallel',
         'Javinizer',
+        'Get-AVDanyuData',
+        'Get-AVEntertainmentData',
+        'Get-AVEntertainmentUrl',
         'Get-CfSession',
         'Get-DLgetchuData',
         'Get-DmmData',
@@ -88,9 +91,11 @@
         'Get-JVAggregatedData',
         'Get-JVData',
         'Get-JVItem',
+        'Get-JVMediaInfo',
         'Get-JVNfo',
         'Get-JVSettings',
         'Get-JVSortData',
+        'Get-MaleActors',
         'Get-MgstageData',
         'Get-MgstageUrl',
         'Get-R18Data',
@@ -101,6 +106,7 @@
         'Set-JVMovie',
         'Start-JVGUI',
         'Update-JVModule',
+        'Update-JVNfo',
         'Update-JVThumbCsv',
         'Write-JVWebLog'
     )

@@ -81,7 +81,7 @@ To run Javinizer, you will need to install following:
 
 ### Installation
 
-After installing the required prerequisites, run the following command in an administrator PowerShell 7 console to install the Javinizer module. If this is your first time using PowerShell, you may run into some prompts about security policies. Follow the instructions given in the prompts to unrestrict the code.
+After installing the required prerequisites, run the following command in an administrator PowerShell 7 (pwsh.exe) console to install the Javinizer module. If this is your first time using PowerShell, you may run into some prompts about security policies. Follow the instructions given in the prompts to unrestrict the code.
 
 ```powershell
 # Install the module from PowerShell gallery
@@ -99,7 +99,7 @@ Here are some common commands that you can run with Javinizer:
 # Run a command to sort your JAV files using default settings
 > Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted"
 
-# Run a command to sort your JAV files while searching folders recursively
+# Run a command to sort your JAV files while searching folders recursively (within the folders)
 > Javinizer -Path "C:\JAV\Unsorted" -DestinationPath "C:\JAV\Sorted" -Recurse
 
 # Run a command to sort a JAV file using direct URLs
@@ -126,28 +126,26 @@ Here are some common commands that you can run with Javinizer:
 
 ### Quick start (GUI)
 
-**NOTE** The GUI version of Javinizer is not updated at the same rate as the CLI version. For a more streamlined experience, I recommend using the CLI version unless you require the visual feedback and customization during your sorts.
-
-After running the GUI, [view the docs](https://docs.jvlflame.net/installation/install-javinizer-web-gui#import-the-javinizer-dashboard) for first-time setup to import the Javinizer dashboard into PowerShell Universal.
-
 #### Windows
 
 ```powershell
-# Install PowerShell Universal to Javinizer module folder
+# Install PowerShell Universal to Javinizer module folder (Run as administrator)
 > Javinizer -InstallGUI
 
-# Runs the PowerShell Universal application and opens the Javinizer GUI
+# Runs the PowerShell Universal application and opens the Javinizer GUI dashboard page
+# Optionally specify a custom port using the -Port parameter
 > Javinizer -OpenGUI
 ```
+
+After running `Javinizer -OpenGUI`, the PowerShell Universal process should run in a separate window and open your browser to 'http://localhost:[PORT]/' which contains the Javinizer dashboard.
 
 #### Docker
 
 ```
-docker run --name javinizer -p 5000:5000 -d jvlflame/javinizer:latest
+docker run --name javinizer -p 8600:8600 -d jvlflame/javinizer:latest
 
 # Optional
--v path/to/appdata:/home/data
--v path/to/settingsFile:/home/Javinizer/src/Javinizer/jvSettings.json
+-v path/to/jvSettings.json:/home/jvSettings.json
 ```
 
 ## Example Output
