@@ -1,4 +1,4 @@
-FROM python:3.9.2-slim-buster
+FROM python:3.9.2-buster
 
 # Add docker entrypoint script
 ADD docker-entrypoint.sh /
@@ -38,6 +38,7 @@ RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod
 # Install pwsh modules
 RUN pwsh -c "Set-PSRepository 'PSGallery' -InstallationPolicy Trusted" \
     && pwsh -c "Install-Module UniversalDashboard.Style" \
+    && pwsh -c "Install-Module UniversalDashboard.Charts" \
     && pwsh -c "Install-Module UniversalDashboard.UDPlayer" \
     && pwsh -c "Install-Module UniversalDashboard.UDSpinner" \
     && pwsh -c "Install-Module UniversalDashboard.UDScrollUp" \
@@ -55,6 +56,7 @@ RUN pip3 install pillow \
 #    && apt-get autoremove
 
 # Add powershell universal environmental variables
+ENV Kestrel__Endpoints__HTTP__Url http://*:8600
 ENV Data__RepositoryPath ./data/Repository
 ENV Data__ConnectionString ./data/database.db
 ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
