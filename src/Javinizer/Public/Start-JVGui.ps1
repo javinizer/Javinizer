@@ -63,8 +63,9 @@ function Start-JVGui {
         return
     }
 
-    Write-Host "Waiting for Javinizer dashboard to start..." -NoNewline
-    $timeout = New-TimeSpan -Seconds 15
+    Write-Host "Waiting for Javinizer dashboard to start..."
+    Start-Sleep -Seconds 3
+    <#     $timeout = New-TimeSpan -Seconds 15
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     do {
         $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/")
@@ -72,7 +73,7 @@ function Start-JVGui {
         $httpStatusCode = [int]$httpResponse.StatusCode
         Write-Host '.'
         Start-Sleep -Seconds 2
-    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout)
+    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout) #>
 
     Start-Process "http://localhost:$Port/"
     Write-Host "Javinizer GUI started at [http://localhost:$Port/]"
