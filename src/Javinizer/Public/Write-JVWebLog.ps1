@@ -10,17 +10,48 @@ function Write-JVWebLog {
         [System.IO.FileInfo]$HistoryPath,
 
         [Parameter()]
-        [PSObject]$Data
+        [PSObject]$Data,
+
+        [Parameter()]
+        [PSObject]$AllData
     )
 
     process {
+        <# $actress = foreach ($actor in $Data.Actress) {
+            $name = "$($actor.LastName) $($actor.FirstName)".Trim()
+            if ($null -eq $name -or $name -eq '') {
+                $name = $actor.JapaneseName
+            }
+        } #>
+
         $message = [PSCustomObject]@{
-            Timestamp       = Get-Date -Format s
+            Timestamp       = Get-Date -Format o
             Path            = $OriginalPath
             DestinationPath = $DestinationPath
             Id              = $Data.Id
+            ContentId       = $Data.ContentId
+            DisplayName     = $Data.DisplayName
+            Title           = $Data.Title
+            AlternateTitle  = $Data.AlternateTitle
+            Description     = $Data.Description
+            Rating          = $Data.Rating.Count
+            Votes           = $Data.Rating.Votes
             ReleaseDate     = $Data.ReleaseDate
             Maker           = $Data.Maker
+            Label           = $Data.Label
+            Runtime         = $Data.Runtime
+            Director        = $Data.Director
+            Actress         = $Data.Actress | ConvertTo-Json -Compress
+            Genre           = $Data.Genre | ConvertTo-Json -Compress
+            Series          = $Data.Series
+            Tag             = $Data.Tag | ConvertTo-Json -Compress
+            Tagline         = $Data.Tagline | ConvertTo-Json -Compress
+            Credits         = $Data.Credits | ConvertTo-Json -Compress
+            CoverUrl        = $Data.CoverUrl
+            ScreenshotUrl   = $Data.ScreenshotUrl | ConvertTo-Json -Compress
+            TrailerUrl      = $Data.TrailerUrl
+            MediaInfo       = $Data.MediaInfo | ConvertTo-Json -Compress
+            AllData         = $AllData | ConvertTo-Json -Depth 32 -Compress
         }
 
         $LogMutex = New-Object System.Threading.Mutex($false, "LogMutex")

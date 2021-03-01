@@ -5,7 +5,13 @@ function Test-JVData {
         [PSObject]$Data,
 
         [Parameter(Mandatory = $true, Position = 1)]
-        [Array]$RequiredFields
+        [Array]$RequiredFields,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$AllData,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [PSObject]$Selected
     )
 
     process {
@@ -28,6 +34,8 @@ function Test-JVData {
 
         $dataObject = [PSCustomObject]@{
             Data       = $Data
+            AllData    = $AllData
+            Selected   = $Selected
             NullFields = $nullFields
         }
 

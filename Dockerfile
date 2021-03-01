@@ -1,41 +1,69 @@
+FROM python:3.9.2-buster
 
-FROM ubuntu:18.04
+# Add docker entrypoint script
+ADD docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
-ADD docker-entrypoint.sh /home
-ADD src/Javinizer/Universal/Repository/javinizergui.ps1 /home
-RUN chmod +x /home/docker-entrypoint.sh
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-RUN apt-get update -y && apt-get install -y curl unrar wget software-properties-common apt-transport-https
-RUN add-apt-repository multiverse
-RUN mkdir /home/Universal
-WORKDIR /home/Universal
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y unzip wget
 
-RUN wget https://ftp.jvlflame.net/Universal.linux-x64.1.4.7.rar \
-    && unrar x Universal.linux-x64.1.4.7.rar \
-    && rm Universal.linux-x64.1.4.7.rar
+# Create directories
+RUN mkdir -p /home/data/Repository/.universal \
+    && mkdir -p /home/Universal
 
-RUN chmod +x /home/Universal/Universal.Server
+# Add dashboard files
+ADD src/Javinizer/Universal/Repository/javinizergui.ps1 /home/data/Repository
+ADD src/Javinizer/Universal/Repository/dashboards.ps1 /home/data/Repository/.universal
 
-RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb && dpkg -i packages-microsoft-prod.deb && apt-get update
-RUN add-apt-repository universe
-RUN apt-get install -y powershell
-RUN apt-get install -y mediainfo
-RUN add-apt-repository -y ppa:deadsnakes/ppa
-RUN apt-get update -y
-RUN apt-get install -y python3.8 python3-pip
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 10
-RUN pip3 install pillow google_trans_new googletrans==4.0.0rc1
-
-# Add custom UD components
-RUN pwsh -Command "Set-PSRepository -Name 'PSGallery' -InstallationPolicy Trusted"
-RUN pwsh -Command "Install-Module UniversalDashboard.Style; Install-Module UniversalDashboard.UDPlayer; Install-Module UniversalDashboard.UDSpinner; Install-Module UniversalDashboard.UDScrollUp; Install-Module UniversalDashboard.CodeEditor"
-RUN pwsh -Command "Install-Module Javinizer"
-
+# Download powershell universal
 WORKDIR /home
-EXPOSE 8600
-VOLUME ["/data"]
+RUN wget https://imsreleases.blob.core.windows.net/universal/production/1.5.13/Universal.linux-x64.1.5.13.zip
+
+# Extract powershell universal to /home/Universal
+RUN unzip -q /home/Universal.linux-x64.1.5.13.zip -d /home/Universal/ \
+    && chmod +x /home/Universal/Universal.Server \
+    && rm /home/Universal.linux-x64.1.5.13.zip
+
+# Install mediainfo
+RUN apt-get install -y mediainfo
+
+# Install pwsh
+RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && apt-get update \
+    && apt-get install -y powershell \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pwsh modules
+RUN pwsh -c "Set-PSRepository 'PSGallery' -InstallationPolicy Trusted" \
+    && pwsh -c "Install-Module UniversalDashboard.Style" \
+    && pwsh -c "Install-Module UniversalDashboard.Charts" \
+    && pwsh -c "Install-Module UniversalDashboard.UDPlayer" \
+    && pwsh -c "Install-Module UniversalDashboard.UDSpinner" \
+    && pwsh -c "Install-Module UniversalDashboard.UDScrollUp" \
+    && pwsh -c "Install-Module UniversalDashboard.CodeEditor" \
+    && pwsh -c "Install-Module Javinizer"
+
+# Install python modules
+RUN pip3 install pillow \
+    google_trans_new \
+    googletrans==4.0.0rc1
+
+# Clean up
+#RUN apt-get purge unzip \
+#    wget \
+#    && apt-get autoremove
+
+# Create symlink to module settings file
+RUN pwsh -c "ln -s (Join-Path (Get-InstalledModule Javinizer).InstalledLocation -ChildPath jvSettings.json) /home/jvSettings.json"
+
+# Add powershell universal environmental variables
+ENV Kestrel__Endpoints__HTTP__Url http://*:8600
 ENV Data__RepositoryPath ./data/Repository
 ENV Data__ConnectionString ./data/database.db
 ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
 ENV Logging__Path ./data/logs/log.txt
-ENTRYPOINT ["/home/docker-entrypoint.sh"]
+
+EXPOSE 8600
+ENTRYPOINT ["/docker-entrypoint.sh"]

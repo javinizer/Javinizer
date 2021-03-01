@@ -6,43 +6,75 @@ function Start-JVGui {
         [Int]$Port = 8600
     )
 
-    $jvModulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
-    $jvPsuPath = Join-Path -Path $jvModulePath -ChildPath 'GUI'
-    $jvPsuExePath = Join-Path -Path $jvPsuPath -ChildPath 'Universal.Server.exe'
-    $jvPsuSettingsPath = Join-Path -Path $jvPsuPath -ChildPath 'appsettings.json'
-    $jvPsuRepositoryPath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'Repository'
-    $jvDashboardPath = Join-Path -Path $jvPsuRepositoryPath -ChildPath 'javinizergui.ps1'
-    $jvPsuDatabasePath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'database.db'
-    $jvPsuAssetsFolderPath = Join-Path -Path $jvModulePath -ChildPath 'Universal' -AdditionalChildPath 'Dashboard'
+    # Get module details
+    $psuVersion = '1.5.13'
 
-    # Check if the dashboard file is valid
-    $dashboardContent = Get-Content -Path $jvDashboardPath -Raw
+    # Get PowerShell Universal details
+    $psuPath = Join-Path -Path $env:programfiles -ChildPath 'Javinizer' -AdditionalChildPath $psuVersion
+    $psuUniversalPath = Join-Path -Path $psuPath -ChildPath 'Universal'
+    $psuBinaryPath = Join-Path -Path $psuPath -ChildPath 'Universal.Server.exe'
+    $psuAppSettingsPath = Join-Path -Path $psuPath -ChildPath 'appsettings.json'
+    $psuRepoPath = Join-Path -Path $psuUniversalPath -ChildPath 'Repository'
+    $psuGuiScriptPath = Join-Path $psuRepoPath -ChildPath 'javinizergui.ps1'
+    $psuDatabasePath = Join-Path -Path $psuUniversalPath -ChildPath 'database.db'
+    $psuAssetsPath = Join-Path -Path $psuUniversalPath -ChildPath 'Dashboard'
+    $psuConfigPath = Join-Path -Path $psuRepoPath -ChildPath '.universal'
+    $psuConfigDashboardScriptPath = Join-Path $psuConfigPath -ChildPath 'dashboards.ps1'
+    $psuLogPath = Join-Path -Path $psuUniversalPath -ChildPath 'log.txt'
 
-    if ($dashboardContent -notmatch 'Javinizer Web') {
-        Write-Warning "Javinizer dashboard content is invalid, redownloading..."
-        try {
-            $origDashboardContent = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -Verbose:$false
-            Set-Content -Path $jvDashboardPath -Value $origDashboardContent -Force -
-        } catch {
-            Write-Error "Error occurred when resetting Javinizer dashboard: $PSItem"
-        }
+    if (!(Test-Path -Path $psuPath)) {
+        Write-Warning "Javinizer GUI installation not detected at path [$psuPath], run 'Javinizer -InstallGUI' to install"
+        return
     }
 
-    # Customize the default appsettings.json for Javinizer specific usage
-    $jvPsuSettings = Get-Content -Path $jvPsuSettingsPath | ConvertFrom-Json -Depth 32
-    $jvPsuSettings.Kestrel.Endpoints.HTTP.Url = "http://*:$Port"
-    $jvPSuSettings.Data.RepositoryPath = $jvPsuRepositoryPath
-    $jvPsuSettings.Data.ConnectionString = $jvPsuDatabasePath
-    $jvPsuSettings.UniversalDashboard.AssetsFolder = $jvPsuAssetsFolderPath
+    if (!(Test-Path -Path $psuConfigPath) -or !(Test-Path -Path $psuConfigDashboardScriptPath)) {
+        Write-Warning "Default Javinizer configurations not detected at path [$psuConfigPath], run 'Javinizer -InstallGUI' to reinstall"
+        return
+    }
 
-    # Write settings back to appsettings.json
-    $jvPsuSettings | ConvertTo-Json -Depth 32 | Out-File -FilePath $jvPsuSettingsPath -Force
+    if (!(Test-Path -Path $psuGuiScriptPath)) {
+        Write-Warning "Javinizer GUI script file not detected at path [$psuGuiScriptPath], run 'Javinizer -InstallGUI' to reinstall"
+        return
+    }
 
     try {
-        Start-Process -FilePath $jvPsuExePath -Verb RunAs
+        # Customize the default appsettings.json for Javinizer specific usage
+        $psuAppSettings = Get-Content -Path $psuAppSettingsPath | ConvertFrom-Json -Depth 32
+        $psuAppSettings.Kestrel.Endpoints.HTTP.Url = "http://*:$Port"
+        $psuAppSettings.Logging.Path = $psuLogPath
+        $psuAppSettings.Data.RepositoryPath = $psuRepoPath
+        $psuAppSettings.Data.ConnectionString = $psuDatabasePath
+        $psuAppSettings.UniversalDashboard.AssetsFolder = $psuAssetsPath
+
+        # Write settings back to appsettings.json
+        $psuAppSettings | ConvertTo-Json -Depth 32 | Out-File -FilePath $psuAppSettingsPath -Force
     } catch {
-        Write-Error "Error starting Javinizer PowerShell Universal client: $PSItem" -ErrorAction Stop
+        Write-Error "Error occurred when writing PowerShell Universal appsettings: $PSItem"
+        return
     }
 
-    Start-Process "http://localhost:$Port/dashboard"
+    try {
+        # We are using explorer.exe to run the binary as non-administrator
+        # This allows users to access network drives more easily without
+        # Needing to remap them in an administrator scope
+        explorer.exe $psuBinaryPath
+    } catch {
+        Write-Error "Error starting Javinizer PowerShell Universal: $PSItem"
+        return
+    }
+
+    Write-Host "Waiting for Javinizer dashboard to start..." -NoNewline
+    $timeout = New-TimeSpan -Seconds 15
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    do {
+        $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/")
+        $httpResponse = $httpRequest.GetResponse()
+        $httpStatusCode = [int]$httpResponse.StatusCode
+        Write-Host '.'
+        Start-Sleep -Seconds 2
+    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout)
+
+    Start-Process "http://localhost:$Port/"
+    Write-Host "Javinizer GUI started at [http://localhost:$Port/]"
+    Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
 }

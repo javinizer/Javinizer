@@ -175,7 +175,7 @@ function Get-JVNfo {
         foreach ($item in $Actress) {
             $actressName = $null
             if ($ActressLanguageJa) {
-                if ($null -ne $item.JapaneseName) {
+                if ($null -ne $item.JapaneseName -and $item.JapaneseName -ne '') {
                     $actressName = ($item.JapaneseName)
                     if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
                         if ($NameOrder) {
@@ -186,7 +186,7 @@ function Get-JVNfo {
                     }
                 }
 
-                if ($null -eq $actressName) {
+                if ($null -eq $actressName -or $actressName -eq '') {
                     if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
                         if ($NameOrder) {
                             $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
@@ -197,7 +197,7 @@ function Get-JVNfo {
                     }
                 }
             } else {
-                if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
+                if (($null -ne $item.FirstName -and $item.FirstName -ne '') -or ($null -ne $item.LastName -and $item.LastName -ne '')) {
                     if ($NameOrder) {
                         $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
                     } else {

@@ -119,7 +119,7 @@ function Get-Jav321Genre {
 
         try {
             $genre = ($Webrequest | Select-String '<a href="\/genre\/.+?">(.+?)<\/a>' -AllMatches).Matches |
-                ForEach-Object { $_.Groups[1].Value }
+            ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
         }
@@ -181,7 +181,7 @@ function Get-Jav321Actress {
             $actress | ForEach-Object { $movieActressObject += [PSCustomObject]@{
                     LastName     = $null
                     FirstName    = $null
-                    JapaneseName = ($_.Matches.Groups[2].Value)
+                    JapaneseName = ($_.Matches.Groups[2].Value -replace '（.*）', '')
                     ThumbUrl     = if (($_.Matches.Groups[1].Value -replace "'", '') -ne '.jpg') { 'https://www.jav321.com/mono/actjpgs/' + $_.Matches.Groups[1].Value -replace "'", '' }
                 }
             }

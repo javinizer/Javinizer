@@ -17,6 +17,7 @@ function Convert-HTMLCharacter {
             -replace '※', '.*.' `
             -replace '&#39;', "'" `
             -replace '&#039', '' `
+            -replace '	', '' `
             -replace '', '' # Seemingly invisible character that appears in mgstage
 
         $newString = $String.Trim()

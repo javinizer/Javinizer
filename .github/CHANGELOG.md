@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.0]
+
+### Added
+- Added `-OpenModule` parameter to open the Javinizer module directory
+- Added setting `scraper.option.addmaleactors` to scrape avdanyuwiki.com for male actors (#147)
+    -  Updated English names in the thumb csv will be added in a later release
+- Sorting files via the CLI now populates the history csv file (-OpenHistory)
+- GUI: Added ouput and filematcher preview
+- GUI: Added recurse depth selection on sort card
+- GUI: Added genre/tag editor popups
+- GUI: Added stats page that corresponds with the history csv
+- GUI: Added an advanced manual search workflow
+- GUI: Added tooltip descriptions for most GUI actions and settings options
+- GUI: Added better dark/light theme management, refreshed appbar
+- GUI: Added 'not matched' count to sort progress popup
+
+### Changed
+- **Updated settings metadata priority defaults to favor javlibrary over r18**
+- mgstageja scraper no longer includes actress aliases in the JapaneseName
+- jav321 scrapers no longer include actress aliases in the JapaneseName
+- History csv now includes all metadata fields
+- GUI: Installing the GUI no longer requires first-run setup via `-OpenGUI` and Docker
+- GUI: PowerShell Universal version upgraded from 1.4.7 => 1.5.13
+- GUI: Default port changed from 5000 => 8600
+- GUI: GUI now runs in a non-admin scope to allow easier access to network drives
+
+### Fixed
+- Fixed issue where actress images would fail to download if they contained special characters on mgstage (#223)
+- Fixed issue causing update check to never run
+- Fixed issue with javlibraryja and javlibraryzh scrapers not accepting manual cloudflare cookies
+- Fixed issue where R18 series metadata included a blank 'tab' character
+
 ## [2.3.3]
 
 ### Changed

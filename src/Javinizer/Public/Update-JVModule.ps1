@@ -7,6 +7,12 @@ function Update-JVModule {
         [Parameter(ParameterSetName = 'Update')]
         [Switch]$Update,
 
+        [Parameter(ParameterSetName = 'Check')]
+        [Switch]$IsWeb,
+
+        [Parameter(ParameterSetName = 'Check')]
+        [Switch]$GuiVersion,
+
         [Parameter(ParameterSetName = 'Update')]
         [String]$UpdateUrl = 'https://gist.githubusercontent.com/jvlflame/0e8293198e59c286ccf1a438ea8a76e9/raw'
     )
@@ -14,6 +20,24 @@ function Update-JVModule {
     process {
         switch ($PsCmdlet.ParameterSetName) {
             'Check' {
+                if ($IsWeb) {
+                    $installedVersion = (Get-JVModuleInfo).Version
+                    $latestVersion = (Find-Module -Name 'Javinizer').Version
+                    if ($installedVersion -ne $latestVersion) {
+                        Show-JVToast -Type Success -Message "There is a new version of Javinizer available $installedVersion => $latestVersion"
+                    } else {
+                        Show-JVToast -Type Info -Message "There are no updates for Javinizer available"
+                    }
+
+                    $guiCheck = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -MaximumRetryCount 3
+                    $latestGuiVersion = ($guiCheck.Content | Select-String -Pattern "\`$cache\:guiVersion = '(.*)'").Matches.Groups[1].Value
+
+                    if ($GuiVersion -ne $latestGuiVersion) {
+                        Show-JVToast -Type Success -Message "There is a new version of Javinizer GUI available $GuiVersion => $latestGuiVersion"
+                    } else {
+                        Show-JVToast -Type Info -Message "There are no updates for Javinizer GUI available"
+                    }
+                }
                 if (!($global:jvUpdateCheck)) {
                     # Set global variable to determine that check has already been completed in the current session
                     $global:jvUpdateCheck = $true
@@ -44,7 +68,7 @@ function Update-JVModule {
                     Write-Warning "Starting update process, please make sure to close all related Javinizer settings files before continuing"
                     Write-Warning "Updating from version [$installedVersion => $latestVersion]"
                     Pause
-                    
+
                     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($UpdateUrl))
                 } else {
                     Write-Warning "You already have the latest version of Javinizer! [$installedVersion]"

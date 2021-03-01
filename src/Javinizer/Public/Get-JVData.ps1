@@ -95,6 +95,9 @@ function Get-JVData {
         [Parameter(ParameterSetName = 'Id')]
         [Switch]$Strict,
 
+        [Parameter(ParameterSetName = 'Id')]
+        [Switch]$AllResults,
+
         [Parameter(ParameterSetName = 'Url')]
         [Parameter(ParameterSetName = 'Id')]
         [PSObject]$Session,
@@ -163,7 +166,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Dmm" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:DmmUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
                         }
                         if ($using:DmmUrl) {
                             $using:DmmUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
@@ -178,7 +181,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-DmmJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:DmmJaUrl)) {
-                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict
+                            $jvDmmUrl = Get-DmmUrl -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
                         }
                         if ($using:DmmJaUrl) {
                             $using:DmmJaUrl | Get-DmmData -ScrapeActress:$using:DmmScrapeActress
@@ -227,7 +230,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:R18Url)) {
-                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict
+                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
                         }
                         if ($using:R18Url) {
                             $using:R18Url | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
@@ -244,7 +247,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-R18Zh" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:R18ZhUrl)) {
-                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict
+                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
                         }
                         if ($using:R18ZhUrl) {
                             $using:R18ZhUrl | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
@@ -263,7 +266,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavlibraryUrl)) {
-                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
+                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session -AllResults:$using:Allresults
                         }
                         if ($using:JavlibraryUrl) {
                             $using:JavlibraryUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
@@ -280,13 +283,13 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavlibraryJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavlibraryJaUrl)) {
-                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
+                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session -AllResults:$using:Allresults
                         }
                         if ($using:JavlibraryJaUrl) {
-                            $using:JavlibraryJaUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                            $using:JavlibraryJaUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         } elseif ($jvJavlibraryUrl) {
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Ja | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                                $jvJavlibraryUrl.Ja | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                             }
                         }
                     } | Out-Null
@@ -297,13 +300,13 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavlibraryZh" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavlibraryZhUrl)) {
-                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
+                            $jvJavlibraryUrl = Get-JavlibraryUrl -Id $using:Id -BaseUrl $using:JavlibraryBaseUrl -Session:$using:Session -AllResults:$using:Allresults
                         }
                         if ($using:JavlibraryZhUrl) {
-                            $using:JavlibraryZhUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                            $using:JavlibraryZhUrl | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                         } elseif ($jvJavlibraryUrl) {
                             if ($jvJavlibraryUrl) {
-                                $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl
+                                $jvJavlibraryUrl.Zh | Get-JavlibraryData -JavlibraryBaseUrl $using:JavlibraryBaseUrl -Session:$using:Session
                             }
                         }
                     } | Out-Null
@@ -316,7 +319,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Javbus" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavbusUrl)) {
-                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id
+                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id -AllResults:$using:Allresults
                         }
                         if ($using:JavbusUrl) {
                             $using:JavbusUrl | Get-JavbusData
@@ -331,7 +334,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavbusJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavbusJaUrl)) {
-                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id
+                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id -AllResults:$using:Allresults
                         }
                         if ($using:JavbusJaUrl) {
                             $using:JavbusJaUrl | Get-JavbusData
@@ -346,7 +349,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavbusZh" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavbusZhUrl)) {
-                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id
+                            $jvJavbusUrl = Get-JavbusUrl -Id $using:Id -AllResults:$using:Allresults
                         }
                         if ($using:JavbusZhUrl) {
                             $using:JavbusZhUrl | Get-JavbusData
@@ -362,7 +365,7 @@ function Get-JVData {
                 Start-ThreadJob -Name "jvdata-Jav321" -ThrottleLimit $throttleLimit -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if (!($using:Jav321JaUrl)) {
-                        $jvJav321Url = Get-Jav321Url -Id $using:Id
+                        $jvJav321Url = Get-Jav321Url -Id $using:Id -AllResults:$using:Allresults
                     }
                     if ($using:Jav321JaUrl) {
                         $using:Jav321JaUrl | Get-Jav321Data
@@ -378,7 +381,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-Javdb" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavdbUrl)) {
-                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession
+                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession -AllResults:$using:Allresults
                         }
                         if ($using:JavdbUrl) {
                             $using:JavdbUrl | Get-JavdbData -Session $using:JavdbSession
@@ -395,7 +398,7 @@ function Get-JVData {
                     Start-ThreadJob -Name "jvdata-JavdbZh" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:JavdbZhUrl)) {
-                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession
+                            $jvJavdbUrl = Get-JavdbUrl -Id $using:Id -Session $using:JavdbSession -AllResults:$using:Allresults
                         }
                         if ($using:JavdbZhUrl) {
                             $using:JavdbZhUrl | Get-JavdbData -Session $using:JavdbSession
@@ -413,7 +416,7 @@ function Get-JVData {
                 Start-ThreadJob -Name "jvdata-MgstageJa" -ThrottleLimit $throttleLimit -ScriptBlock {
                     Import-Module $using:jvModulePath
                     if (!($using:MgstageJaUrl)) {
-                        $jvMgstageJaUrl = Get-MgstageUrl -Id $using:Id
+                        $jvMgstageJaUrl = Get-MgstageUrl -Id $using:Id -AllResults:$using:Allresults
                     }
                     if ($using:MgstageJaUrl) {
                         $using:MgstageJaUrl | Get-MgstageData
