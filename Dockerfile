@@ -55,6 +55,9 @@ RUN pip3 install pillow \
 #    wget \
 #    && apt-get autoremove
 
+# Create symlink to module settings file
+RUN pwsh -c "ln -s (Join-Path (Get-InstalledModule Javinizer).InstalledLocation -ChildPath jvSettings.json) /home/jvSettings.json"
+
 # Add powershell universal environmental variables
 ENV Kestrel__Endpoints__HTTP__Url http://*:8600
 ENV Data__RepositoryPath ./data/Repository
