@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.1]
+
+### Fixed
+- GUI: Fixed custom appbar not being displayed
+
 ## [2.4.0]
 
 ### Added
