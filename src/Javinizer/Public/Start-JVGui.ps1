@@ -67,14 +67,14 @@ function Start-JVGui {
     $timeout = New-TimeSpan -Seconds 15
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     do {
-        $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/javinizer")
+        $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/")
         $httpResponse = $httpRequest.GetResponse()
         $httpStatusCode = [int]$httpResponse.StatusCode
         Write-Host '.'
         Start-Sleep -Seconds 2
     } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout)
 
-    Start-Process "http://localhost:$Port/javinizer"
-    Write-Host "Javinizer GUI started at [http://localhost:$Port/javinizer]"
+    Start-Process "http://localhost:$Port/"
+    Write-Host "Javinizer GUI started at [http://localhost:$Port/]"
     Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
 }
