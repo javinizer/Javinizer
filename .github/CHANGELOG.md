@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.3]
+
+### Fixed
+- Fixed issue where genres were not being replaced from the genre csv (#235)
+- Fixed issue where `-Update` was not being applied properly
+
 ## [2.4.2]
 
 ### Fixed

@@ -1004,6 +1004,7 @@ function Javinizer {
                                 Data            = $javAggregatedData.Data
                                 Path            = $javMovies.FullName
                                 DestinationPath = $DestinationPath
+                                Update          = $Update
                                 Settings        = $Settings
                                 PartNumber      = $javMovies.PartNumber
                             }
@@ -1014,6 +1015,8 @@ function Javinizer {
                                 Data            = $javAggregatedData.Data
                                 SortData        = $sortData.SortData
                                 Path            = $javMovies.FullName
+                                Update          = $Update
+                                Force           = $Force
                                 DestinationPath = $DestinationPath
                                 Settings        = $Settings
                             }
@@ -1079,6 +1082,7 @@ function Javinizer {
                                 Data            = $javAggregatedData.Data
                                 Path            = $movie.FullName
                                 DestinationPath = $DestinationPath
+                                Update          = $Update
                                 Settings        = $Settings
                                 PartNumber      = $movie.PartNumber
                             }

@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.0-1'
+﻿$cache:guiVersion = '2.4.3-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -1153,6 +1153,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                             Path            = $moviePath
                                                             DestinationPath = $destinationPath
                                                             Settings        = $cache:settings
+                                                            Update          = $update
                                                             PartNumber      = $cache:findData[$cache:index].PartNumber
                                                         }
 
@@ -1206,6 +1207,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                     Data            = $_.Data
                                                                     Path            = $moviePath
                                                                     DestinationPath = $destinationPath
+                                                                    Update          = $update
                                                                     Settings        = $settings
                                                                     PartNumber      = $_.PartNumber
                                                                 }
@@ -1729,11 +1731,13 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                         .MuiButton-root {
                                             padding: 10px 16px;
                                         }' -Content {
+                                            $update = (Get-UDElement -Id 'checkbox-sort-update').checked
                                             New-UDButton -Text 'Preview' -FullWidth -Variant text -OnClick {
                                                 $sortDataParameters = @{
                                                     Data            = $cache:findData[$cache:index].Data
                                                     Path            = $cache:findData[$cache:index].Path
                                                     DestinationPath = $cache:findData[$cache:index].DestinationPath
+                                                    Update          = $update
                                                     Settings        = $cache:Settings
                                                     PartNumber      = $cache:findData[$cache:index].PartNumber
                                                 }
