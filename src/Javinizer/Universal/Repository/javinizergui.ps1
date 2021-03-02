@@ -3669,6 +3669,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                         <LABEL>
                         <ACTORS>
                         <ORIGINALTITLE>
+                        <FILENAME
                         <RESOLUTION>'
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                             New-UDGrid -Container -Content {
