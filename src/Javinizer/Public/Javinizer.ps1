@@ -1078,17 +1078,19 @@ function Javinizer {
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                             $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -FileName $movie.BaseName -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
-                            $sortDataParameters = @{
-                                Data            = $javAggregatedData.Data
-                                Path            = $movie.FullName
-                                DestinationPath = $DestinationPath
-                                Update          = $Update
-                                Settings        = $Settings
-                                PartNumber      = $movie.PartNumber
-                            }
 
-                            $sortData = Get-JVSortData @sortDataParameters
                             if ($PSBoundParameters.ContainsKey('IsWeb') -or $PSBoundParameters.ContainsKey('Search')) {
+                                $sortDataParameters = @{
+                                    Data            = $javAggregatedData.Data
+                                    Path            = $movie.FullName
+                                    DestinationPath = $DestinationPath
+                                    Update          = $Update
+                                    Settings        = $Settings
+                                    PartNumber      = $movie.PartNumber
+                                }
+
+                                $sortData = Get-JVSortData @sortDataParameters
+
                                 if ($IsWebType -eq 'Search' -or $PSBoundParameters.ContainsKey('Search')) {
                                     [PSCustomObject]@{
                                         Path            = $movie.FullName
@@ -1124,6 +1126,17 @@ function Javinizer {
                             } else {
                                 if ($null -ne $javData) {
                                     if ($javAggregatedData.NullFields -eq '') {
+                                        $sortDataParameters = @{
+                                            Data            = $javAggregatedData.Data
+                                            Path            = $movie.FullName
+                                            DestinationPath = $DestinationPath
+                                            Update          = $Update
+                                            Settings        = $Settings
+                                            PartNumber      = $movie.PartNumber
+                                        }
+
+                                        $sortData = Get-JVSortData @sortDataParameters
+
                                         $setParameters = @{
                                             Data            = $javAggregatedData.Data
                                             SortData        = $sortData.SortData
