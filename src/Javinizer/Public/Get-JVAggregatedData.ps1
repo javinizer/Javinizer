@@ -192,7 +192,10 @@ function Get-JVAggregatedData {
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('location.tagcsv')]
-        [System.IO.FileInfo]$TagCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvTags.csv')
+        [System.IO.FileInfo]$TagCsvPath = (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvTags.csv'),
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [String]$FileName
     )
 
     process {
@@ -251,28 +254,29 @@ function Get-JVAggregatedData {
         }
 
         $aggregatedDataObject = [PSCustomObject]@{
-            Id             = $null
-            ContentId      = $null
-            DisplayName    = $null
-            Title          = $null
-            AlternateTitle = $null
-            Description    = $null
-            Rating         = $null
-            ReleaseDate    = $null
-            Runtime        = $null
-            Director       = $null
-            Maker          = $null
-            Label          = $null
-            Series         = $null
-            Tag            = $null
-            Tagline        = $null
-            Credits        = $null
-            Actress        = $null
-            Genre          = $null
-            CoverUrl       = $null
-            ScreenshotUrl  = $null
-            TrailerUrl     = $null
-            MediaInfo      = $MediaInfo
+            Id               = $null
+            ContentId        = $null
+            DisplayName      = $null
+            Title            = $null
+            AlternateTitle   = $null
+            Description      = $null
+            Rating           = $null
+            ReleaseDate      = $null
+            Runtime          = $null
+            Director         = $null
+            Maker            = $null
+            Label            = $null
+            Series           = $null
+            Tag              = $null
+            Tagline          = $null
+            Credits          = $null
+            Actress          = $null
+            Genre            = $null
+            CoverUrl         = $null
+            ScreenshotUrl    = $null
+            TrailerUrl       = $null
+            OriginalFileName = $FileName
+            MediaInfo        = $MediaInfo
         }
 
         $selectedDataObject = [PSCustomObject]@{

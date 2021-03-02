@@ -152,7 +152,8 @@ function Convert-JVString {
             -replace '<ACTORS>', "$actresses" `
             -replace '<ORIGINALTITLE>', "$($Data.AlternateTitle)" `
             -replace '<RESOLUTION>', "$($Data.MediaInfo.VideoHeight)" `
-            -replace '<DIRECTOR>', "$($Data.Director)"
+            -replace '<DIRECTOR>', "$($Data.Director)" `
+            -replace '<FILENAME>', "$($Data.OriginalFileName)"
 
         foreach ($symbol in $invalidSymbols) {
             if ([regex]::Escape($symbol) -eq '/') {
