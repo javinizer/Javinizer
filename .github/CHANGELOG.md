@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Fixed issue where sort would fail when downloading movie screenshots
 -   Fixed issue where filematcher would erroneously detect 5 digit movies with a single trailing '0' as a contentId during multipart matching (e.g. DMM-070807_1) (#227)
+-   Fixed issue where Jav321 scraper was failing due to invalid -AllResults parameter
+-   Fixed issue where error was being thrown when trying to translate from english => english
+-   Fixed issue where error was being thrown when movie was not matched
 
 ## [2.4.3]
 
