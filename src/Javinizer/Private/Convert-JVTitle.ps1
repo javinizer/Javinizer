@@ -209,7 +209,14 @@ function Convert-JVTitle {
             # Match ID-### - cd1, ID-### - cd2, etc.
             elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?R?\s?[-]\s?(cd|part|pt)?[-]?\d{1,3}") {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?\s?[-])"
-                $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').Trim().PadLeft(3, '0')
+
+                if ($fileBaseNameUpper[$x] -match '^0{2,5}') {
+                    # If match contentid format: DMM00234-1
+                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').Trim().PadLeft(3, '0')
+                } else {
+                    # If match dvdid format: DMM-070807-1
+                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '')).Trim()
+                }
                 $filePartNum = ((($fileP3.Trim() -replace '-', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
                 if ($filePartNum -match '^\d+$') {
                     $filePartNumber = [int]$filePartNum
