@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.3-1'
+﻿$cache:guiVersion = '2.4.4-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -3669,6 +3669,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                         <LABEL>
                         <ACTORS>
                         <ORIGINALTITLE>
+                        <FILENAME
                         <RESOLUTION>'
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                             New-UDGrid -Container -Content {

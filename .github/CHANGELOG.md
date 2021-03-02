@@ -5,71 +5,96 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.4]
+
+### Added
+
+-   Added \<FILENAME> as a format string which converts to the movie's basename
+
+### Changed
+
+-   Downloaded screenshot names now have a 2 digit padding for the incremented number
+-   `-UpdateModule` now copies tags, genre, history csv files to new module folder instead of doing a comparative replacement
+
+### Fixed
+
+-   Fixed issue where sort would fail when downloading movie screenshots
+-   Fixed issue where filematcher would erroneously detect 5 digit movies with a single trailing '0' as a contentId during multipart matching (e.g. DMM-070807_1) (#227)
+
 ## [2.4.3]
 
 ### Fixed
-- Fixed issue where genres were not being replaced from the genre csv (#235)
-- Fixed issue where `-Update` was not being applied properly
+
+-   Fixed issue where genres were not being replaced from the genre csv (#235)
+-   Fixed issue where `-Update` was not being applied properly
 
 ## [2.4.2]
 
 ### Fixed
-- GUI: Fixed custom appbar not being displayed
+
+-   GUI: Fixed custom appbar not being displayed
 
 ## [2.4.0]
 
 ### Added
-- Added `-OpenModule` parameter to open the Javinizer module directory
-- Added setting `scraper.option.addmaleactors` to scrape avdanyuwiki.com for male actors (#147)
-    -  Updated English names in the thumb csv will be added in a later release
-- Sorting files via the CLI now populates the history csv file (-OpenHistory)
-- GUI: Added ouput and filematcher preview
-- GUI: Added recurse depth selection on sort card
-- GUI: Added genre/tag editor popups
-- GUI: Added stats page that corresponds with the history csv
-- GUI: Added an advanced manual search workflow
-- GUI: Added tooltip descriptions for most GUI actions and settings options
-- GUI: Added better dark/light theme management, refreshed appbar
-- GUI: Added 'not matched' count to sort progress popup
+
+-   Added `-OpenModule` parameter to open the Javinizer module directory
+-   Added setting `scraper.option.addmaleactors` to scrape avdanyuwiki.com for male actors (#147)
+    -   Updated English names in the thumb csv will be added in a later release
+-   Sorting files via the CLI now populates the history csv file (-OpenHistory)
+-   GUI: Added ouput and filematcher preview
+-   GUI: Added recurse depth selection on sort card
+-   GUI: Added genre/tag editor popups
+-   GUI: Added stats page that corresponds with the history csv
+-   GUI: Added an advanced manual search workflow
+-   GUI: Added tooltip descriptions for most GUI actions and settings options
+-   GUI: Added better dark/light theme management, refreshed appbar
+-   GUI: Added 'not matched' count to sort progress popup
 
 ### Changed
-- **Updated settings metadata priority defaults to favor javlibrary over r18**
-- mgstageja scraper no longer includes actress aliases in the JapaneseName
-- jav321 scrapers no longer include actress aliases in the JapaneseName
-- History csv now includes all metadata fields
-- GUI: Installing the GUI no longer requires first-run setup via `-OpenGUI` and Docker
-- GUI: PowerShell Universal version upgraded from 1.4.7 => 1.5.13
-- GUI: Default port changed from 5000 => 8600
-- GUI: GUI now runs in a non-admin scope to allow easier access to network drives
+
+-   **Updated settings metadata priority defaults to favor javlibrary over r18**
+-   mgstageja scraper no longer includes actress aliases in the JapaneseName
+-   jav321 scrapers no longer include actress aliases in the JapaneseName
+-   History csv now includes all metadata fields
+-   GUI: Installing the GUI no longer requires first-run setup via `-OpenGUI` and Docker
+-   GUI: PowerShell Universal version upgraded from 1.4.7 => 1.5.13
+-   GUI: Default port changed from 5000 => 8600
+-   GUI: GUI now runs in a non-admin scope to allow easier access to network drives
 
 ### Fixed
-- Fixed issue where actress images would fail to download if they contained special characters on mgstage (#223)
-- Fixed issue causing update check to never run
-- Fixed issue with javlibraryja and javlibraryzh scrapers not accepting manual cloudflare cookies
-- Fixed issue where R18 series metadata included a blank 'tab' character
+
+-   Fixed issue where actress images would fail to download if they contained special characters on mgstage (#223)
+-   Fixed issue causing update check to never run
+-   Fixed issue with javlibraryja and javlibraryzh scrapers not accepting manual cloudflare cookies
+-   Fixed issue where R18 series metadata included a blank 'tab' character
 
 ## [2.3.3]
 
 ### Changed
-- `admin.updates.check` now checks on a 24 hour interval instead of on every run
-- Removed local dependencies on `-UpdateModule` - now runs properly
+
+-   `admin.updates.check` now checks on a 24 hour interval instead of on every run
+-   Removed local dependencies on `-UpdateModule` - now runs properly
 
 ### Fixed
-- Fixed JAVLibrary scraper not returning cover urls for certain movies
-- Fixed file matcher cleaning regex ".HD" => "\.HD"
+
+-   Fixed JAVLibrary scraper not returning cover urls for certain movies
+-   Fixed file matcher cleaning regex ".HD" => "\.HD"
 
 ## [2.3.2]
 
 ### Changed
-- Javdb scraper now accepts relative ID match rather than exact ID match to support matching mgstage titles
-    - mgstage `406FSDSS-169` <-> `FSDSS-169` javdb
+
+-   Javdb scraper now accepts relative ID match rather than exact ID match to support matching mgstage titles
+    -   mgstage `406FSDSS-169` <-> `FSDSS-169` javdb
 
 ### Fixed
-- Additional fixes for -UpdateModule
-- Filematcher now properly cleans ContentId (ID00123) to Id (ID-123) value
-- `-Strict` now properly works on updated Dmm url scraper
-- Added better debugging error when filematcher breaks on invalid multi-part format (#215)
-- Javlibrary ratings now properly return null when there is no rating value
+
+-   Additional fixes for -UpdateModule
+-   Filematcher now properly cleans ContentId (ID00123) to Id (ID-123) value
+-   `-Strict` now properly works on updated Dmm url scraper
+-   Added better debugging error when filematcher breaks on invalid multi-part format (#215)
+-   Javlibrary ratings now properly return null when there is no rating value
 
 ## [2.3.1]
 

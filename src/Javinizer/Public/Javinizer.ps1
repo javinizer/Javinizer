@@ -998,7 +998,7 @@ function Javinizer {
 
                     $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
                     if ($null -ne $javData) {
-                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                        $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -FileName $javMovies.BaseName -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($javAggregatedData.NullFields -eq '') {
                             $sortDataParameters = @{
                                 Data            = $javAggregatedData.Data
@@ -1077,7 +1077,7 @@ function Javinizer {
                             }
 
                             $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
-                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
+                            $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -FileName $movie.BaseName -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                             $sortDataParameters = @{
                                 Data            = $javAggregatedData.Data
                                 Path            = $movie.FullName
