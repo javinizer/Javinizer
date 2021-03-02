@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Downloaded screenshot names now have a 2 digit padding for the incremented number
+-   `-UpdateModule` now copies tags, genre, history csv files to new module folder instead of doing a comparative replacement
 
 ### Fixed
 
