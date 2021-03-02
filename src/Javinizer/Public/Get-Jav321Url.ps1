@@ -4,7 +4,7 @@ function Get-Jav321Url {
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [String]$Id,
 
-        [Parameter]
+        [Parameter()]
         [Switch]$AllResults
     )
 
