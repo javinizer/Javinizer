@@ -18,16 +18,35 @@ function Get-TranslatedString {
             $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
         }
 
-        if ($null -ne $String -and $String -ne '') {
-            try {
-                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                    $tempFile = python $translatePath $String $Language
-                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                    $tempFile = python3 $translatePath $String $Language
+        if ($Language -eq 'en') {
+            if ($String -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                if ($null -ne $String -and $String -ne '') {
+                    try {
+                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                            $tempFile = python $translatePath $String $Language
+                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                            $tempFile = python3 $translatePath $String $Language
+                        }
+                        $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
+                    } finally {
+                        Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
+                    }
                 }
-                $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
-            } finally {
-                Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
+            } else {
+                $translatedString = $String
+            }
+        } else {
+            if ($null -ne $String -and $String -ne '') {
+                try {
+                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                        $tempFile = python $translatePath $String $Language
+                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                        $tempFile = python3 $translatePath $String $Language
+                    }
+                    $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
+                } finally {
+                    Remove-Item -Path $tempFile -ErrorAction SilentlyContinue
+                }
             }
         }
 
