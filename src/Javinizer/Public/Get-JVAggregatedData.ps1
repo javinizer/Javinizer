@@ -631,14 +631,16 @@ function Get-JVAggregatedData {
                         $genreIndexNum = $replaceGenres.Original.IndexOf($genre)
                         if ($replaceGenres.Replacement[$genreIndexNum] -ne '' -and $null -ne $replaceGenres.Replacement[$genreIndexNum]) {
                             $newGenres += $replaceGenres.Replacement[$genreIndexNum]
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($replaceGenres.Original[$genreIndexNum])] replaced as [$($replaceGenres.Replacement[$genreIndexNum])]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($replaceGenres.Original[$genreIndexNum])] replaced as [$($replaceGenres.Replacement[$genreIndexNum])]"
                         }
                     } else {
                         $newGenres += $genre
                     }
                 }
+
+                $aggregatedDataObject.Genre = $newGenres
             } else {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$grenreCsvPath]"
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Genre csv file is missing or cannot be found at path [$genreCsvPath]"
             }
         }
 
@@ -815,7 +817,7 @@ function Get-JVAggregatedData {
                         $tagIndexNum = $replaceTags.Original.IndexOf($tag)
                         if ($replaceTags.Replacement[$tagIndexNum] -ne '' -and $null -ne $replaceTags.Replacement[$tagIndexNum]) {
                             $newTags += $replaceTags.Replacement[$tagIndexNum]
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($replaceTags.Original[$tagIndexNum])] replaced as [$($replaceTags.Replacement[$tagIndexNum])]"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($replaceTags.Original[$tagIndexNum])] replaced as [$($replaceTags.Replacement[$tagIndexNum])]"
                         }
                     } else {
                         $newTags += $tag
