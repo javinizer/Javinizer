@@ -63,19 +63,22 @@ function Start-JVGui {
         return
     }
 
-    Write-Host "Waiting for Javinizer dashboard to start..."
-    Start-Sleep -Seconds 3
-    <#     $timeout = New-TimeSpan -Seconds 15
+    Write-Host "Waiting for Javinizer dashboard to start..." -NoNewline
+    $timeout = New-TimeSpan -Seconds 15
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     do {
         $httpRequest = [System.Net.WebRequest]::Create("http://localhost:$Port/")
-        $httpResponse = $httpRequest.GetResponse()
+        try {
+            $httpResponse = $httpRequest.GetResponse()
+        } catch {
+            # Silence http response errors
+        }
         $httpStatusCode = [int]$httpResponse.StatusCode
-        Write-Host '.'
-        Start-Sleep -Seconds 2
-    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout) #>
+        Write-Host $httpStatusCode
+    } while ($httpStatusCode -ne 200 -and $stopwatch.elapsed -lt $timeout)
 
     Start-Process "http://localhost:$Port/"
-    Write-Host "Javinizer GUI started at [http://localhost:$Port/]"
+    Write-Host "`nJavinizer GUI started at [http://localhost:$Port/]" -
     Write-Host "To specify a custom port, use the -Port parameter (0 - 65353)"
+    Write-Host "If you see a 'Not Running' screen, remove the '/not-running' or wait for the page to reload"
 }
