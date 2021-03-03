@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.5]
+
+### Changed
+
+-   Screenshot filename index padding is now configurable via setting `"sort.format.screenshotimg.padding": 1`
+
+### Fixed
+
+-   GUI: Fixed issue where checkbox for sort.metadata.nfo.translate.keeporiginaldescription would always be checked if sort.metadata.nfo.translate was true
+
 ## [2.4.4]
 
 ### Added

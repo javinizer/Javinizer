@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.4-1'
+﻿$cache:guiVersion = '2.4.5-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -933,7 +933,7 @@ function New-JVAppBar {
     )
 
     $drawer = New-UDDrawer -Children {
-        New-UDList -SubHeader "Javinzer Web GUI v$($cache:javinizerInfo.Version)" -Children {
+        New-UDList -SubHeader "Javinzer Web GUI v$($cache:guiVersion)" -Children {
             New-UDListItem -Label 'Sort' -Icon $iconSearchLocation -OnClick {
                 Invoke-UDRedirect -Url '/sort'
             }
@@ -3630,7 +3630,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
 
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                             New-UDTooltip -TooltipContent { 'Specifies to append the original Japanese description to the nfo file when translating the description.' } -Content {
-                                New-UDCheckBox -Label 'sort.metadata.nfo.translate.keeporiginaldescription' -Id 'checkbox-settings-translate-originaldescription' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate')
+                                New-UDCheckBox -Label 'sort.metadata.nfo.translate.keeporiginaldescription' -Id 'checkbox-settings-translate-originaldescription' -LabelPlacement end -Checked ($cache:settings.'sort.metadata.nfo.translate.keeporiginaldescription')
                             }  -Place right -Type dark -Effect float
                         }
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
@@ -3669,7 +3669,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                         <LABEL>
                         <ACTORS>
                         <ORIGINALTITLE>
-                        <FILENAME
+                        <FILENAME>
                         <RESOLUTION>'
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                             New-UDGrid -Container -Content {

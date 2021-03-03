@@ -34,7 +34,7 @@ $ModuleName = (Split-Path -Path $BuildFile -Leaf).Split('.')[0]
 #Default Build
 $str = @()
 $str = 'Clean', 'ValidateRequirements'
-$str += 'FormattingCheck'
+# $str += 'FormattingCheck'
 $str += 'Analyze', 'Test', 'InfraTest'
 
 $str += 'Build', 'Archive'
