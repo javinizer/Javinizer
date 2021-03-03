@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.4-1'
+﻿$cache:guiVersion = '2.4.5-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -933,7 +933,7 @@ function New-JVAppBar {
     )
 
     $drawer = New-UDDrawer -Children {
-        New-UDList -SubHeader "Javinzer Web GUI v$($cache:javinizerInfo.Version)" -Children {
+        New-UDList -SubHeader "Javinzer Web GUI v$($cache:guiVersion)" -Children {
             New-UDListItem -Label 'Sort' -Icon $iconSearchLocation -OnClick {
                 Invoke-UDRedirect -Url '/sort'
             }
