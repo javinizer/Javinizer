@@ -115,7 +115,9 @@ function Install-JVGui {
             try {
                 Write-Host "Setting ACL on [$psuPath]..."
                 $psuAcl = Get-Acl -Path $psuPath
-                $aclRule = New-Object System.Security.AccessControl.FileSystemAccessRule("everyone", "FullControl", "ContainerInherit,Objectinherit", "none", "Allow")
+                # Find Windows SID values here https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/security-identifiers-in-windows#well-known-sids-all-versions-of-windows
+                $everyoneAccountName = ([wmi]"Win32_SID.SID='S-1-1-0'").AccountName
+                $aclRule = New-Object System.Security.AccessControl.FileSystemAccessRule($everyoneAccountName, "FullControl", "ContainerInherit,Objectinherit", "none", "Allow")
                 $psuAcl.AddAccessRule($aclRule)
                 Set-Acl -Path $psuPath -AclObject $psuAcl
             } catch {
@@ -124,7 +126,10 @@ function Install-JVGui {
                 return
             }
 
-            # We need to remove the existing service if it already exists
+            # Windows service deployment is deprecated due to requiring admin scope privileges during runtime
+            # To allow easier access to network drives, we will only be copying the files/executable
+            # And running the executable in a non-admin scope
+
             <# $svcCheck = Get-Service -Name Javinizer -ErrorAction SilentlyContinue
             if ($svcCheck) {
                 Write-Host "Removing the existing Javinizer service..."
@@ -144,10 +149,7 @@ function Install-JVGui {
             Start-Service -Name 'Javinizer' #>
 
             Write-Host "Javinizer GUI successfully installed!" -ForegroundColor Green
-            Write-Host "If all modules are installed, open the GUI using 'Javinizer -OpenGUI -FirstRun'" -ForegroundColor Green
-            Write-Host "You will need to follow documentation to import the Javinizer dashboard for your first-run:" -ForegroundColor Green
-            Write-Host "https://docs.jvlflame.net/v/2.2.6/installation/install-javinizer-web-gui#import-the-javinizer-dashboard" -ForegroundColor Green
-
+            Write-Host "If all modules are installed, open the GUI using 'Javinizer -OpenGUI'" -ForegroundColor Green
         } else {
             Write-Warning "This feature is only available on Windows"
             return
