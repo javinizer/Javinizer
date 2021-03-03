@@ -76,7 +76,11 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.metadata.nfo.altnamerole')]
-        [Boolean]$AltNameRole
+        [Boolean]$AltNameRole,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.format.screenshotimg.padding')]
+        [Int]$ScreenshotImgPadding
     )
 
     begin {
@@ -104,6 +108,7 @@ function Set-JVMovie {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
             $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
+            $ScreenshotImgPadding = $Settings.'sort.format.screenshotimg.padding'
         }
 
         <# if ($RenameFile -and (!($Update))) {
@@ -321,7 +326,7 @@ function Set-JVMovie {
                         }
 
                         foreach ($screenshot in $Data.ScreenshotUrl) {
-                            $paddedIndex = $index.ToString().PadLeft(2, '0')
+                            $paddedIndex = $index.ToString().PadLeft($ScreenshotImgPadding, '0')
                             $screenshotName = "$($sortData.ScreenshotImgName)$paddedIndex.jpg"
                             $webClient = New-Object System.Net.WebClient
                             $webclient.Headers.Add("User-Agent: Other")

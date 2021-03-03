@@ -67,6 +67,7 @@
   "sort.format.trailervid": "<ID>-trailer",
   "sort.format.nfo": "<ID>",
   "sort.format.screenshotimg": "fanart",
+  "sort.format.screenshotimg.padding": 1,
   "sort.format.screenshotfolder": "extrafanart",
   "sort.format.actressimgfolder": ".actors",
   "sort.metadata.nfo.mediainfo": false,
