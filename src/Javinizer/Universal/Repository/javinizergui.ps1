@@ -1151,8 +1151,12 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                         }
 
                                                         # Remove the movie after it's committed
-                                                        ($cache:findData).RemoveAt($cache:index)
-                                                        ($cache:originalFindData).RemoveAt($cache:index)
+                                                        if ($cache:findData.Count -gt 1) {
+                                                            ($cache:findData).RemoveAt($cache:index)
+                                                            ($cache:originalFindData).RemoveAt($cache:index)
+                                                        } else {
+                                                            Update-JVPage -Sort -ClearData
+                                                        }
 
                                                         if ($cache:index -gt 0) {
                                                             $cache:index -= 1
