@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.6]
+
+### Changed
+
+-   GUI: `-StartGUI` now checks for and applies updates to the GUI dashboard script before starting
+
+### Fixed
+
+-   GUI: Running sort on an individual file on the filebrowser now properly displays metadata after scraping
+-   GUI: Committing sort on an individual file now prpoerly clears the sort screen
+-   GUI: `-InstallGUI` now properly applies file permissions to install directory for non-english locale systems (#244)
+
 ## [2.4.5]
 
 ### Changed
