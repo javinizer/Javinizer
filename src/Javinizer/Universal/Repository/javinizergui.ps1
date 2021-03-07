@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.5-1'
+﻿$cache:guiVersion = '2.4.6-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -790,113 +790,99 @@ function Invoke-JavinizerWeb {
 
     process {
         if (!($cache:inProgress)) {
-            if (!($Preview)) {
-                # Check if javlibrary cloudflare protection is enabled
-                if ($cache:settings.'scraper.movie.javlibrary' -or $cache:settings.'scraper.movie.javlibraryja' -or $cache:settings.'scraper.movie.javlibraryzh') {
-                    if (-not ($cache:cfSession)) {
+            # Check if javlibrary cloudflare protection is enabled
+            if ($cache:settings.'scraper.movie.javlibrary' -or $cache:settings.'scraper.movie.javlibraryja' -or $cache:settings.'scraper.movie.javlibraryzh') {
+                if (-not ($cache:cfSession)) {
+                    try {
+                        Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
+                    } catch {
                         try {
-                            Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
-                        } catch {
-                            try {
-                                # Test with persisted settings
-                                if ($cache:settings.'javlibrary.cookie.cfduid' -and $cache:settings.'javlibrary.cookie.cfclearance' -and $cache:settings.'javlibrary.browser.useragent') {
-                                    $cache:cfSession = Get-CfSession -Cfduid:$cache:settings.'javlibrary.cookie.cfduid' -Cfclearance:$cache:settings.'javlibrary.cookie.cfclearance' `
-                                        -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
+                            # Test with persisted settings
+                            if ($cache:settings.'javlibrary.cookie.cfduid' -and $cache:settings.'javlibrary.cookie.cfclearance' -and $cache:settings.'javlibrary.browser.useragent') {
+                                $cache:cfSession = Get-CfSession -Cfduid:$cache:settings.'javlibrary.cookie.cfduid' -Cfclearance:$cache:settings.'javlibrary.cookie.cfclearance' `
+                                    -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
 
-                                    # Testing with the newly created session sometimes fails if there is no wait time
-                                    Start-Sleep -Seconds 1
+                                # Testing with the newly created session sometimes fails if there is no wait time
+                                Start-Sleep -Seconds 1
 
-                                    Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
-                                } else {
-                                    Show-JVCfModal
-                                    return
-                                }
-                            } catch {
+                                Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
+                            } else {
                                 Show-JVCfModal
                                 return
                             }
-                        }
-                    } else {
-                        try {
-                            Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
                         } catch {
                             Show-JVCfModal
                             return
                         }
                     }
-                }
-
-                Show-JVProgressModal -Sort
-
-                if ($interactive) {
-                    Update-JVPage -ClearData
-                    if ($Path) {
-                        $Item = (Get-Item -LiteralPath $Path)
-                    }
-                    if ($Item.Mode -like 'd*') {
-                        $cache:searchTotal = ($cache:settings | Get-JVItem -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict).Count
-                        $cache:tempFile = New-TemporaryFile
-
-                        if ($Depth -gt 0 -and $Recurse) {
-                            $jvData = Javinizer -Path $Item.FullName -Recurse:$Recurse -Depth:$Depth -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search' -WebTempPath $cache:tempFile
-                        } else {
-                            $jvData = Javinizer -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search' -WebTempPath $cache:tempFile
-                        }
-
-                        if ($null -ne $jvData) {
-                            $sortedData = ($jvData | Sort-Object { $_.Data.Id })
-                            $sortedData | ForEach-Object { $cache:findData.Add($_) }
-                        } else {
-                            Show-JVToast -Type Error -Message 'No movies matched'
-                        }
-                    } else {
-                        $movieId = ($cache:settings | Get-JVItem -Path $Item.FullName).Id
-                        Set-UDElement -Id 'textbox-sort-manualsearch' -Properties @{
-                            value = $movieId
-                        }
-
-                        $jvData = Javinizer -Path $Item.FullName -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search'
-
-                        if ($null -ne $jvData) {
-                            $sortedData = $jvData
-                        } else {
-                            Show-JVToast -Type Error -Message "[$movieId] not matched"
-                        }
-                    }
-
-                    # We want to clone the data here so we can reset specific metadata to default if desired
-                    # Since there is no easy way to clone a PSCustomObject, we need to convert the object into a plaintext json so we can then assign it to the new variable
-                    $tempData = $sortedData | ConvertTo-Json -Depth 32 | ConvertFrom-Json -Depth 32
-                    #$cache:originalFindData = ($tempData | ConvertFrom-Json -Depth 32) | Sort-Object { $_.Data.Id }
-                    $tempData | ForEach-Object { $cache:originalFindData.Add($_) }
                 } else {
-                    if ($Item.Mode -like 'd*') {
-                        if ($Depth -gt 0) {
-                            Javinizer -Path $Item.FullName -Recurse:$Recurse -Depth:$Depth -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
-                        } else {
-                            Javinizer -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
-                        }
-                    } else {
-                        Javinizer -Path $Item.FullName -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
+                    try {
+                        Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
+                    } catch {
+                        Show-JVCfModal
+                        return
                     }
-                }
-                Update-JVPage -Sort -ClearProgress
-                Show-JVProgressModal -Off
-            } else {
-                if ($Depth -gt 0) {
-                    $preview = Javinizer -Path $Path -Recurse:$Recurse -Strict:$Strict -Depth:$Depth -Preview
-                } else {
-                    $preview = Javinizer -Path $Path -Recurse:$Recurse -Strict:$Strict -Preview
-                }
-
-                Show-UDModal -FullWidth -MaxWidth md -Content {
-                    $previewColumns = @(
-                        New-UDTableColumn -Title 'Id' -Property 'Id' -IncludeInSearch
-                    )
-                    New-UDTable -Title 'Preview' -Data $preview -Columns $previewColumns -Sort -Filter -Search -ShowPagination
-                    #New-UDTable -Title $cache:settings.'emby.url' -Data $cache:embyData
                 }
             }
+
+            Show-JVProgressModal -Sort
+
+            if ($interactive) {
+                Update-JVPage -ClearData
+                if ($Path) {
+                    $Item = (Get-Item -LiteralPath $Path)
+                }
+                if ($Item.Mode -like 'd*') {
+                    $cache:searchTotal = ($cache:settings | Get-JVItem -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict).Count
+                    $cache:tempFile = New-TemporaryFile
+
+                    if ($Depth -gt 0 -and $Recurse) {
+                        $jvData = Javinizer -Path $Item.FullName -Recurse:$Recurse -Depth:$Depth -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search' -WebTempPath $cache:tempFile
+                    } else {
+                        $jvData = Javinizer -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search' -WebTempPath $cache:tempFile
+                    }
+
+                    if ($null -ne $jvData) {
+                        $sortedData = ($jvData | Sort-Object { $_.Data.Id })
+                        $sortedData | ForEach-Object { $cache:findData.Add($_) }
+                    } else {
+                        Show-JVToast -Type Error -Message 'No movies matched'
+                    }
+                } else {
+                    $movieId = ($cache:settings | Get-JVItem -Path $Item.FullName).Id
+                    <# Set-UDElement -Id 'textbox-sort-manualsearch' -Properties @{
+                        value = $movieId
+                    } #>
+
+                    $jvData = Javinizer -Path $Item.FullName -Strict:$Strict -HideProgress -IsWeb -IsWebType 'Search'
+
+                    if ($null -ne $jvData) {
+                        $sortedData = $jvData
+                        $sortedData | ForEach-Object { $cache:findData.Add($_) }
+                    } else {
+                        Show-JVToast -Type Error -Message "[$movieId] not matched"
+                    }
+                }
+
+                # We want to clone the data here so we can reset specific metadata to default if desired
+                # Since there is no easy way to clone a PSCustomObject, we need to convert the object into a plaintext json so we can then assign it to the new variable
+                $tempData = $sortedData | ConvertTo-Json -Depth 32 | ConvertFrom-Json -Depth 32
+                #$cache:originalFindData = ($tempData | ConvertFrom-Json -Depth 32) | Sort-Object { $_.Data.Id }
+                $tempData | ForEach-Object { $cache:originalFindData.Add($_) }
+            } else {
+                if ($Item.Mode -like 'd*') {
+                    if ($Depth -gt 0) {
+                        Javinizer -Path $Item.FullName -Recurse:$Recurse -Depth:$Depth -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
+                    } else {
+                        Javinizer -Path $Item.FullName -Recurse:$Recurse -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
+                    }
+                } else {
+                    Javinizer -Path $Item.FullName -Strict:$Strict -Update:$Update -Force:$Force -HideProgress -IsWeb -IsWebType 'Sort'
+                }
+            }
+            Update-JVPage -Sort -ClearProgress
+            Show-JVProgressModal -Off
+
 
         } else {
             Show-JVToast -Type Error -Message 'A job is currently running, please wait'
@@ -1165,8 +1151,12 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                         }
 
                                                         # Remove the movie after it's committed
-                                                        ($cache:findData).RemoveAt($cache:index)
-                                                        ($cache:originalFindData).RemoveAt($cache:index)
+                                                        if ($cache:findData.Count -gt 1) {
+                                                            ($cache:findData).RemoveAt($cache:index)
+                                                            ($cache:originalFindData).RemoveAt($cache:index)
+                                                        } else {
+                                                            Update-JVPage -Sort -ClearData
+                                                        }
 
                                                         if ($cache:index -gt 0) {
                                                             $cache:index -= 1
