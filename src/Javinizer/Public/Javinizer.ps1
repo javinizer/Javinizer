@@ -1089,7 +1089,11 @@ function Javinizer {
                                     PartNumber      = $movie.PartNumber
                                 }
 
-                                $sortData = Get-JVSortData @sortDataParameters
+                                try {
+                                    $sortData = Get-JVSortData @sortDataParameters -ErrorAction SilentlyContinue
+                                } catch {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($movie.FileName)] Not matched"
+                                }
 
                                 if ($IsWebType -eq 'Search' -or $PSBoundParameters.ContainsKey('Search')) {
                                     [PSCustomObject]@{
@@ -1100,6 +1104,7 @@ function Javinizer {
                                         AllData         = $javAggregatedData.AllData
                                         Selected        = $javAggregatedData.Selected
                                         NullFields      = $javAggregatedData.NullFields
+                                        SortData        = $sortData.SortData
                                         FileName        = $movie.FileName
                                         ManualSearch    = $null
                                     }
