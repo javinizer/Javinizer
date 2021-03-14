@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.4.6'
+    ModuleVersion     = '2.4.7'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -150,7 +150,7 @@
             ReleaseNotes             = 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
 
             # Prerelease string of this module
-            # Prerelease               = ''
+            Prerelease               = 'alpha'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             RequireLicenseAcceptance = $false
