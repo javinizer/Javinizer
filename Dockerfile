@@ -43,7 +43,7 @@ RUN pwsh -c "Set-PSRepository 'PSGallery' -InstallationPolicy Trusted" \
     && pwsh -c "Install-Module UniversalDashboard.UDSpinner" \
     && pwsh -c "Install-Module UniversalDashboard.UDScrollUp" \
     && pwsh -c "Install-Module UniversalDashboard.CodeEditor" \
-    && pwsh -c "Install-Module Javinizer -AllowPrerelease"
+    && pwsh -c "Install-Module Javinizer"
 
 # Install python modules
 RUN pip3 install pillow \

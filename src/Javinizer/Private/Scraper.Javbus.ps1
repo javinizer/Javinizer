@@ -193,7 +193,7 @@ function Get-JavbusGenre {
         $genre = @()
         try {
             $genre = ($Webrequest | ForEach-Object { $_ -split '\n' } |
-                Select-String '<span class="genre"><a href="(.*)\/genre\/(.*)">(.*)<\/a><\/span>').Matches |
+                Select-String '<a href="(.*)\/genre\/(.*)">(.*)<\/a><\/label><\/span>').Matches |
             ForEach-Object { $_.Groups[3].Value }
         } catch {
             return
