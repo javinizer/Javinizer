@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.7]
+
+### Fixed
+- Using `<TITLE>` at the end of a directory format string no longer errors when creating metadata files (#245)
+- JavBus genre metadata scraper updated for site changes
+
 ## [2.4.6]
 
 ### Changed
