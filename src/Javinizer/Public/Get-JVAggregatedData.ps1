@@ -636,6 +636,8 @@ function Get-JVAggregatedData {
                         if ($replaceGenres.Replacement[$genreIndexNum] -ne '' -and $null -ne $replaceGenres.Replacement[$genreIndexNum]) {
                             $newGenres += $replaceGenres.Replacement[$genreIndexNum]
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Genre - $($replaceGenres.Original[$genreIndexNum])] replaced as [$($replaceGenres.Replacement[$genreIndexNum])]"
+                        } else {
+                            $newGenres += $genre
                         }
                     } else {
                         $newGenres += $genre
@@ -822,6 +824,8 @@ function Get-JVAggregatedData {
                         if ($replaceTags.Replacement[$tagIndexNum] -ne '' -and $null -ne $replaceTags.Replacement[$tagIndexNum]) {
                             $newTags += $replaceTags.Replacement[$tagIndexNum]
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($replaceTags.Original[$tagIndexNum])] replaced as [$($replaceTags.Replacement[$tagIndexNum])]"
+                        } else {
+                            $newtags += $tag
                         }
                     } else {
                         $newTags += $tag
