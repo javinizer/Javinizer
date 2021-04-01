@@ -198,7 +198,7 @@ function Get-MgstageGenre {
 
     process {
         $genreArray = @()
-        $genreHtml = ((($Webrequest.Content -split '<th>ジャンル：<\/th>')[1] -split '<\/td>')[0]) -split '<a href="\/search\/search\.php\?image_word_ids\[\]=.*">' | ForEach-Object { ($_ -replace '<td>' -replace '<\/a>').Trim() } | Where-Object { $_ -ne '' }
+        $genreHtml = ((($Webrequest.Content -split '<th>ジャンル：<\/th>')[1] -split '<\/td>')[0]) -split '<a href="\/search\/csearch\.php\?genre\[\]=.*">' | ForEach-Object { ($_ -replace '<td>' -replace '<\/a>').Trim() } | Where-Object { $_ -ne '' }
 
         foreach ($genre in $genreHtml) {
             $genre = Convert-HtmlCharacter -String $genre
@@ -221,7 +221,7 @@ function Get-MgstageActress {
 
     process {
         $movieActressObject = @()
-        $movieActress = (((($Webrequest.Content -split '<th>出演：<\/th>')[1] -split '<\/td>')[0]) -replace '<td>' -replace '<\/a>' -replace '<a href="\/search\/search\.php\?image_word_ids\[\]=.*">') -split '\n' `
+        $movieActress = (((($Webrequest.Content -split '<th>出演：<\/th>')[1] -split '<\/td>')[0]) -replace '<td>' -replace '<\/a>' -replace '<a href="\/search\/csearch\.php\?actor\[\]=.*">') -split '\n' `
         | ForEach-Object { ($_).Trim() } | Where-Object { $_ -ne '' }
 
         foreach ($actress in $movieActress) {
