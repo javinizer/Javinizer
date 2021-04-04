@@ -254,6 +254,13 @@ function Get-TokyoHotCoverUrl {
         [Object]$Webrequest
     )
 
+    # HTML src
+    # <li class="package">
+    # <a href="https://my.cdn.tokyo-hot.com/media/5484/jacket/n0487.jpg"><img src="https://my.cdn.tokyo-hot.com/static/images/package.png" alt="Jacket" width="48" height="43"><br>Jacket</a>
+    # <a href="https://my.cdn.tokyo-hot.com/media/5484/package/_v.jpg"></a>
+    # <a href="https://my.cdn.tokyo-hot.com/media/5484/package/_vb.jpg"></a>
+    # </li>
+
     process {
         try {
             $coverUrl = ($Webrequest.Content | Select-String -Pattern '<img src="(.*)" class="video-cover"').Matches.Groups[1].Value
@@ -302,5 +309,22 @@ function Get-TokyoHotTrailerUrl {
         }
 
         Write-Output $trailerUrl
+    }
+}
+
+function Get-TokyoHotDescription {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    process {
+        try {
+            $description = ($Webrequest.Content | Select-String -Pattern '<div class="sentence">(.*)<\/div>').Matches.Groups[1].Value
+        } catch {
+            $description = $null
+        }
+
+        Write-Output $description
     }
 }

@@ -43,6 +43,7 @@ function Get-TokyoHotData {
             CoverUrl      = Get-TokyoHotCoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-TokyoHotScreenshotUrl -WebRequest $webRequest
             TrailerUrl    = Get-TokyoHotTrailerUrl -WebRequest $webRequest
+            Description   = Get-TokyoHotDescription -WebRequest $webRequest
         }
 
         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] TokyoHot data object: $($movieDataObject | ConvertTo-Json -Depth 32 -Compress)"
