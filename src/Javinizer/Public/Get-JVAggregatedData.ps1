@@ -353,7 +353,7 @@ function Get-JVAggregatedData {
                     } else {
                         $aggregatedDataObject.$field = $sourceData.$field
                     }
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Compress)]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [$field - $priority] Set to [$($sourceData.$field | ConvertTo-Json -Depth 32 -Compress)]"
                 }
             }
         }
@@ -476,14 +476,14 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched.Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName match"
                             } elseif ($matched.Count -gt 1) {
                                 $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched[0].Index].FirstName
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched[0].Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched[0].Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName match"
                             }
                         } elseif ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
@@ -493,14 +493,14 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched.Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName LastName match"
                             } elseif ($matched.Count -gt 1) {
                                 $aggregatedDataObject.Actress[$x].FirstName = $actressCsv[$matched[0].Index].FirstName
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched[0].Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched[0].Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using FirstName LastName match"
                             }
                         } elseif (($aggregatedDataObject.Actress[$x].JapaneseName -ne '') -and ($matched = Compare-Object -ReferenceObject $aliasObject -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName'))) {
@@ -510,7 +510,7 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched.Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched.Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched.Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using JapaneseName match"
                             } elseif ($matched.Count -gt 1) {
                                 $actressString = "$($actressCsv[$matched.Index].LastName) $($actressCsv[$matched.Index].FirstName) - $($actressCsv[$matched[0].Index].JapaneseName)".Trim()
@@ -518,7 +518,7 @@ function Get-JVAggregatedData {
                                 $aggregatedDataObject.Actress[$x].LastName = $actressCsv[$matched[0].Index].LastName
                                 $aggregatedDataObject.Actress[$x].JapaneseName = $actressCsv[$matched[0].Index].JapaneseName
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $actressCsv[$matched[0].Index].ThumbUrl
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Alias - $aliasString] converted to [$actressString] using JapaneseName match"
                             }
                         }
@@ -529,7 +529,7 @@ function Get-JVAggregatedData {
                     $matched = @()
                     $matchedActress = @()
                     if (($aggregatedDataObject.Actress[$x].JapaneseName -ne '') -and ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('JapaneseName'))) {
-                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                         if ($matched.Count -eq 1) {
                             $matchedActress = $matched
                             $aggregatedDataObject.Actress[$x].FirstName = $matchedActress.FirstName
@@ -538,7 +538,7 @@ function Get-JVAggregatedData {
                             if ($null -eq $aggregatedDataObject.ThumbUrl -or $aggregatedDataObject.ThumbUrl -eq '') {
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             }
-                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Actress - $originalActressString] matched to [$actressString]"
                         } elseif ($matched.Count -gt 1) {
                             $matchedActress = $matched | Where-Object { $_.FirstName -like $aggregatedDataObject.Actress[$x].FirstName -and $_.LastName -like $aggregatedDataObject.Actress[$x].LastName }
@@ -549,12 +549,12 @@ function Get-JVAggregatedData {
                                 if ($null -eq $aggregatedDataObject.ThumbUrl -or $aggregatedDataObject.ThumbUrl -eq '') {
                                     $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                                 }
-                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                                $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Actress - $originalActressString] matched to [$actressString]"
                             }
                         }
                     } elseif (($aggregatedDataObject.Actress[$x].LastName -eq '' -and $aggregatedDataObject.Actress[$x].FirstName -ne '') -and ($matched = Compare-Object -ReferenceObject ($actressCsv | Where-Object { $_.LastName -eq '' }) -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName'))) {
-                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                         if ($matched.Count -eq 1) {
                             $matchedActress = $matched
                             $aggregatedDataObject.Actress[$x].FirstName = $matchedActress.FirstName
@@ -563,11 +563,11 @@ function Get-JVAggregatedData {
                             if ($null -eq $aggregatedDataObject.ThumbUrl -or $aggregatedDataObject.ThumbUrl -eq '') {
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             }
-                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Actress - $originalActressString] matched to [$actressString]"
                         }
                     } elseif ($matched = Compare-Object -ReferenceObject $actressCsv -DifferenceObject $aggregatedDataObject.Actress[$x] -IncludeEqual -ExcludeDifferent -PassThru -Property @('FirstName', 'LastName')) {
-                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                        $originalActressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                         if ($matched.Count -eq 1) {
                             $matchedActress = $matched
                             $aggregatedDataObject.Actress[$x].FirstName = $matchedActress.FirstName
@@ -576,7 +576,7 @@ function Get-JVAggregatedData {
                             if ($null -eq $aggregatedDataObject.ThumbUrl -or $aggregatedDataObject.ThumbUrl -eq '') {
                                 $aggregatedDataObject.Actress[$x].ThumbUrl = $matchedActress.ThumbUrl
                             }
-                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Compress
+                            $actressString = $aggregatedDataObject.Actress[$x] | ConvertTo-Json -Depth 32 -Compress
                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] [Actress - $originalActressString] matched to [$actressString]"
                         }
                     }
