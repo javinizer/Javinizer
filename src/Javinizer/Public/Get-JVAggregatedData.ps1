@@ -183,6 +183,10 @@ function Get-JVAggregatedData {
         [Alias('sort.metadata.nfo.actressastag')]
         [Boolean]$ActressAsTag,
 
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.preferactressalias')]
+        [Boolean]$PreferActressAlias,
+
         [Alias('sort.metadata.tagcsv')]
         [Boolean]$ReplaceTag,
 
@@ -242,6 +246,7 @@ function Get-JVAggregatedData {
             $ReplaceTag = $Settings.'sort.metadata.tagcsv'
             $TranslateModule = $Settings.'sort.metadata.nfo.translate.module'
             $AvDanyu = $Settings.'scraper.option.addmaleactors'
+            $PreferActressAlias = $Settings.'sort.metadata.nfo.preferactressalias'
             if ($Settings.'location.genrecsv' -ne '') {
                 $GenreCsvPath = $Settings.'location.genrecsv'
             }
@@ -578,6 +583,38 @@ function Get-JVAggregatedData {
                 }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Thumbnail csv file is missing or cannot be found at path [$thumbCsvPath]"
+            }
+        }
+
+        if ($PreferActressAlias) {
+            if ($aggregatedDataObject.Actress.Count -gt 1) {
+                $originalActress = ($Data | Where-Object { $_.Source -eq $selectedDataObject.Actress }).Actress
+                $originalActress | Out-String | Write-Debug
+                for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
+                    if ($originalActress[$x].EnglishAlias.Count -gt 1) {
+                        $aggregatedDataObject.Actress[$x].FirstName = $originalActress[$x].EnglishAlias[-1].FirstName
+                        $aggregatedDataObject.Actress[$x].LastName = $originalActress[$x].EnglishAlias[-1].LastName
+                        $aggregatedDataObject.Actress[$x].JapaneseName = $originalActress[$x].JapaneseAlias[-1].JapaneseName
+                    } else {
+                        if ($originalActress[$x].EnglishAlias) {
+                            $aggregatedDataObject.Actress[$x].FirstName = $originalActress[$x].EnglishAlias.FirstName
+                            $aggregatedDataObject.Actress[$x].LastName = $originalActress[$x].EnglishAlias.LastName
+                            $aggregatedDataObject.Actress[$x].JapaneseName = $originalActress[$x].JapaneseAlias.JapaneseName
+                        }
+                    }
+                }
+            } elseif ($aggregatedDataObject.Actress.Count -eq 1) {
+                if ($originalActress.EnglishAlias.Count -gt 1) {
+                    $aggregatedDataObject.Actress.FirstName = $originalActress.EnglishAlias[-1].FirstName
+                    $aggregatedDataObject.Actress.LastName = $originalActress.EnglishAlias[-1].LastName
+                    $aggregatedDataObject.Actress.JapaneseName = $originalActress.EnglishAlias[-1].JapaneseName
+                } else {
+                    if ($originalActress.Alias) {
+                        $aggregatedDataObject.Actress.FirstName = $originalActress.EnglishAlias.FirstName
+                        $aggregatedDataObject.Actress.LastName = $originalActress.EnglishAlias.LastName
+                        $aggregatedDataObject.Actress.JapaneseName = $originalActress.JapaneseAlias.JapaneseName
+                    }
+                }
             }
         }
 
