@@ -587,9 +587,8 @@ function Get-JVAggregatedData {
         }
 
         if ($PreferActressAlias) {
+            $originalActress = ($Data | Where-Object { $_.Source -eq $selectedDataObject.Actress }).Actress
             if ($aggregatedDataObject.Actress.Count -gt 1) {
-                $originalActress = ($Data | Where-Object { $_.Source -eq $selectedDataObject.Actress }).Actress
-                $originalActress | Out-String | Write-Debug
                 for ($x = 0; $x -lt $aggregatedDataObject.Actress.Count; $x++) {
                     if ($originalActress[$x].EnglishAlias.Count -gt 1) {
                         $aggregatedDataObject.Actress[$x].FirstName = $originalActress[$x].EnglishAlias[-1].FirstName
@@ -605,14 +604,14 @@ function Get-JVAggregatedData {
                 }
             } elseif ($aggregatedDataObject.Actress.Count -eq 1) {
                 if ($originalActress.EnglishAlias.Count -gt 1) {
-                    $aggregatedDataObject.Actress.FirstName = $originalActress.EnglishAlias[-1].FirstName
-                    $aggregatedDataObject.Actress.LastName = $originalActress.EnglishAlias[-1].LastName
-                    $aggregatedDataObject.Actress.JapaneseName = $originalActress.EnglishAlias[-1].JapaneseName
+                    $aggregatedDataObject.Actress[0].FirstName = $originalActress.EnglishAlias[-1].FirstName
+                    $aggregatedDataObject.Actress[0].LastName = $originalActress.EnglishAlias[-1].LastName
+                    $aggregatedDataObject.Actress[0].JapaneseName = $originalActress.EnglishAlias[-1].JapaneseName
                 } else {
-                    if ($originalActress.Alias) {
-                        $aggregatedDataObject.Actress.FirstName = $originalActress.EnglishAlias.FirstName
-                        $aggregatedDataObject.Actress.LastName = $originalActress.EnglishAlias.LastName
-                        $aggregatedDataObject.Actress.JapaneseName = $originalActress.JapaneseAlias.JapaneseName
+                    if ($originalActress.EnglishAlias) {
+                        $aggregatedDataObject.Actress[0].FirstName = $originalActress.EnglishAlias.FirstName
+                        $aggregatedDataObject.Actress[0].LastName = $originalActress.EnglishAlias.LastName
+                        $aggregatedDataObject.Actress[0].JapaneseName = $originalActress.JapaneseAlias.JapaneseName
                     }
                 }
             }
