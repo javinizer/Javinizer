@@ -919,7 +919,7 @@ function New-JVAppBar {
     )
 
     $drawer = New-UDDrawer -Children {
-        New-UDList -SubHeader "Javinzer Web GUI v$($cache:guiVersion)" -Children {
+        New-UDList -SubHeader "Javinizer Web GUI v$($cache:guiVersion)" -Children {
             New-UDListItem -Label 'Sort' -Icon $iconSearchLocation -OnClick {
                 Invoke-UDRedirect -Url '/sort'
             }
