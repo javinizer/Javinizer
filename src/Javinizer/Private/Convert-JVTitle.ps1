@@ -85,15 +85,15 @@ function Convert-JVTitle {
                     $partNum = ($file | Select-String $RegexString).Matches.Groups[$RegexPtMatch].Value
 
                     # If ID#### and there's no hypen, subsequent searches will fail
-                    if ($id -match '^([a-z]+)(\d+)$') {
+                    <# if ($id -match '^([a-z]+)(\d+)$') {
                         $id = $Matches[1] + "-" + ($Matches[2] -replace '^0{1,5}', '').PadLeft(3, '0')
-                    }
+                    } #>
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "File [$file] not matched by regex"
                     break
                 }
                 if ($fileBaseNameUpper -eq 1) {
-                    if ($partNum -ne '') {
+                    if ($partNum -ne '' -and $null -ne $partNum) {
                         $fileBaseNameUpper = "$id-PT$PartNum"
                     } elseif ($id -ne '') {
                         $fileBaseNameUpper = "$id"
@@ -101,7 +101,7 @@ function Convert-JVTitle {
                         $fileBaseNameUpper = $file
                     }
                 } else {
-                    if ($partNum -ne '') {
+                    if ($partNum -ne '' -and $null -ne $partNum) {
                         $fileBaseNameUpper[$index] = "$id-PT$PartNum"
                     } elseif ($id -ne '') {
                         $fileBaseNameUpper[$index] = "$id"
@@ -275,7 +275,7 @@ function Convert-JVTitle {
 
             # Turn on strict filematching if the movie does not appear to be a standard DVD Id format
             # This will require less reliance on using -Strict during commandline usage
-            if ($movieId -notmatch '([a-zA-Z|tT28]+-\d+[zZ]?[eE]?)') {
+            if ($movieId -notmatch '([a-zA-Z|tT28]+-\d+[zZ]?[eE]?)' -and $RegexEnabled -eq $false) {
                 $Strict = $true
             }
 

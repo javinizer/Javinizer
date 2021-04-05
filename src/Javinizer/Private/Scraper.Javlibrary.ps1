@@ -195,8 +195,29 @@ function Get-JavlibraryActress {
 
             process {
                 try {
-                    $movieActress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>').Matches.Groups[0].Value `
-                        -split '<span class="star">' | ForEach-Object { ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches } | ForEach-Object { $_.Groups[2].Value }
+                    $actress = ($Webrequest.Content | Select-String -Pattern '<a href="vl_star\.php\?s=(?:.*)" rel="tag">(.*)<\/a><\/span>(.*)').Matches.Groups[0].Value `
+                        -split '<span class="star">'
+
+                    $movieActress = $actress | ForEach-Object {
+                        [PSCustomObject]@{
+                            Name  = ($_ | Select-String -Pattern '<a href="vl_star\.php\?s=(.*)" rel="tag">(.*)<\/a><\/span>').Matches | ForEach-Object { $_.Groups[2].Value }
+                            Alias = ($_ -split '<span id=' | Select-String -Pattern 'class="alias">(.*)<\/span>').Matches | ForEach-Object { if ($_.Groups) { $_.Groups[1].Value } } | ForEach-Object {
+                                if ($_ -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                                    [PSCustomObject]@{
+                                        LastName     = $null
+                                        FirstName    = $null
+                                        JapaneseName = $_
+                                    }
+                                } else {
+                                    [PSCustomObject]@{
+                                        LastName     = ($_ -split ' ')[0]
+                                        FirstName    = ($_ -split ' ')[1]
+                                        JapaneseName = $null
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } catch {
                     return
                 }
@@ -231,37 +252,41 @@ function Get-JavlibraryActress {
                 $nameParts = ($enActress -split ' ').Count
                 if ($nameParts -eq 1) {
                     $lastName = $null
-                    $firstName = $enActress
+                    $firstName = $enActress.Name
                 } else {
-                    $lastName = ($enActress -split ' ')[0]
-                    $firstName = ($enActress -split ' ')[1]
+                    $lastName = ($enActress.Name -split ' ')[0]
+                    $firstName = ($enActress.Name -split ' ')[1]
                 }
 
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = $lastName
-                    FirstName    = $firstName
-                    JapaneseName = $jaActress
-                    ThumbUrl     = $null
+                    LastName      = $lastName
+                    FirstName     = $firstName
+                    JapaneseName  = $jaActress.Name
+                    EnglishAlias  = $enActress.Alias
+                    JapaneseAlias = $jaActress.Alias
+                    ThumbUrl      = $null
                 }
             } else {
                 if ($jaActress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                     $jaActress[$x] = $null
                 }
 
-                $nameParts = ($enActress[$x] -split ' ').Count
+                $nameParts = ($enActress[$x].Name -split ' ').Count
                 if ($nameParts -eq 1) {
                     $lastName = $null
-                    $firstName = $enActress[$x]
+                    $firstName = $enActress[$x].Name
                 } else {
-                    $lastName = ($enActress[$x] -split ' ')[0]
-                    $firstName = ($enActress[$x] -split ' ')[1]
+                    $lastName = ($enActress[$x].Name -split ' ')[0]
+                    $firstName = ($enActress[$x].Name -split ' ')[1]
                 }
 
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = $lastName
-                    FirstName    = $firstName
-                    JapaneseName = $jaActress[$x]
-                    ThumbUrl     = $null
+                    LastName      = $lastName
+                    FirstName     = $firstName
+                    JapaneseName  = $jaActress[$x].Name
+                    EnglishAlias  = $enActress[$x].Alias
+                    JapaneseAlias = $jaActress[$x].Alias
+                    ThumbUrl      = $null
                 }
             }
         }

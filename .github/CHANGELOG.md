@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.8]
+
+### Added
+- Added `EnglishAlias` and `JapaneseAlias` properties to JAVLibrary scraper output
+- Setting `sort.metadata.nfo.preferactressalias` added to replace the default actress with the oldest alias in the aggregated metadata
+    - This can be used to "normalize" your actresses if you use JAVLibrary as your primary actress metadata
+### Fixed
+- Various fixes to regex matcher which were altering results
+- Mgstage scraper fixed for site HTML changes
+- Tag/Genres no longer being automatically replaced on a null replacement value
+
+
 ## [2.4.7]
 
 ### Fixed

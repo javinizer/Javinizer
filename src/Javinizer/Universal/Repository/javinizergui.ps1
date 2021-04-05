@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.7-1'
+﻿$cache:guiVersion = '2.4.8-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -133,6 +133,7 @@ $sortSettings = @(
     'sort.metadata.nfo.actresslanguageja',
     'sort.metadata.nfo.unknownactress',
     'sort.metadata.nfo.actressastag',
+    'sort.metadata.nfo.preferactressalias',
     'sort.metadata.nfo.originalpath',
     'sort.metadata.thumbcsv',
     'sort.metadata.thumbcsv.autoadd',
@@ -919,7 +920,7 @@ function New-JVAppBar {
     )
 
     $drawer = New-UDDrawer -Children {
-        New-UDList -SubHeader "Javinzer Web GUI v$($cache:guiVersion)" -Children {
+        New-UDList -SubHeader "Javinizer Web GUI v$($cache:guiVersion)" -Children {
             New-UDListItem -Label 'Sort' -Icon $iconSearchLocation -OnClick {
                 Invoke-UDRedirect -Url '/sort'
             }
@@ -3564,6 +3565,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                 'sort.metadata.nfo.actresslanguageja' { 'Specifies to prefer Japanese names when creating the metadata nfo' }
                                 'sort.metadata.nfo.unknownactress' { 'Specifies to add an "Unknown" actress to sorted movies without any actresses' }
                                 'sort.metadata.nfo.actressastag' { 'Specifies to add actresses as tags in the nfo file' }
+                                'sort.metadata.nfo.preferactressalias' { 'Specifies to prefer the oldest actress alias to normalize your metadata' }
                                 'sort.metadata.nfo.originalpath' { 'Specifies to add an "originalpath" field to the nfo specifying the location the movie was last sorted from' }
                                 'sort.metadata.thumbcsv' { 'Specifies to use the thumbnail csv to replace actor names and thumbs when aggregating metadata' }
                                 'sort.metadata.thumbcsv.autoadd' { 'Specifies to automatically add missing actor to the thumbnail csv when scraping using the R18 or R18Zh scrapers' }
