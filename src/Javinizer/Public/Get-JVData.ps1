@@ -73,6 +73,10 @@ function Get-JVData {
         [Boolean]$AventertainmentJa,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.tokyohot')]
+        [Boolean]$TokyoHot,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
@@ -104,7 +108,12 @@ function Get-JVData {
 
         [Parameter(ParameterSetName = 'Url')]
         [Parameter(ParameterSetName = 'Id')]
-        [PSObject]$JavdbSession
+        [PSObject]$JavdbSession,
+
+        # not sure if session is needed for TokyoHot
+        [Parameter(ParameterSetName = 'Url')]
+        [Parameter(ParameterSetName = 'Id')]
+        [PSObject]$TokyoHotSession
     )
 
     process {
@@ -136,6 +145,8 @@ function Get-JVData {
             $MgstageJa = $Settings.'scraper.movie.mgstageja'
             $Aventertainment = $Settings.'scraper.movie.aventertainment'
             $AventertainmentJa = $Settings.'scraper.movie.aventertainmentja'
+            $TokyoHot = $Settings.'scraper.movie.tokyohot'
+
             $DmmScrapeActress = $Settings.'scraper.option.dmm.scrapeactress'
             if ($Settings.'location.uncensorcsv' -ne '') {
                 $UncensorCsvPath = $Settings.'location.uncensorcsv'
@@ -425,6 +436,25 @@ function Get-JVData {
                     }
                 } | Out-Null
             }
+
+            # TokyoHot
+            if ($TokyoHot) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - TokyoHot] [Url - $JavdbUrl]"
+                Start-ThreadJob -Name "jvdata-TokyoHot" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Import-Module $using:jvModulePath
+                    if (!($using:TokyoHotUrl)) {
+                        $jvTokyoHotUrl = Get-TokyoHotUrl -Id $using:Id -Session $using:TokyoHotSession -AllResults:$using:Allresults
+                    }
+                    if ($using:TokyoHotUrl) {
+                        $using:TokyoHotUrl | Get-TokyoHotData -Session $using:TokyoHotSession
+                    } elseif ($jvTokyoHotUrl) {
+                        if ($jvTokyoHotUrl) {
+                            $jvTokyoHotUrl.En | Get-TokyoHotData -Session $using:TokyoHotSession
+                        }
+                    }
+                } | Out-Null
+            }
+
 
             if ($DLgetchuJa) {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - DLgetchuJa] [Url - $DLgetchuJaUrl]"
