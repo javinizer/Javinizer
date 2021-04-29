@@ -355,9 +355,14 @@ function Get-R18Actress {
             $cookie.Domain = '.r18.com'
             $session.Cookies.Add($cookie)
 
-            $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession $session -Verbose:$false
+            try {
+                $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession $session -Verbose:$false
+                $jaActress = Get-Actress -Webrequest $jaWebrequest
+            } catch {
+                Write-Warning "[$(Get-R18Id -Webrequest $Webrequest)] R18 Ja actresses not found"
+                $jaActress = $null
+            }
             $enActress = Get-Actress -Webrequest $Webrequest
-            $jaActress = Get-Actress -Webrequest $jaWebrequest
         } else {
             # Create en language cookie
             $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -379,14 +384,16 @@ function Get-R18Actress {
                     $thumbUrl = $null
                 }
 
-                if ($jaActress.Actress -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                    $jaActress.Actress = $null
+                if ($jaActress) {
+                    if ($jaActress.Actress -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                        $jaActress.Actress = $null
+                    }
                 }
 
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($enActress.Actress -split ' ')[1] -replace '\\', ''
                     FirstName    = ($enActress.Actress -split ' ')[0] -replace '\\', ''
-                    JapaneseName = $jaActress.Actress -replace '（.*）', '' -replace '&amp;', '&'
+                    JapaneseName = if ($jaActress) { $jaActress.Actress -replace '（.*）', '' -replace '&amp;', '&' } else { $null }
                     ThumbUrl     = $thumbUrl
                 }
             } else {
@@ -395,14 +402,16 @@ function Get-R18Actress {
                     $thumbUrl = $null
                 }
 
-                if ($jaActress.Actress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                    $jaActress.Actress[$x] = $null
+                if ($jaActress) {
+                    if ($jaActress.Actress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
+                        $jaActress.Actress[$x] = $null
+                    }
                 }
 
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($enActress.Actress[$x] -split ' ')[1] -replace '\\', ''
                     FirstName    = ($enActress.Actress[$x] -split ' ')[0] -replace '\\', ''
-                    JapaneseName = $jaActress.Actress[$x] -replace '（.*）', '' -replace '&amp;', '&'
+                    JapaneseName = if ($jaActress) { $jaActress.Actress[$x] -replace '（.*）', '' -replace '&amp;', '&' } else { $null }
                     ThumbUrl     = $thumbUrl
                 }
             }

@@ -18,7 +18,16 @@ function Get-R18Data {
 
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+            if ($Url -match "lg=zh") {
+                try {
+                    $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]"
+                    return
+                }
+            } else {
+                $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+            }
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
         }
