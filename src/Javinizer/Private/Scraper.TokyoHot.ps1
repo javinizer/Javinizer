@@ -1,6 +1,16 @@
 
 # TODO: Nothing works in here yet !!
 
+function Get-TokyoHotInfo {
+    param (
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
+        [Object]$Webrequest
+    )
+
+    $infoWrapper = ((($Webrequest.Content -split '<dl class="info">')[1] -split '<\/dl>')[0]) -split '<dt>.*<\/dt>'
+    Write-Output $infoWrapper
+}
+
 function Get-TokyoHotId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
@@ -13,8 +23,8 @@ function Get-TokyoHotId {
 
     process {
         try {
-            # parse meta tag
-            $id = (($Webrequest.Content | Select-String -Pattern '<meta name=`"description`" content=`"(?.*)`"').Matches.Groups[0].Value -split ',')[1]
+            $info = Get-TokyoHotInfo -Webrequest $Webrequest
+            $id = ($info[8] | Select-String -Pattern '<dd>(.*)<\/dd>').Matches.Groups[1].Value
         } catch {
             return
         }
@@ -30,12 +40,11 @@ function Get-TokyoHotTitle {
     )
     process {
         try {
-            $title = (($Webrequest.Content | Select-String -Pattern '<title>.*<\/title>').Matches.Groups[0].Value -split ' ')[2]
+            $title = ((($Webrequest.Content | Select-String -Pattern '<title>(.*)<\/title>').Matches.Groups[1].Value -split '\|')[0]).Trim()
         } catch {
             return
         }
 
-        $title = Convert-HtmlCharacter -String $title
         Write-Output $title
     }
 }
@@ -48,7 +57,8 @@ function Get-TokyoHotReleaseDate {
 
     process {
         try {
-            $releaseDate = ($Webrequest.Content | Select-String -Pattern '<span class="value">(\d{4}-\d{2}-\d{2})<\/span>').Matches.Groups[1].Value
+            $info = Get-TokyoHotInfo -Webrequest $Webrequest
+            $releaseDate = ($info[6] | Select-String -Pattern '<dd>(.*)<\/dd>').Matches.Groups[1].Value -replace '/', '-'
         } catch {
             return
         }
@@ -77,31 +87,12 @@ function Get-TokyoHotRuntime {
     )
 
     process {
-        try {
-            $length = ($Webrequest.Content | Select-String -Pattern '<span class="value">(\d*) (分鍾|minute\(s\))<\/span>').Matches.Groups[1].Value
-        } catch {
-            return
-        }
+        $info = Get-TokyoHotInfo -Webrequest $Webrequest
+        $rawLength = ($info[7] | Select-String -Pattern '<dd>(.*)<\/dd>').Matches.Groups[1].Value
+        $hours, $minutes, $seconds = $rawLength -split ':'
+        $length = (New-TimeSpan -Hours $hours -Minutes $minutes -Seconds $seconds).TotalMinutes
 
         Write-Output $length
-    }
-}
-
-function Get-TokyoHotDirector {
-    param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
-    )
-
-    process {
-        try {
-            $director = ($Webrequest.Content | Select-String -Pattern '<a href="\/directors\/.*">(.*)<\/a>').Matches.Groups[1].Value
-        } catch {
-            return
-        }
-
-        $director = Convert-HtmlCharacter -String $director
-        Write-Output $director
     }
 }
 
