@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.10]
+
+### Fixed
+- Fixed error output caused by missing R18 (Zh) pages used by R18 actress scraper
+- Fixed tags not being replaced properly by the tagcsv
+
 ## [2.4.9]
 
 ### Fixed

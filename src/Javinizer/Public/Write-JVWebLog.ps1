@@ -41,16 +41,16 @@ function Write-JVWebLog {
             Label           = $Data.Label
             Runtime         = $Data.Runtime
             Director        = $Data.Director
-            Actress         = $Data.Actress | ConvertTo-Json -Compress
-            Genre           = $Data.Genre | ConvertTo-Json -Compress
+            Actress         = $Data.Actress | ConvertTo-Json -Depth 32 -Compress
+            Genre           = $Data.Genre | ConvertTo-Json -Depth 32 -Compress
             Series          = $Data.Series
-            Tag             = $Data.Tag | ConvertTo-Json -Compress
-            Tagline         = $Data.Tagline | ConvertTo-Json -Compress
-            Credits         = $Data.Credits | ConvertTo-Json -Compress
+            Tag             = $Data.Tag | ConvertTo-Json -Depth 32 -Compress
+            Tagline         = $Data.Tagline | ConvertTo-Json -Depth 32 -Compress
+            Credits         = $Data.Credits | ConvertTo-Json -Depth 32 -Compress
             CoverUrl        = $Data.CoverUrl
-            ScreenshotUrl   = $Data.ScreenshotUrl | ConvertTo-Json -Compress
+            ScreenshotUrl   = $Data.ScreenshotUrl | ConvertTo-Json -Depth 32 -Compress
             TrailerUrl      = $Data.TrailerUrl
-            MediaInfo       = $Data.MediaInfo | ConvertTo-Json -Compress
+            MediaInfo       = $Data.MediaInfo | ConvertTo-Json -Depth 32 -Compress
             AllData         = $AllData | ConvertTo-Json -Depth 32 -Compress
         }
 

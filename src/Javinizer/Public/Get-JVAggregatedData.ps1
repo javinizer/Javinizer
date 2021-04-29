@@ -856,10 +856,10 @@ function Get-JVAggregatedData {
                 $originalTags = $aggregatedDataObject.Tag
                 foreach ($tag in $originalTags) {
                     if ($tag -in $replaceTags.Original) {
-                        $tagIndexNum = $replaceTags.Original.IndexOf($tag)
-                        if ($replaceTags.Replacement[$tagIndexNum] -ne '' -and $null -ne $replaceTags.Replacement[$tagIndexNum]) {
-                            $newTags += $replaceTags.Replacement[$tagIndexNum]
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $($replaceTags.Original[$tagIndexNum])] replaced as [$($replaceTags.Replacement[$tagIndexNum])]"
+                        $replacement = ($replaceTags | Where-Object { $_.Original -eq $tag }).Replacement
+                        if ($replacement -ne '' -and $null -ne $replacement) {
+                            $newTags += $replacement
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($aggregatedDataObject.Id)] [$($MyInvocation.MyCommand.Name)] [Tag - $tag] replaced as [$replacement]"
                         } else {
                             $newtags += $tag
                         }
