@@ -293,6 +293,14 @@ function Get-MgstageTrailerUrl {
     )
 
     process {
+        $trailerUrl = @()
+        try {
+            $trailerID = ($Webrequest.Content | Select-String -Pattern '\/sampleplayer\/sampleplayer.html\/([^"]+)"').Matches.Groups[1].Value
+            $traileriFrameUrl = 'https://www.mgstage.com/sampleplayer/sampleRespons.php?pid=' + $trailerID
+            $trailerUrl = ((Invoke-WebRequest -Uri $traileriFrameUrl -WebSession $session -Verbose:$false).Content | Select-String -Pattern '(https.+.ism)\\/').Matches.Groups[1].Value -replace '\\', '' -replace 'ism', 'mp4'
+        } catch {
+            return
+        }
         Write-Output $trailerUrl
     }
 }
