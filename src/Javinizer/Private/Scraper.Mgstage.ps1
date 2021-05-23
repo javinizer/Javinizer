@@ -293,7 +293,6 @@ function Get-MgstageTrailerUrl {
     )
 
     process {
-        $trailerUrl = @()
         try {
             $trailerID = ($Webrequest.Content | Select-String -Pattern '\/sampleplayer\/sampleplayer.html\/([^"]+)"').Matches.Groups[1].Value
             $traileriFrameUrl = 'https://www.mgstage.com/sampleplayer/sampleRespons.php?pid=' + $trailerID
