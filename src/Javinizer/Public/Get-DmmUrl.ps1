@@ -53,30 +53,60 @@ function Get-DmmUrl {
                         $appendChar = ($splitId[1])[-1]
                         $splitId[1] = $splitId[1] -replace '\D', ''
                     }
-                    $Id = ($splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar).Trim()
+                    $contentId = ($splitId[0] + $splitId[1].PadLeft(5, '0') + $appendChar).Trim()
+                }
+                $cleanId = (($splitId -join "") + $appendChar).Trim()
+            }
+
+            $searchUrl = "https://www.dmm.co.jp/search/=/searchstr=$contentId/"
+
+            try {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
+                $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
+            }
+
+            $searchResults = $webRequest.links.href | Where-Object { $_ -match '\/mono\/dvd' -or $_ -match '\/digital\/videoa' }
+
+            if ($searchResults) {
+                $matchedResults = @()
+
+                # Prioritize digital video before falling back to DVD matches
+                if ($searchResults -match "\/digital\/videoa") {
+                    $searchResults | Where-Object { $_ -match "\/digital\/videoa" -and $_ -match $contentId } | ForEach-Object {
+                        $cid = ($_ | Select-String -Pattern 'cid=(.*)\/').Matches.Groups[1].Value
+
+                        # Remove the prepended numbers in the contentId to more accurately match it to generic cid value
+                        $cleanCid = $cid -replace '^\d*', ''
+
+                        # Digital videos will match to contentId (ID00123)
+                        if ($cleanCid -eq $contentId) {
+                            $matchedResults += $_
+                        }
+                    }
+                }
+
+                if ($searchResults -match "\/mono\/dvd") {
+                    $searchResults | Where-Object { $_ -match "\/mono\/dvd" -and $_ -match $cleanId } | ForEach-Object {
+                        $cid = ($_ | Select-String -Pattern 'cid=(.*)\/').Matches.Groups[1].Value
+                        $cleanCid = $cid -replace '^\d*', ''
+
+                        # DVD videos will match to DVDId (ID123)
+                        if ($cleanCid -eq $cleanId) {
+                            $matchedResults += $_
+                        }
+                    }
                 }
             }
 
-            $urlObject = [PSCustomObject]@{
-                En = "https://www.dmm.co.jp/en/mono/dvd/-/detail/=/cid=$Id"
-                Ja = "https://www.dmm.co.jp/digital/videoa/-/detail/=/cid=$Id"
-            }
+            if ($matchedResults.Length -gt 0) {
+                $selectedResult = $matchedResults | Select-Object -First 1
 
-            try {
-                $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-                $cookie = New-Object System.Net.Cookie
-                $cookie.Name = 'age_check_done'
-                $cookie.Value = '1'
-                $cookie.Domain = 'dmm.co.jp'
-                $session.Cookies.Add($cookie)
-                # Need to test the URL for a valid match before outputting the URL
-                Invoke-WebRequest $urlObject.Ja -WebSession $session
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
-                return
-            }
-
-            if ($urlObject) {
+                $urlObject = [PSCustomObject]@{
+                    En = $null
+                    Ja = $selectedResult
+                }
                 Write-Output $urlObject
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$Id] [$($MyInvocation.MyCommand.Name)] not matched on DMM"
