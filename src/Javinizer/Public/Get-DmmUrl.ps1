@@ -78,7 +78,7 @@ function Get-DmmUrl {
                         $cid = ($_ | Select-String -Pattern 'cid=(.*)\/').Matches.Groups[1].Value
 
                         # Remove the prepended numbers in the contentId to more accurately match it to generic cid value
-                        $cleanCid = $cid -replace '^\d*', ''
+                        $cleanCid = $cid -replace '^\w*?(?=[a-z]+\d+)', ''
 
                         # Digital videos will match to contentId (ID00123)
                         if ($cleanCid -eq $contentId) {
@@ -90,7 +90,7 @@ function Get-DmmUrl {
                 if ($searchResults -match "\/mono\/dvd") {
                     $searchResults | Where-Object { $_ -match "\/mono\/dvd" -and $_ -match $cleanId } | ForEach-Object {
                         $cid = ($_ | Select-String -Pattern 'cid=(.*)\/').Matches.Groups[1].Value
-                        $cleanCid = $cid -replace '^\d*', ''
+                        $cleanCid = $cid -replace '^\w*?(?=[a-z]+\d+)', ''
 
                         # DVD videos will match to DVDId (ID123)
                         if ($cleanCid -eq $cleanId) {
