@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.11]
+### Changed
+- Mgstage data scraper now includes trailer scraping (#262)
+- Dmm url scraper now falls back to dmm search if the movie is missing on r18
+
 ## [2.4.10]
 
 ### Fixed
