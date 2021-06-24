@@ -133,6 +133,7 @@ function Get-JVNfo {
     <mpaa>XXX</mpaa>
     <tagline>$Tagline</tagline>
     <set>$Series</set>
+    <thumb>$CoverUrl</thumb>
 
 "@
 
