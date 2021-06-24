@@ -444,7 +444,7 @@ function Get-JVData {
             if ($Tokyohot -or $TokyohotJa -or $TokyohotZh) {
                 if ($Tokyohot) {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $TokyohotUrl]"
-                    Start-ThreadJob -Name "jvdata-Javlibrary" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Start-ThreadJob -Name "jvdata-Tokyohot" -ThrottleLimit $throttleLimit -ScriptBlock {
                         Import-Module $using:jvModulePath
                         if (!($using:TokyohotUrl)) {
                             $jvTokyohotUrl = Get-TokyohotUrl -Id $using:Id -AllResults:$using:Allresults
