@@ -32,6 +32,7 @@ function Convert-JVTitle {
         $RemoveStrings = @(
             # Prefixes
             '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]',
+            '.*\.com\@',
             '[@|-|_]?[a-zA-Z0-9]+(\.com|\.net|\.tk)[_|-]?',
             '^_'
             '^[0-9]{4}',
