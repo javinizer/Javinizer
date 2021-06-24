@@ -17,7 +17,7 @@ function Get-TokyoHotData {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = if ($Url -match 'lang=ja') { 'TokyohotJa' } elseif ($Url -match 'lang=zh-TW') { 'TokyohotZh' } else { 'Tokyohot' }
+            Source        = if ($Url -match 'lang=ja') { 'tokyohotja' } elseif ($Url -match 'lang=zh-TW') { 'tokyohotzh' } else { 'tokyohot' }
             Url           = $Url
             Id            = Get-TokyoHotId -WebRequest $webRequest
             Title         = Get-TokyoHotTitle -WebRequest $webRequest
