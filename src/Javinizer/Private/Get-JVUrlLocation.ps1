@@ -113,6 +113,23 @@ function Get-JVUrlLocation {
                         Source = 'javdb'
                     }
                 }
+            } elseif ($link -match 'tokyo-hot') {
+                if ($link -match 'lang=ja') {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'tokyohotja'
+                    }
+                } elseif ($link -match 'lang=zh') {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'tokyohotzh'
+                    }
+                } else {
+                    $testUrlobject += [PSCustomObject]@{
+                        Url    = $link
+                        Source = 'tokyohot'
+                    }
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }

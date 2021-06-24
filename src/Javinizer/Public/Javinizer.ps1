@@ -385,6 +385,15 @@ function Javinizer {
         [Switch]$AventertainmentJa,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$Tokyohot,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$TokyohotZh,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$TokyohotJa,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Switch]$AllResults,
 
         [Parameter(ParameterSetName = 'Info')]
@@ -741,6 +750,10 @@ function Javinizer {
                         if ($item.Source -match 'javdb') {
                             $item.Url | Get-JavdbData
                         }
+
+                        if ($item.Source -match 'tokyohot') {
+                            $item.Url | Get-TokyohotData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -749,7 +762,7 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
+                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -Tokyohot:$Tokyohot -TokyohotJa:$TokyohotJa -TokyohotZh:$TokyohotZh -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
                         -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults
                 }
 
