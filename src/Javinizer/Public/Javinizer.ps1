@@ -531,6 +531,21 @@ function Javinizer {
             }
         }
 
+        if ($Settings.'proxy.enabled') {
+            $proxyPass = ConvertTo-SecureString $Settings.'proxy.password' -AsPlainText -Force
+            $proxyCred = New-Object System.Management.Automation.PSCredential -ArgumentList $Settings.'proxy.username', $proxyPass
+
+            [System.Net.Webrequest]::DefaultWebProxy = New-Object System.Net.WebProxy($Settings.'proxy.host')
+            [System.Net.WebRequest]::DefaultWebProxy.Credentials = $proxyCred
+
+            $global:PSDefaultParameterValues = @{
+                'Invoke-RestMethod:Proxy'           = $Settings.'proxy.host'
+                'Invoke-RestMethod:ProxyCredential' = $proxyCred
+                'Invoke-WebRequest:Proxy'           = $Settings.'proxy.host'
+                'Invoke-WebRequest:ProxyCredential' = $proxyCred
+            }
+        }
+
         if ($Settings.'admin.log' -eq '1') {
             if ($Settings.'location.log' -eq '') {
                 $script:JVLogPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvLog.log'
