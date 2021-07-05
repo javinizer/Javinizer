@@ -254,8 +254,8 @@ function Get-JavlibraryActress {
                     $lastName = $null
                     $firstName = $enActress.Name
                 } else {
-                    $lastName = ($enActress.Name -split ' ')[0]
-                    $firstName = ($enActress.Name -split ' ')[1]
+                    $lastName = ($enActress.Name -split ' ')[1]
+                    $firstName = ($enActress.Name -split ' ')[0]
                 }
 
                 $movieActressObject += [PSCustomObject]@{
