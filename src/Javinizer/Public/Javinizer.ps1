@@ -492,6 +492,11 @@ function Javinizer {
             $ProgressPreference = 'SilentlyContinue'
         }
 
+        $global:PSDefaultParameterValues = @{
+            'Invoke-RestMethod:MaximumRetryCount' = 3
+            'Invoke-WebRequest:MaximumRetryCount' = 3
+        }
+
         try {
             if (!($SettingsPath)) {
                 $SettingsPath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'jvSettings.json'
