@@ -178,8 +178,8 @@ function Convert-JVTitle {
             # Match ID-###A, ID###B, etc.
             # Match ID-###-A, ID-###-B, etc.
             # Match ID-### - A, ID-### - B, etc.
-            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?R?\s?[-]?\s?[A-D]$") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?)"
+            if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?\s?[-]?\s?[A-Y]$") {
+                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?)"
                 $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').PadLeft(3, '0')
                 $fileP3 = ($fileP3 -replace '-', '').Trim()
                 try {
@@ -187,7 +187,7 @@ function Convert-JVTitle {
                 } catch {
                     Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "Invalid multi-part format for file: [$file]"
                 }
-                if ($asciiP3 -gt 64 -and $asciiP3 -lt 69) {
+                if ($asciiP3 -gt 64 -and $asciiP3 -lt 90) {
                     $filePartNumber = $asciiP3 - 64
                 }
             }
