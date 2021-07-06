@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.0]
+
+### Added
+- Tokyohot scraper (#253)
+- Add settings to use proxy for web requests
+  - `proxy.enabled`
+  - `proxy.host`
+  - `proxy.username`
+  - `proxy.password`
+- <\thumb> tag added to nfo for the coverurl field (#267)
+- `-Clean` parameter to clean JAV filenames without sorting
+  - e.g. `Javinizer -Path C:\Javinizer\Unsorted -Clean -Verbose`
+
+### Changed
+- File matcher
+  - Files beginning with `hhd800.com@` are now cleaned properly
+  - Properly match multipart format with `.part, .pt, .cd`
+  - Multipart format now works with letters up to Y (From A-D => to A-Y) to better work with JAV VR
+### Fixed
+- Javbus coverUrl scraper returning a relative path instead of the full path
+- Single-word actresses from javlibrary being set as @Unknown in dynamic folder structures
+
 ## [2.4.11]
 ### Changed
 - Mgstage data scraper now includes trailer scraping (#262)
