@@ -96,6 +96,7 @@ function Set-JVMovie {
         if ($Settings) {
             $MoveToFolder = $Settings.'sort.movetofolder'
             $RenameFile = $Settings.'sort.renamefile'
+            $RenameFolder = $Settings.'sort.renamefolderinplace'
             $MaxTitleLength = $Settings.'sort.maxtitlelength'
             $CreateNfo = $Settings.'sort.create.nfo'
             $CreateNfoPerFile = $Settings.'sort.create.nfoperfile'
@@ -192,9 +193,18 @@ function Set-JVMovie {
 
             # We do not want to recreate the destination folder if it already exists
             try {
-                if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
-                    New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$($sortData.FolderPath)]"
+                if ($RenameFolder) {
+                    # Force multipart movies to wait to avoid race condition when renaming the folder
+                    if ($sortData.PartNumber -gt 0) {
+                        Start-Sleep -Seconds 5
+                    }
+                    Rename-Item -LiteralPath $sortData.ParentPath -NewName $sortData.FolderName -ErrorAction SilentlyContinue
+                    $Path = Join-Path -Path $sortData.ParentPath.Parent -ChildPath $sortData.FolderName -AdditionalChildPath $Path.Name
+                } else {
+                    if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
+                        New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$($sortData.FolderPath)]"
+                    }
                 }
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$($sortData.FolderPath)]: $PSItem"
@@ -402,34 +412,54 @@ function Set-JVMovie {
                 }
             }
 
-            if ($RenameFile -and (!($Update))) {
+            if ($RenameFile -and !$Update) {
                 try {
-                    if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
-                            if (!(Test-Path -LiteralPath $sortData.FilePath)) {
-                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
-                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    if ($Force) {
-                                        try {
-                                            Move-Item $Path $sortData.FilePath --force
-                                        } catch {
-                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
-                                        }
-                                    } else {
-                                        try {
-                                            Move-Item $Path $sortData.FilePath --no-clobber
-                                        } catch {
-                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                    if ($RenameFolder) {
+                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
+                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                            if ($Force) {
+                                try {
+                                    Move-Item $Path $sortData.FilePath --force
+                                } catch {
+                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
+                                }
+                            } else {
+                                try {
+                                    Move-Item $Path $sortData.FilePath --no-clobber
+                                } catch {
+                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                                }
+                            }
+                        }
+                    } else {
+                        if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
+                            if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
+                                if (!(Test-Path -LiteralPath $sortData.FilePath)) {
+                                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                        Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
+                                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                        if ($Force) {
+                                            try {
+                                                Move-Item $Path $sortData.FilePath --force
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
+                                            }
+                                        } else {
+                                            try {
+                                                Move-Item $Path $sortData.FilePath --no-clobber
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                                            }
                                         }
                                     }
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
+                                } else {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
                                 }
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                             }
-                        } else {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                         }
                     }
                 } catch {
