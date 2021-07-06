@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.5.0-1'
+﻿$cache:guiVersion = '2.5.0-2'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -49,7 +49,10 @@ $scraperSettings = @(
     'JavlibraryZh',
     'MGStageJa',
     'R18',
-    'R18Zh'
+    'R18Zh',
+    'TokyoHot',
+    'TokyoHotJa',
+    'TokyoHotZh'
 )
 
 $prioritySettings = @(
