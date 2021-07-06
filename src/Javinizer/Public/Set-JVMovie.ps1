@@ -90,6 +90,29 @@ function Set-JVMovie {
         if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
             $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
         }
+
+        function New-WebClient {
+            param (
+                [Switch]$Proxy,
+                [String]$ProxyUrl,
+                [String]$ProxyUser,
+                [String]$ProxyPass
+            )
+
+            $webClient = New-Object System.Net.WebClient
+            $webclient.Headers.Add("User-Agent: Other")
+            if ($Proxy) {
+                $newProxy = New-Object System.Net.WebProxy
+                $newProxy.Address = $ProxyUrl
+                $webClient.Proxy = $newProxy
+                if ($ProxyUser -ne '' -or $ProxyPass -ne '') {
+                    $cred = New-Object System.Net.NetworkCredential -ArgumentList $ProxyUser, $ProxyPass
+                    $webClient.Credentials = $cred
+                }
+            }
+
+            return $webClient
+        }
     }
 
     process {
@@ -173,19 +196,6 @@ function Set-JVMovie {
             $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
         } #>
 
-        $webClient = New-Object System.Net.WebClient
-        $webclient.Headers.Add("User-Agent: Other")
-
-        if ($Proxy) {
-            $newProxy = New-Object System.Net.WebProxy
-            $newProxy.Address = $ProxyUrl
-            $webClient.Proxy = $newProxy
-            if ($ProxyUser -ne '' -or $ProxyPass -ne '') {
-                $cred = New-Object System.Net.NetworkCredential -ArgumentList $ProxyUser, $ProxyPass
-                $webClient.Credentials = $cred
-            }
-        }
-
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
@@ -222,6 +232,7 @@ function Set-JVMovie {
             if ($DownloadThumbImg) {
                 if ($null -ne $Data.CoverUrl) {
                     try {
+                        $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force) {
                                 if (Test-Path -LiteralPath $sortData.ThumbPath) {
@@ -310,6 +321,7 @@ function Set-JVMovie {
                         $nfoXML = [xml]$nfoContents
                         foreach ($actress in $nfoXML.movie.actor) {
                             if ($actress.thumb -ne '') {
+                                $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $sortData.ActorFolderPath -ChildPath "$newName.jpg"
 
@@ -350,10 +362,9 @@ function Set-JVMovie {
                         }
 
                         foreach ($screenshot in $Data.ScreenshotUrl) {
+                            $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                             $paddedIndex = $index.ToString().PadLeft($ScreenshotImgPadding, '0')
                             $screenshotName = "$($sortData.ScreenshotImgName)$paddedIndex.jpg"
-                            $webClient = New-Object System.Net.WebClient
-                            $webclient.Headers.Add("User-Agent: Other")
                             $screenshotPath = Join-Path -Path $sortData.ScreenshotFolderPath -ChildPath $screenshotName
                             if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                                 if ($Force.IsPresent) {
@@ -386,6 +397,7 @@ function Set-JVMovie {
             if ($DownloadTrailerVid) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
+                        $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force.IsPresent) {
                                 if (Test-Path -LiteralPath $sortData.TrailerPath) {
