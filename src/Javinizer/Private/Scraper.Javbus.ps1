@@ -311,7 +311,7 @@ function Get-JavbusActress {
                     LastName     = $lastName
                     FirstName    = $firstName
                     JapaneseName = $jaActressName
-                    ThumbUrl     = $thumbUrl
+                    ThumbUrl     = 'https://www.javbus.com' + $thumbUrl
                 }
             }
         }
