@@ -94,8 +94,9 @@ $embySettings = @(
 $javlibrarySettings = @(
     'javlibrary.baseurl',
     'javlibrary.browser.useragent',
-    'javlibrary.cookie.cfduid',
-    'javlibrary.cookie.cfclearance',
+    "javlibrary.cookie.cf_chl_2",
+    "javlibrary.cookie.cf_chl_prog",
+    'javlibrary.cookie.cf_clearance',
     'javlibrary.cookie.session',
     'javlibrary.cookie.userid',
     'javdb.cookie.session'
@@ -661,7 +662,8 @@ function Show-JVCfModal {
             Invoke-UDRedirect -OpenInNewWindow -Url 'https://www.whatismybrowser.com/detect/what-is-my-user-agent'
         }
 
-        New-UDTextbox -Id 'textbox-javlibrary-cfduid' -Label '__cfduid' -FullWidth
+        New-UDTextbox -Id 'textbox-javlibrary-cfchl2' -Label 'cf_chl_2' -FullWidth
+        New-UDTextbox -Id 'textbox-javlibrary-cfchlprog' -Label 'cf_chl_prog' -FullWidth
         New-UDTextbox -Id 'textbox-javlibrary-cfclearance' -Label 'cf_clearance' -FullWidth
         New-UDTextbox -Id 'textbox-javlibrary-useragent' -Label 'user-agent' -FullWidth
 
@@ -671,10 +673,11 @@ function Show-JVCfModal {
         New-UDButton -Text 'Ok' -OnClick {
 
             try {
-                $Cfduid = (Get-UDElement -Id 'textbox-javlibrary-cfduid').value
-                $Cfclearance = (Get-UDElement -Id 'textbox-javlibrary-cfclearance').value
+                $cf_chl_2 = (Get-UDElement -Id 'textbox-javlibrary-cfchl2').value
+                $cf_chl_prog = (Get-UDElement -Id 'textbox-javlibrary-cfchlprog').value
+                $cf_clearance = (Get-UDElement -Id 'textbox-javlibrary-cfclearance').value
                 $UserAgent = (Get-UDElement -Id 'textbox-javlibrary-useragent').value
-                $cache:cfSession = Get-CfSession -Cfduid $cfduid -Cfclearance $cfclearance -UserAgent $useragent -BaseUrl $cache:settings.'javlibrary.baseurl'
+                $cache:cfSession = Get-CfSession -cf_chl_2 $cf_chl_2 -cf_chl_prog $cf_chl_prog -cf_clearance $cf_clearance -UserAgent $useragent -BaseUrl $cache:settings.'javlibrary.baseurl'
             } catch {
                 Show-JVToast -Type Error -Message "$PSItem"
                 Hide-UDModal
@@ -686,22 +689,15 @@ function Show-JVCfModal {
                 Invoke-WebRequest -Uri $cache:Settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
                 if ($cache:cfSession) {
                     $originalSettingsContent = Get-Content -Path $cache:SettingsPath
-                    $cookies = $cache:cfSession.Cookies.GetCookies($cache:settings.'javlibrary.baseurl')
-                    $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
-                    $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
-                    $userAgent = $cache:cfSession.UserAgent
                     $settingsContent = $OriginalSettingsContent
-                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
-                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
+                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_chl_2": ".*"', "`"javlibrary.cookie.cf_chl_2`": `"$cf_chl_2`""
+                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_chl_prog": ".*"', "`"javlibrary.cookie.cf_chl_prog`": `"$cf_chl_prog`""
+                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_clearance": ".*"', "`"javlibrary.cookie.cf_clearance`": `"$cf_clearance`""
                     $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
-                    $origJson = $originalSettingsContent | ConvertFrom-Json
-                    $newJson = $settingsContent | ConvertFrom-Json
 
-                    if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
-                        $settingsContent | Out-File -FilePath $cache:SettingsPath
-                        Show-JVToast -Type Success -Message "Replaced Javlibrary settings with updated values in [$cache:SettingsPath]"
+                    $settingsContent | Out-File -FilePath $cache:SettingsPath
+                    Show-JVToast -Type Success -Message "Replaced Javlibrary settings with updated values in [$cache:SettingsPath]"
 
-                    }
                 }
             } catch {
                 Show-JVToast -Type Error -Message "$PSItem"
@@ -802,8 +798,8 @@ function Invoke-JavinizerWeb {
                     } catch {
                         try {
                             # Test with persisted settings
-                            if ($cache:settings.'javlibrary.cookie.cfduid' -and $cache:settings.'javlibrary.cookie.cfclearance' -and $cache:settings.'javlibrary.browser.useragent') {
-                                $cache:cfSession = Get-CfSession -Cfduid:$cache:settings.'javlibrary.cookie.cfduid' -Cfclearance:$cache:settings.'javlibrary.cookie.cfclearance' `
+                            if ($cache:settings.'javlibrary.cookie.cf_chl_2' -and $cache:settings.'javlibrary.cookie.cf_chl_prog' -and $cache:settings.'javlibrary.cookie.cf_clearance' -and $cache:settings.'javlibrary.browser.useragent') {
+                                $cache:cfSession = Get-CfSession -cf_chl_2:$cache:settings.'javlibrary.cookie.cf_chl_2' -cf_chl_prog:$cache:settings.'javlibrary.cookie.cf_chl_prog' -cf_clearance:$cache:settings.'javlibrary.cookie.cf_clearance' `
                                     -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
 
                                 # Testing with the newly created session sometimes fails if there is no wait time
@@ -3746,8 +3742,9 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                     $javToolTip = switch ($setting) {
                                         'javlibrary.baseurl' { 'Specifies the base URL of the Javlibrary instance you want to scrape such as b49t.com' }
                                         'javlibrary.browser.useragent' { 'Specifies your browsers user agent when accessing Javlibrary. This can be found by googling your user agent' }
-                                        'javlibrary.cookie.cfduid' { 'Specifies the cookie value of the __cfduid cookie when accessing Javlibrary' }
-                                        'javlibrary.cookie.cfclearance' { 'Specifies the cookie value of the cf_clearance cookie when accessing Javlibrary' }
+                                        'javlibrary.cookie.cf_chl_2' { 'Specifies the cookie value of the cf_chl_2 cookie when accessing Javlibrary' }
+                                        'javlibrary.cookie.cf_chl_prog' { 'Specifies the cookie value of the cf_chl_prog cookie when accessing Javlibrary' }
+                                        'javlibrary.cookie.cf_clearance' { 'Specifies the cookie value of the cf_clearance cookie when accessing Javlibrary' }
                                         'javlibrary.cookie.session' { 'Specifies the cookie value of the session cookie when logged into Javlibrary, used to set owned movies' }
                                         'javlibrary.cookie.userid' { 'Specifies the cookie value of the userid cookie when logged into Javlibrary, used to set owned movies' }
                                         'javdb.cookie.session' { 'Specifies the _jdb_session login cookie for javdb to access and scrape fc2 titles' }
