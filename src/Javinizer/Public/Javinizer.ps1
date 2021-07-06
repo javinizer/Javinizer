@@ -256,6 +256,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
         [Parameter(ParameterSetName = 'Javlibrary', Position = 0)]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [AllowEmptyString()]
         [System.IO.FileInfo]$Path,
 
@@ -267,12 +268,14 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -385,6 +388,15 @@ function Javinizer {
         [Switch]$AventertainmentJa,
 
         [Parameter(ParameterSetName = 'Info')]
+        [Switch]$Tokyohot,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$TokyohotZh,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$TokyohotJa,
+
+        [Parameter(ParameterSetName = 'Info')]
         [Switch]$AllResults,
 
         [Parameter(ParameterSetName = 'Info')]
@@ -449,6 +461,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Preview')]
         [Hashtable]$Set,
 
+        [Parameter(ParameterSetName = 'Clean')]
+        [Switch]$Clean,
+
         [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
         [Alias('v')]
         [Switch]$Version,
@@ -481,6 +496,11 @@ function Javinizer {
     process {
         if ($HideProgress) {
             $ProgressPreference = 'SilentlyContinue'
+        }
+
+        $global:PSDefaultParameterValues = @{
+            'Invoke-RestMethod:MaximumRetryCount' = 3
+            'Invoke-WebRequest:MaximumRetryCount' = 3
         }
 
         try {
@@ -519,6 +539,21 @@ function Javinizer {
                 }
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when defining settings using -Set: $PSItem"
+            }
+        }
+
+        if ($Settings.'proxy.enabled') {
+            $proxyPass = ConvertTo-SecureString $Settings.'proxy.password' -AsPlainText -Force
+            $proxyCred = New-Object System.Management.Automation.PSCredential -ArgumentList $Settings.'proxy.username', $proxyPass
+
+            [System.Net.Webrequest]::DefaultWebProxy = New-Object System.Net.WebProxy($Settings.'proxy.host')
+            [System.Net.WebRequest]::DefaultWebProxy.Credentials = $proxyCred
+
+            $global:PSDefaultParameterValues = @{
+                'Invoke-RestMethod:Proxy'           = $Settings.'proxy.host'
+                'Invoke-RestMethod:ProxyCredential' = $proxyCred
+                'Invoke-WebRequest:Proxy'           = $Settings.'proxy.host'
+                'Invoke-WebRequest:ProxyCredential' = $proxyCred
             }
         }
 
@@ -684,6 +719,32 @@ function Javinizer {
                 }
             }
 
+            'Clean' {
+                if ($Depth -and $Recurse) {
+                    $files = Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
+                } else {
+                    $files = Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Strict:$Strict
+                }
+
+                foreach ($file in $files) {
+                    try {
+                        if ($file.PartNumber) {
+                            $newName = $file.Id + '-pt' + $file.PartNumber + $file.Extension
+                        } else {
+                            $newName = $file.Id + $file.Extension
+                        }
+
+                        if ($newName -ne $file.FileName) {
+                            Rename-Item -LiteralPath $file.Fullname -NewName $newName
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($MyInvocation.MyCommand.Name)] Cleaned file '$($file.BaseName)' to '$newName' in [$($file.Directory)]"
+                        }
+                    } catch {
+                        Write-Error $PSItem
+                    }
+
+                }
+            }
+
             'Preview' {
                 if ($Depth -and $Recurse) {
                     Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
@@ -741,6 +802,10 @@ function Javinizer {
                         if ($item.Source -match 'javdb') {
                             $item.Url | Get-JavdbData
                         }
+
+                        if ($item.Source -match 'tokyohot') {
+                            $item.Url | Get-TokyohotData
+                        }
                     }
 
                     $data = [PSCustomObject]@{
@@ -749,7 +814,7 @@ function Javinizer {
                 } else {
                     $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
-                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
+                        -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -Tokyohot:$Tokyohot -TokyohotJa:$TokyohotJa -TokyohotZh:$TokyohotZh -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
                         -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults
                 }
 

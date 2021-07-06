@@ -109,6 +109,10 @@ function Set-JVMovie {
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
             $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
             $ScreenshotImgPadding = $Settings.'sort.format.screenshotimg.padding'
+            $Proxy = $Settings.'proxy.enabled'
+            $ProxyUrl = $Settings.'proxy.host'
+            $ProxyUser = $Settings.'proxy.username'
+            $ProxyPass = $Settings.'proxy.password'
         }
 
         <# if ($RenameFile -and (!($Update))) {
@@ -168,6 +172,20 @@ function Set-JVMovie {
             $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
         } #>
 
+        $webClient = New-Object System.Net.WebClient
+        $webclient.Headers.Add("User-Agent: Other")
+
+        if ($Proxy) {
+            $newProxy = New-Object System.Net.WebProxy
+            $newProxy.Address = $ProxyUrl
+            $webClient.Proxy = $newProxy
+            if ($ProxyUser -ne '' -or $ProxyPass -ne '') {
+                $cred = New-Object System.Net.NetworkCredential -ArgumentList $ProxyUser, $ProxyPass
+                $webClient.Credentials = $cred
+            }
+        }
+
+
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
             $sortData.FolderPath = ([String]$sortData.FolderPath).TrimEnd('.')
@@ -194,8 +212,6 @@ function Set-JVMovie {
             if ($DownloadThumbImg) {
                 if ($null -ne $Data.CoverUrl) {
                     try {
-                        $webClient = New-Object System.Net.WebClient
-                        $webclient.Headers.Add("User-Agent: Other")
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force) {
                                 if (Test-Path -LiteralPath $sortData.ThumbPath) {
@@ -284,8 +300,6 @@ function Set-JVMovie {
                         $nfoXML = [xml]$nfoContents
                         foreach ($actress in $nfoXML.movie.actor) {
                             if ($actress.thumb -ne '') {
-                                $webClient = New-Object System.Net.WebClient
-                                $webclient.Headers.Add("User-Agent: Other")
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $sortData.ActorFolderPath -ChildPath "$newName.jpg"
 
@@ -362,8 +376,6 @@ function Set-JVMovie {
             if ($DownloadTrailerVid) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
-                        $webClient = New-Object System.Net.WebClient
-                        $webclient.Headers.Add("User-Agent: Other")
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force.IsPresent) {
                                 if (Test-Path -LiteralPath $sortData.TrailerPath) {

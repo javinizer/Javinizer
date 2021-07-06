@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.4.11-1'
+﻿$cache:guiVersion = '2.5.0-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -3279,6 +3279,9 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                     'MgStageJa' { 'Japanese Mgstage scraper' }
                                     'R18' { 'English R18 scraper' }
                                     'R18Zh' { 'Chinese R18 scraper' }
+                                    'TokyoHot' { 'English TokyoHot scraper' }
+                                    'TokyoHotJa' { 'Japanese TokyoHot scraper' }
+                                    'TokyoHotZh' { 'Chinese TokyoHot scraper' }
                                     default { $null }
                                 }
 
@@ -3732,7 +3735,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                         }
                     }
                 }
-                New-UDCard -Title 'Javlibrary/Javdb' -Content {
+                New-UDCard -Title 'Javlibrary/Javdb (Edit in JSON)' -Content {
                     New-UDGrid -Container -Content {
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -Content {
                             New-UDGrid -Container -Content {
@@ -3748,7 +3751,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                     }
                                     New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                                         New-UDTooltip -TooltipContent { $javToolTip } -Place left -Type dark -Effect solid -Content {
-                                            New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting") -FullWidth
+                                            New-UDTextbox -Label $setting -Id "$setting" -Value ($cache:settings."$setting") -FullWidth -Disabled
                                         }
                                     }
                                 }

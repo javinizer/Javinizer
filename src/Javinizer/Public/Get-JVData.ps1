@@ -73,6 +73,18 @@ function Get-JVData {
         [Boolean]$AventertainmentJa,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.tokyohot')]
+        [Boolean]$Tokyohot,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.tokyohotja')]
+        [Boolean]$TokyohotJa,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.tokyohotzh')]
+        [Boolean]$TokyohotZh,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('javlibrary.baseurl')]
         [String]$JavlibraryBaseUrl = 'https://www.javlibrary.com',
 
@@ -126,6 +138,9 @@ function Get-JVData {
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
+            $Tokyohot = $Settings.'scraper.movie.tokyohot'
+            $TokyohotJa = $Settings.'scraper.movie.tokyohotja'
+            $TokyohotZh = $Settings.'scraper.movie.tokyohotzh'
             $Dmm = $Settings.'scraper.movie.dmm'
             $DmmJa = $Settings.'scraper.movie.dmmja'
             $Javbus = $Settings.'scraper.movie.javbus'
@@ -424,6 +439,59 @@ function Get-JVData {
                         $jvMgstageJaUrl.Ja | Get-MgstageData
                     }
                 } | Out-Null
+            }
+
+            if ($Tokyohot -or $TokyohotJa -or $TokyohotZh) {
+                if ($Tokyohot) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javlibrary] [Url - $TokyohotUrl]"
+                    Start-ThreadJob -Name "jvdata-Tokyohot" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:TokyohotUrl)) {
+                            $jvTokyohotUrl = Get-TokyohotUrl -Id $using:Id -AllResults:$using:Allresults
+                        }
+                        if ($using:TokyohotUrl) {
+                            $using:TokyohotUrl | Get-TokyohotData
+                        } elseif ($jvTokyohotUrl) {
+                            if ($jvTokyohotUrl) {
+                                $jvTokyohotUrl.En | Get-TokyohotData
+                            }
+                        }
+                    } | Out-Null
+                }
+
+                if ($TokyohotJa) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - TokyohotJa] [Url - $TokyohotJaUrl]"
+                    Start-ThreadJob -Name "jvdata-TokyohotJa" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:TokyohotJaUrl)) {
+                            $jvTokyohotUrl = Get-TokyohotUrl -Id $using:Id -AllResults:$using:Allresults
+                        }
+                        if ($using:TokyohotJaUrl) {
+                            $using:TokyohotJaUrl | Get-TokyohotData
+                        } elseif ($jvTokyohotUrl) {
+                            if ($jvTokyohotUrl) {
+                                $jvTokyohotUrl.Ja | Get-TokyohotData
+                            }
+                        }
+                    } | Out-Null
+                }
+
+                if ($TokyohotZh) {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - TokyohotZh] [Url - $TokyohotZhUrl]"
+                    Start-ThreadJob -Name "jvdata-TokyohotZh" -ThrottleLimit $throttleLimit -ScriptBlock {
+                        Import-Module $using:jvModulePath
+                        if (!($using:TokyohotZhUrl)) {
+                            $jvTokyohotUrl = Get-TokyohotUrl -Id $using:Id -AllResults:$using:Allresults
+                        }
+                        if ($using:TokyohotZhUrl) {
+                            $using:TokyohotZhUrl | Get-TokyohotData
+                        } elseif ($jvTokyohotUrl) {
+                            if ($jvTokyohotUrl) {
+                                $jvTokyohotUrl.Zh | Get-TokyohotData
+                            }
+                        }
+                    } | Out-Null
+                }
             }
 
             if ($DLgetchuJa) {
