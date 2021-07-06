@@ -45,7 +45,7 @@ function Convert-JVTitle {
             'Watch ',
             # Suffixes (obsolete(?))
             '-h264',
-            '\..*$',
+            '\.(?!part|pt|cd).*$',
             '-AV',
             '_www.avcens.download'
             '_JAV.1399.net',
@@ -178,6 +178,7 @@ function Convert-JVTitle {
             # Match ID-###A, ID###B, etc.
             # Match ID-###-A, ID-###-B, etc.
             # Match ID-### - A, ID-### - B, etc.
+
             if ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?\s?[-]?\s?[A-Y]$") {
                 $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?)"
                 $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').PadLeft(3, '0')
@@ -208,17 +209,17 @@ function Convert-JVTitle {
             # Match ID-### - part1, ID ### - part2, etc.
             # Match ID-###-cd1, ID-###-cd2, etc.
             # Match ID-### - cd1, ID-### - cd2, etc.
-            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?E?R?\s?[-]\s?(cd|part|pt)?[-]?\d{1,3}") {
-                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?E?\s?[-])"
+            elseif ($fileBaseNameUpper[$x] -match "[-][0-9]{1,6}Z?\s?[-|\.]\s?(cd|part|pt)?[-]?\d{1,3}") {
+                $fileP1, $fileP2, $fileP3 = $fileBaseNameUpper[$x] -split "([-][0-9]{1,6}Z?\s?[-|\.])"
 
                 if ($fileBaseNameUpper[$x] -match '^0{2,5}') {
                     # If match contentid format: DMM00234-1
-                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '') -replace '^0{1,5}', '').Trim().PadLeft(3, '0')
+                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '' -replace '\.', '') -replace '^0{1,5}', '').Trim().PadLeft(3, '0')
                 } else {
                     # If match dvdid format: DMM-070807-1
-                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '')).Trim()
+                    $fileBaseNameUpperCleaned += $fileP1 + "-" + (($fileP2 -replace '-', '' -replace '\.', '')).Trim()
                 }
-                $filePartNum = ((($fileP3.Trim() -replace '-', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
+                $filePartNum = ((($fileP3.Trim() -replace '-', '' -replace '\.', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
                 if ($filePartNum -match '^\d+$') {
                     $filePartNumber = [int]$filePartNum
                 }
