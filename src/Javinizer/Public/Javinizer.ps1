@@ -256,6 +256,7 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo', Position = 0)]
         [Parameter(ParameterSetName = 'Javlibrary', Position = 0)]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [AllowEmptyString()]
         [System.IO.FileInfo]$Path,
 
@@ -267,12 +268,14 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [Switch]$Recurse,
 
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Nfo')]
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Parameter(ParameterSetName = 'Preview')]
+        [Parameter(ParameterSetName = 'Clean')]
         [Int]$Depth,
 
         [Parameter(ParameterSetName = 'Path')]
@@ -457,6 +460,9 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Javlibrary')]
         [Parameter(ParameterSetName = 'Preview')]
         [Hashtable]$Set,
+
+        [Parameter(ParameterSetName = 'Clean')]
+        [Switch]$Clean,
 
         [Parameter(ParameterSetName = 'Version', Mandatory = $true)]
         [Alias('v')]
@@ -710,6 +716,32 @@ function Javinizer {
                     Install-JVGui -Force:$Force
                 } elseif ($OpenGUI) {
                     Start-JVGui -Port:$Port
+                }
+            }
+
+            'Clean' {
+                if ($Depth -and $Recurse) {
+                    $files = Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Depth:$Depth -Strict:$Strict
+                } else {
+                    $files = Get-JVItem -Settings $Settings -Path $Path -Recurse:$Recurse -Strict:$Strict
+                }
+
+                foreach ($file in $files) {
+                    try {
+                        if ($file.PartNumber) {
+                            $newName = $file.Id + '-pt' + $file.PartNumber + $file.Extension
+                        } else {
+                            $newName = $file.Id + $file.Extension
+                        }
+
+                        if ($newName -ne $file.FileName) {
+                            Rename-Item -LiteralPath $file.Fullname -NewName $newName
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($MyInvocation.MyCommand.Name)] Cleaned file '$($file.BaseName)' to '$newName' in [$($file.Directory)]"
+                        }
+                    } catch {
+                        Write-Error $PSItem
+                    }
+
                 }
             }
 
