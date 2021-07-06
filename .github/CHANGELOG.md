@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.1]
+
+### Added
+- Add functionality to rename folders in-place without moving files (#268)
+  - To use: set `"sort.renamefolderinplace": true` and `"sort.movetofolder": false`
+  - This will only work properly if there is a unique movie per directory, otherwise race conditions between conflicting movies will cause errors. I recommend testing this in a controlled environment before "production" use
+
+### Changed
+- JAVLibrary cookies changed following Cloudflare update
+  - Added
+    - `javlibrary.cookie.cf_chl_2`
+    - `javlibrary.cookie.cf_chl_prog`
+  - Changed
+    - `javlibrary.cookie.cfclearance` => `javlibrary.cookie.cf_clearance`
+  - Removed
+    - `javlibrary.cookie.cfduid`
+
+### Fixed
+- Javbus actress thumburls returning a relative url instead of the full url
+- Downloading images from alternate sources should now work properly (bug introduced from added proxy settings)
+- Duplicate actresses without Japanese name should now be ignored from actress autoadd to thumb csv
+
 ## [2.5.0]
 
 ### Added

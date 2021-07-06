@@ -663,17 +663,33 @@ function Javinizer {
                         Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
                     } catch {
                         try {
-                            $CfSession = Get-CfSession -Cfduid:$Settings.'javlibrary.cookie.cfduid' -Cfclearance:$Settings.'javlibrary.cookie.cfclearance' -UserAgent:$Settings.'javlibrary.browser.useragent' -BaseUrl $Settings.'javlibrary.baseurl'
+                            $CfSession = Get-CfSession -cf_chl_2:$Settings.'javlibrary.cookie.cf_chl_2' -cf_chl_prog:$Settings.'javlibrary.cookie.cf_chl_prog' -cf_clearance:$Settings.'javlibrary.cookie.cf_clearance' -UserAgent:$Settings.'javlibrary.browser.useragent' -BaseUrl $Settings.'javlibrary.baseurl'
                             # Testing with the newly created session sometimes fails if there is no wait time
                             Start-Sleep -Seconds 1
                             Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
                         } catch {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter websession/cookies to use the scraper"
+                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, enter JAVLibrary cookies and browser useragent to use the scraper"
                             $CfSession = Get-CfSession -BaseUrl $Settings.'javlibrary.baseurl'
                             # Testing with the newly created session sometimes fails if there is no wait time
                             Start-Sleep -Seconds 1
                             try {
                                 Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false | Out-Null
+                                if ($CfSession) {
+                                    $originalSettingsContent = Get-Content -Path $SettingsPath
+                                    $cookies = $CfSession.Cookies.GetCookies($Settings.'javlibrary.baseurl')
+                                    $cf_clearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
+                                    $cf_chl_2 = ($cookies | Where-Object { $_.Name -eq 'cf_chl_2' }).Value
+                                    $cf_chl_prog = ($cookies | Where-Object { $_.Name -eq 'cf_chl_prog' }).Value
+                                    $userAgent = $CfSession.UserAgent
+                                    $settingsContent = $OriginalSettingsContent
+                                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_chl_2": ".*"', "`"javlibrary.cookie.cf_chl_2`": `"$cf_chl_2`""
+                                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_chl_prog": ".*"', "`"javlibrary.cookie.cf_chl_prog`": `"$cf_chl_prog`""
+                                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cf_clearance": ".*"', "`"javlibrary.cookie.cf_clearance`": `"$cf_clearance`""
+                                    $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
+
+                                    $settingsContent | Out-File -FilePath $SettingsPath
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
+                                }
                             } catch {
                                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Unable reach Javlibrary, invalid websession values"
                             }
@@ -687,24 +703,7 @@ function Javinizer {
                     }
                 }
 
-                if ($CfSession) {
-                    $originalSettingsContent = Get-Content -Path $SettingsPath
-                    $cookies = $CfSession.Cookies.GetCookies($Settings.'javlibrary.baseurl')
-                    $cfduid = ($cookies | Where-Object { $_.Name -eq '__cfduid' }).Value
-                    $cfclearance = ($cookies | Where-Object { $_.Name -eq 'cf_clearance' }).Value
-                    $userAgent = $CfSession.UserAgent
-                    $settingsContent = $OriginalSettingsContent
-                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfduid": ".*"', "`"javlibrary.cookie.cfduid`": `"$cfduid`""
-                    $settingsContent = $settingsContent -replace '"javlibrary\.cookie\.cfclearance": ".*"', "`"javlibrary.cookie.cfclearance`": `"$cfclearance`""
-                    $settingsContent = $settingsContent -replace '"javlibrary\.browser\.useragent": ".*"', "`"javlibrary.browser.useragent`": `"$userAgent`""
-                    $origJson = $originalSettingsContent | ConvertFrom-Json
-                    $newJson = $settingsContent | ConvertFrom-Json
 
-                    if (($origJson.'javlibrary.browser.useragent' -ne $newJson.'javlibrary.browser.useragent') -or ($origJson.'javlibrary.cookie.cfduid' -ne $newJson.'javlibrary.cookie.cfduid') -or ($origJson.'javlibrary.cookie.cfclearance' -ne $newJson.'javlibrary.cookie.cfclearance')) {
-                        $settingsContent | Out-File -FilePath $SettingsPath
-                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Replaced Javlibrary settings with updated values in [$SettingsPath]"
-                    }
-                }
             }
         }
 
@@ -804,7 +803,7 @@ function Javinizer {
                         }
 
                         if ($item.Source -match 'tokyohot') {
-                            $item.Url | Get-TokyohotData
+                            $item.Url | Get-TokyoHotData
                         }
                     }
 

@@ -90,12 +90,36 @@ function Set-JVMovie {
         if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
             $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
         }
+
+        function New-WebClient {
+            param (
+                [Switch]$Proxy,
+                [String]$ProxyUrl,
+                [String]$ProxyUser,
+                [String]$ProxyPass
+            )
+
+            $webClient = New-Object System.Net.WebClient
+            $webclient.Headers.Add("User-Agent: Other")
+            if ($Proxy) {
+                $newProxy = New-Object System.Net.WebProxy
+                $newProxy.Address = $ProxyUrl
+                $webClient.Proxy = $newProxy
+                if ($ProxyUser -ne '' -or $ProxyPass -ne '') {
+                    $cred = New-Object System.Net.NetworkCredential -ArgumentList $ProxyUser, $ProxyPass
+                    $webClient.Credentials = $cred
+                }
+            }
+
+            return $webClient
+        }
     }
 
     process {
         if ($Settings) {
             $MoveToFolder = $Settings.'sort.movetofolder'
             $RenameFile = $Settings.'sort.renamefile'
+            $RenameFolder = $Settings.'sort.renamefolderinplace'
             $MaxTitleLength = $Settings.'sort.maxtitlelength'
             $CreateNfo = $Settings.'sort.create.nfo'
             $CreateNfoPerFile = $Settings.'sort.create.nfoperfile'
@@ -172,19 +196,6 @@ function Set-JVMovie {
             $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
         } #>
 
-        $webClient = New-Object System.Net.WebClient
-        $webclient.Headers.Add("User-Agent: Other")
-
-        if ($Proxy) {
-            $newProxy = New-Object System.Net.WebProxy
-            $newProxy.Address = $ProxyUrl
-            $webClient.Proxy = $newProxy
-            if ($ProxyUser -ne '' -or $ProxyPass -ne '') {
-                $cred = New-Object System.Net.NetworkCredential -ArgumentList $ProxyUser, $ProxyPass
-                $webClient.Credentials = $cred
-            }
-        }
-
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
@@ -192,9 +203,18 @@ function Set-JVMovie {
 
             # We do not want to recreate the destination folder if it already exists
             try {
-                if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
-                    New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$($sortData.FolderPath)]"
+                if ($RenameFolder) {
+                    # Force multipart movies to wait to avoid race condition when renaming the folder
+                    if ($sortData.PartNumber -gt 0) {
+                        Start-Sleep -Seconds 5
+                    }
+                    Rename-Item -LiteralPath $sortData.ParentPath -NewName $sortData.FolderName -ErrorAction SilentlyContinue
+                    $Path = Join-Path -Path $sortData.ParentPath.Parent -ChildPath $sortData.FolderName -AdditionalChildPath $Path.Name
+                } else {
+                    if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
+                        New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Directory] created at path [$($sortData.FolderPath)]"
+                    }
                 }
             } catch {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating destination folder path [$($sortData.FolderPath)]: $PSItem"
@@ -212,6 +232,7 @@ function Set-JVMovie {
             if ($DownloadThumbImg) {
                 if ($null -ne $Data.CoverUrl) {
                     try {
+                        $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force) {
                                 if (Test-Path -LiteralPath $sortData.ThumbPath) {
@@ -300,6 +321,7 @@ function Set-JVMovie {
                         $nfoXML = [xml]$nfoContents
                         foreach ($actress in $nfoXML.movie.actor) {
                             if ($actress.thumb -ne '') {
+                                $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $sortData.ActorFolderPath -ChildPath "$newName.jpg"
 
@@ -340,10 +362,9 @@ function Set-JVMovie {
                         }
 
                         foreach ($screenshot in $Data.ScreenshotUrl) {
+                            $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                             $paddedIndex = $index.ToString().PadLeft($ScreenshotImgPadding, '0')
                             $screenshotName = "$($sortData.ScreenshotImgName)$paddedIndex.jpg"
-                            $webClient = New-Object System.Net.WebClient
-                            $webclient.Headers.Add("User-Agent: Other")
                             $screenshotPath = Join-Path -Path $sortData.ScreenshotFolderPath -ChildPath $screenshotName
                             if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                                 if ($Force.IsPresent) {
@@ -376,6 +397,7 @@ function Set-JVMovie {
             if ($DownloadTrailerVid) {
                 if ($null -ne $Data.TrailerUrl -and $Data.TrailerUrl -ne '') {
                     try {
+                        $webClient = New-WebClient -Proxy:$Proxy -ProxyUrl $ProxyUrl -ProxyUser $ProxyUser -ProxyPass $ProxyPass
                         if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
                             if ($Force.IsPresent) {
                                 if (Test-Path -LiteralPath $sortData.TrailerPath) {
@@ -402,34 +424,54 @@ function Set-JVMovie {
                 }
             }
 
-            if ($RenameFile -and (!($Update))) {
+            if ($RenameFile -and !$Update) {
                 try {
-                    if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
-                        if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
-                            if (!(Test-Path -LiteralPath $sortData.FilePath)) {
-                                if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
-                                } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                                    if ($Force) {
-                                        try {
-                                            Move-Item $Path $sortData.FilePath --force
-                                        } catch {
-                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
-                                        }
-                                    } else {
-                                        try {
-                                            Move-Item $Path $sortData.FilePath --no-clobber
-                                        } catch {
-                                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                    if ($RenameFolder) {
+                        if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                            Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
+                        } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                            if ($Force) {
+                                try {
+                                    Move-Item $Path $sortData.FilePath --force
+                                } catch {
+                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
+                                }
+                            } else {
+                                try {
+                                    Move-Item $Path $sortData.FilePath --no-clobber
+                                } catch {
+                                    Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                                }
+                            }
+                        }
+                    } else {
+                        if ((Get-Item -LiteralPath $DestinationPath).Directory -ne (Get-Item -LiteralPath $Path).Directory) {
+                            if ((Get-Item -LiteralPath $Path).FullName -ne $sortData.FilePath) {
+                                if (!(Test-Path -LiteralPath $sortData.FilePath)) {
+                                    if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+                                        Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force:$Force
+                                    } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
+                                        if ($Force) {
+                                            try {
+                                                Move-Item $Path $sortData.FilePath --force
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath -Force
+                                            }
+                                        } else {
+                                            try {
+                                                Move-Item $Path $sortData.FilePath --no-clobber
+                                            } catch {
+                                                Move-Item -LiteralPath $Path -Destination $sortData.FilePath
+                                            }
                                         }
                                     }
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
+                                } else {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
                                 }
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] => [$($sortData.FilePath)]"
                             } else {
-                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Completed [$Path] but did not move as the destination file already exists"
+                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                             }
-                        } else {
-                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Updated [$Path]"
                         }
                     }
                 } catch {
