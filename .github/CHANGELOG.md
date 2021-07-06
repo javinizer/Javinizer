@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Javbus coverUrl scraper returning a relative path instead of the full path
 - Single-word actresses from javlibrary being set as @Unknown in dynamic folder structures
+- Automatically retry all requests on failure (up to 3 times) to attempt to resolve failed javlibrary requests
 
 ## [2.4.11]
 ### Changed
