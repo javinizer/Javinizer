@@ -25,7 +25,8 @@
         'PSAvoidUsingWriteHost',
         'PSAvoidGlobalVars',
         'PSUseShouldProcessForStateChangingFunctions',
-        'PSUseConsistentIndentation'
+        'PSUseConsistentIndentation',
+        'PSAvoidUsingConvertToSecureStringWithPlainText'
     )
     #________________________________________
     #Rules
