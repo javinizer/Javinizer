@@ -23,9 +23,9 @@ InModuleScope 'Javinizer' {
         BeforeAll {
             function Get-Files ($fileNames) {
                 $files = @()
-                foreach($file in $FileNames) {
+                foreach ($file in $FileNames) {
                     $file = [PSCustomObject]@{
-                        Name = $file
+                        Name     = $file
                         BaseName = $file.Substring(0, $file.Length - 4)
                     }
                     $files += $file
@@ -62,34 +62,32 @@ InModuleScope 'Javinizer' {
 
                 $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
-                $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
-                $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
+                $results.ContentId | Should -Be (, "BBI00094" * $fileNames.Length)
+                $results.Id | Should -Be (, "BBI-094" * $fileNames.Length)
                 $results.PartNumber | Should -Be ((1..4) * [Math]::Ceiling($fileNames.Length / 4))[0..($fileNames.Length - 1)]
             }
 
-            It 'Should work fine for ID ending in E, Z and R' {
+            It 'Should work fine for ID ending in Z' {
                 $fileNames = @(
-                    "ibw-230z.mp4",
-                    "ktra-213e.mp4",
-                    "gesd-093r.mp4"
+                    "ibw-230z.mp4"
                 )
 
                 $files = @()
-                foreach($file in $FileNames) {
+                foreach ($file in $FileNames) {
                     $file = [PSCustomObject]@{
-                        Name = $file
+                        Name     = $file
                         BaseName = $file.Substring(0, $file.Length - 4)
                     }
                     $files += $file
                 }
 
                 $results = Convert-JVTitle $files -RegexEnabled $false
-                $results.ContentId | Should -Be ("IBW00230Z", "KTRA00213E", "GESD00093R")
-                $results.Id | Should -Be ("IBW-230Z", "KTRA-213E", "GESD-093R")
-                $results.PartNumber | Should -Be (,$null * $fileNames.Length)
+                $results.ContentId | Should -Be ("IBW00230Z")
+                $results.Id | Should -Be ("IBW-230Z")
+                $results.PartNumber | Should -Be (, $null * $fileNames.Length)
             }
 
-            It 'Should work fine for multipart ID ending in E, Z and R' {
+            It 'Should work fine for multipart ID ending in Z' {
                 $fileNames = @(
                     "ibw-230za.mp4",
                     "ibw-230z-b.mp4",
@@ -116,12 +114,12 @@ InModuleScope 'Javinizer' {
 
                 $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
-                $results.ContentId | Should -Be (,"IBW00230Z" * $fileNames.Length)
-                $results.Id | Should -Be (,"IBW-230Z" * $fileNames.Length)
+                $results.ContentId | Should -Be (, "IBW00230Z" * $fileNames.Length)
+                $results.Id | Should -Be (, "IBW-230Z" * $fileNames.Length)
                 $results.PartNumber | Should -Be ((1..4) * [Math]::Ceiling($fileNames.Length / 4))[0..($fileNames.Length - 1)]
             }
 
-            It 'Should fail for multiparts > D except Z, E, R. Numerics are OK.' {
+            It 'Should fail for multiparts > D except Z. Numerics are OK.' {
                 $fileNames = @(
                     "bbi-094f.wmv",
                     "bbi-094 - g.mp4",
@@ -130,9 +128,9 @@ InModuleScope 'Javinizer' {
 
                 $files = Get-Files $fileNames
                 $results = Convert-JVTitle $files -RegexEnabled $false
-                $results.ContentId | Should -Be (,"BBI00094" * $fileNames.Length)
-                $results.Id | Should -Be (,"BBI-094" * $fileNames.Length)
-                $results.PartNumber | Should -Be ($null, $null, 5)
+                $results.ContentId | Should -Be (, "BBI00094" * $fileNames.Length)
+                $results.Id | Should -Be (, "BBI-094" * $fileNames.Length)
+                $results.PartNumber | Should -Be (6, 7, 5)
             }
         }
 
