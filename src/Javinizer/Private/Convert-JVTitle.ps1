@@ -95,7 +95,7 @@ function Convert-JVTitle {
                 }
                 if ($fileBaseNameUpper -eq 1) {
                     if ($partNum -ne '' -and $null -ne $partNum) {
-                        $fileBaseNameUpper = "$id-PT$PartNum"
+                        $fileBaseNameUpper = "$id-pt$PartNum"
                     } elseif ($id -ne '') {
                         $fileBaseNameUpper = "$id"
                     } else {
@@ -103,7 +103,7 @@ function Convert-JVTitle {
                     }
                 } else {
                     if ($partNum -ne '' -and $null -ne $partNum) {
-                        $fileBaseNameUpper[$index] = "$id-PT$PartNum"
+                        $fileBaseNameUpper[$index] = "$id-pt$PartNum"
                     } elseif ($id -ne '') {
                         $fileBaseNameUpper[$index] = "$id"
                     } else {
@@ -223,6 +223,19 @@ function Convert-JVTitle {
                 if ($filePartNum -match '^\d+$') {
                     $filePartNumber = [int]$filePartNum
                 }
+            }
+
+            elseif ($RegexEnabled) {
+                $fileP1, $fileP2 = $fileBaseNameUpper[$x] -split "-pt"
+
+                $filePartNum = ((($fileP2.Trim() -replace '-', '' -replace '\.', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
+                if ($filePartNum -match '^\d+$') {
+                    $filePartNumber = [int]$filePartNum
+                    $fileBaseNameUpperCleaned += $fileP1
+                } else {
+                    $fileBaseNameUpperCleaned += $fileBaseNameUpper[$x]
+                }
+
             }
 
             # Match everything else
