@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.2]
+### Added
+- Add setting to toggle the addition of generic actress role of `<role>Actress</role>` (#273)
+  -   `sort.metadata.nfo.addgenericrole`
+### Fixed
+- 3 -> 0 retries on webrequest to check for javlibrary cloudflare blocking to speed up initialization
+- Fixed json conversion loop which was breaking multiple javinizer GUI components
+- Regex multi-part matcher for movies that don't match standard DVD ID format should now match properly
+- Duplicate actresses without Japanese name should now be ignored from actress autoadd to thumb csv (again)
+
 ## [2.5.1]
 
 ### Added

@@ -132,6 +132,7 @@ function Set-JVMovie {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
             $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
+            $AddGenericRole = $Settings.'sort.metadata.nfo.addgenericrole'
             $ScreenshotImgPadding = $Settings.'sort.format.screenshotimg.padding'
             $Proxy = $Settings.'proxy.enabled'
             $ProxyUrl = $Settings.'proxy.host'
@@ -165,9 +166,9 @@ function Set-JVMovie {
         } #>
 
         if ($OriginalPath) {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
         } else {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
         }
 
         <# if ($MoveToFolder) {
@@ -209,7 +210,7 @@ function Set-JVMovie {
                         Start-Sleep -Seconds 5
                     }
                     Rename-Item -LiteralPath $sortData.ParentPath -NewName $sortData.FolderName -ErrorAction SilentlyContinue
-                    $Path = Join-Path -Path $sortData.ParentPath.Parent -ChildPath $sortData.FolderName -AdditionalChildPath $Path.Name
+                    $Path = Join-Path -Path $sortData.RenameNewPath -ChildPath $sortData.FolderName -AdditionalChildPath $Path.Name
                 } else {
                     if (!(Test-Path -LiteralPath $sortData.FolderPath) -and (!($Update))) {
                         New-Item -Path $sortData.FolderPath -ItemType Directory -Force:$Force | Out-Null

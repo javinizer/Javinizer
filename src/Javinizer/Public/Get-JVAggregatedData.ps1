@@ -378,7 +378,7 @@ function Get-JVAggregatedData {
                     if ($Data.Source -contains 'r18') {
                         $r18Data = $Data | Where-Object { $_.Source -eq 'r18' }
                         foreach ($actress in $r18Data.Actress) {
-                            if ($actress.JapaneseName -ne '' -and ($actress.JapaneseName -notin $actressCsv.JapaneseName)) {
+                            if (($actress.JapaneseName -ne '' -and $null -ne $actress.JapaneseName) -and ($actress.JapaneseName -notin $actressCsv.JapaneseName)) {
                                 try {
                                     $fullName = "$($actress.LastName) $($actress.FirstName)".Trim()
                                     $actressObject = [PSCustomObject]@{

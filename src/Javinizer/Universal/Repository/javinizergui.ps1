@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.5.1-0'
+﻿$cache:guiVersion = '2.5.2-0'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -133,6 +133,7 @@ $sortSettings = @(
     'sort.format.groupactress',
     'sort.metadata.nfo.mediainfo',
     'sort.metadata.nfo.altnamerole',
+    'sort.metadata.nfo.addgenericrole',
     'sort.metadata.nfo.firstnameorder',
     'sort.metadata.nfo.actresslanguageja',
     'sort.metadata.nfo.unknownactress',
@@ -3563,6 +3564,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                 'sort.format.groupactress' { 'Specifies to convert the format string for <ACTORS> when there is more than one actress to "@Group" and if unknown, to "@Unknown"' }
                                 'sort.metadata.nfo.mediainfo' { 'Specifies to add media metadata information to the nfo file, this requires the MediaInfo command line application' }
                                 'sort.metadata.nfo.altnamerole' { 'Specifies to set the actress role in the nfo as the altname' }
+                                'sort.metadata.nfo.addgenericrole' { 'Specifies to set the actress role in the nfo as Actress' }
                                 'sort.metadata.nfo.firstnameorder' { 'Specifies to set the actress name order to FirstName LastName' }
                                 'sort.metadata.nfo.actresslanguageja' { 'Specifies to prefer Japanese names when creating the metadata nfo' }
                                 'sort.metadata.nfo.unknownactress' { 'Specifies to add an "Unknown" actress to sorted movies without any actresses' }
