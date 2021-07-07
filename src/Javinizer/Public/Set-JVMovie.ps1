@@ -132,6 +132,7 @@ function Set-JVMovie {
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
             $OriginalPath = $Settings.'sort.metadata.nfo.originalpath'
             $AltNameRole = $Settings.'sort.metadata.nfo.altnamerole'
+            $AddGenericRole = $Settings.'sort.metadata.nfo.addgenericrole'
             $ScreenshotImgPadding = $Settings.'sort.format.screenshotimg.padding'
             $Proxy = $Settings.'proxy.enabled'
             $ProxyUrl = $Settings.'proxy.host'
@@ -165,9 +166,9 @@ function Set-JVMovie {
         } #>
 
         if ($OriginalPath) {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
         } else {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
         }
 
         <# if ($MoveToFolder) {
