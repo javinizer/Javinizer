@@ -184,7 +184,8 @@ function Get-JVSortData {
             ScreenshotImgName    = $screenshotImgName
             ScreenshotFolderName = $screenshotFolderName
             ActorFolderName      = $actorFolderName
-            ParentPath           = (Get-Item -LiteralPath $Path).Directory
+            RenameNewPath        = ((Get-Item -LiteralPath $Path).Directory.Parent).ToString()
+            ParentPath           = ((Get-Item -LiteralPath $Path).Directory).ToString()
             FilePath             = $filePath
             FolderPath           = $folderPath
             NfoPath              = $nfoPath
