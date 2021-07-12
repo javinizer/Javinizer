@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.3]
+
+### Fixed
+- JAVLibrary cloudflare session now properly added to requests when running Javinizer without `-Path` (e.g. using location.input)
+- Suppress errors related to regex partnumber match when no partnumber is present
+
 ## [2.5.2]
 ### Added
 - Add setting to toggle the addition of generic actress role of `<role>Actress</role>` (#273)
