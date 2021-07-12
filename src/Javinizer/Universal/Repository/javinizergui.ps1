@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.5.2-0'
+﻿$cache:guiVersion = '2.5.3-0'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
