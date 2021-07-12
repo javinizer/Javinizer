@@ -1,8 +1,8 @@
 FROM arm64v8/python:3.9-buster
 
 # Add docker entrypoint script
-ADD docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
+ADD docker-entrypoint-arm64v8.sh /
+RUN chmod +x /docker-entrypoint-arm64v8.sh
 
 # Install dependencies
 RUN apt-get update \
@@ -66,4 +66,4 @@ ENV UniversalDashboard__AssetsFolder ./data/UniversalDashboard
 ENV Logging__Path ./data/logs/log.txt
 
 EXPOSE 8600
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint-arm64v8.sh"]
