@@ -228,7 +228,7 @@ function Convert-JVTitle {
             elseif ($RegexEnabled) {
                 $fileP1, $fileP2 = $fileBaseNameUpper[$x] -split "-pt"
 
-                $filePartNum = ((($fileP2.Trim() -replace '-', '' -replace '\.', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
+                $filePartNum = ((($fileP2 -replace '-', '' -replace '\.', '') -replace '^0{1,5}', '') -replace '(cd|part|pt)', '')
                 if ($filePartNum -match '^\d+$') {
                     $filePartNumber = [int]$filePartNum
                     $fileBaseNameUpperCleaned += $fileP1
