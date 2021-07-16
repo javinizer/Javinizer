@@ -1,4 +1,4 @@
-﻿$cache:guiVersion = '2.5.3-0'
+﻿$cache:guiVersion = '2.5.3-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -1198,7 +1198,7 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                     Data            = $_.Data
                                                                     Path            = $moviePath
                                                                     DestinationPath = $destinationPath
-                                                                    Update          = $update
+                                                                    Update          = $using:update
                                                                     Settings        = $settings
                                                                     PartNumber      = $_.PartNumber
                                                                 }
