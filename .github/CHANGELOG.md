@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.4]
+
+### Fixed
+- R18 scraper following movie page update (#282)
 ## [2.5.3]
 
 ### Fixed

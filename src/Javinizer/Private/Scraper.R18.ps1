@@ -5,8 +5,7 @@ function Get-R18ContentId {
     )
 
     process {
-        $contentId = (((($Webrequest.Content -split 'ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
-        $contentId = Convert-HtmlCharacter -String $contentId
+        $contentId = $Webrequest.data.content_id
 
         if ($contentId -eq '----') {
             $contentId = $null
@@ -23,8 +22,7 @@ function Get-R18Id {
     )
 
     process {
-        $id = (((($Webrequest.Content -split '<dt>DVD ID:<\/dt>')[1] -split '<br>')[0]) -split '<dd>')[1]
-        $id = Convert-HtmlCharacter -String $id
+        $id = $Webrequest.data.dvd_id
 
         if ($id -eq '----') {
             $id = $null
@@ -44,7 +42,7 @@ function Get-R18Title {
     )
 
     process {
-        $title = (($Webrequest.Content -split '<cite itemprop=\"name\">')[1] -split '<\/cite>')[0]
+        $title = $Webrequest.data.title
         $title = Convert-HtmlCharacter -String $title
         if ($Replace) {
             foreach ($string in $Replace.GetEnumerator()) {
@@ -64,12 +62,7 @@ function Get-R18Description {
     )
 
     process {
-        if ($Webrequest.Content -match '<h1>Product Description<\/h1>') {
-            $description = ((($Webrequest.Content -split '<h1>Product Description<\/h1>')[1] -split '<p>')[1] -split '<\/p>')[0]
-            $description = Convert-HtmlCharacter -String $description
-        } else {
-            $description = $null
-        }
+        $description = $Webrequest.data.comment
 
         Write-Output $description
     }
@@ -82,44 +75,8 @@ function Get-R18ReleaseDate {
     )
 
     process {
-        $releaseDate = (($Webrequest.Content -split '<dd itemprop=\"dateCreated\">')[1] -split '<br>')[0]
-        $releaseDate = ($releaseDate.Trim() -replace '\.', '') -replace ',', ''
+        $releaseDate = ($Webrequest.data.release_date -split ' ')[0]
 
-        if ($releaseDate -match '/') {
-            $year, $month, $day = $releaseDate -split '/'
-        } else {
-            $month, $day, $year = $releaseDate -split ' '
-            # Convert full month names to abbreviated values due to non-standard naming conventions on R18 website
-            if ($month -eq 'Jan') {
-                $month = 1
-            } elseif ($month -eq 'Feb') {
-                $month = 2
-            } elseif ($month -eq 'Mar') {
-                $month = 3
-            } elseif ($month -eq 'Apr') {
-                $month = 4
-            } elseif ($month -eq 'May') {
-                $month = 5
-            } elseif ($month -eq 'June') {
-                $month = 6
-            } elseif ($month -eq 'July') {
-                $month = 7
-            } elseif ($month -eq 'Aug') {
-                $month = 8
-            } elseif ($month -eq 'Sept') {
-                $month = 9
-            } elseif ($month -eq 'Oct') {
-                $month = 10
-            } elseif ($month -eq 'Nov') {
-                $month = 11
-            } elseif ($month -eq 'Dec') {
-                $month = 12
-            }
-        }
-
-        # Convert the month name to a numeric value to conform with CMS datetime standards
-        # $month = [array]::indexof([cultureinfo]::CurrentCulture.DateTimeFormat.AbbreviatedMonthNames, "$month") + 1
-        $releaseDate = Get-Date -Year $year -Month $month -Day $day -Format "yyyy-MM-dd"
         Write-Output $releaseDate
     }
 }
@@ -144,8 +101,7 @@ function Get-R18Runtime {
     )
 
     process {
-        $length = (((($Webrequest.Content -split '<dd itemprop="duration">')[1] -split '<br>')[0] -split 'min')[0] -split '分鐘')[0]
-        $length = $length.Trim()
+        $length = $Webrequest.data.runtime_minutes
         Write-Output $length
     }
 }
@@ -157,7 +113,7 @@ function Get-R18Director {
     )
 
     process {
-        $director = (($Webrequest.Content -split '<dd itemprop="director">')[1] -split '<br>')[0]
+        $director = $Webrequest.data.director
         $director = Convert-HtmlCharacter -String $director
 
         if ($director -eq '----') {
@@ -174,7 +130,7 @@ function Get-R18Maker {
     )
 
     process {
-        $maker = ((($Webrequest.Content -split '<dd itemprop="productionCompany" itemscope itemtype="http:\/\/schema.org\/Organization\">')[1] -split '<\/a>')[0] -split '>')[1]
+        $maker = $Webrequest.data.maker.name
         $maker = Convert-HtmlCharacter -String ($maker -replace '\n', ' ')
 
         if ($maker -eq '----') {
@@ -196,7 +152,7 @@ function Get-R18Label {
 
     process {
         try {
-            $label = ((($Webrequest.Content -split '<dt>(Label:|廠牌:)<\/dt>')[2] -split '</dd>')[0] -replace '<[^>]*>' , '').Trim()
+            $label = $Webrequest.data.label.name
         } catch {
             return
         }
@@ -229,33 +185,11 @@ function Get-R18Series {
     )
 
     process {
-        $series = ((($Webrequest.Content -split 'type=series')[1] -split '<\/a><br>')[0] -split '>')[1]
-        if ($null -ne $series) {
-            $lang = ((($Webrequest.Content -split '\n')[1] -split '"')[1] -split '"')[0]
-            $seriesUrl = ($Webrequest.links.href | Where-Object { $_ -like '*type=series*' }[0]) + '?lg=' + $lang
 
-            try {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "Performing [GET] on URL [$seriesUrl]"
-                $seriesSearch = Invoke-WebRequest -Uri $seriesUrl -Method Get -Verbose:$false
-            } catch {
-                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level ERROR -Message "Error [GET] on URL [$seriesUrl]: $PSItem"
-            }
-
-            try {
-                $series = Convert-HtmlCharacter -String ($seriesSearch.Content | Select-String -Pattern '<meta name="description" content="(.*) \(\d*\) movies').Matches.Groups[1].Value
-            } catch {
-                return
-            }
-
-            if ($Replace) {
-                foreach ($string in $Replace.GetEnumerator()) {
-                    $series = $series -replace [regex]::Escape($string.Original), $string.Replacement
-                }
-            }
-
-            if ($series -like '</dd*') {
-                $series = $null
-            }
+        if ($Webrequest.data.series) {
+            $series = $Webrequest.data.series.name
+        } else {
+            $series = $null
         }
 
         Write-Output $series
@@ -273,21 +207,18 @@ function Get-R18Genre {
 
     process {
         $genreArray = @()
-        $genreHtml = ((($Webrequest.Content -split '<div class="pop-list">')[1] -split '<\/div>')[0] -split '<\/a>') -split '>'
+        $genres = $Webrequest.data.categories.name
 
-        foreach ($genre in $genreHtml) {
-            $genre = $genre.trim()
-            if ($genre -notmatch 'https:\/\/www\.r18\.com\/videos\/vod\/(movies|amateur)\/list\/id=(.*)' -and $genre -ne '') {
-                $genre = Convert-HtmlCharacter -String $genre
-                if ($Replace) {
-                    foreach ($string in $Replace.GetEnumerator()) {
-                        if (($genre -split ' ') -eq $string.Original) {
-                            $genre = $genre -replace [regex]::Escape($string.Original), $string.Replacement
-                        }
+        foreach ($genre in $genres) {
+            $genre = Convert-HtmlCharacter -String $genre
+            if ($Replace) {
+                foreach ($string in $Replace.GetEnumerator()) {
+                    if (($genre -split ' ') -eq $string.Original) {
+                        $genre = $genre -replace [regex]::Escape($string.Original), $string.Replacement
                     }
                 }
-                $genreArray += $genre
             }
+            $genreArray += $genre
         }
 
         if ($genreArray.Count -eq 0) {
@@ -304,117 +235,30 @@ function Get-R18Actress {
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
 
+        [Parameter(Position = 1, ValueFromPipeline = $true)]
+        [Object]$AltWebrequest,
+
         [Parameter()]
         [String]$Url
     )
 
     process {
-        function Get-Actress {
-            param (
-                [Parameter()]
-                [Object]$Webrequest
-            )
-
-            process {
-                $thumbUrl = @()
-                $pattern = '<a href="https:\/\/www\.r18\.com\/videos\/vod\/movies\/list\/id=(\d*)\/(?:.*)\/">\n.*<p><img alt="(.*)" src="https:\/\/pics\.r18\.com\/mono\/actjpgs\/(.*)" width="(?:.*)" height="(?:.*)"><\/p>'
-                try {
-                    $movieActress = ($Webrequest.Content | Select-String -Pattern $pattern -AllMatches).Matches | ForEach-Object { ($_.Groups[2].Value).Trim() }
-                    $thumbs = ($Webrequest.Content | Select-String -Pattern $pattern -AllMatches).Matches | ForEach-Object { $_.Groups[3].Value }
-                } catch {
-                    return
-                }
-
-                foreach ($thumb in $thumbs) {
-                    $thumbUrl += 'https://pics.r18.com/mono/actjpgs/' + $thumb
-                }
-
-                $actresses = [PSCustomObject]@{
-                    Actress = $movieActress
-                    Thumbs  = $thumbUrl
-                }
-
-                Write-Output $actresses
-            }
-        }
 
         $movieActressObject = @()
-        if ($Url -notmatch 'lg=(en|zh)') {
-            $Url += '&?lg=en'
-        }
 
-        $enActressUrl = $Url -replace 'lg=(en|zh)', 'lg=en'
-        $jaActressUrl = $Url -replace 'lg=(en|zh)', 'lg=zh'
-
-        if ($Url -match 'lg=en') {
-            # Create zh language cookie
-            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-            $cookie = New-Object System.Net.Cookie
-            $cookie.Name = 'lg'
-            $cookie.Value = 'zh'
-            $cookie.Domain = '.r18.com'
-            $session.Cookies.Add($cookie)
-
-            try {
-                $jaWebrequest = Invoke-WebRequest -Uri $jaActressUrl -Method Get -WebSession $session -Verbose:$false
-                $jaActress = Get-Actress -Webrequest $jaWebrequest
-            } catch {
-                Write-Warning "[$(Get-R18Id -Webrequest $Webrequest)] R18 Ja actresses not found"
-                $jaActress = $null
-            }
-            $enActress = Get-Actress -Webrequest $Webrequest
-        } else {
-            # Create en language cookie
-            $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-            $cookie = New-Object System.Net.Cookie
-            $cookie.Name = 'lg'
-            $cookie.Value = 'en'
-            $cookie.Domain = '.r18.com'
-            $session.Cookies.Add($cookie)
-
-            $enWebrequest = Invoke-WebRequest -Uri $enActressUrl -Method Get -WebSession $session -Verbose:$false
-            $enActress = Get-Actress -Webrequest $enWebrequest
-            $jaActress = Get-Actress -Webrequest $Webrequest
-        }
-
-        for ($x = 0; $x -lt $enActress.Actress.Count; $x++) {
-            if ($enActress.Actress.Count -eq 1) {
-                $thumbUrl = $enActress.Thumbs[$x]
-                if ($enActress.Thumbs -like '*nowprinting*' -or $enActress.Thumbs -like '*now_printing*') {
-                    $thumbUrl = $null
-                }
-
-                if ($jaActress) {
-                    if ($jaActress.Actress -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                        $jaActress.Actress = $null
-                    }
-                }
-
+        if ($Webrequest.data.actresses) {
+            for ($x = 0; $x -lt $Webrequest.data.actresses.count; $x++) {
                 $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($enActress.Actress -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($enActress.Actress -split ' ')[0] -replace '\\', ''
-                    JapaneseName = if ($jaActress) { $jaActress.Actress -replace '（.*）', '' -replace '&amp;', '&' } else { $null }
-                    ThumbUrl     = $thumbUrl
-                }
-            } else {
-                $thumbUrl = $enActress.Thumbs[$x]
-                if ($enActress.Thumbs[$x] -like '*nowprinting*' -or $enActress.Thumbs[$x] -like '*now_printing*') {
-                    $thumbUrl = $null
-                }
-
-                if ($jaActress) {
-                    if ($jaActress.Actress[$x] -notmatch '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
-                        $jaActress.Actress[$x] = $null
-                    }
-                }
-
-                $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($enActress.Actress[$x] -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($enActress.Actress[$x] -split ' ')[0] -replace '\\', ''
-                    JapaneseName = if ($jaActress) { $jaActress.Actress[$x] -replace '（.*）', '' -replace '&amp;', '&' } else { $null }
-                    ThumbUrl     = $thumbUrl
+                    LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
+                    JapaneseName = $ALtWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
+                    ThumbUrl     = $Webrequest.data.actresses[$x].image_url
                 }
             }
+        }
+
+        if ($movieActressObject.count -lt 1) {
+            $movieActressObject = $null
         }
 
         Write-Output $movieActressObject
@@ -428,8 +272,18 @@ function Get-R18CoverUrl {
     )
 
     process {
-        $coverUrl = (($Webrequest.Content -split '<div class="box01 mb10 detail-view detail-single-picture">')[1] -split '<\/div>')[0]
-        $coverUrl = (($coverUrl -split 'src="')[1] -split '">')[0]
+        $images = $Webrequest.data.images.jacket_image
+
+        if ($images.large) {
+            $coverUrl = $images.large
+        } elseif ($images.medium) {
+            $coverUrl = $images.medium
+        } elseif ($images.small) {
+            $coverUrl = $images.small
+        } else {
+            $coverUrl = $null
+        }
+
         Write-Output $coverUrl
     }
 }
@@ -441,15 +295,16 @@ function Get-R18ScreenshotUrl {
     )
 
     process {
-        $screenshotUrl = @()
-        $screenshotHtml = (($Webrequest.Content -split '<ul class="js-owl-carousel clearfix">')[1] -split '<\/ul>')[0]
-        $screenshotHtml = $screenshotHtml -split '<li>'
-        foreach ($screenshot in $screenshotHtml) {
-            $screenshot = $screenshot -replace '<p><img class="lazyOwl" ', ''
-            $screenshot = (($screenshot -split 'data-src="')[1] -split '"')[0]
-            if ($screenshot -ne '') {
-                $screenshotUrl += $screenshot
-            }
+        $images = $Webrequest.data.gallery
+
+        if ($images.large) {
+            $screenshotUrl = $images.large
+        } elseif ($images.medium) {
+            $screenshotUrl = $images.medium
+        } elseif ($images.small) {
+            $screenshotUrl = $images.small
+        } else {
+            $screenshotUrl = $null
         }
 
         Write-Output $screenshotUrl
@@ -463,24 +318,16 @@ function Get-R18TrailerUrl {
     )
 
     process {
-        $trailerUrl = @()
+        $trailerUrlObject = $Webrequest.data.sample
 
-        if ($trailerUrl[0] -eq '') {
+        if ($trailerUrlObject.high) {
+            $trailerUrl = $trailerUrlObject.high
+        } elseif ($trailerUrlObject.medium) {
+            $trailerUrl = $trailerUrlObject.medium
+        } elseif ($trailerUrlObject.low) {
+            $trailerUrl = $trailerUrlObject.low
+        } else {
             $trailerUrl = $null
-        } else {
-            $trailerUrlObject = [PSCustomObject]@{
-                Low  = (($Webrequest.Content -split 'data-video-low="')[1] -split '"')[0]
-                Med  = (($Webrequest.Content -split 'data-video-med="')[1] -split '"')[0]
-                High = (($Webrequest.Content -split 'data-video-high="')[1] -split '"')[0]
-            }
-        }
-
-        if ($trailerUrlObject.High) {
-            $trailerUrl = $trailerUrlObject.High
-        } elseif ($trailerUrlObject.Med) {
-            $trailerUrl = $trailerUrlObject.Med
-        } else {
-            $trailerUrl = $trailerUrlObject.Low
         }
 
         Write-Output $trailerUrl

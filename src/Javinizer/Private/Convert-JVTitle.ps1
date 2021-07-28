@@ -45,6 +45,7 @@ function Convert-JVTitle {
             'Watch ',
             # Suffixes (obsolete(?))
             '-h264',
+            '_4K',
             '\.(?!part|pt|cd).*$',
             '-AV',
             '_www.avcens.download'
