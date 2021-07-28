@@ -239,6 +239,9 @@ function Get-R18Actress {
         [Object]$AltWebrequest,
 
         [Parameter()]
+        [Switch]$Zh,
+
+        [Parameter()]
         [String]$Url
     )
 
@@ -248,11 +251,20 @@ function Get-R18Actress {
 
         if ($Webrequest.data.actresses) {
             for ($x = 0; $x -lt $Webrequest.data.actresses.count; $x++) {
-                $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
-                    JapaneseName = $ALtWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
-                    ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                if ($Zh) {
+                    $movieActressObject += [PSCustomObject]@{
+                        LastName     = ($AltWebrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
+                        FirstName    = ($AltWebrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
+                        JapaneseName = $Webrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
+                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                    }
+                } else {
+                    $movieActressObject += [PSCustomObject]@{
+                        LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
+                        FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
+                        JapaneseName = $AltWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
+                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                    }
                 }
             }
         }
