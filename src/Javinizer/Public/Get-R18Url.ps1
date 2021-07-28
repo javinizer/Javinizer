@@ -117,10 +117,29 @@ function Get-R18Url {
                 $matchedResult = $matchedResult[0]
             }
 
+            <# $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+            $cookie = New-Object System.Net.Cookie
+            $cookie.Name = 'lg'
+            $cookie.Value = 'zh'
+            $cookie.Domain = '.r18.com'
+            $session.Cookies.Add($cookie) #>
+
             $urlObject = foreach ($entry in $matchedResult) {
+                $matchedContentId = (($entry.Url -split 'id=')[1] -split '\/')[0]
+
+                <# try {
+                    $zhUrl = Invoke-WebRequest -Uri ($entry.Url + '&lg=zh') -Method Get -WebSession $session -Verbose:$false
+
+                } catch {
+                    Write-Warning "[$(Get-R18Id -Webrequest $Webrequest)] R18 Ja actresses not found"
+                    $zhUrl = $null
+                } #>
+
                 [PSCustomObject]@{
                     En    = $entry.Url
                     Zh    = $entry.Url + '&lg=zh'
+                    EnApi = "https://www.r18.com/api/v4f/contents/$($matchedContentId)?lang=en"
+                    ZhApi = "https://www.r18.com/api/v4f/contents/$($matchedContentId)?lang=zh"
                     Id    = $entry.Id
                     Title = $entry.Title
                 }

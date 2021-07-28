@@ -10,26 +10,38 @@ function Get-R18Data {
 
     process {
         $movieDataObject = @()
+        $contentId = (($Url -split 'id=')[1] -split '\/')[0]
+        $enApiUrl = "https://www.r18.com/api/v4f/contents/$($contentId)?lang=en"
+        $zhApiUrl = "https://www.r18.com/api/v4f/contents/$($contentId)?lang=zh"
+
         try {
             $replaceHashtable = Import-Csv -LiteralPath $UncensorCsvPath
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when import uncensor csv at path [$UncensorCsvPath]: $PSItem"
         }
 
-        try {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$Url]"
-            if ($Url -match "lg=zh") {
-                try {
-                    $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
-                } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]"
-                    return
-                }
-            } else {
-                $webRequest = Invoke-WebRequest -Uri $Url -Method Get -Verbose:$false
+        if ($Url -match 'lg=zh') {
+            try {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$zhApiUrl]"
+                $webRequest = (Invoke-WebRequest -Uri $zhApiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
+
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$enApiUrl]"
+                $altWebRequest = (Invoke-WebRequest -Uri $enApiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
+
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
             }
-        } catch {
-            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
+
+        } else {
+            try {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$enApiUrl]"
+                $webRequest = (Invoke-WebRequest -Uri $enApiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
+            } catch {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
+            }
+
+            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$zhApiUrl]"
+            $altWebRequest = (Invoke-WebRequest -Uri $zhApiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
         }
 
         $movieDataObject = [PSCustomObject]@{
@@ -46,7 +58,7 @@ function Get-R18Data {
             Maker         = Get-R18Maker -WebRequest $webRequest
             Label         = Get-R18Label -WebRequest $webRequest -Replace $replaceHashTable
             Series        = Get-R18Series -WebRequest $webRequest -Replace $replaceHashTable
-            Actress       = Get-R18Actress -WebRequest $webRequest -Url $Url
+            Actress       = Get-R18Actress -WebRequest $webRequest -Url $Url -AltWebrequest $altWebRequest
             Genre         = Get-R18Genre -WebRequest $webRequest -Replace $replaceHashTable
             CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest
