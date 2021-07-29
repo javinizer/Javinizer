@@ -21,6 +21,7 @@ function Get-R18Data {
         }
 
         if ($Url -match 'lg=zh') {
+            $Zh = $true
             try {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$zhApiUrl]"
                 $webRequest = (Invoke-WebRequest -Uri $zhApiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
@@ -58,7 +59,7 @@ function Get-R18Data {
             Maker         = Get-R18Maker -WebRequest $webRequest
             Label         = Get-R18Label -WebRequest $webRequest -Replace $replaceHashTable
             Series        = Get-R18Series -WebRequest $webRequest -Replace $replaceHashTable
-            Actress       = Get-R18Actress -WebRequest $webRequest -Url $Url -AltWebrequest $altWebRequest
+            Actress       = Get-R18Actress -WebRequest $webRequest -Url $Url -AltWebrequest $altWebRequest -Zh:$Zh
             Genre         = Get-R18Genre -WebRequest $webRequest -Replace $replaceHashTable
             CoverUrl      = Get-R18CoverUrl -WebRequest $webRequest
             ScreenshotUrl = Get-R18ScreenshotUrl -WebRequest $webRequest

@@ -239,6 +239,9 @@ function Get-R18Actress {
         [Object]$AltWebrequest,
 
         [Parameter()]
+        [Switch]$Zh,
+
+        [Parameter()]
         [String]$Url
     )
 
@@ -248,11 +251,20 @@ function Get-R18Actress {
 
         if ($Webrequest.data.actresses) {
             for ($x = 0; $x -lt $Webrequest.data.actresses.count; $x++) {
-                $movieActressObject += [PSCustomObject]@{
-                    LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
-                    FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
-                    JapaneseName = $ALtWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
-                    ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                if ($Zh) {
+                    $movieActressObject += [PSCustomObject]@{
+                        LastName     = ($AltWebrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
+                        FirstName    = ($AltWebrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
+                        JapaneseName = $Webrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
+                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                    }
+                } else {
+                    $movieActressObject += [PSCustomObject]@{
+                        LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
+                        FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
+                        JapaneseName = $AltWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
+                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
+                    }
                 }
             }
         }
@@ -297,11 +309,11 @@ function Get-R18ScreenshotUrl {
     process {
         $images = $Webrequest.data.gallery
 
-        if ($images.large) {
+        if ($null -ne $images.large[0]) {
             $screenshotUrl = $images.large
-        } elseif ($images.medium) {
+        } elseif ($null -ne $images.medium[0]) {
             $screenshotUrl = $images.medium
-        } elseif ($images.small) {
+        } elseif ($null -ne $images.small[0]) {
             $screenshotUrl = $images.small
         } else {
             $screenshotUrl = $null
@@ -320,11 +332,11 @@ function Get-R18TrailerUrl {
     process {
         $trailerUrlObject = $Webrequest.data.sample
 
-        if ($trailerUrlObject.high) {
+        if ($null -ne $trailerUrlObject.high) {
             $trailerUrl = $trailerUrlObject.high
-        } elseif ($trailerUrlObject.medium) {
+        } elseif ($null -ne $trailerUrlObject.medium) {
             $trailerUrl = $trailerUrlObject.medium
-        } elseif ($trailerUrlObject.low) {
+        } elseif ($null -ne $trailerUrlObject.low) {
             $trailerUrl = $trailerUrlObject.low
         } else {
             $trailerUrl = $null
