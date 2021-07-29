@@ -309,11 +309,11 @@ function Get-R18ScreenshotUrl {
     process {
         $images = $Webrequest.data.gallery
 
-        if ($images.large) {
+        if ($null -ne $images.large[0]) {
             $screenshotUrl = $images.large
-        } elseif ($images.medium) {
+        } elseif ($null -ne $images.medium[0]) {
             $screenshotUrl = $images.medium
-        } elseif ($images.small) {
+        } elseif ($null -ne $images.small[0]) {
             $screenshotUrl = $images.small
         } else {
             $screenshotUrl = $null
@@ -332,11 +332,11 @@ function Get-R18TrailerUrl {
     process {
         $trailerUrlObject = $Webrequest.data.sample
 
-        if ($trailerUrlObject.high) {
+        if ($null -ne $trailerUrlObject.high) {
             $trailerUrl = $trailerUrlObject.high
-        } elseif ($trailerUrlObject.medium) {
+        } elseif ($null -ne $trailerUrlObject.medium) {
             $trailerUrl = $trailerUrlObject.medium
-        } elseif ($trailerUrlObject.low) {
+        } elseif ($null -ne $trailerUrlObject.low) {
             $trailerUrl = $trailerUrlObject.low
         } else {
             $trailerUrl = $null
