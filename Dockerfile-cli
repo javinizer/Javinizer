@@ -1,0 +1,42 @@
+FROM python:3.9.2-buster
+
+# Add docker entrypoint script
+ADD docker-entrypoint-cli.sh /
+RUN chmod +x /docker-entrypoint-cli.sh
+
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y wget nano
+
+# Create directories
+RUN mkdir -p /home
+
+# Install mediainfo
+RUN apt-get install -y mediainfo
+
+# Install pwsh
+RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb \
+    && dpkg -i packages-microsoft-prod.deb \
+    && apt-get update \
+    && apt-get install -y powershell \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pwsh modules
+RUN pwsh -c "Set-PSRepository 'PSGallery' -InstallationPolicy Trusted" \
+    && pwsh -c "Install-Module Javinizer"
+
+# Install python modules
+RUN pip3 install pillow \
+    google_trans_new \
+    googletrans==4.0.0rc1
+
+# Clean up
+#RUN apt-get purge unzip \
+#    wget \
+#    && apt-get autoremove
+
+# Create symlink to module settings file
+RUN pwsh -c "ln -s (Join-Path (Get-InstalledModule Javinizer).InstalledLocation -ChildPath jvSettings.json) /home/jvSettings.json"
+
+EXPOSE 8600
+ENTRYPOINT ["/docker-entrypoint-cli.sh"]
