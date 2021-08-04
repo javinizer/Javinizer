@@ -58,6 +58,7 @@
   "sort.download.posterimg": true,
   "sort.download.screenshotimg": false,
   "sort.download.trailervid": false,
+  "sort.download.timeoutduration": 100000,
   "sort.format.groupactress": true,
   "sort.format.delimiter": ", ",
   "sort.format.file": "<ID>",

@@ -185,9 +185,14 @@ function Get-R18Series {
     )
 
     process {
-
         if ($Webrequest.data.series) {
             $series = $Webrequest.data.series.name
+
+            if ($Replace) {
+                foreach ($string in $Replace.GetEnumerator()) {
+                    $series = $series -replace [regex]::Escape($string.Original), $string.Replacement
+                }
+            }
         } else {
             $series = $null
         }

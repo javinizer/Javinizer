@@ -390,7 +390,7 @@ function Get-JVAggregatedData {
                                         Alias        = $null
                                     }
                                     # We only want to write the actress if the thumburl isn't null
-                                    if ($actressObject.ThumbUrl -ne '' -and $null -ne $actressObject.ThumbUrl) {
+                                    if ($actressObject.ThumbUrl -ne '' -and $null -ne $actressObject.ThumbUrl -and $actressObject.ThumbUrl -notlike '*printing*') {
                                         $actressObject | Export-Csv -LiteralPath $ThumbCsvPath -Append
                                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Wrote [$fullName - $($actress.JapaneseName)] to thumb csv"
                                     }

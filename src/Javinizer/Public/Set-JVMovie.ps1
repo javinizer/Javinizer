@@ -91,6 +91,30 @@ function Set-JVMovie {
             $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
         }
 
+        # Add custom webclient class to extend timeout durations
+        # https://stackoverflow.com/questions/40431173/powershell-script-webclient-timeout-140-calling-an-ssrs-report
+        $Source = @"
+using System.Net;
+
+public class ExtendedWebClient : WebClient {
+    public int Timeout;
+
+    protected override WebRequest GetWebRequest(System.Uri address) {
+        WebRequest request = base.GetWebRequest(address);
+        if (request != null) {
+            request.Timeout = Timeout;
+        }
+        return request;
+    }
+
+    public ExtendedWebClient() {
+        Timeout = 100000; // Timeout value by default
+    }
+}
+"@;
+
+        Add-Type -TypeDefinition $Source -Language CSharp
+
         function New-WebClient {
             param (
                 [Switch]$Proxy,
@@ -99,7 +123,10 @@ function Set-JVMovie {
                 [String]$ProxyPass
             )
 
-            $webClient = New-Object System.Net.WebClient
+            # $webClient = New-Object System.Net.WebClient
+
+            $webClient = New-Object ExtendedWebClient;
+            $webClient.Timeout = $Settings.'sort.download.timeoutduration'
             $webclient.Headers.Add("User-Agent: Other")
             if ($Proxy) {
                 $newProxy = New-Object System.Net.WebProxy

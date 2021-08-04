@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.6]
+
+### Added
+- Timeout configuration for trailer/screenshot download requests (in ms) (#286)
+- CLI docker images (tag: `jvlflame/javinizer:latest-cli)
+
+### Fixed
+- Series metadata for r18 now properly uncensored
+- Actresses with invalid thumburl no longer automatically added to r18 thumb csv (after r18 html changes)
+
 ## [2.5.5]
 
 ### Fixed
