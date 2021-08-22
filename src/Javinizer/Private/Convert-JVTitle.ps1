@@ -33,6 +33,7 @@ function Convert-JVTitle {
             # Prefixes
             '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]',
             '.*\.com\@',
+            '.*\.org\@',
             '[@|-|_]?[a-zA-Z0-9]+(\.com|\.net|\.tk)[_|-]?',
             '^_'
             '^[0-9]{4}',
@@ -127,7 +128,7 @@ function Convert-JVTitle {
                 if ($file -match '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d+)') {
                     # Extract content ID without prefixes if match
                     try {
-                        $file = ($file | Select-String -Pattern '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d+)').Matches.Groups[2].Value
+                        $file = ($file | Select-String -Pattern '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d{3,8})').Matches.Groups[2].Value
                     } catch {
                         # Don't re-assign if match fails
                     }
@@ -301,6 +302,8 @@ function Convert-JVTitle {
             # This will require less reliance on using -Strict during commandline usage
             if ($movieId -notmatch '([a-zA-Z|tT28]+-\d+[zZ]?[eE]?)' -and $RegexEnabled -eq $false) {
                 $Strict = $true
+                Write-Host "Strict"
+                Write-Host "Strict"
                 Write-Host "Strict"
                 Write-Host "Strict"
                 Write-Host "Strict"
