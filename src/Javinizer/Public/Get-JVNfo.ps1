@@ -180,9 +180,9 @@ function Get-JVNfo {
         }
 
         foreach ($item in $Actress) {
-            $actressName = $null
+            $actors = @()
+            $actressNfoString = ''
             if ($ActressLanguageJa) {
-                $actors = @()
                 if ($null -ne $item.JapaneseName -and $item.JapaneseName -ne '') {
                     $actors += [PSCustomObject]@{
                         Name     = $item.JapaneseName
@@ -238,7 +238,6 @@ function Get-JVNfo {
                     }
                 }
             } else {
-                $actors = @()
                 if (($null -ne $item.FirstName -and $item.FirstName -ne '') -or ($null -ne $item.LastName -and $item.LastName -ne '')) {
                     if ($NameOrder) {
                         $actors += [PSCustomObject]@{
@@ -273,9 +272,12 @@ function Get-JVNfo {
                     }
                 }
 
-                if ($null -eq $actressName) {
+                if ($actors.Length -eq 0) {
                     if ($null -ne $item.JapaneseName) {
-                        $actressName = ($item.JapaneseName).Trim()
+                        $actors += [PSCustomObject]@{
+                            Name     = $item.JapaneseName
+                            ThumbUrl = $item.ThumbUrl
+                        }
                     }
                     $altName = $null
                 }
