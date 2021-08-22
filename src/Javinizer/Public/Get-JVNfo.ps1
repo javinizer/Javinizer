@@ -89,7 +89,10 @@ function Get-JVNfo {
         [Boolean]$AltNameRole,
 
         [Parameter()]
-        [Boolean]$AddGenericRole
+        [Boolean]$AddGenericRole,
+
+        [Parameter()]
+        [Boolean]$AddAliases
     )
 
     process {
@@ -179,8 +182,20 @@ function Get-JVNfo {
         foreach ($item in $Actress) {
             $actressName = $null
             if ($ActressLanguageJa) {
+                $actors = @()
                 if ($null -ne $item.JapaneseName -and $item.JapaneseName -ne '') {
-                    $actressName = ($item.JapaneseName)
+                    $actors += [PSCustomObject]@{
+                        Name     = $item.JapaneseName
+                        ThumbUrl = $item.ThumbUrl
+                    }
+                    if ($AddAliases) {
+                        foreach ($alias in $item.JapaneseAlias) {
+                            $actors += [PSCustomObject]@{
+                                Name     = $alias.JapaneseName
+                                ThumbUrl = $item.ThumbUrl
+                            }
+                        }
+                    }
                     if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
                         if ($NameOrder) {
                             $altName = ("$($item.FirstName) $($item.LastName)").Trim()
@@ -190,22 +205,67 @@ function Get-JVNfo {
                     }
                 }
 
-                if ($null -eq $actressName -or $actressName -eq '') {
+                if ($actors.Length -eq 0) {
                     if ($null -ne $item.FirstName -or $null -ne $item.LastName) {
                         if ($NameOrder) {
-                            $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
+                            $actors += [PSCustomObject]@{
+                                Name     = ("$($item.FirstName) $($item.LastName)").Trim()
+                                ThumbUrl = $item.ThumbUrl
+                            }
+                            if ($AddAliases) {
+                                foreach ($alias in $item.JapaneseAlias) {
+                                    $actors += [PSCustomObject]@{
+                                        Name     = $alias.JapaneseName
+                                        ThumbUrl = $item.ThumbUrl
+                                    }
+                                }
+                            }
                         } else {
-                            $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
+                            $actors += [PSCustomObject]@{
+                                Name     = ("$($item.LastName) $($item.FirstName)").Trim()
+                                ThumbUrl = $item.ThumbUrl
+                            }
+                            if ($AddAliases) {
+                                foreach ($alias in $item.JapaneseAlias) {
+                                    $actors += [PSCustomObject]@{
+                                        Name     = $alias.JapaneseName
+                                        ThumbUrl = $item.ThumbUrl
+                                    }
+                                }
+                            }
                         }
                         $altName = $null
                     }
                 }
             } else {
+                $actors = @()
                 if (($null -ne $item.FirstName -and $item.FirstName -ne '') -or ($null -ne $item.LastName -and $item.LastName -ne '')) {
                     if ($NameOrder) {
-                        $actressName = ("$($item.FirstName) $($item.LastName)").Trim()
+                        $actors += [PSCustomObject]@{
+                            Name     = ("$($item.FirstName) $($item.LastName)").Trim()
+                            ThumbUrl = $item.ThumbUrl
+                        }
+                        if ($AddAliases) {
+                            foreach ($alias in $item.EnglishAlias) {
+                                $actors += [PSCustomObject]@{
+                                    Name     = ("$($alias.FirstName) $($alias.LastName)").Trim()
+                                    ThumbUrl = $item.ThumbUrl
+                                }
+                            }
+                        }
                     } else {
-                        $actressName = ("$($item.LastName) $($item.FirstName)").Trim()
+                        $actors += [PSCustomObject]@{
+                            Name     = ("$($item.LastName) $($item.FirstName)").Trim()
+                            ThumbUrl = $item.ThumbUrl
+                        }
+                        if ($AddAliases) {
+                            foreach ($alias in $item.EnglishAlias) {
+                                $actors += [PSCustomObject]@{
+                                    Name     = ("$($alias.LastName) $($alias.FirstName)").Trim()
+                                    ThumbUrl = $item.ThumbUrl
+                                }
+                            }
+                        }
                     }
 
                     if ($null -ne $item.JapaneseName) {
@@ -222,34 +282,40 @@ function Get-JVNfo {
             }
 
             if ($AltNameRole) {
-                $actressNfoString = @"
+                foreach ($actor in $actors) {
+                    $actressNfoString += @"
     <actor>
-        <name>$actressName</name>
+        <name>$($actor.Name)</name>
         <altname>$altName</altname>
         <thumb>$($item.ThumbUrl)</thumb>
         <role>$altName</role>
     </actor>
 
 "@
+                }
             } elseif ($AddGenericRole) {
-                $actressNfoString = @"
+                foreach ($actor in $actors) {
+                    $actressNfoString += @"
     <actor>
-        <name>$actressName</name>
+        <name>$($actor.Name)</name>
         <altname>$altName</altname>
         <thumb>$($item.ThumbUrl)</thumb>
         <role>Actress</role>
     </actor>
 
 "@
+                }
             } else {
-                $actressNfoString = @"
+                foreach ($actor in $actors) {
+                    $actressNfoString += @"
     <actor>
-        <name>$actressName</name>
+        <name>$($actor.Name)</name>
         <altname>$altName</altname>
         <thumb>$($item.ThumbUrl)</thumb>
     </actor>
 
 "@
+                }
             }
 
             $nfoString = $nfoString + $actressNfoString

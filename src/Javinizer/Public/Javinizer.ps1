@@ -770,7 +770,7 @@ function Javinizer {
                 }
 
                 if ($Nfo) {
-                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AltNameRole:$Settings.'sort.metadata.nfo.altnamerole' -AddGenericRole:$Settings.'sort.metadata.nfo.addgenericrole'
+                    $nfoData = $data.Data | Get-JVNfo -ActressLanguageJa:$Settings.'sort.metadata.nfo.actresslanguageja' -NameOrder:$Settings.'sort.metadata.nfo.firstnameorder' -AltNameRole:$Settings.'sort.metadata.nfo.altnamerole' -AddGenericRole:$Settings.'sort.metadata.nfo.addgenericrole' -AddAliases:$Settings.'sort.metadata.nfo.addaliases'
                     Write-Output $nfoData
                 } elseif ($Search -and $Aggregated) {
                     [PSCustomObject]@{
