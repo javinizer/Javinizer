@@ -125,10 +125,11 @@ function Convert-JVTitle {
             }
 
             foreach ($file in $FileBaseNameOriginal) {
-                if ($file -match '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d+)') {
+                if ($file -match '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d{3,8})') {
                     # Extract content ID without prefixes if match
                     try {
-                        $file = ($file | Select-String -Pattern '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d{3,8})').Matches.Groups[2].Value
+                        $partNum = ($file | Select-String -Pattern '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d{3,8})(.*)').Matches.Groups[3].Value
+                        $file = ($file | Select-String -Pattern '([a-zA-Z]?_?\d+)?([a-zA-Z]+\d{3,8})').Matches.Groups[2].Value + $partNum
                     } catch {
                         # Don't re-assign if match fails
                     }
@@ -302,6 +303,14 @@ function Convert-JVTitle {
             # This will require less reliance on using -Strict during commandline usage
             if ($movieId -notmatch '([a-zA-Z|tT28]+-\d+[zZ]?[eE]?)' -and $RegexEnabled -eq $false) {
                 $Strict = $true
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
+                Write-Host "Strict"
                 Write-Host "Strict"
                 Write-Host "Strict"
                 Write-Host "Strict"
