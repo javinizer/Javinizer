@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.7]
+
+### Added
+- Setting `sort.metadata.nfo.addaliases` to add all actress aliases alongside the original name as separate actresses in the nfo (#290) (#291)
+
+### Changed
+- Improved filematcher (#289)
+  - contentId matching is now improved
+  - file names starting with `.*\.org@` are now matched properly (e.g. bbs2048.org@MOVIE-123.mp4)
+
+### Fixed
+- Fixed fields on `dmmja` scraper (#293) (#294)
+
 ## [2.5.6]
 
 ### Added

@@ -72,6 +72,7 @@
   "sort.format.screenshotimg.padding": 1,
   "sort.format.screenshotfolder": "extrafanart",
   "sort.format.actressimgfolder": ".actors",
+  "sort.metadata.nfo.addaliases": false,
   "sort.metadata.nfo.mediainfo": false,
   "sort.metadata.nfo.addgenericrole": true,
   "sort.metadata.nfo.altnamerole": false,

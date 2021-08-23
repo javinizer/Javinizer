@@ -193,9 +193,9 @@ public class ExtendedWebClient : WebClient {
         } #>
 
         if ($OriginalPath) {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole -AddAliases:$Settings.'sort.metadata.nfo.addaliases'
         } else {
-            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole
+            $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole -AddAliases:$Settings.'sort.metadata.nfo.addaliases'
         }
 
         <# if ($MoveToFolder) {
