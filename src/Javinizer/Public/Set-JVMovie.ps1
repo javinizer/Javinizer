@@ -94,6 +94,7 @@ function Set-JVMovie {
         # Add custom webclient class to extend timeout durations
         # https://stackoverflow.com/questions/40431173/powershell-script-webclient-timeout-140-calling-an-ssrs-report
         $Source = @"
+#pragma warning disable SYSLIB0014
 using System.Net;
 
 public class ExtendedWebClient : WebClient {
