@@ -3502,12 +3502,12 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                             $cache:locationPath = $cache:settings."location.$setting"
                                             if ($null -ne $cache:locationPath -or $cache:locationPath -ne '') {
                                                 $cache:locationPath = switch ($setting) {
-                                                    'thumbcsv' { $cache:defaultThumbPath }
-                                                    'genrecsv' { $cache:defaultGenrePath }
-                                                    'uncensorcsv' { $cache:defaultUncensorPath }
-                                                    'historycsv' { $cache:defaultHistoryPath }
-                                                    'tagcsv' { $cache:defaultTagPath }
-                                                    'log' { $cache:defaultLogPath }
+                                                    'thumbcsv' { $cache:thumbCsvPath }
+                                                    'genrecsv' { $cache:genreCsvPath }
+                                                    'uncensorcsv' { $cache:uncensorCsvPath }
+                                                    'historycsv' { $cache:historyCsvPath }
+                                                    'tagcsv' { $cache:tagCsvPath }
+                                                    'log' { $cache:logPath}
                                                 }
                                             }
 
