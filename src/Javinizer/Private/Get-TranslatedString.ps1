@@ -7,15 +7,19 @@ function Get-TranslatedString {
 
         [String]$Language = 'en',
 
-        [ValidateSet('googletrans', 'google_trans_new')]
+        [String]$TranslateDeeplApiKey,
+        
+        [ValidateSet('googletrans', 'google_trans_new', 'deepl')]
         [String]$Module
     )
 
     process {
         if ($Module -eq 'google_trans_new') {
             $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate_new.py'
-        } else {
+        } elseif($Module -eq 'googletrans') {
             $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate.py'
+        } else{
+            $translatePath = Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'translate_deepl.py'
         }
 
         if ($Language -eq 'en') {
@@ -23,9 +27,9 @@ function Get-TranslatedString {
                 if ($null -ne $String -and $String -ne '') {
                     try {
                         if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                            $tempFile = python $translatePath $String $Language
+                            $tempFile = python $translatePath $String $Language $TranslateDeeplApiKey
                         } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                            $tempFile = python3 $translatePath $String $Language
+                            $tempFile = python3 $translatePath $String $Language $TranslateDeeplApiKey
                         }
                         $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
                     } finally {
@@ -39,9 +43,9 @@ function Get-TranslatedString {
             if ($null -ne $String -and $String -ne '') {
                 try {
                     if ([System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-                        $tempFile = python $translatePath $String $Language
+                        $tempFile = python $translatePath $String $Language $TranslateDeeplApiKey
                     } elseif ([System.Environment]::OSVersion.Platform -eq 'Unix') {
-                        $tempFile = python3 $translatePath $String $Language
+                        $tempFile = python3 $translatePath $String $Language $TranslateDeeplApiKey
                     }
                     $translatedString = Get-Content -Path $tempFile -Encoding utf8 -Raw
                 } finally {

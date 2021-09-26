@@ -135,6 +135,7 @@ function Test-JVSettings {
             'sort.metadata.nfo.displayname',
             'sort.metadata.nfo.format.tagline',
             'sort.metadata.nfo.translate.language'
+            'sort.metadata.nfo.translate.deeplapikey'
         ) | Test-JVSettingsGroup -Settings $Settings -Type String
 
         $arraySettings = @(
