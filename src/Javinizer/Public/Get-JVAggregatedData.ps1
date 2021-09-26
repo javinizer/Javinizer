@@ -132,6 +132,10 @@ function Get-JVAggregatedData {
         [String]$TranslateLanguage,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
+        [Alias('sort.metadata.nfo.translate.deeplapikey')]
+        [String]$TranslateDeeplApiKey,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Setting')]
         [Alias('sort.metadata.nfo.translate.keeporiginaldescription')]
         [Boolean]$KeepOriginalDescription,
 
@@ -229,6 +233,7 @@ function Get-JVAggregatedData {
             $Translate = $Settings.'sort.metadata.nfo.translate'
             $TranslateFields = $Settings.'sort.metadata.nfo.translate.field'
             $TranslateLanguage = $Settings.'sort.metadata.nfo.translate.language'
+            $TranslateDeeplApiKey = $Settings.'sort.metadata.nfo.translate.deeplapikey'
             $KeepOriginalDescription = $Settings.'sort.metadata.nfo.translate.keeporiginaldescription'
             $DelimiterFormat = $Settings.'sort.format.delimiter'
             $ActressLanguageJa = $Settings.'sort.metadata.nfo.actresslanguageja'
@@ -715,14 +720,14 @@ function Get-JVAggregatedData {
                 $translatedObject.PSObject.Properties | ForEach-Object {
                     if ($_.Name -in $TranslateFields) {
                         if ($_.Name -eq 'Genre') {
-                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage -Module $TranslateModule
+                            $_.Value = Get-TranslatedString -String ($aggregatedDataObject."$($_.Name)" -join '|') -Language $TranslateLanguage -Module $TranslateModule -TranslateDeeplApiKey $TranslateDeeplApiKey
                             $genres = @()
                             $rawGenres = $_.Value -split '\|'
                             foreach ($genre in $rawGenres) {
                                 $genres += ($genre).Trim()
                             }
                         } else {
-                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage -Module $TranslateModule
+                            $_.Value = Get-TranslatedString -String $aggregatedDataObject."$($_.Name)" -Language $TranslateLanguage -Module $TranslateModule -TranslateDeeplApiKey $TranslateDeeplApiKey
                         }
                         if ($null -ne $_.Value -and ($_.Value).Trim() -ne '') {
                             if ($_.Name -eq 'Genre') {
