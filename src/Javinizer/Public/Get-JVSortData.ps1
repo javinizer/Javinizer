@@ -177,6 +177,7 @@ function Get-JVSortData {
         }
 
         $pathObject = [PSCustomObject]@{
+            FileName             = $fileName
             FolderName           = $folderName
             ThumbName            = $thumbName
             PosterName           = $posterName

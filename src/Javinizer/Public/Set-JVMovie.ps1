@@ -80,7 +80,11 @@ function Set-JVMovie {
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [Alias('sort.format.screenshotimg.padding')]
-        [Int]$ScreenshotImgPadding
+        [Int]$ScreenshotImgPadding,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Alias('sort.movesubtitles')]
+        [Boolean]$MoveSubtitles
     )
 
     begin {
@@ -166,65 +170,14 @@ public class ExtendedWebClient : WebClient {
             $ProxyUrl = $Settings.'proxy.host'
             $ProxyUser = $Settings.'proxy.username'
             $ProxyPass = $Settings.'proxy.password'
+            $MoveSubtitles= $Settings.'sort.movesubtitles'
         }
-
-        <# if ($RenameFile -and (!($Update))) {
-            $fileName = Convert-JVString -Data $Data -Format $FileFormat -PartNumber $sortData.PartNumber -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        } else {
-            $fileName = (Get-Item -LiteralPath $Path).BaseName
-        }
-        if ($outputFolderFormat -ne '') {
-            $outputFolders = @()
-            foreach ($format in $outputFolderFormat) {
-                $outputFolders += Convert-JVstring -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-            }
-            $outputFolderName = $outputFolders -join '/'
-        } #>
-
-        <# $sortData.PosterName = @()
-        foreach ($format in $PosterFormat) {
-            $sortData.PosterName += Convert-JVString -Data $Data -Format $format -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-        } #>
-
-        <# if ($CreateNfo) {
-            $nfoName = Convert-JVString -Data $Data -Format $NfoFormat -MaxTitleLength $MaxTitleLength -Delimiter $DelimiterFormat -ActressLanguageJa:$ActressLanguageJa -FirstNameOrder:$FirstNameOrder -GroupActress:$GroupActress -IsFileName:$true
-            if ($CreateNfoPerFile) {
-                $nfoName = $fileName
-            }
-        } #>
 
         if ($OriginalPath) {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -OriginalPath:$Path -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole -AddAliases:$Settings.'sort.metadata.nfo.addaliases'
         } else {
             $nfoContents = $Data | Get-JVNfo -NameOrder $FirstNameOrder -ActressLanguageJa:$ActressLanguageJa -AltNameRole:$AltNameRole -AddGenericRole:$AddGenericRole -AddAliases:$Settings.'sort.metadata.nfo.addaliases'
         }
-
-        <# if ($MoveToFolder) {
-            if ($DestinationPath) {
-                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
-                    $sortData.FolderPath = Join-Path -Path $DestinationPath -ChildPath $outputFolderName -AdditionalChildPath $sortData.FolderName
-                } else {
-                    $sortData.FolderPath = Join-Path -Path $DestinationPath -ChildPath $sortData.FolderName
-                }
-            } else {
-                if ($outputFolderName -ne '' -and $null -ne $outputFolderName) {
-                    $sortData.FolderPath = Join-Path -Path $Path -ChildPath $outputFolderName -AdditionalChildPath $sortData.FolderName
-                } else {
-                    $sortData.FolderPath = Join-Path -Path $Path -ChildPath $sortData.FolderName
-                }
-            }
-        } else {
-            if ($DestinationPath) {
-                $sortData.FolderPath = $DestinationPath
-            } else {
-                $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
-            }
-        } #>
-
-        <# if ($Update) {
-            $sortData.FolderPath = (Get-Item -LiteralPath $Path).Directory
-        } #>
-
 
         if ($Force -or $PSCmdlet.ShouldProcess($Path)) {
             # Windows directory paths do not allow trailing dots/periods but do not throw an error on creation
@@ -450,6 +403,37 @@ public class ExtendedWebClient : WebClient {
                     } catch {
                         Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when creating trailer video file [$($Data.TrailerUrl)] to [$($sortData.TrailerName)]: $PSItem"
                     }
+                }
+            }
+
+            if ($MoveSubtitles) {
+                try {
+                    $languageCodes = Import-Csv -Path (Join-Path -Path ((Get-Item $PSScriptRoot).Parent) -ChildPath 'languageCodes.csv')
+                    $subtitleFiles = Get-ChildItem -Path $sortData.ParentPath | Where-Object {$_.extension -match '\.ass|\.ssa|\.srt|\.smi|\.vtt' }
+
+                    foreach ($file in $subtitleFiles) {
+                        $simpleLanguageCheck = ($file.BaseName -split '\.')[1]
+
+                        if (($simpleLanguageCheck -in $languageCodes.'Alpha3b_Code') -or ($simpleLanguageCheck -in $languageCodes.'Alpha2_Code')) {
+                            $subtitleLanguage = $simpleLanguageCheck
+                        } else {
+                            # Default to english if the subtitle language is not correctly matched
+                            # This is operating under the assumption that in the majority of cases that english is the desired subtitle language
+                            $subtitleLanguage = "eng"
+                        }
+
+                        $subtitleName = "$($sortData.FileName).$($subtitleLanguage)$($file.Extension)"
+                        $sortedSubtitlePath = Join-Path -Path $sortData.FolderPath -ChildPath $subtitleName
+
+                        # If 'eng' was already matched, then let the rest continue as-is if not matched
+                        Rename-Item $file -NewName $subtitleName -ErrorAction 'SilentlyContinue'
+                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [Subtitle] moved to path [$($sortedSubtitlePath)]"
+                    }
+
+                    # Move all subtitle files after updating them
+                    Get-ChildItem -Path $sortData.ParentPath | Where-Object {$_.extension -match '\.ass|\.ssa|\.srt|\.smi|\.vtt' } | Move-Item -Destination $sortData.FolderPath
+                } catch {
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when moving subtitle: $PSItem"
                 }
             }
 
