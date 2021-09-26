@@ -51,6 +51,7 @@
   "sort.renamefile": true,
   "sort.renamefolderinplace": false,
   "sort.maxtitlelength": 100,
+  "sort.movesubtitles": false,
   "sort.create.nfo": true,
   "sort.create.nfoperfile": true,
   "sort.download.actressimg": false,
