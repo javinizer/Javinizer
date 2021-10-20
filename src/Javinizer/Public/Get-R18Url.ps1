@@ -50,7 +50,7 @@ function Get-R18Url {
                     [PSCustomObject]@{
                         Id    = (($_ -split '<img alt="')[1] -split '"')[0]
                         Title = (($_ -split '<dt>')[1] -split '<\/dt>')[0]
-                        Url   = (($_ -split '<a href="')[1] -split '">')[0]
+                        Url   = (($_ -split '<a class="i3NLink" href="')[1] -split '"')[0]
                     }
                 }
             }
@@ -77,7 +77,7 @@ function Get-R18Url {
                         [PSCustomObject]@{
                             Id    = (($_ -split '<img alt="')[1] -split '"')[0]
                             Title = (($_ -split '<dt>')[1] -split '<\/dt>')[0]
-                            Url   = (($_ -split '<a href="')[1] -split '">')[0]
+                            Url   = (($_ -split '<a class="i3NLink" href="')[1] -split '"')[0]
                         }
                     }
                 }
