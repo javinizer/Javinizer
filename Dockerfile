@@ -48,7 +48,8 @@ RUN pwsh -c "Set-PSRepository 'PSGallery' -InstallationPolicy Trusted" \
 # Install python modules
 RUN pip3 install pillow \
     google_trans_new \
-    googletrans==4.0.0rc1
+    googletrans==4.0.0rc1 \
+    requests
 
 # Clean up
 #RUN apt-get purge unzip \
