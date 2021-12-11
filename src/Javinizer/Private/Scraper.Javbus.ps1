@@ -276,7 +276,11 @@ function Get-JavbusActress {
                     LastName     = $lastName
                     FirstName    = $firstName
                     JapaneseName = $actressName
-                    ThumbUrl     = $thumbUrl
+                    ThumbUrl     = if ($thumbUrl -notcontains 'javbus.com') {
+                        'https://www.javbus.com' + $thumbUrl
+                    } else {
+                        $thumbUrl
+                    }
                 }
             } else {
                 try {
