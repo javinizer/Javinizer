@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.10]
+
+### Fixed
+
+- Fixed JAVLibrary actress name order (english/romaji) for movies with only one actress (#321)
+- Fixed JAVBus actress thumbnail URL for actresses missing the baseURL (#316)
+
 ## [2.5.9]
 
 ### Fixed
