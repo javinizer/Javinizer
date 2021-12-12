@@ -333,7 +333,7 @@ function Get-JavlibraryScreenshotUrl {
         $screenshotHtml = $screenshotHtml -split '<img src="'
         foreach ($screenshot in $screenshotHtml) {
             if ($screenshot -ne '') {
-                $screenshot = 'https:' + ($screenshot -split '"')[0]
+                $screenshot = if ($screenshot -match 'https?:') { ($screenshot -split '"')[0] } else { 'https:' + ($screenshot -split '"')[0] }
                 $screenshot = $screenshot -replace '-', 'jp-'
                 if ($screenshot -match 'pics.dmm') {
                     $screenshotUrl += $screenshot
