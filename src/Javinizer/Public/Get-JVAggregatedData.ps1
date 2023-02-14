@@ -404,28 +404,8 @@ function Get-JVAggregatedData {
                                 }
                             }
                         }
-                    } elseif ($Data.Source -contains 'r18zh') {
-                        $r18Data = $Data | Where-Object { $_.Source -eq 'r18zh' }
-                        foreach ($actress in $r18Data.Actress) {
-                            if ($actress.JapaneseName -notin $actressCsv.JapaneseName) {
-                                try {
-                                    $fullName = "$($actress.LastName) $($actress.FirstName)".Trim()
-                                    $actressObject = [PSCustomObject]@{
-                                        FullName     = $fullName
-                                        LastName     = $actress.LastName
-                                        FirstName    = $actress.FirstName
-                                        JapaneseName = $actress.JapaneseName
-                                        ThumbUrl     = $actress.ThumbUrl
-                                        Alias        = $null
-                                    }
-                                    $actressObject | Export-Csv -LiteralPath $ThumbCsvPath -Append
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Info -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Wrote [$fullName - $($actress.JapaneseName)] to thumb csv"
-                                } catch {
-                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($Data[0].Id)] [$($MyInvocation.MyCommand.Name)] Error occured when updating Javinizer thumb csv at path [$ThumbCsvPath]: $PSItem"
-                                }
-                            }
-                        }
                     }
+
                     # Reimport the csv to catch any updates
                     try {
                         $actressCsv = Import-Csv -LiteralPath $thumbCsvPath

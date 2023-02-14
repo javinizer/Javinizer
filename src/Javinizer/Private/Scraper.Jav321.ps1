@@ -201,7 +201,7 @@ function Get-Jav321CoverUrl {
 
     process {
         try {
-            $coverUrl = ((($Webrequest | Select-String -Pattern '"/snapshot/(.*)/\d/0"><img class="img-responsive" src="(.*)"').Matches.Groups[2].Value -split '" onerror')[0] -split '"></a>')[0].Trim()
+            $coverUrl = ((($Webrequest | Select-String -Pattern '"/snapshot/(.*)/\d/0"><img class="img-responsive" max-width="100%" src="(.*)"').Matches.Groups[2].Value -split '" onerror')[0] -split '"></a>')[0].Trim()
         } catch {
             return
         }
@@ -221,13 +221,13 @@ function Get-Jav321ScreenshotUrl {
 
         try {
             $screenshotUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
-                    Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" src="(.*)"') -split "src=\'" |
+                    Select-String -Pattern '<a href="\/snapshot\/(.*)\/(.*)\/(.*)"><img class="img-responsive" max-width="100%" src="(.*)"') -split "src=\'" |
                 Select-String -Pattern "(https:\/\/www.jav321.com\/digital\/video\/(.*)\/(.*).jpg)(.*)<\/a>").Matches |
             ForEach-Object { $_.Groups[1].Value }
         } catch {
             try {
                 $screenshotUrl = (($Webrequest | ForEach-Object { $_ -split '\n' } |
-                        Select-String -Pattern '<a href="\/snapshot/(.*)\/(.*)\/(.*)"><img class="img-responsive"') -split 'src="' |
+                        Select-String -Pattern '<a href="\/snapshot/(.*)\/(.*)\/(.*)"><img class="img-responsive" max-width="100%"') -split 'src="' |
                     Select-String -Pattern '(https:\/\/www.jav321.com\/\/images\/(.*)\/(.*)\/(.*)\/(.*).jpg)"><\/a><\/p>').Matches |
                 ForEach-Object { $_.Groups[1].Value }
             } catch {

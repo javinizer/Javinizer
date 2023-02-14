@@ -57,12 +57,6 @@ function Javinizer {
     .PARAMETER Nfo
         Specifies to output the nfo contents from -Find.
 
-    .PARAMETER R18
-        Specifies to search R18 when using -Find.
-
-    .PARAMETER R18Zh
-        Specifies to search R18-Chinese when using -Find.
-
     .PARAMETER Dmm
         Specifies to search Dmm when using -Find.
 
@@ -204,7 +198,7 @@ function Javinizer {
 
     Description
     -----------
-    Find a movie metadata on R18 and DMM by specifying its id, aggrregates the data, and outputs the corresponding nfo contents.
+    Find a movie metadata on DMM by specifying its id, aggrregates the data, and outputs the corresponding nfo contents.
 
     .EXAMPLE
     Javinizer -SetEmbyThumbs
@@ -338,12 +332,6 @@ function Javinizer {
 
         [Parameter(ParameterSetNAme = 'Info')]
         [Switch]$Nfo,
-
-        [Parameter(ParameterSetName = 'Info')]
-        [Switch]$R18,
-
-        [Parameter(ParameterSetName = 'Info')]
-        [Switch]$R18Zh,
 
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Dmm,
@@ -759,7 +747,7 @@ function Javinizer {
                         Data = $data
                     }
                 } else {
-                    $data = Get-JVData -Id $Find -R18:$R18 -R18Zh:$R18Zh -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
+                    $data = Get-JVData -Id $Find -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
                         -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -Tokyohot:$Tokyohot -TokyohotJa:$TokyohotJa -TokyohotZh:$TokyohotZh -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
                         -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults

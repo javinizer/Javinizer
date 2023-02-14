@@ -11,19 +11,7 @@ function Get-JVUrlLocation {
     process {
         $testUrlObject = @()
         foreach ($link in $Url) {
-            if ($link -match 'r18.com') {
-                if ($link -match 'lg=zh') {
-                    $testUrlObject += [PSCustomObject]@{
-                        Url    = $link
-                        Source = 'r18zh'
-                    }
-                } else {
-                    $testUrlObject += [PSCustomObject]@{
-                        Url    = $link
-                        Source = 'r18'
-                    }
-                }
-            } elseif ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com' -or $link -match ($Settings.'javlibrary.baseurl' -replace 'http(s)?:\/\/')) {
+            if ($link -match 'javlibrary.com' -or $link -match 'g46e.com' -or $link -match 'm45e.com' -or $link -match ($Settings.'javlibrary.baseurl' -replace 'http(s)?:\/\/')) {
                 if ($link -match '/ja/') {
                     $testUrlObject += [PSCustomObject]@{
                         Url    = $link

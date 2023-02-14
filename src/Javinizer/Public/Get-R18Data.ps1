@@ -46,7 +46,7 @@ function Get-R18Data {
         }
 
         $movieDataObject = [PSCustomObject]@{
-            Source        = if ($Url -match 'lg=zh') { 'r18zh' } else { 'r18' }
+            Source        = 'r18'
             Url           = $Url
             ContentId     = Get-R18ContentId -WebRequest $webRequest
             Id            = Get-R18Id -WebRequest $webRequest

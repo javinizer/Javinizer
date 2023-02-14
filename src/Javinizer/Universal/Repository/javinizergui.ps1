@@ -1,4 +1,4 @@
-$cache:guiVersion = '2.5.10-1'
+$cache:guiVersion = '2.5.11-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -48,8 +48,6 @@ $scraperSettings = @(
     'JavlibraryJa',
     'JavlibraryZh',
     'MGStageJa',
-    'R18',
-    'R18Zh',
     'TokyoHot',
     'TokyoHotJa',
     'TokyoHotZh'
@@ -122,6 +120,7 @@ $formatStringSettings = @(
 
 $sortSettings = @(
     'sort.movetofolder',
+    'sort.renamefolderinplace'
     'sort.renamefile',
     'sort.movesubtitles',
     'sort.create.nfo',
@@ -2325,8 +2324,6 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                                 Javlibrary   = $cache:settings.'web.sort.manualsearch.javlibrary'
                                                                                 JavlibraryJa = $cache:settings.'web.sort.manualsearch.javlibraryja'
                                                                                 JavlibraryZh = $cache:settings.'web.sort.manualsearch.javlibraryzh'
-                                                                                R18          = $cache:settings.'web.sort.manualsearch.r18'
-                                                                                R18Zh        = $cache:settings.'web.sort.manualsearch.r18zh'
                                                                                 Aggregated   = $true
                                                                                 Search       = $true
                                                                             }
@@ -2394,8 +2391,6 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                                             Javlibrary   = $cache:settings.'web.sort.manualsearch.javlibrary'
                                                                                             JavlibraryJa = $cache:settings.'web.sort.manualsearch.javlibraryja'
                                                                                             JavlibraryZh = $cache:settings.'web.sort.manualsearch.javlibraryzh'
-                                                                                            R18          = $cache:settings.'web.sort.manualsearch.r18'
-                                                                                            R18Zh        = $cache:settings.'web.sort.manualsearch.r18zh'
                                                                                             AllResults   = $true
                                                                                         }
 
@@ -3278,8 +3273,6 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                     'JavlibraryJa' { 'Japanese Javlibrary scraper' }
                                     'JavlibraryZh' { 'Chinese Javlibrary scraper' }
                                     'MgStageJa' { 'Japanese Mgstage scraper' }
-                                    'R18' { 'English R18 scraper' }
-                                    'R18Zh' { 'Chinese R18 scraper' }
                                     'TokyoHot' { 'English TokyoHot scraper' }
                                     'TokyoHotJa' { 'Japanese TokyoHot scraper' }
                                     'TokyoHotZh' { 'Chinese TokyoHot scraper' }
@@ -3554,6 +3547,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                         foreach ($setting in $sortSettings) {
                             $sortTooltip = switch ($setting) {
                                 'sort.movetofolder' { 'Specifies to move the movie to its own folder after being sorted' }
+                                'sort.renamefolderinplace' { 'Specifies to rename folder in-place without moving files' }
                                 'sort.renamefile' { 'Specifies to rename the movie file after being sorted' }
                                 'sort.movesubtitles' { 'Specifies to automatically move subtitle files with the movie file after being sorted' }
                                 'sort.create.nfo' { 'Specifies to create the nfo file when sorting a movie' }
@@ -3574,7 +3568,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                 'sort.metadata.nfo.preferactressalias' { 'Specifies to prefer the oldest actress alias to normalize your metadata' }
                                 'sort.metadata.nfo.originalpath' { 'Specifies to add an "originalpath" field to the nfo specifying the location the movie was last sorted from' }
                                 'sort.metadata.thumbcsv' { 'Specifies to use the thumbnail csv to replace actor names and thumbs when aggregating metadata' }
-                                'sort.metadata.thumbcsv.autoadd' { 'Specifies to automatically add missing actor to the thumbnail csv when scraping using the R18 or R18Zh scrapers' }
+                                'sort.metadata.thumbcsv.autoadd' { 'Specifies to automatically add missing actor to the thumbnail csv when scraping using the R18 scrapers' }
                                 'sort.metadata.thumbcsv.convertalias' { 'Specifies to use the thumbnail csv alias field to replace actresses in the metadata' }
                                 'sort.metadata.genrecsv' { 'Specifies to use the genre csv to replace genres in the metadata' }
                                 'sort.metadata.genrecsv.autoadd' { 'Specifies to automatically add missing genres to the genre csv' }

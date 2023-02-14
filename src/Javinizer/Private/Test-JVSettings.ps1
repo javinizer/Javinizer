@@ -81,8 +81,6 @@ function Test-JVSettings {
             'scraper.movie.javlibrary',
             'scraper.movie.javlibraryja',
             'scraper.movie.javlibraryzh',
-            'scraper.movie.r18',
-            'scraper.movie.r18zh',
             'sort.create.nfo',
             'sort.create.nfoperfile',
             'sort.download.actressimg',

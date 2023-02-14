@@ -5,14 +5,6 @@ function Get-JVData {
         [String]$Id,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.r18')]
-        [Boolean]$R18,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
-        [Alias('scraper.movie.r18zh')]
-        [Boolean]$R18Zh,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.javlibrary')]
         [Boolean]$Javlibrary,
 
@@ -132,8 +124,6 @@ function Get-JVData {
         if ($Url) {
             $urlObject = $Url | Get-JVUrlLocation -Settings $Settings
         } elseif ($Settings) {
-            $R18 = $Settings.'scraper.movie.r18'
-            $R18Zh = $Settings.'scraper.movie.r18zh'
             $Jav321Ja = $Settings.'scraper.movie.jav321ja'
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
@@ -234,42 +224,6 @@ function Get-JVData {
                             $using:AventertainmentJaUrl | Get-AventertainmentData
                         } elseif ($jvAventertainmentUrl) {
                             $jvAventertainmentUrl.Ja | Get-AventertainmentData
-                        }
-                    } | Out-Null
-                }
-            }
-
-            if ($R18 -or $R18Zh) {
-                if ($R18) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18] [Url - $R18Url]"
-                    Start-ThreadJob -Name "jvdata-R18" -ThrottleLimit $throttleLimit -ScriptBlock {
-                        Import-Module $using:jvModulePath
-                        if (!($using:R18Url)) {
-                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
-                        }
-                        if ($using:R18Url) {
-                            $using:R18Url | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
-                        } elseif ($jvR18Url) {
-                            if ($jvR18Url) {
-                                $jvR18Url.En | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
-                            }
-                        }
-                    } | Out-Null
-                }
-
-                if ($R18Zh) {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18Zh] [Url - $R18ZhUrl]"
-                    Start-ThreadJob -Name "jvdata-R18Zh" -ThrottleLimit $throttleLimit -ScriptBlock {
-                        Import-Module $using:jvModulePath
-                        if (!($using:R18ZhUrl)) {
-                            $jvR18Url = Get-R18Url -Id $using:Id -Strict:$using:Strict -AllResults:$using:Allresults
-                        }
-                        if ($using:R18ZhUrl) {
-                            $using:R18ZhUrl | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
-                        } elseif ($jvR18Url) {
-                            if ($jvR18Url) {
-                                $jvR18Url.Zh | Get-R18Data -UncensorCsvPath:$using:UncensorCsvPath
-                            }
                         }
                     } | Out-Null
                 }

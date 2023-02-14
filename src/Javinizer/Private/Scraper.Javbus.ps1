@@ -357,6 +357,7 @@ function Get-JavbusScreenshotUrl {
             $screenshots = ($Webrequest -split '<a class="sample-box"')
             $screenshots = $screenshots[1..$screenshots.Count] | ForEach-Object { ($_ | Select-String -Pattern 'href="(.*)"><div class=').Matches }
             $screenshotUrl += ($screenshots | ForEach-Object { if ($_.Groups[1].Value -match '"') { ($_.Groups[1].Value -split '"')[0] } else { $_.Groups[1].Value } })
+            $screenshotUrl = $screenshoturl | ForEach-Object { if ($_ -notmatch 'http') { 'https://www.javbus.com' + $_ } else { $_ } }
         } catch {
             return
         }

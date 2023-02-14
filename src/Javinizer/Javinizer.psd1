@@ -13,7 +13,7 @@
 
     # Version number of this module.
 
-    ModuleVersion     = '2.5.10'
+    ModuleVersion     = '2.5.11'
 
     # Supported PSEditions
     # CompatiblePSEditions = @('Core')
@@ -100,8 +100,6 @@
         'Get-MaleActors',
         'Get-MgstageData',
         'Get-MgstageUrl',
-        'Get-R18Data',
-        'Get-R18Url',
         'Install-JVGui',
         'Set-JavlibraryOwned',
         'Set-JVEmbyThumbs',
