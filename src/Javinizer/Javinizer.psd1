@@ -100,6 +100,8 @@
         'Get-MaleActors',
         'Get-MgstageData',
         'Get-MgstageUrl',
+        'Get-R18DevData',
+        'Get-R18DevUrl',
         'Install-JVGui',
         'Set-JavlibraryOwned',
         'Set-JVEmbyThumbs',

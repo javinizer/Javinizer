@@ -1383,7 +1383,8 @@ New-UDPage -Name "Sort" -Content {
                                             'javlibrary',
                                             'javlibraryja',
                                             'javlibraryzh',
-                                            'mgstageja'
+                                            'mgstageja',
+                                            "r18dev"
                                         )
                                         New-UDTextbox -Id 'textbox-sort-manualsearch' -Placeholder 'Enter an ID or a comma separated list of URLs' -FullWidth -MultiLine -Autofocus
                                         New-UDGrid -Container -Content {
@@ -1418,6 +1419,7 @@ New-UDPage -Name "Sort" -Content {
                                                         Javlibrary   = $cache:settings.'web.sort.manualsearch.javlibrary'
                                                         JavlibraryJa = $cache:settings.'web.sort.manualsearch.javlibraryja'
                                                         JavlibraryZh = $cache:settings.'web.sort.manualsearch.javlibraryzh'
+                                                        R18Dev       = $cache:settings.'web.sort.manualsearch.r18dev'
                                                         Aggregated   = $true
                                                     }
                                                     $jvData = (Javinizer @findParams)

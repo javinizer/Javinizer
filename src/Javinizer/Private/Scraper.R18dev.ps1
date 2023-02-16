@@ -1,48 +1,48 @@
-function Get-R18ContentId {
+function Get-R18DevContentId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $contentId = $Webrequest.data.content_id
-
-        if ($contentId -eq '----') {
-            $contentId = $null
-        }
+        $contentId = $Webrequest.content_id
 
         Write-Output $contentId
     }
 }
 
-function Get-R18Id {
+function Get-R18DevId {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $id = $Webrequest.data.dvd_id
-
-        if ($id -eq '----') {
-            $id = $null
-        }
+        $id = $Webrequest.dvd_id
 
         Write-Output $Id
     }
 }
 
-function Get-R18Title {
+function Get-R18DevTitle {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja,
 
         [Parameter()]
         [Object]$Replace
     )
 
     process {
-        $title = $Webrequest.data.title
+        $title = if ($Ja) {
+            $Webrequest.title_ja
+        } elseif ($Webrequest.title_en) {
+            $Webrequest.title_en
+        } else { $Webrequest.title }
+
         $title = Convert-HtmlCharacter -String $title
         if ($Replace) {
             foreach ($string in $Replace.GetEnumerator()) {
@@ -55,96 +55,106 @@ function Get-R18Title {
     }
 }
 
-function Get-R18Description {
+function Get-R18DevDescription {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja
     )
 
     process {
-        $description = $Webrequest.data.comment
+        $description = if ($Ja) { '' } else { $Webrequest.comment_en }
 
         Write-Output $description
     }
 }
 
-function Get-R18ReleaseDate {
+function Get-R18DevReleaseDate {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $releaseDate = ($Webrequest.data.release_date -split ' ')[0]
+        $releaseDate = ($Webrequest.release_date -split ' ')[0]
 
         Write-Output $releaseDate
     }
 }
 
-function Get-R18ReleaseYear {
+function Get-R18DevReleaseYear {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $releaseYear = Get-R18ReleaseDate -WebRequest $Webrequest
+        $releaseYear = Get-R18DevReleaseDate -WebRequest $Webrequest
         $releaseYear = ($releaseYear -split '-')[0]
         Write-Output $releaseYear
     }
 }
 
-function Get-R18Runtime {
+function Get-R18DevRuntime {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $length = $Webrequest.data.runtime_minutes
+        $length = $Webrequest.runtime_mins
         Write-Output $length
     }
 }
 
-function Get-R18Director {
+function Get-R18DevDirector {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja
     )
 
     process {
-        $director = $Webrequest.data.director
-        $director = Convert-HtmlCharacter -String $director
-
-        if ($director -eq '----') {
-            $director = $null
+        if ($Webrequest.directors.count -gt 0) {
+            if ($Ja) {
+                $director = $Webrequest.directors[0].name_kanji
+            } else {
+                $director = $Webrequest.directors[0].name_romaji
+            }
         }
+
         Write-Output $director
     }
 }
 
-function Get-R18Maker {
+function Get-R18DevMaker {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja
     )
 
     process {
-        $maker = $Webrequest.data.maker.name
+        $maker = if ($Ja) { $Webrequest.maker_name_ja } else { $Webrequest.maker_name_en }
         $maker = Convert-HtmlCharacter -String ($maker -replace '\n', ' ')
-
-        if ($maker -eq '----') {
-            $maker = $null
-        }
 
         Write-Output $maker
     }
 }
 
-function Get-R18Label {
+function Get-R18DevLabel {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja,
 
         [Parameter()]
         [Object]$Replace
@@ -152,7 +162,7 @@ function Get-R18Label {
 
     process {
         try {
-            $label = $Webrequest.data.label.name
+            $label = if ($Ja) { $Webrequest.label_name_ja } else { $Webrequest.label_name_en }
         } catch {
             return
         }
@@ -167,44 +177,42 @@ function Get-R18Label {
 
         $label = Convert-HtmlCharacter -String ($label -replace '\n', ' ')
 
-        if ($label -eq '----') {
-            $label = $null
-        }
-
         Write-Output $label
     }
 }
 
-function Get-R18Series {
+function Get-R18DevSeries {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja,
 
         [Parameter()]
         [Object]$Replace
     )
 
     process {
-        if ($Webrequest.data.series) {
-            $series = $Webrequest.data.series.name
+        $series = if ($Ja) { $Webrequest.series_name_ja } else { $Webrequest.series_name_en }
 
-            if ($Replace) {
-                foreach ($string in $Replace.GetEnumerator()) {
-                    $series = $series -replace [regex]::Escape($string.Original), $string.Replacement
-                }
+        if ($Replace) {
+            foreach ($string in $Replace.GetEnumerator()) {
+                $series = $series -replace [regex]::Escape($string.Original), $string.Replacement
             }
-        } else {
-            $series = $null
         }
 
         Write-Output $series
     }
 }
 
-function Get-R18Genre {
+function Get-R18DevGenre {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
+
+        [Parameter()]
+        [Switch]$Ja,
 
         [Parameter()]
         [Object]$Replace
@@ -212,7 +220,7 @@ function Get-R18Genre {
 
     process {
         $genreArray = @()
-        $genres = $Webrequest.data.categories.name
+        $genres = if ($Ja) { $Webrequest.categories.name_ja } else { $Webrequest.categories.name_en }
 
         foreach ($genre in $genres) {
             $genre = Convert-HtmlCharacter -String $genre
@@ -234,17 +242,11 @@ function Get-R18Genre {
     }
 }
 
-function Get-R18Actress {
+function Get-R18DevActress {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest,
-
-        [Parameter(Position = 1, ValueFromPipeline = $true)]
-        [Object]$AltWebrequest,
-
-        [Parameter()]
-        [Switch]$Zh,
 
         [Parameter()]
         [String]$Url
@@ -254,22 +256,13 @@ function Get-R18Actress {
 
         $movieActressObject = @()
 
-        if ($Webrequest.data.actresses) {
-            for ($x = 0; $x -lt $Webrequest.data.actresses.count; $x++) {
-                if ($Zh) {
-                    $movieActressObject += [PSCustomObject]@{
-                        LastName     = ($AltWebrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
-                        FirstName    = ($AltWebrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
-                        JapaneseName = $Webrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
-                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
-                    }
-                } else {
-                    $movieActressObject += [PSCustomObject]@{
-                        LastName     = ($Webrequest.data.actresses[$x].name -split ' ')[1] -replace '\\', ''
-                        FirstName    = ($Webrequest.data.actresses[$x].name -split ' ')[0] -replace '\\', ''
-                        JapaneseName = $AltWebrequest.data.actresses[$x].name -replace '（.*）', '' -replace '&amp;', '&'
-                        ThumbUrl     = $Webrequest.data.actresses[$x].image_url
-                    }
+        if ($Webrequest.actresses) {
+            for ($x = 0; $x -lt $Webrequest.actresses.count; $x++) {
+                $movieActressObject += [PSCustomObject]@{
+                    LastName     = ($Webrequest.actresses[$x].name_romaji -split ' ')[1] -replace '\\', ''
+                    FirstName    = ($Webrequest.actresses[$x].name_romaji -split ' ')[0] -replace '\\', ''
+                    JapaneseName = $Webrequest.actresses[$x].name_kanji -replace '（.*）', '' -replace '&amp;', '&'
+                    ThumbUrl     = $Webrequest.actresses[$x].image_url
                 }
             }
         }
@@ -282,70 +275,52 @@ function Get-R18Actress {
     }
 }
 
-function Get-R18CoverUrl {
+function Get-R18DevCoverUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $images = $Webrequest.data.images.jacket_image
-
-        if ($images.large) {
-            $coverUrl = $images.large
-        } elseif ($images.medium) {
-            $coverUrl = $images.medium
-        } elseif ($images.small) {
-            $coverUrl = $images.small
-        } else {
-            $coverUrl = $null
-        }
+        $coverUrl = $Webrequest.jacket_full_url
 
         Write-Output $coverUrl
     }
 }
 
-function Get-R18ScreenshotUrl {
+function Get-R18DevScreenshotUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $images = $Webrequest.data.gallery
+        $images = $Webrequest.gallery
 
-        if ($null -ne $images.large[0]) {
-            $screenshotUrl = $images.large
-        } elseif ($null -ne $images.medium[0]) {
-            $screenshotUrl = $images.medium
-        } elseif ($null -ne $images.small[0]) {
-            $screenshotUrl = $images.small
+        if ($images.count -gt 0) {
+            if ($null -ne $images.image_full[0]) {
+                $screenshotUrl = $images.image_full
+            } elseif ($null -ne $images.image_thumb[0]) {
+                $screenshotUrl = $images.image_thumb
+            } else {
+                $screenshotUrl = $null
+            }
         } else {
-            $screenshotUrl = $null
+            return
         }
 
         Write-Output $screenshotUrl
     }
 }
 
-function Get-R18TrailerUrl {
+function Get-R18DevTrailerUrl {
     param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
         [Object]$Webrequest
     )
 
     process {
-        $trailerUrlObject = $Webrequest.data.sample
-
-        if ($null -ne $trailerUrlObject.high) {
-            $trailerUrl = $trailerUrlObject.high
-        } elseif ($null -ne $trailerUrlObject.medium) {
-            $trailerUrl = $trailerUrlObject.medium
-        } elseif ($null -ne $trailerUrlObject.low) {
-            $trailerUrl = $trailerUrlObject.low
-        } else {
-            $trailerUrl = $null
-        }
+        $trailerUrl = $Webrequest.sample_url
 
         Write-Output $trailerUrl
     }

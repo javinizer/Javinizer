@@ -17,6 +17,10 @@ function Get-JVData {
         [Boolean]$JavlibraryZh,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.r18dev')]
+        [Boolean]$R18dev,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
         [Alias('scraper.movie.dmm')]
         [Boolean]$Dmm,
 
@@ -131,6 +135,7 @@ function Get-JVData {
             $Tokyohot = $Settings.'scraper.movie.tokyohot'
             $TokyohotJa = $Settings.'scraper.movie.tokyohotja'
             $TokyohotZh = $Settings.'scraper.movie.tokyohotzh'
+            $R18dev = $Settings.'scraper.movie.r18dev'
             $Dmm = $Settings.'scraper.movie.dmm'
             $DmmJa = $Settings.'scraper.movie.dmmja'
             $Javbus = $Settings.'scraper.movie.javbus'
@@ -227,6 +232,21 @@ function Get-JVData {
                         }
                     } | Out-Null
                 }
+            }
+
+            if ($R18dev) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - R18dev] [Url - $R18devUrl]"
+                Start-ThreadJob -Name "jvdata-R18dev" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Import-Module $using:jvModulePath
+                    if (!($using:R18devUrl)) {
+                        $jvR18devUrl = Get-R18DevUrl -Id $using:Id -Strict:$using:Strict
+                    }
+                    if ($using:R18devUrl) {
+                        $using:R18devUrl | Get-R18DevData -UncensorCsvPath:$using:UncensorCsvPath
+                    } elseif ($jvR18devUrl) {
+                        $jvR18devUrl | Get-R18DevData -UncensorCsvPath:$using:UncensorCsvPath
+                    }
+                } | Out-Null
             }
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {

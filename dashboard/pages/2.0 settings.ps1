@@ -18,7 +18,7 @@ New-UDPage -Name "Settings" -Content {
         'JavlibraryJa',
         'JavlibraryZh',
         'MGStageJa',
-        'R18',
+        'R18Dev',
         'Javbus',
         'JavbusJa',
         'JavbusZh',

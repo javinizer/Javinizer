@@ -380,8 +380,8 @@ function Get-JVAggregatedData {
                 }
 
                 if ($ThumbCsvAutoAdd) {
-                    if ($Data.Source -contains 'r18') {
-                        $r18Data = $Data | Where-Object { $_.Source -eq 'r18' }
+                    if ($Data.Source -contains 'r18dev') {
+                        $r18Data = $Data | Where-Object { $_.Source -eq 'r18dev' }
                         foreach ($actress in $r18Data.Actress) {
                             if (($actress.JapaneseName -ne '' -and $null -ne $actress.JapaneseName) -and ($actress.JapaneseName -notin $actressCsv.JapaneseName)) {
                                 try {

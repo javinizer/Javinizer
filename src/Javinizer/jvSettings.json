@@ -10,6 +10,7 @@
   "location.log": "",
   "scraper.movie.aventertainment": false,
   "scraper.movie.aventertainmentja": false,
+  "scraper.movie.r18dev": false,
   "scraper.movie.dmm": false,
   "scraper.movie.dmmja": true,
   "scraper.movie.jav321ja": false,
@@ -114,6 +115,7 @@
   ],
   "sort.metadata.priority.actress": [
     "javlibrary",
+    "r18dev",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -121,6 +123,7 @@
   "sort.metadata.priority.alternatetitle": ["javlibraryja", "dmmja"],
   "sort.metadata.priority.coverurl": [
     "javlibrary",
+    "r18dev",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -128,40 +131,47 @@
   ],
   "sort.metadata.priority.description": [
     "dmmja",
+    "r18dev",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.director": [
     "javlibrary",
+    "r18dev",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.genre": [
     "javlibrary",
+    "r18dev",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.id": [
     "javlibrary",
+    "r18dev",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
-  "sort.metadata.priority.contentid": ["dmmja"],
+  "sort.metadata.priority.contentid": ["r18dev", "dmmja"],
   "sort.metadata.priority.label": [
     "javlibrary",
+    "r18dev",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.maker": [
     "javlibrary",
+    "r18dev",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.releasedate": [
     "javlibrary",
+    "r18dev",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -170,14 +180,16 @@
   "sort.metadata.priority.rating": ["dmmja", "javlibrary", "mgstageja"],
   "sort.metadata.priority.runtime": [
     "javlibrary",
+    "r18dev",
     "dmmja",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
-  "sort.metadata.priority.series": ["mgstageja"],
+  "sort.metadata.priority.series": ["r18dev", "mgstageja"],
   "sort.metadata.priority.screenshoturl": [
     "javlibrary",
+    "r18dev",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -185,11 +197,12 @@
   ],
   "sort.metadata.priority.title": [
     "javlibrary",
+    "r18dev",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
-  "sort.metadata.priority.trailerurl": ["dmmja"],
+  "sort.metadata.priority.trailerurl": ["r18dev", "dmmja"],
   "emby.url": "http://192.168.0.1:8096",
   "emby.apikey": "",
   "javlibrary.baseurl": "http://www.javlibrary.com",
@@ -228,6 +241,7 @@
   "web.sort.manualsearch.javlibraryja": false,
   "web.sort.manualsearch.javlibraryzh": false,
   "web.sort.manualsearch.mgstageja": false,
+  "web.sort.manualsearch.r18dev": true,
   "web.theme": "light",
   "admin.log": true,
   "admin.log.level": "info",
