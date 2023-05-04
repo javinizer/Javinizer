@@ -57,6 +57,9 @@ function Javinizer {
     .PARAMETER Nfo
         Specifies to output the nfo contents from -Find.
 
+    .PARAMETER R18Dev
+        Specifies to search R18.dev when using -Find.
+
     .PARAMETER Dmm
         Specifies to search Dmm when using -Find.
 
@@ -180,7 +183,7 @@ function Javinizer {
     Sorts files from a path and specify an external settings file to use.
 
     .EXAMPLE
-    Javinizer -Find 'ABP-420' -R18 -Dmm
+    Javinizer -Find 'ABP-420' -R18Dev -Dmm
 
     Description
     -----------
@@ -194,7 +197,7 @@ function Javinizer {
     Find an array of urls metadata and aggregates them according to your settings file.
 
     .EXAMPLE
-    Javinizer -Find 'ABP-420' -R18 -Javlibrary -Dmm -Aggregated -Nfo
+    Javinizer -Find 'ABP-420' -R18Dev -Javlibrary -Dmm -Aggregated -Nfo
 
     Description
     -----------
@@ -332,6 +335,9 @@ function Javinizer {
 
         [Parameter(ParameterSetNAme = 'Info')]
         [Switch]$Nfo,
+
+        [Parameter(ParameterSetName = 'Info')]
+        [Switch]$R18Dev,
 
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$Dmm,
@@ -718,7 +724,7 @@ function Javinizer {
                             $item.Url | Get-JavlibraryData -JavlibraryBaseUrl $Settings.'javlibrary.baseurl'
                         }
 
-                        if ($item.Source -match 'r18') {
+                        if ($item.Source -match 'r18dev') {
                             $item.Url | Get-R18DevData -UncensorCsvPath:$uncensorCsvPath
                         }
 
@@ -748,7 +754,7 @@ function Javinizer {
                     }
                 } else {
                     $data = Get-JVData -Id $Find -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
-                        -DmmJa:$DmmJa -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
+                        -DmmJa:$DmmJa -R18Dev:$R18Dev -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
                         -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -Tokyohot:$Tokyohot -TokyohotJa:$TokyohotJa -TokyohotZh:$TokyohotZh -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
                         -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults
                 }
@@ -980,7 +986,11 @@ function Javinizer {
                         $DestinationPath = $Settings.'location.output'
                     } catch {
                         # Default destination path to the current directory if settings not specified
-                        $DestinationPath = (Get-Item -LiteralPath $Path).Directory
+                        if ((Get-Item $Path).PSIsContainer) {
+                            $DestinationPath = (Get-Item -LiteralPath $Path).FullName
+                        } else {
+                            $DestinationPath = (Get-Item -LiteralPath $Path).DirectoryName
+                        }
                     }
                 }
 
