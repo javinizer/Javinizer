@@ -27,7 +27,7 @@ function Get-AventertainmentTitle {
 
     process {
         try {
-            $title = ($Webrequest.Content | Select-String -Pattern '<title>(.*)\s?(\| AVentertainments\.com)<\/title>').Matches.Groups[1].Value
+            $title = ($Webrequest.Content | Select-String -Pattern '<title>([^<]*)<\/title>').Matches.Groups[1].Value.Trim()
         } catch {
             return
         }
@@ -135,7 +135,7 @@ function Get-AventertainmentGenre {
         $genreArray = @()
 
         try {
-            $genres = (((($Webrequest.Content -split '<span class="value-category">')[1]) -split '<\/span>')[0] | Select-String -Pattern '<a href=".*subdept_products.*>(.*)<\/a>' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
+            $genres = (((($Webrequest.Content -split '<span class="value-category">')[1]) -split '<\/span>')[0] | Select-String -Pattern '<a href=".*dept">(.*)<\/a>' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
         } catch {
             try {
                 $genres = (((($Webrequest.Content -split '<span class="value-category">')[1]) -split '<\/span>')[0] | Select-String -Pattern '<a href=".*cat_id.*>(.*)<\/a>' -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
@@ -175,7 +175,7 @@ function Get-AventertainmentActress {
 
             process {
                 try {
-                    $actress = (($Webrequest.Content | Select-String -Pattern "<a href=.*\/ActressDetail\.aspx\?languageID=\d&actressname=(.*)>(.*)<\/a>").Matches.Value -split '<\/a>') | ForEach-Object { (($_ -split '>')[1]) }
+                    $actress = (($Webrequest.Content | Select-String -Pattern '<a href=\"https:.*ppv_actressdetail\">(.*)<\/a>').Matches.Value -split '<\/a>') | ForEach-Object { (($_ -split '>')[1]) }
                     $actress = $actress | Where-Object { $null -ne $_ -and $_ -ne '' } | ForEach-Object { ($_).Trim() }
                 } catch {
                     # Do nothing
@@ -248,7 +248,7 @@ function Get-AventertainmentCoverUrl {
 
     process {
         try {
-            $coverUrl = ($Webrequest.Content | Select-String -Pattern 'href="(.*\/bigcover\/.*\.jpg)" role="button">(ジャケット画像|Cover\sJacket)<\/a>').Matches.Groups[1].Value
+            $coverUrl = ($Webrequest.Content | Select-String -Pattern '<div.*id="PlayerCover".*><img src="([^"]+)"').Matches.Groups[1].Value
         } catch {
             try {
                 $coverUrl = ($Webrequest.Content | Select-String -Pattern "<a class='lightbox' href='(.*\/vodimages\/gallery\/large\/.*\.jpg)'>").Matches.Groups[1].Value
@@ -269,8 +269,8 @@ function Get-AventertainmentScreenshotUrl {
 
     process {
         try {
-            $screenshotUrl = ($Webrequest.Content | Select-String -Pattern "<a class='lightbox' href='(.*\/vodimages\/screenshot\/large\/.*\.jpg)'>").Matches.Groups[1].Value
-            $screenshotUrl = (($screenshotUrl -split '<img src=' -split 'href=') | Select-String -Pattern "'(.*\/vodimages\/screenshot\/large\/.*\.jpg)" -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
+            $screenshotUrl = ($Webrequest.Content | Select-String -Pattern "<a class='lightbox' href='(.*\/vodimages\/screenshot\/large\/.*\.(jpg|webp))'>").Matches.Groups[1].Value
+            $screenshotUrl = (($screenshotUrl -split '<img src=' -split 'href=') | Select-String -Pattern "'(.*\/vodimages\/screenshot\/large\/.*\.(jpg|webp))" -AllMatches).Matches | ForEach-Object { $_.Groups[1].Value }
         } catch {
             return
         }

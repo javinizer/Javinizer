@@ -222,7 +222,7 @@ function Get-AventertainmentUrl {
             return
         } else {
             $urlObject = [PSCustomObject]@{
-                Ja = $enAventertainmentUrl -replace 'languageID=1', 'languageID=2'
+                Ja = $enAventertainmentUrl -replace 'ppv/([1-9]+)/1/1/new_detail', 'ppv/$1/2/1/new_detail'
                 En = $enAventertainmentUrl
             }
 
