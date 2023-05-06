@@ -1,4 +1,4 @@
-FROM python:3.9.2-buster
+FROM python:3.9.6-bullseye
 
 # Add docker entrypoint script
 ADD docker-entrypoint.sh /
@@ -29,7 +29,7 @@ RUN unzip -q /home/Universal.linux-x64.1.5.13.zip -d /home/Universal/ \
 RUN apt-get install -y mediainfo
 
 # Install pwsh
-RUN wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb \
+RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb \
     && dpkg -i packages-microsoft-prod.deb \
     && apt-get update \
     && apt-get install -y powershell \
