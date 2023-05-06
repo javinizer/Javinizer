@@ -258,11 +258,17 @@ function Get-R18DevActress {
 
         if ($Webrequest.actresses) {
             for ($x = 0; $x -lt $Webrequest.actresses.count; $x++) {
+                if (!$Webrequest.actresses[$x].image_url.StartsWith('http')) {
+                    $ThumbUrl = 'https://pics.dmm.co.jp/mono/actjpgs/' + $Webrequest.actresses[$x].image_url
+                } else {
+                    $ThumbUrl = $Webrequest.actresses[$x].image_url
+                }
+
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = ($Webrequest.actresses[$x].name_romaji -split ' ')[1] -replace '\\', ''
                     FirstName    = ($Webrequest.actresses[$x].name_romaji -split ' ')[0] -replace '\\', ''
                     JapaneseName = $Webrequest.actresses[$x].name_kanji -replace '（.*）', '' -replace '&amp;', '&'
-                    ThumbUrl     = $Webrequest.actresses[$x].image_url
+                    ThumbUrl     = $ThumbUrl
                 }
             }
         }
