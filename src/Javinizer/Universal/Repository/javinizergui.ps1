@@ -3184,7 +3184,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                             New-UDButton -Icon $iconEdit -Text 'Json' -Size large -FullWidth -OnClick {
                                 Show-UDModal -FullScreen -Content {
                                     $settingsContent = (Get-Content -LiteralPath $cache:settingsPath) -join "`r`n"
-                                    New-UDCodeEditor -Id 'editor-settings-json' -Autosize -Language json -Theme vs-dark -Code $settingsContent
+                                    New-UDCodeEditor -Id 'editor-settings-json' -Autosize -Width '100%' -Height '100%' -Language 'json' -Theme vs-dark -Code $settingsContent
                                 } -Header {
                                     "jvSettings.json"
                                 } -Footer {
