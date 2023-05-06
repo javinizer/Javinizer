@@ -39,15 +39,16 @@ $scraperSettings = @(
     'Dmm',
     'DmmJa',
     'Jav321Ja',
-    'Javdb',
-    'JavdbZh',
     'Javbus',
     'JavbusJa',
     'JavbusZh',
+    'Javdb',
+    'JavdbZh',
     'Javlibrary',
     'JavlibraryJa',
     'JavlibraryZh',
     'MGStageJa',
+    'R18Dev',
     'TokyoHot',
     'TokyoHotJa',
     'TokyoHotZh'
@@ -2314,18 +2315,27 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                                 $searchInput = ($searchInput -split ',').Trim()
                                                                             }
                                                                             $findParams = @{
-                                                                                Find         = $searchInput
-                                                                                Dmm          = $cache:settings.'web.sort.manualsearch.dmm'
-                                                                                DmmJa        = $cache:settings.'web.sort.manualsearch.dmmja'
-                                                                                Jav321Ja     = $cache:settings.'web.sort.manualsearch.jav321ja'
-                                                                                Javbus       = $cache:settings.'web.sort.manualsearch.javbus'
-                                                                                JavbusJa     = $cache:settings.'web.sort.manualsearch.javbusja'
-                                                                                JavbusZh     = $cache:settings.'web.sort.manualsearch.javbuszh'
-                                                                                Javlibrary   = $cache:settings.'web.sort.manualsearch.javlibrary'
-                                                                                JavlibraryJa = $cache:settings.'web.sort.manualsearch.javlibraryja'
-                                                                                JavlibraryZh = $cache:settings.'web.sort.manualsearch.javlibraryzh'
-                                                                                Aggregated   = $true
-                                                                                Search       = $true
+                                                                                Find                = $searchInput
+                                                                                Aventertainment     = $cache:settings.'web.sort.manualsearch.aventertainment'
+                                                                                AventertainmentJa   = $cache:settings.'web.sort.manualsearch.aventertainmentja'
+                                                                                Dmm                 = $cache:settings.'web.sort.manualsearch.dmm'
+                                                                                DmmJa               = $cache:settings.'web.sort.manualsearch.dmmja'
+                                                                                Jav321Ja            = $cache:settings.'web.sort.manualsearch.jav321ja'
+                                                                                Javdb               = $cache:settings.'web.sort.manualsearch.javdb'
+                                                                                JavdbZh             = $cache:settings.'web.sort.manualsearch.javdbzh'
+                                                                                Javbus              = $cache:settings.'web.sort.manualsearch.javbus'
+                                                                                JavbusJa            = $cache:settings.'web.sort.manualsearch.javbusja'
+                                                                                JavbusZh            = $cache:settings.'web.sort.manualsearch.javbuszh'
+                                                                                Javlibrary          = $cache:settings.'web.sort.manualsearch.javlibrary'
+                                                                                JavlibraryJa        = $cache:settings.'web.sort.manualsearch.javlibraryja'
+                                                                                JavlibraryZh        = $cache:settings.'web.sort.manualsearch.javlibraryzh'
+                                                                                MGStageJa           = $cache:settings.'web.sort.manualsearch.mgstageja'
+                                                                                R18Dev              = $cache:settings.'web.sort.manualsearch.r18dev'
+                                                                                Tokyohot            = $cache:settings.'web.sort.manualsearch.tokyohot'
+                                                                                TokyohotJa          = $cache:settings.'web.sort.manualsearch.tokyohotja'
+                                                                                TokyohotZh          = $cache:settings.'web.sort.manualsearch.tokyohotzh'
+                                                                                Aggregated          = $true
+                                                                                Search              = $true
                                                                             }
 
                                                                             $jvData = Javinizer @findParams
@@ -2381,16 +2391,25 @@ $Pages += New-UDPage -Name "Sort" -Content {
                                                                                         }
 
                                                                                         $findParams = @{
-                                                                                            Find         = $cache:searchInput
-                                                                                            Dmm          = $cache:settings.'web.sort.manualsearch.dmm'
-                                                                                            DmmJa        = $cache:settings.'web.sort.manualsearch.dmmja'
-                                                                                            Jav321Ja     = $cache:settings.'web.sort.manualsearch.jav321ja'
-                                                                                            Javbus       = $cache:settings.'web.sort.manualsearch.javbus'
-                                                                                            JavbusJa     = $cache:settings.'web.sort.manualsearch.javbusja'
-                                                                                            JavbusZh     = $cache:settings.'web.sort.manualsearch.javbuszh'
-                                                                                            Javlibrary   = $cache:settings.'web.sort.manualsearch.javlibrary'
-                                                                                            JavlibraryJa = $cache:settings.'web.sort.manualsearch.javlibraryja'
-                                                                                            JavlibraryZh = $cache:settings.'web.sort.manualsearch.javlibraryzh'
+                                                                                            Find                = $cache:searchInput
+                                                                                            Aventertainment     = $cache:settings.'web.sort.manualsearch.aventertainment'
+                                                                                            AventertainmentJa   = $cache:settings.'web.sort.manualsearch.aventertainmentja'
+                                                                                            Dmm                 = $cache:settings.'web.sort.manualsearch.dmm'
+                                                                                            DmmJa               = $cache:settings.'web.sort.manualsearch.dmmja'
+                                                                                            Jav321Ja            = $cache:settings.'web.sort.manualsearch.jav321ja'
+                                                                                            Javdb               = $cache:settings.'web.sort.manualsearch.javdb'
+                                                                                            JavdbZh             = $cache:settings.'web.sort.manualsearch.javdbzh'
+                                                                                            Javbus              = $cache:settings.'web.sort.manualsearch.javbus'
+                                                                                            JavbusJa            = $cache:settings.'web.sort.manualsearch.javbusja'
+                                                                                            JavbusZh            = $cache:settings.'web.sort.manualsearch.javbuszh'
+                                                                                            Javlibrary          = $cache:settings.'web.sort.manualsearch.javlibrary'
+                                                                                            JavlibraryJa        = $cache:settings.'web.sort.manualsearch.javlibraryja'
+                                                                                            JavlibraryZh        = $cache:settings.'web.sort.manualsearch.javlibraryzh'
+                                                                                            MGStageJa           = $cache:settings.'web.sort.manualsearch.mgstageja'
+                                                                                            R18Dev              = $cache:settings.'web.sort.manualsearch.r18dev'
+                                                                                            Tokyohot            = $cache:settings.'web.sort.manualsearch.tokyohot'
+                                                                                            TokyohotJa          = $cache:settings.'web.sort.manualsearch.tokyohotja'
+                                                                                            TokyohotZh          = $cache:settings.'web.sort.manualsearch.tokyohotzh'
                                                                                             AllResults   = $true
                                                                                         }
 
@@ -3272,6 +3291,7 @@ $Pages += New-UDPage -Name "Settings" -Content {
                                     'Javlibrary' { 'English Javlibrary scraper' }
                                     'JavlibraryJa' { 'Japanese Javlibrary scraper' }
                                     'JavlibraryZh' { 'Chinese Javlibrary scraper' }
+                                    'R18Dev' { 'English R18.dev scraper'}
                                     'MgStageJa' { 'Japanese Mgstage scraper' }
                                     'TokyoHot' { 'English TokyoHot scraper' }
                                     'TokyoHotJa' { 'Japanese TokyoHot scraper' }
