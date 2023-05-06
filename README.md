@@ -143,10 +143,10 @@ After running `Javinizer -OpenGUI`, the PowerShell Universal process should run 
 
 ```
 # To run GUI
-docker run --name javinizer -p 8600:8600 -d jvlflame/javinizer:latest
+docker run --name javinizer -p 8600:8600 -d javinizer/javinizer:latest
 
 # To run CLI
-docker run --name javinizer -p 8600:8600 -d jvlflame/javinizer:latest-cli
+docker run --name javinizer -p 8600:8600 -d javinizer/javinizer:latest-cli
 
 # Optional
 # You will need to copy the jvSettings.json configuration from [here](./src/Javinizer/jvSettings.json) and write it to your path/to/jvSettings.json location
