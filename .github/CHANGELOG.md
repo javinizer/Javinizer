@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.13]
+
+### Fixed
+
+- Fixed missing TokyoHot for GUI
+- Fixed missing R18.dev option for GUI
+
+## [2.5.12]
+
+### Fixed
+
+- Added support for R18.dev
+- Updated Module update script to base on master repository
+
+### Fixed
+
+- Fixed missing `sort.renamefolderinplace` in GUI (#353)
+- Removed R18 support (#350)
+- Fixed javbus screenshot not being recognized (#349)
+- Fixed jav321 screenshots not being grabbed correctly (#346)
+
 ## [2.5.11]
 
 ### Fixed
