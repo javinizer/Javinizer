@@ -109,10 +109,10 @@ Here are some common commands that you can run with Javinizer:
 > Javinizer -Find "ABP-420" -Javlibrary
 
 # Run a command to find metadata and aggregate it according to your settings file
-> Javinizer -Find "ABP-420" -Javlibrary -R18 -DmmJa -Aggregated
+> Javinizer -Find "ABP-420" -Javlibrary -R18Dev -DmmJa -Aggregated
 
 # Run a command to find metadata, aggregate it according to your settings file, and output the nfo
-> Javinizer -Find "ABP-420" -Javlibrary -R18 -DmmJa -Aggregated -Nfo
+> Javinizer -Find "ABP-420" -Javlibrary -R18Dev -DmmJa -Aggregated -Nfo
 
 # Open the Javinizer settings configuration
 > Javinizer -OpenSettings
