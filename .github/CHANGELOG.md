@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.14]
+
+### Fixed
+
+- Fixed Aventertainment (#359)
+- Fixed issues with R18.dev in GUI
+- Reverted manual search setting to false by default
+- Updated Dockerfile to support python 3.9
+- Fixed JSON settings not showing on GUI (#325)
+
 ## [2.5.13]
 
 ### Fixed
