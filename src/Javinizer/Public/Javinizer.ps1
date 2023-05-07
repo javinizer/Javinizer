@@ -888,25 +888,22 @@ function Javinizer {
                 $CfSession = Test-JavlibraryCf -Settings $Settings -CfSession $CfSession
                 try {
                     if (!($Path)) {
-                        $Path = $Settings.'location.input'
-                        if ($null -eq $Path -or $Path -eq '') {
-                            $Path = (Get-Location).Path
-                        }
+                        $Path = $null -ne $Settings.'location.input' -and $Settings.'location.input' -ne '' ? $Settings.'location.input' : (Get-Location).Path
                     }
 
                     $javlibraryBaseUrl = $Settings.'javlibrary.baseurl'
-                    $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned_print.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
+                    $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
                         "method"                    = "GET"
                         "authority"                 = "$javlibraryBaseUrl"
                         "scheme"                    = "https"
-                        "path"                      = "/en/mv_owned_print.php"
+                        "path"                      = "/en/mv_owned.php"
                         "upgrade-insecure-requests" = "1"
                         "accept"                    = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
                         "sec-fetch-site"            = "none"
                         "sec-fetch-mode"            = "navigate"
                         "sec-fetch-user"            = "?1"
                         "sec-fetch-dest"            = "document"
-                        "accept-encoding"           = "gzip, deflate, br"
+                        "accept-encoding"           = "gzip, deflate"
                         "accept-language"           = "en-US,en;q=0.9"
                         "cookie"                    = "timezone=420; over18=18; userid=$($Settings.'javlibrary.cookie.userid'); session=$($Settings.'javlibrary.cookie.session')"
                     }
@@ -914,7 +911,7 @@ function Javinizer {
                     $ownedMovies = ($request.content -split '<td class="title">' | ForEach-Object { (($_ -split '<\/td>')[0] -split ' ')[0] })
                     $ownedMovies = $ownedMovies[2..($ownedMovies.Length - 1)]
                 } catch {
-                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when retrieving owned movies from [$javlibraryBaseUrl/en/mv_owned_print.php]"
+                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error occurred when retrieving owned movies from [$javlibraryBaseUrl/en/mv_owned.php]"
                 }
 
                 if ($null -ne $ownedMovies) {

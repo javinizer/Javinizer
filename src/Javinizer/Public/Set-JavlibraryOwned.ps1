@@ -13,7 +13,7 @@ function Set-JavlibraryOwned {
         [PSObject]$Session,
 
         [Parameter()]
-        [String]$BaseUrl = 'http://www.javlibrary.com'
+        [String]$BaseUrl = 'https://www.javlibrary.com'
     )
 
     process {
@@ -50,7 +50,7 @@ function Set-JavlibraryOwned {
                     "sec-fetch-mode"   = "cors"
                     "sec-fetch-dest"   = "empty"
                     "referer"          = $url
-                    "accept-encoding"  = "gzip, deflate, br"
+                    "accept-encoding"  = "gzip, deflate"
                     "accept-language"  = "en-US, en; q=0.9"
                     "cookie"           = "timezone=420; over18=18; userid=$UserId; session=$LoginSession"
                 } `
