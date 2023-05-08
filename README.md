@@ -15,7 +15,7 @@
   <a href="https://www.powershellgallery.com/packages/Javinizer/"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery&style=plastic"
   alt="PSGallery">
   </a>
-  <a href="https://hub.docker.com/r/jvlflame/javinizer">
+  <a href="https://hub.docker.com/r/javinizer/javinizer">
       <img src="https://img.shields.io/docker/pulls/javinizer/javinizer?style=plastic&color=red&label=docker"
       alt="Docker">
   </a>
