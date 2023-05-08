@@ -12,7 +12,7 @@ function Test-JavlibraryCf {
             Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -MaximumRetryCount 0 -Verbose:$false | Out-Null
         } catch {
             try {
-                $CfSession = Get-CfSession -cf_bm:$Settings.'javlibrary.cookie.cf_bm' -cf_clearance:$Settings.'javlibrary.cookie.cf_clearance' -UserAgent:$Settings.'javlibrary.browser.useragent' -BaseUrl $Settings.'javlibrary.baseurl'
+                $CfSession = Get-CfSession -__cf_bm:$Settings.'javlibrary.cookie.__cf_bm' -cf_clearance:$Settings.'javlibrary.cookie.cf_clearance' -UserAgent:$Settings.'javlibrary.browser.useragent' -BaseUrl $Settings.'javlibrary.baseurl'
                 # Testing with the newly created session sometimes fails if there is no wait time
                 Start-Sleep -Seconds 1
                 Invoke-WebRequest -Uri $Settings.'javlibrary.baseurl' -WebSession $CfSession -UserAgent $CfSession.UserAgent -MaximumRetryCount 0 -Verbose:$false | Out-Null
