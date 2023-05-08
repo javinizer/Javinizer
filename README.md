@@ -16,7 +16,7 @@
   alt="PSGallery">
   </a>
   <a href="https://hub.docker.com/r/jvlflame/javinizer">
-      <img src="https://img.shields.io/docker/pulls/jvlflame/javinizer?style=plastic&color=red&label=docker"
+      <img src="https://img.shields.io/docker/pulls/javinizer/javinizer?style=plastic&color=red&label=docker"
       alt="Docker">
   </a>
   <a href="https://discord.gg/Pds7xCpzpc">
