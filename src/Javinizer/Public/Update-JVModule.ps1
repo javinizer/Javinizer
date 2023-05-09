@@ -14,7 +14,7 @@ function Update-JVModule {
         [Switch]$GuiVersion,
 
         [Parameter(ParameterSetName = 'Update')]
-        [String]$UpdateUrl = 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/src/Javinizer/Misc/Invoke-Update.ps1'
+        [String]$UpdateUrl = 'https://raw.githubusercontent.com/javinizer/Javinizer/master/src/Javinizer/Misc/Invoke-Update.ps1'
     )
 
     process {
@@ -29,7 +29,7 @@ function Update-JVModule {
                         Show-JVToast -Type Info -Message "There are no updates for Javinizer available"
                     }
 
-                    $guiCheck = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -MaximumRetryCount 3
+                    $guiCheck = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/javinizer/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -MaximumRetryCount 3
                     $latestGuiVersion = ($guiCheck.Content | Select-String -Pattern "\`$cache\:guiVersion = '(.*)'").Matches.Groups[1].Value
 
                     if ([System.Version]$GuiVersion -lt [System.Version]$latestGuiVersion) {
