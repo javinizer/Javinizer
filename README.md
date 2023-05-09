@@ -33,7 +33,7 @@
   <a href="#features"><strong>Features</strong></a> •
   <a href="#getting-started"><strong>Getting Started</strong></a> •
   <a href="#example-output"><strong>Examples</strong></a> •
-  <a href="https://docs.jvlflame.net/" target="_blank"><strong>Documentation</strong></a>
+  <a href="https://javinizer.gitbook.io/docs" target="_blank"><strong>Documentation</strong></a>
 
 </p>
 
