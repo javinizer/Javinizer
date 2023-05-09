@@ -41,8 +41,7 @@ function Convert-JVString {
             '"',
             '<',
             '>',
-            '|',
-            "'"
+            '|'
         )
 
         if ($maxTitleLength) {
