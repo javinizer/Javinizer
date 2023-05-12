@@ -118,6 +118,11 @@ function Get-JVUrlLocation {
                         Source = 'tokyohot'
                     }
                 }
+            } elseif ($link -match 'r18.dev') {
+                $testUrlObject += [PSCustomObject]@{
+                    Url    = $link
+                    Source = 'r18dev'
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }
