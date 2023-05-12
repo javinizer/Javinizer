@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.15]
+
+### Fixed
+
+- Missing R18.dev in `Get-JVUrlLocation`
+- Fixed DMM sample video for VR searches
+- Fixed UpdateModule's URL location to the new url link
+- Removed apostrophe from being replaced (#351)
+- Updated `SetOwned` for Javlibrary
+
 ## [2.5.14]
 
 ### Fixed
