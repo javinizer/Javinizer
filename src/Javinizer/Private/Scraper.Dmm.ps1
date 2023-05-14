@@ -265,7 +265,7 @@ function Get-DmmActress {
         if ($Webrequest.Content -match '\/digital\/videoa\/-\/detail\/ajax-performer\/') {
             try {
                 $fullActressUrl = "https://www.dmm.co.jp" + ($Webrequest.Content | Select-String -Pattern '\/digital\/videoa\/-\/detail\/ajax-performer\/=\/data=.*\/').Matches.Groups[0].Value
-                $movieActress = ((Invoke-WebRequest -Uri $fullActressUrl -Verbose:$false).Content | Select-String -Pattern '\/article=actress\/id=(\d*)\/">(.*)<\/a>' -AllMatches).Matches
+                $movieActress = ((Invoke-WebRequest -Uri $fullActressUrl -Verbose:$false).Content | Select-String -Pattern '\/article=actress\/id=(\d*)[^>]+>(.*)<\/a>' -AllMatches).Matches
             } catch {
                 return
             }
@@ -283,7 +283,7 @@ function Get-DmmActress {
             $firstName = $null
             $engActressUrl = "https://www.dmm.co.jp/en/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
             $jaActressUrl = "https://www.dmm.co.jp/mono/dvd/-/list/=/article=actress/id=$($actress.Groups[1].Value)/"
-            $actressName = $actress.Groups[1].Value
+            $actressName = $actress.Groups[2].Value
             if ($actressName -match '[\u3040-\u309f]|[\u30a0-\u30ff]|[\uff66-\uff9f]|[\u4e00-\u9faf]') {
                 if ($ScrapeActress) {
                     $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -319,13 +319,20 @@ function Get-DmmActress {
                         $lastName = ($engActressName -split ' ')[0]
                         $firstName = ($engActressName -split ' ')[1]
                     }
+
+
+                    try {
+                        $thumbUrl = ((Invoke-WebRequest -Uri "https://actress.dmm.co.jp/-/detail/=/actress_id=$($actress.Groups[1].Value)/" -WebSession $session).Content | Select-String -Pattern '<img.*src="(.*actjpgs[^"]+)"').Matches.Groups[1].Value
+                    } catch {
+                        $thumbUrl = $null
+                    }
                 }
 
                 $movieActressObject += [PSCustomObject]@{
                     LastName     = $lastName
                     FirstName    = $firstName
                     JapaneseName = ($actressName -replace '（.*）', '').Trim()
-                    ThumbUrl     = $null
+                    ThumbUrl     = $thumbUrl
                 }
             } else {
                 if ($ScrapeActress) {

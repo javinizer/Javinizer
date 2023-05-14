@@ -258,10 +258,9 @@ function Get-R18DevActress {
 
         if ($Webrequest.actresses) {
             for ($x = 0; $x -lt $Webrequest.actresses.count; $x++) {
-                if (!$Webrequest.actresses[$x].image_url.StartsWith('http')) {
+                $ThumbUrl = $Webrequest.actresses[$x].image_url
+                if ($null -ne $ThumbUrl -and !$ThumbUrl.StartsWith('http')) {
                     $ThumbUrl = 'https://pics.dmm.co.jp/mono/actjpgs/' + $Webrequest.actresses[$x].image_url
-                } else {
-                    $ThumbUrl = $Webrequest.actresses[$x].image_url
                 }
 
                 $movieActressObject += [PSCustomObject]@{

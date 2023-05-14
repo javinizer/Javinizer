@@ -10,7 +10,7 @@
   "location.log": "",
   "scraper.movie.aventertainment": false,
   "scraper.movie.aventertainmentja": false,
-  "scraper.movie.r18dev": false,
+  "scraper.movie.r18dev": true,
   "scraper.movie.dmm": false,
   "scraper.movie.dmmja": true,
   "scraper.movie.jav321ja": false,
@@ -114,16 +114,17 @@
     "title"
   ],
   "sort.metadata.priority.actress": [
-    "javlibrary",
     "r18dev",
+    "dmmja",
+    "javlibrary",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.alternatetitle": ["javlibraryja", "dmmja"],
   "sort.metadata.priority.coverurl": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -136,14 +137,14 @@
     "aventertainment"
   ],
   "sort.metadata.priority.director": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.genre": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "javbus",
     "mgstageja",
     "aventertainment"
