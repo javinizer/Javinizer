@@ -1084,6 +1084,10 @@ function Javinizer {
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
                         foreach ($movie in $javMovies) {
+                            if (!$MoveToFolder -and ($DestinationPath -ne $movie.Directory)) {
+                                $DestinationPath = $movie.Directory
+                            }
+
                             if ($Settings.'sort.metadata.nfo.mediainfo') {
                                 $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                             }
