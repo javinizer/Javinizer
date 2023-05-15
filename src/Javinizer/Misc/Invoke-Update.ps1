@@ -80,9 +80,12 @@ $newSettings.PSObject.Properties | ForEach-Object {
     if ($origSettings.PSObject.Properties.Name -contains $_.Name) {
         $newSettings."$($_.Name)" = ($origSettings.PSObject.Properties | Where-Object { $_.Name -eq $property.Name })[0].Value
         if ($_.Name.StartsWith("sort.metadata.priority")) {
-            $elementIndex = $_.Value.IndexOf(($_.Value | Where-Object { $_ -eq "r18" }))
-            if ($elementIndex -ge 0) {
-                $_.Value[$elementIndex] = "r18dev"
+            $filteredValues = ($_.Value | Where-Object { $_ -eq "r18" })
+            if ($filteredValues.Count -gt 0) {
+                foreach ($obj in $filteredValues) {
+                    $elementIndex = $_.Value.IndexOf($obj)
+                    $_.Value[$elementIndex] = "r18dev"
+                }
             }
             $newSettings."$($_.Name)" = $_.Value | Where-Object { $_ -in $supportedScrapers }
         }
