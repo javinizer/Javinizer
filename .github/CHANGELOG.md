@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.17]
+
+### Fixed
+
+- Fixed an issue with scraping actress on DmmJa for actresses
+- Allow continuation of scraping even when some actress thumbnails returned 404.
+- Fixed a bug on Invoke-Update
+
 ## [2.5.16]
 
 ### Fixed
