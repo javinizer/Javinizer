@@ -307,25 +307,29 @@ public class ExtendedWebClient : WebClient {
                                 $newName = ($actress.name -split ' ') -join '_'
                                 $actressThumbPath = Join-Path -Path $sortData.ActorFolderPath -ChildPath "$newName.jpg"
 
-                                if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
-                                    if ($Force) {
-                                        if (Test-Path -LiteralPath $actressThumbPath) {
-                                            Remove-Item -LiteralPath $actressThumbPath -Force
-                                        }
-                                        $webClient.DownloadFile($actress.thumb, $actressThumbPath)
-                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
-                                    } elseif (!(Test-Path -LiteralPath $actressThumbPath)) {
-                                        $webClient.DownloadFile($actress.thumb, $actressThumbPath)
-                                        Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
-                                    }
-                                } else {
-                                    if (!(Test-Path -LiteralPath $actressThumbPath)) {
-                                        Start-Sleep -Seconds 2
-                                        if (!(Test-Path -LiteralPath $actressThumbPath)) {
+                                try {
+                                    if ($sortData.PartNumber -eq 0 -or $sortData.PartNumber -eq 1) {
+                                        if ($Force) {
+                                            if (Test-Path -LiteralPath $actressThumbPath) {
+                                                Remove-Item -LiteralPath $actressThumbPath -Force
+                                            }
+                                            $webClient.DownloadFile($actress.thumb, $actressThumbPath)
+                                            Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
+                                        } elseif (!(Test-Path -LiteralPath $actressThumbPath)) {
                                             $webClient.DownloadFile($actress.thumb, $actressThumbPath)
                                             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
                                         }
+                                    } else {
+                                        if (!(Test-Path -LiteralPath $actressThumbPath)) {
+                                            Start-Sleep -Seconds 2
+                                            if (!(Test-Path -LiteralPath $actressThumbPath)) {
+                                                $webClient.DownloadFile($actress.thumb, $actressThumbPath)
+                                                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] [ActressImg - $($actress.thumb)] downloaded to path [$actressThumbPath]"
+                                            }
+                                        }
                                     }
+                                } catch {
+                                    Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Action 'Continue' -Message "[$($Data.Id)] [$($MyInvocation.MyCommand.Name)] Error occurred when downloading actress image files: $PSItem"
                                 }
                             }
                         }

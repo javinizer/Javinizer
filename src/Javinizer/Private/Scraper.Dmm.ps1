@@ -272,7 +272,7 @@ function Get-DmmActress {
         } else {
             try {
                 $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
-                $movieActress = ($actressBlock | Select-String -Pattern ' >(.*)</a>' -AllMatches).Matches
+                $movieActress = ($actressBlock | Select-String -Pattern '<a.*href=".*id=(\d*)[^>]+>(.*)<\/a>' -AllMatches).Matches
             } catch {
                 return
             }
