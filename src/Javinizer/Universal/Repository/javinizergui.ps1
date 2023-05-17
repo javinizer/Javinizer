@@ -654,7 +654,7 @@ function Show-JVCfModal {
 
     Show-UDModal -FullWidth -MaxWidth sm -Persistent -Content {
         New-UDTypography -Text 'Cloudflare anti-bot protection was detected on JAVLibrary. Manually access JAVLibrary and copy its site cookie values and your browser user-agent into this screen.
-        See https://github.com/jvlflame/Javinizer/issues/169 for more detailed instructions. If you want to ignore this error, disable all JAVLibrary scrapers and re-sort.'
+        See https://github.com/javinizer/Javinizer/issues/169 for more detailed instructions. If you want to ignore this error, disable all JAVLibrary scrapers and re-sort.'
 
         New-UDButton -Text 'Navigate to javlibrary' -Variant text -OnClick {
             Invoke-UDRedirect -OpenInNewWindow -Url 'https://javlibrary.com/'
@@ -941,10 +941,10 @@ function New-JVAppBar {
                 Invoke-UDRedirect -Url '/about'
             }
             New-UDListItem -Label "Docs" -Icon $iconBook -OnClick {
-                Invoke-UDRedirect -Url 'https://docs.jvlflame.net' -OpenInNewWindow
+                Invoke-UDRedirect -Url 'https://javinizer.gitbook.io/docs' -OpenInNewWindow
             }
             New-UDListItem -Label "GitHub" -Icon $iconGithub -OnClick {
-                Invoke-UDRedirect -Url 'https://github.com/jvlflame/Javinizer' -OpenInNewWindow
+                Invoke-UDRedirect -Url 'https://github.com/javinizer/Javinizer' -OpenInNewWindow
             }
         }
     }
@@ -3260,13 +3260,13 @@ $Pages += New-UDPage -Name "Settings" -Content {
 
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                             New-UDButton -Text 'View Javinizer docs' -Variant text -FullWidth -OnClick {
-                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://docs.jvlflame.net'
+                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://javinizer.gitbook.io/docs'
                             }
                         }
 
                         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 6 -Content {
                             New-UDButton -Text 'View default settings' -Variant text -FullWidth -OnClick {
-                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer/blob/master/src/Javinizer/jvSettings.json'
+                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/javinizer/Javinizer/blob/master/src/Javinizer/jvSettings.json'
                             }
                         }
                     }
@@ -4109,13 +4109,13 @@ $Pages += New-UDPage -Name 'About' -Content {
                             New-UDListItem -Label $cache:guiVersion -SubTitle 'GUI Version'
                             New-UDListItem -Label $cache:javinizerInfo.Prerelease -SubTitle 'Prerelease'
                             New-UDListItem -Label $cache:javinizerInfo.Project -SubTitle 'Project' -OnClick {
-                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer'
+                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/javinizer/Javinizer'
                             }
                             New-UDListItem -Label $cache:javinizerInfo.License -SubTitle 'License' -OnClick {
-                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer/blob/master/LICENSE'
+                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/javinizer/Javinizer/blob/master/LICENSE'
                             }
                             New-UDListItem -Label $cache:javinizerInfo.ReleaseNotes -SubTitle 'ReleaseNotes' -OnClick {
-                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/jvlflame/Javinizer/blob/master/.github/CHANGELOG.md'
+                                Invoke-UDRedirect -OpenInNewWindow -Url 'https://github.com/javinizer/Javinizer/blob/master/.github/CHANGELOG.md'
                             }
                         }
                     }
@@ -4125,7 +4125,7 @@ $Pages += New-UDPage -Name 'About' -Content {
 
         New-UDGrid -Item -ExtraSmallSize 12 -SmallSize 12 -MediumSize 12 -Content {
             New-UDCard -Title 'ChangeLog' -Content {
-                $changeLog = (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/.github/CHANGELOG.md' -MaximumRetryCount 3 -RetryIntervalSec 3).Content
+                $changeLog = (Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/javinizer/Javinizer/master/.github/CHANGELOG.md' -MaximumRetryCount 3 -RetryIntervalSec 3).Content
                 New-UDCodeEditor -ReadOnly -Theme vs-dark -Width '155ch' -Height '100ch' -Language markdown -Code $changeLog
             }
         }

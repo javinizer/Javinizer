@@ -131,7 +131,7 @@ You will most likely want to persist settings data when running Javinizer within
 docker run --name javinizer -p 8600:8600 -v path/to/jvSettings.json:/home/jvSettings.json -d javinizer/javinizer:latest-cli
 ```
 
-To persist your settings file, create a copy of the [settings file](https://github.com/jvlflame/Javinizer/blob/master/src/Javinizer/jvSettings.json) and bind mount the file:&#x20;
+To persist your settings file, create a copy of the [settings file](https://github.com/javinizer/Javinizer/blob/master/src/Javinizer/jvSettings.json) and bind mount the file:&#x20;
 
 * `/home/jvSettings.json`
 

@@ -48,7 +48,7 @@ If you are using Docker Desktop with Hyper-V, you will want to make use of "File
 With the example path of `C:\javinizer\docker`, I can now run the following command to persist the PowerShell Universal appdata:
 
 ```
-docker run --name Javinizer -p 8600:8600 -v C:/javinizer/docker/jvSettings.json:/home/jvSettings.json jvlflame/javinizer:latest
+docker run --name Javinizer -p 8600:8600 -v C:/javinizer/docker/jvSettings.json:/home/jvSettings.json javinizer/javinizer:latest
 ```
 
 ### Unraid Example

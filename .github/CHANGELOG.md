@@ -119,7 +119,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Timeout configuration for trailer/screenshot download requests (in ms) (#286)
-- CLI docker images (tag: `jvlflame/javinizer:latest-cli)
+- CLI docker images (tag: `javinizer/javinizer:latest-cli)
 
 ### Fixed
 

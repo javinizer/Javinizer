@@ -8,8 +8,8 @@
 <br>
 
 <p align="center">
-  <a href="https://github.com/jvlflame/Javinizer/releases">
-    <img src="https://img.shields.io/github/v/release/jvlflame/Javinizer?include_prereleases&style=plastic&label=release"
+  <a href="https://github.com/javinizer/Javinizer/releases">
+    <img src="https://img.shields.io/github/v/release/javinizer/Javinizer?include_prereleases&style=plastic&label=release"
          alt="GitHub">
   </a>
   <a href="https://www.powershellgallery.com/packages/Javinizer/"><img src="https://img.shields.io/powershellgallery/dt/javinizer?color=red&label=psgallery&style=plastic"
@@ -23,8 +23,8 @@
     <img src="https://img.shields.io/discord/608449512352120834?color=brightgreen&style=plastic&label=discord"
     alt="Discord">
   </a>
-    <a href="https://github.com/jvlflame/Javinizer/compare/dev">
-    <img src="https://img.shields.io/github/commits-since/jvlflame/javinizer/latest/dev?style=plastic"
+    <a href="https://github.com/javinizer/Javinizer/compare/dev">
+    <img src="https://img.shields.io/github/commits-since/javinizer/javinizer/latest/dev?style=plastic"
     alt="Commits">
   </a>
 </p>
@@ -38,8 +38,8 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo.gif" width="1280">
-  <img src="https://raw.githubusercontent.com/jvlflame/Javinizer/master/media/demo-gui.jpg" width="1280">
+  <img src="https://raw.githubusercontent.com/javinizer/Javinizer/master/media/demo.gif" width="1280">
+  <img src="https://raw.githubusercontent.com/javinizer/Javinizer/master/media/demo-gui.jpg" width="1280">
 </p>
 
 <p align="center">
@@ -58,7 +58,7 @@
 
 ## Getting Started
 
-View the full Javinizer installation and usage documentation on [GitBook](https://docs.jvlflame.net/).
+View the full Javinizer installation and usage documentation on [GitBook](https://javinizer.gitbook.io/docs/).
 
 ### Prerequisites
 

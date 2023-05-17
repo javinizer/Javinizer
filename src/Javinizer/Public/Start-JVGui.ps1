@@ -71,7 +71,7 @@ function Start-JVGui {
     }
 
     try {
-        $request = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/jvlflame/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -MaximumRetryCount 3 -Verbose:$false -ErrorAction SilentlyContinue
+        $request = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/javinizer/Javinizer/master/src/Javinizer/Universal/Repository/javinizergui.ps1' -MaximumRetryCount 3 -Verbose:$false -ErrorAction SilentlyContinue
         $currentVersion = ((((Get-Content -Path $psuGuiScriptPath) -split "`n")[0] | Select-String -Pattern "'(.*)'").Matches.Groups[1].Value -split '-')[0]
         $currentRevision = ((((Get-Content -Path $psuGuiScriptPath) -split "`n")[0] | Select-String -Pattern "'(.*)'").Matches.Groups[1].Value -split '-')[1]
         $webVersion = (((($request.Content) -split "`n")[0] | Select-String -Pattern "'(.*)'").Matches.Groups[1].Value -split '-')[0]
