@@ -137,7 +137,12 @@ function Get-Jav321Description {
     process {
 
         try {
-            $description = (($Webrequest | Select-String -Pattern '<div class="col-md-12">(.*)<\/div><\/div><\/div><\/div><script async src=').Matches.Groups[1].Value -replace '</div></div><div class="row"><div class="col-md-12">', '').Trim()
+            $description = ($Webrequest | Select-String -Pattern '<div class="col-md-12">(.*)<\/div><\/div><\/div><\/div><script async src=').Matches
+            if ($null -eq $description) {
+                $description = ($Webrequest | Select-String -Pattern '<div class="row"><div class="col-md-12"><\/div><\/div><div class="row"><div class="col-md-12">(.*?)<').Matches.Groups[1].Value.Trim()
+            } else {
+                $description = ($description.Groups[1].Value -replace '</div></div><div class="row"><div class="col-md-12">', '').Trim()
+            }
         } catch {
             return
         }
