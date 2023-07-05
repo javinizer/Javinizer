@@ -17,4 +17,4 @@ Javinizer currently supports the following scraper sources:
 
 Javinizer currently lives on [GitHub](https://github.com/javinizer/Javinizer).
 
-<figure><img src=".gitbook/assets/demo.gif" alt=""><figcaption></figcaption></figure>
+<figure><img src="../media/demo.gif" alt=""><figcaption></figcaption></figure>

@@ -18,7 +18,7 @@ Download the versions appropriate for the operating system you are installing on
 
 PowerShell Core (Version 6+) is required for use of the Javinizer module. I recommend using the latest stable release of PowerShell 7.
 
-[You can find the download/installation binaries for PowerShell 7 here.](https://github.com/PowerShell/PowerShell/releases/latest)&#x20;
+[You can find the download/installation binaries for PowerShell 7 here.](https://github.com/PowerShell/PowerShell/releases/latest)
 
 ### Python 3 (Required)
 
@@ -111,10 +111,14 @@ Javinizer -v
 
 ## Docker
 
-Run the latest cli docker build (CLI tags are labeled as `[version]-cli`).
+Note that the CLI docker build versions are meant to give you a Powershell interpreter with Javinizer pre-installed. You would then need to refer the [CLI usage guide](../using-javinizer/using-the-cli/) to execute the appropriate commands. Also note that you will now need to refer to mount points inside the container. For example, if you mounted `-v /path/to/media:/mnt` then you will need to refer `/mnt` and not `/path/to/media`.\
+\
+If you want to run it on the NAS without using the CLI, it's recommended to use the [Web GUI ](install-javinizer-web-gui.md)version instead.
+
+You can run the latest cli docker build (CLI tags are labeled as `[version]-cli`).
 
 ```
-docker run -p 8600:8600 --name javinizer -d javinizer/javinizer:latest-cli
+docker run --name javinizer -it javinizer/javinizer:latest-cli
 ```
 
 ### Persisting Data
@@ -127,11 +131,13 @@ You will most likely want to persist settings data when running Javinizer within
 
 ### Docker Run Example
 
+The following command will provide you with a Powershell interpreter which you can then use to execute Javinizer's CLI commands with your media mapped to `/mnt` while keeping the persistency of your `jvSettings.json`.
+
 ```
-docker run --name javinizer -p 8600:8600 -v path/to/jvSettings.json:/home/jvSettings.json -d javinizer/javinizer:latest-cli
+docker run --name javinizer -v path/to/media:/mnt -v path/to/jvSettings.json:/home/jvSettings.json -it javinizer/javinizer:latest-cli
 ```
 
-To persist your settings file, create a copy of the [settings file](https://github.com/javinizer/Javinizer/blob/master/src/Javinizer/jvSettings.json) and bind mount the file:&#x20;
+To persist your settings file, create a copy of the [settings file](../../src/Javinizer/jvSettings.json) and bind mount the file:
 
 * `/home/jvSettings.json`
 
