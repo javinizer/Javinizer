@@ -12,6 +12,13 @@ function Get-DmmUrl {
     )
 
     process {
+        $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+        $cookie = New-Object System.Net.Cookie
+        $cookie.Name = 'age_check_done'
+        $cookie.Value = '1'
+        $cookie.Domain = 'dmm.co.jp'
+        $session.Cookies.Add($cookie)
+
         # The digital/videoa URL is not being caught by the html for movie IDs matching '0001 - 0009'
         # Convert the movie Id (ID-###) to content Id (ID00###) to match dmm naming standards
         if (!($Strict)) {
@@ -30,7 +37,7 @@ function Get-DmmUrl {
 
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -WebSession $session -Method Get -Verbose:$false
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
         }
