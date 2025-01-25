@@ -9,10 +9,10 @@ Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 # List of PowerShell Modules required for the build
 $modulesToInstall = [System.Collections.ArrayList]::new()
 # https://github.com/pester/Pester
-$null = $modulesToInstall.Add(([PSCustomObject]@{
-            ModuleName    = 'Pester'
-            ModuleVersion = '4.9.0'
-        }))
+# $null = $modulesToInstall.Add(([PSCustomObject]@{
+#             ModuleName    = 'Pester'
+#             ModuleVersion = '4.9.0'
+#         }))
 # https://github.com/nightroman/Invoke-Build
 $null = $modulesToInstall.Add(([PSCustomObject]@{
             ModuleName    = 'InvokeBuild'
