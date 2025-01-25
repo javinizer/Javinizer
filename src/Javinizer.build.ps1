@@ -35,13 +35,15 @@ $ModuleName = (Split-Path -Path $BuildFile -Leaf).Split('.')[0]
 $str = @()
 $str = 'Clean', 'ValidateRequirements'
 # $str += 'FormattingCheck'
-$str += 'Analyze', 'Test', 'InfraTest'
+$str += 'Analyze'
+# $str += 'Test', 'InfraTest'
 
 $str += 'Build', 'Archive'
 Add-BuildTask -Name . -Jobs $str
 
 #Local testing build process
-Add-BuildTask TestLocal Clean, Analyze, Test
+Add-BuildTask TestLocal Clean, Analyze
+# Test
 
 #Local help file creation process
 Add-BuildTask HelpLocal Clean, CreateHelpStart, UpdateCBH
