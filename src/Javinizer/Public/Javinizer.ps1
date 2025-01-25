@@ -1040,8 +1040,8 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
-                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-10)"
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 3) {
+                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-3)"
                     }
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
