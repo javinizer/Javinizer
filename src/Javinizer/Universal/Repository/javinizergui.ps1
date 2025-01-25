@@ -1,4 +1,4 @@
-$cache:guiVersion = '2.5.17-1'
+$cache:guiVersion = '2.6.0-1'
 
 # Define Javinizer module file paths
 $cache:modulePath = (Get-InstalledModule -Name Javinizer).InstalledLocation
@@ -679,7 +679,6 @@ function Show-JVCfModal {
                 $cf_chl_prog = (Get-UDElement -Id 'textbox-javlibrary-cfchlprog').value
                 $cf_clearance = (Get-UDElement -Id 'textbox-javlibrary-cfclearance').value
                 $UserAgent = (Get-UDElement -Id 'textbox-javlibrary-useragent').value
-                $cache:cfSession = Get-CfSession -cf_chl_2 $cf_chl_2 -cf_chl_prog $cf_chl_prog -cf_clearance $cf_clearance -UserAgent $useragent -BaseUrl $cache:settings.'javlibrary.baseurl'
             } catch {
                 Show-JVToast -Type Error -Message "$PSItem"
                 Hide-UDModal
@@ -792,41 +791,6 @@ function Invoke-JavinizerWeb {
 
     process {
         if (!($cache:inProgress)) {
-            # Check if javlibrary cloudflare protection is enabled
-            if ($cache:settings.'scraper.movie.javlibrary' -or $cache:settings.'scraper.movie.javlibraryja' -or $cache:settings.'scraper.movie.javlibraryzh') {
-                if (-not ($cache:cfSession)) {
-                    try {
-                        Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -Verbose:$false | Out-Null
-                    } catch {
-                        try {
-                            # Test with persisted settings
-                            if ($cache:settings.'javlibrary.cookie.cf_chl_2' -and $cache:settings.'javlibrary.cookie.cf_chl_prog' -and $cache:settings.'javlibrary.cookie.cf_clearance' -and $cache:settings.'javlibrary.browser.useragent') {
-                                $cache:cfSession = Get-CfSession -cf_chl_2:$cache:settings.'javlibrary.cookie.cf_chl_2' -cf_chl_prog:$cache:settings.'javlibrary.cookie.cf_chl_prog' -cf_clearance:$cache:settings.'javlibrary.cookie.cf_clearance' `
-                                    -UserAgent:$cache:settings.'javlibrary.browser.useragent' -BaseUrl $cache:settings.'javlibrary.baseurl'
-
-                                # Testing with the newly created session sometimes fails if there is no wait time
-                                Start-Sleep -Seconds 1
-
-                                Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
-                            } else {
-                                Show-JVCfModal
-                                return
-                            }
-                        } catch {
-                            Show-JVCfModal
-                            return
-                        }
-                    }
-                } else {
-                    try {
-                        Invoke-WebRequest -Uri $cache:settings.'javlibrary.baseurl' -WebSession $cache:cfSession -UserAgent $cache:cfSession.UserAgent -Verbose:$false | Out-Null
-                    } catch {
-                        Show-JVCfModal
-                        return
-                    }
-                }
-            }
-
             Show-JVProgressModal -Sort
 
             if ($interactive) {

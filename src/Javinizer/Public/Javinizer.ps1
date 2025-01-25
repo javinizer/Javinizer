@@ -393,11 +393,6 @@ function Javinizer {
         [Parameter(ParameterSetName = 'Info')]
         [Switch]$AllResults,
 
-        [Parameter(ParameterSetName = 'Info')]
-        [Parameter(ParameterSetName = 'Path')]
-        [Parameter(ParameterSetName = 'Javlibrary')]
-        [PSObject]$CfSession,
-
         [Parameter(ParameterSetName = 'Emby')]
         [Switch]$SetEmbyThumbs,
 
@@ -701,10 +696,6 @@ function Javinizer {
             }
 
             'Info' {
-                if (($Javlibrary -or $JavlibraryZh -or $JavlibraryJa) -or ($Find -like '*javlibrary*' -or $Find -like '*g46e*' -or $Find -like '*m45e*')) {
-                    $CfSession = Test-JavlibraryCf -Settings $Settings -CfSession $CfSession
-                }
-
                 if ($Find -match 'https?:\/\/') {
                     $urlObject = Get-JVUrlLocation -Url $Find -Settings $Settings
                     $data = foreach ($item in $urlObject) {
@@ -756,7 +747,7 @@ function Javinizer {
                     $data = Get-JVData -Id $Find -Javlibrary:$Javlibrary -JavlibraryJa:$JavlibraryJa -JavlibraryZh:$JavlibraryZh -Dmm:$Dmm `
                         -DmmJa:$DmmJa -R18Dev:$R18Dev -Javbus:$Javbus -JavbusJa:$JavbusJa -JavbusZh:$JavbusZh -Jav321Ja:$Jav321Ja -JavlibraryBaseUrl $Settings.'javlibrary.baseurl' `
                         -MgstageJa:$MgstageJa -Aventertainment:$Aventertainment -AventertainmentJa:$AventertainmentJa -Tokyohot:$Tokyohot -TokyohotJa:$TokyohotJa -TokyohotZh:$TokyohotZh -UncensorCsvPath $uncensorCsvPath -Strict:$Strict `
-                        -Javdb:$Javdb -JavdbZh:$JavdbZh -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults
+                        -Javdb:$Javdb -JavdbZh:$JavdbZh -JavdbSession:$Settings.'javdb.cookie.session' -AllResults:$AllResults
                 }
 
                 if ($Aggregated) {
@@ -885,14 +876,13 @@ function Javinizer {
             }
 
             'Javlibrary' {
-                $CfSession = Test-JavlibraryCf -Settings $Settings -CfSession $CfSession
                 try {
                     if (!($Path)) {
                         $Path = $null -ne $Settings.'location.input' -and $Settings.'location.input' -ne '' ? $Settings.'location.input' : (Get-Location).Path
                     }
 
                     $javlibraryBaseUrl = $Settings.'javlibrary.baseurl'
-                    $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned.php" -WebSession $CfSession -UserAgent $CfSession.UserAgent -Verbose:$false -Headers @{
+                    $request = Invoke-WebRequest -Uri "$javlibraryBaseUrl/en/mv_owned.php" -Verbose:$false -Headers @{
                         "method"                    = "GET"
                         "authority"                 = "$javlibraryBaseUrl"
                         "scheme"                    = "https"
@@ -940,7 +930,7 @@ function Javinizer {
                     $index = 1
                     foreach ($movieId in $unowned) {
                         Write-Progress -Id 1 -Activity "Javinizer" -Status "Remaining Jobs: $($unowned.Count-$index)" -PercentComplete ($index / $unowned.Count * 100) -CurrentOperation "Setting owned: $movieId"
-                        Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -LoginSession $Settings.'javlibrary.cookie.session' -Session:$CfSession -BaseUrl $javlibraryBaseUrl
+                        Set-JavlibraryOwned -Id $movieId -UserId $Settings.'javlibrary.cookie.userid' -LoginSession $Settings.'javlibrary.cookie.session' -BaseUrl $javlibraryBaseUrl
                         $index++
                     }
                 } else {
@@ -957,10 +947,6 @@ function Javinizer {
             }
 
             'Path' {
-                if (!$IsThread -and ($Settings.'scraper.movie.javlibrary' -or $Settings.'scraper.movie.javlibraryja' -or $Settings.'scraper.movie.javlibraryzh')) {
-                    $CfSession = Test-JavlibraryCf -Settings $Settings -CfSession $CfSession
-                }
-
                 if (!($Path)) {
                     try {
                         # Default path to location.input in settings if not specified
@@ -1008,7 +994,7 @@ function Javinizer {
                         $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                     }
 
-                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
+                    $javData = Get-JVData -Url $Url -Settings $Settings -UncensorCsvPath $uncensorCsvPath -JavdbSession:$Settings.'javdb.cookie.session'
                     if ($null -ne $javData) {
                         $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -FileName $javMovies.BaseName -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
                         if ($javAggregatedData.NullFields -eq '') {
@@ -1040,8 +1026,8 @@ function Javinizer {
                         }
                     }
                 } else {
-                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 10) {
-                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-10)"
+                    if ($Settings.'throttlelimit' -lt 1 -or $Settings.'throttlelimit' -gt 3) {
+                        Write-JVLog -Write $script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Setting 'scraper.throttlelimit' must be within accepted values (1-3)"
                     }
 
                     if (!($PSboundParameters.ContainsKey('IsThread'))) {
@@ -1052,7 +1038,7 @@ function Javinizer {
                                     Import-Module $using:jvModulePath
                                     $jvMovie = $_
                                     $Settings = $using:Settings
-                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -WebTempPath:$using:WebTempPath -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    $jvData = Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -WebTempPath:$using:WebTempPath -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                                     Write-Output $jvData
                                 }
                             } else {
@@ -1060,7 +1046,7 @@ function Javinizer {
                                     Import-Module $using:jvModulePath
                                     $jvMovie = $_
                                     $Settings = $using:Settings
-                                    Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                    Javinizer -IsThread -IsWeb -IsWebType $using:IsWebType -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                                 }
                             }
 
@@ -1069,7 +1055,7 @@ function Javinizer {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 $Settings = $using:Settings
-                                $jvData = Javinizer -IsThread -Search -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                $jvData = Javinizer -IsThread -Search -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                                 Write-Output $jvData
                             }
                         } else {
@@ -1077,12 +1063,23 @@ function Javinizer {
                                 Import-Module $using:jvModulePath
                                 $jvMovie = $_
                                 $Settings = $using:Settings
-                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -CfSession:$using:CfSession -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
+                                Javinizer -IsThread -Path $jvMovie.FullName -DestinationPath $using:DestinationPath -Set $using:Set -MoveToFolder:$Settings.'sort.movetofolder' -RenameFile:$Settings.'sort.renamefile' -Update:$using:Update -SettingsPath:$using:SettingsPath -Strict:$using:Strict -Force:$using:Force -Verbose:$using:VerbosePreference -Debug:$using:DebugPreference
                             }
                         }
                     }
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
+                        $sleepSeconds = $Settings.'sleep'
+
+                        if (!($sleepSeconds)) {
+                            # Default sleep to 5 seconds if not specified
+                            $sleepSeconds = 5
+                        }
+
+                        if ($sleepSeconds -gt 0) {
+                            Start-Sleep -Seconds $sleepSeconds
+                        }
+
                         foreach ($movie in $javMovies) {
                             if (!$MoveToFolder -and ($DestinationPath -ne $movie.Directory)) {
                                 $DestinationPath = $movie.Directory
@@ -1092,7 +1089,7 @@ function Javinizer {
                                 $mediaInfo = Get-JVMediaInfo -Path $movie.FullName
                             }
 
-                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -Session:$CfSession -JavdbSession:$Settings.'javdb.cookie.session'
+                            $javData = Get-JVData -Id $movie.Id -Settings $Settings -UncensorCsvPath $uncensorCsvPath -Strict:$Strict -JavdbSession:$Settings.'javdb.cookie.session'
                             $javAggregatedData = $javData | Get-JVAggregatedData -Settings $Settings -FileName $movie.BaseName -MediaInfo $mediaInfo | Test-JVData -RequiredFields $Settings.'sort.metadata.requiredfield'
 
                             if ($PSBoundParameters.ContainsKey('IsWeb') -or $PSBoundParameters.ContainsKey('Search')) {

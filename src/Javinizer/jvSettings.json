@@ -1,5 +1,6 @@
 {
-  "throttlelimit": 3,
+  "throttlelimit": 1,
+  "sleep": 3,
   "location.input": "",
   "location.output": "",
   "location.thumbcsv": "",
@@ -19,7 +20,7 @@
   "scraper.movie.javbuszh": false,
   "scraper.movie.javdb": false,
   "scraper.movie.javdbzh": false,
-  "scraper.movie.javlibrary": true,
+  "scraper.movie.javlibrary": false,
   "scraper.movie.javlibraryja": false,
   "scraper.movie.javlibraryzh": false,
   "scraper.movie.mgstageja": false,
@@ -150,29 +151,29 @@
     "aventertainment"
   ],
   "sort.metadata.priority.id": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.contentid": ["r18dev", "dmmja"],
   "sort.metadata.priority.label": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.maker": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.releasedate": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -180,8 +181,8 @@
   ],
   "sort.metadata.priority.rating": ["dmmja", "javlibrary", "mgstageja"],
   "sort.metadata.priority.runtime": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "dmmja",
     "javbus",
     "mgstageja",
@@ -189,16 +190,16 @@
   ],
   "sort.metadata.priority.series": ["r18dev", "mgstageja"],
   "sort.metadata.priority.screenshoturl": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "dmmja",
     "javbus",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.title": [
-    "javlibrary",
     "r18dev",
+    "javlibrary",
     "javbus",
     "mgstageja",
     "aventertainment"

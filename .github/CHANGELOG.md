@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.6.0]
+
+### Added
+
+- Added setting `sleep` to add a delay between scraper threads
+
+### Changed
+
+- Reduced throttlelimit from 10 -> 3
+- Added custom UserAgent identifier to r18.dev scraper requests
+- Set JAVLibrary scrapers to disabled by default
+- Set throttlelimit to 1 by default
+
+### Removed
+
+- Removed all cloudflare validation from JAVLibrary scraper
+
+## [2.5.18]
+
+### Fixed
+
+- Fixed age verification error on DmmJa
+
 ## [2.5.17]
 
 ### Fixed
