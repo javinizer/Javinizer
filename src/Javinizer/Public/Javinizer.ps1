@@ -1069,6 +1069,17 @@ function Javinizer {
                     }
 
                     if ($PSboundParameters.ContainsKey('IsThread')) {
+                        $sleepSeconds = $Settings.'sleep'
+
+                        if (!($sleepSeconds)) {
+                            # Default sleep to 5 seconds if not specified
+                            $sleepSeconds = 5
+                        }
+
+                        if ($sleepSeconds -gt 0) {
+                            Start-Sleep -Seconds $sleepSeconds
+                        }
+
                         foreach ($movie in $javMovies) {
                             if (!$MoveToFolder -and ($DestinationPath -ne $movie.Directory)) {
                                 $DestinationPath = $movie.Directory

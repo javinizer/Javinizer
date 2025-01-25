@@ -1,5 +1,6 @@
 {
   "throttlelimit": 1,
+  "sleep": 3,
   "location.input": "",
   "location.output": "",
   "location.thumbcsv": "",
