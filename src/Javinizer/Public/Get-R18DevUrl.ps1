@@ -1,3 +1,5 @@
+$UserAgent = 'Javinizer (+https://github.com/javinizer/Javinizer)'
+
 function Get-R18DevUrl {
     [CmdletBinding()]
     param (
@@ -34,7 +36,7 @@ function Get-R18DevUrl {
         # Try matching the video with Video ID
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$searchUrl]"
-            $webRequest = Invoke-WebRequest -Uri $searchUrl -Method Get -Verbose:$false | ConvertFrom-Json
+            $webRequest = Invoke-WebRequest -Uri $searchUrl -UserAgent $UserAgent -Method Get -Verbose:$false | ConvertFrom-Json
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Error occured on [GET] on URL [$searchUrl]: $PSItem" -Action 'Continue'
         }
@@ -44,7 +46,7 @@ function Get-R18DevUrl {
 
             try {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] Performing [GET] on Uri [$testUrl]"
-                $webRequest = Invoke-WebRequest -Uri $testUrl -Method Get -Verbose:$false | ConvertFrom-Json
+                $webRequest = Invoke-WebRequest -Uri $testUrl -UserAgent $UserAgent -Method Get -Verbose:$false | ConvertFrom-Json
             } catch {
                 $webRequest = $null
             }

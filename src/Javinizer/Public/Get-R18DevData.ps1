@@ -1,3 +1,5 @@
+$UserAgent = 'Javinizer (+https://github.com/javinizer/Javinizer)'
+
 function Get-R18DevData {
     [CmdletBinding()]
     param (
@@ -31,7 +33,7 @@ function Get-R18DevData {
 
         try {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$($MyInvocation.MyCommand.Name)] Performing [GET] on URL [$apiUrl]"
-            $webRequest = (Invoke-WebRequest -Uri $apiUrl -Method Get -Verbose:$false).Content | ConvertFrom-Json
+            $webRequest = (Invoke-WebRequest -Uri $apiUrl -UserAgent $UserAgent -Method Get -Verbose:$false).Content | ConvertFrom-Json
         } catch {
             Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Error -Message "[$($MyInvocation.MyCommand.Name)] Error [GET] on URL [$Url]: $PSItem" -Action 'Continue'
         }
