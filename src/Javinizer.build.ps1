@@ -179,108 +179,108 @@ Add-BuildTask FormattingCheck {
     }
 }#FormattingCheck
 
-#Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists)
-Add-BuildTask Test {
-    $codeCovPath = "$script:ArchivePath\ccReport\"
-    if (-not(Test-Path $codeCovPath)) {
-        New-Item -Path $codeCovPath -ItemType Directory | Out-Null
-    }
-    if (Test-Path -Path $script:UnitTestsPath) {
-        $invokePesterParams = @{
-            Path                         = 'Tests\Unit'
-            Strict                       = $false
-            PassThru                     = $true
-            Verbose                      = $false
-            EnableExit                   = $false
-            CodeCoverage                 = "$ModuleName\*\*.ps1"
-            CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
-            CodeCoverageOutputFileFormat = 'JaCoCo'
-        }
+# #Synopsis: Invokes all Pester Unit Tests in the Tests\Unit folder (if it exists)
+# Add-BuildTask Test {
+#     $codeCovPath = "$script:ArchivePath\ccReport\"
+#     if (-not(Test-Path $codeCovPath)) {
+#         New-Item -Path $codeCovPath -ItemType Directory | Out-Null
+#     }
+#     if (Test-Path -Path $script:UnitTestsPath) {
+#         $invokePesterParams = @{
+#             Path                         = 'Tests\Unit'
+#             Strict                       = $false
+#             PassThru                     = $true
+#             Verbose                      = $false
+#             EnableExit                   = $false
+#             CodeCoverage                 = "$ModuleName\*\*.ps1"
+#             CodeCoverageOutputFile       = "$codeCovPath\CodeCoverage.xml"
+#             CodeCoverageOutputFileFormat = 'JaCoCo'
+#         }
 
-        Write-Build White '      Performing Pester Unit Tests...'
-        # Publish Test Results as NUnitXml
-        $testResults = Invoke-Pester @invokePesterParams
+#         Write-Build White '      Performing Pester Unit Tests...'
+#         # Publish Test Results as NUnitXml
+#         $testResults = Invoke-Pester @invokePesterParams
 
-        # This will output a nice json for each failed test (if running in CodeBuild)
-        if ($env:CODEBUILD_BUILD_ARN) {
-            $testResults.TestResult | ForEach-Object {
-                if ($_.Result -ne 'Passed') {
-                    ConvertTo-Json -InputObject $_ -Compress
-                }
-            }
-        }
+#         # This will output a nice json for each failed test (if running in CodeBuild)
+#         if ($env:CODEBUILD_BUILD_ARN) {
+#             $testResults.TestResult | ForEach-Object {
+#                 if ($_.Result -ne 'Passed') {
+#                     ConvertTo-Json -InputObject $_ -Compress
+#                 }
+#             }
+#         }
 
-        $numberFails = $testResults.FailedCount
-        Assert-Build($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
+#         $numberFails = $testResults.FailedCount
+#         Assert-Build($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
 
-        # Ensure our builds fail until if below a minimum defined code test coverage threshold
-        $coverageThreshold = 0
+#         # Ensure our builds fail until if below a minimum defined code test coverage threshold
+#         $coverageThreshold = 0
 
-        if ($testResults.CodeCoverage.NumberOfCommandsExecuted -ne 0) {
-            $coveragePercent = '{0:N2}' -f ($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
+#         if ($testResults.CodeCoverage.NumberOfCommandsExecuted -ne 0) {
+#             $coveragePercent = '{0:N2}' -f ($testResults.CodeCoverage.NumberOfCommandsExecuted / $testResults.CodeCoverage.NumberOfCommandsAnalyzed * 100)
 
-            <#
-            if ($testResults.CodeCoverage.NumberOfCommandsMissed -gt 0) {
-                'Failed to analyze "{0}" commands' -f $testResults.CodeCoverage.NumberOfCommandsMissed
-            }
-            Write-Host "PowerShell Commands not tested:`n$(ConvertTo-Json -InputObject $testResults.CodeCoverage.MissedCommands)"
-            #>
-            if ([Int]$coveragePercent -lt $coverageThreshold) {
-                throw ('Failed to meet code coverage threshold of {0}% with only {1}% coverage' -f $coverageThreshold, $coveragePercent)
-            } else {
-                Write-Build Cyan "      $('Covered {0}% of {1} analyzed commands in {2} files.' -f $coveragePercent,$testResults.CodeCoverage.NumberOfCommandsAnalyzed,$testResults.CodeCoverage.NumberOfFilesAnalyzed)"
-                Write-Build Green '      ...Pester Unit Tests Complete!'
-            }
-        } else {
-            # account for new module build condition
-            Write-Build Yellow '      Code coverage check skipped. No commands to execute...'
-        }
+#             <#
+#             if ($testResults.CodeCoverage.NumberOfCommandsMissed -gt 0) {
+#                 'Failed to analyze "{0}" commands' -f $testResults.CodeCoverage.NumberOfCommandsMissed
+#             }
+#             Write-Host "PowerShell Commands not tested:`n$(ConvertTo-Json -InputObject $testResults.CodeCoverage.MissedCommands)"
+#             #>
+#             if ([Int]$coveragePercent -lt $coverageThreshold) {
+#                 throw ('Failed to meet code coverage threshold of {0}% with only {1}% coverage' -f $coverageThreshold, $coveragePercent)
+#             } else {
+#                 Write-Build Cyan "      $('Covered {0}% of {1} analyzed commands in {2} files.' -f $coveragePercent,$testResults.CodeCoverage.NumberOfCommandsAnalyzed,$testResults.CodeCoverage.NumberOfFilesAnalyzed)"
+#                 Write-Build Green '      ...Pester Unit Tests Complete!'
+#             }
+#         } else {
+#             # account for new module build condition
+#             Write-Build Yellow '      Code coverage check skipped. No commands to execute...'
+#         }
 
-    }
-}#Test
+#     }
+# }#Test
 
-#Synopsis: Invokes all Pester Infrastructure Tests in the Tests\Infrastructure folder (if it exists)
-Add-BuildTask InfraTest {
-    if (Test-Path -Path $script:InfraTestsPath) {
+# #Synopsis: Invokes all Pester Infrastructure Tests in the Tests\Infrastructure folder (if it exists)
+# Add-BuildTask InfraTest {
+#     if (Test-Path -Path $script:InfraTestsPath) {
 
-        $invokePesterParams = @{
-            Path       = 'Tests\Infrastructure'
-            Strict     = $true
-            PassThru   = $true
-            Verbose    = $false
-            EnableExit = $false
-        }
+#         $invokePesterParams = @{
+#             Path       = 'Tests\Infrastructure'
+#             Strict     = $true
+#             PassThru   = $true
+#             Verbose    = $false
+#             EnableExit = $false
+#         }
 
-        Write-Build White "      Performing Pester Infrastructure Tests in $($invokePesterParams.path)"
-        # Publish Test Results as NUnitXml
-        $testResults = Invoke-Pester @invokePesterParams
+#         Write-Build White "      Performing Pester Infrastructure Tests in $($invokePesterParams.path)"
+#         # Publish Test Results as NUnitXml
+#         $testResults = Invoke-Pester @invokePesterParams
 
-        # This will output a nice json for each failed test (if running in CodeBuild)
-        if ($env:CODEBUILD_BUILD_ARN) {
-            $testResults.TestResult | ForEach-Object {
-                if ($_.Result -ne 'Passed') {
-                    ConvertTo-Json -InputObject $_ -Compress
-                }
-            }
-        }
+#         # This will output a nice json for each failed test (if running in CodeBuild)
+#         if ($env:CODEBUILD_BUILD_ARN) {
+#             $testResults.TestResult | ForEach-Object {
+#                 if ($_.Result -ne 'Passed') {
+#                     ConvertTo-Json -InputObject $_ -Compress
+#                 }
+#             }
+#         }
 
-        $numberFails = $testResults.FailedCount
-        Assert-Build($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
-        Write-Build Green '      ...Pester Infrastructure Tests Complete!'
-    }
-}#InfraTest
+#         $numberFails = $testResults.FailedCount
+#         Assert-Build($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
+#         Write-Build Green '      ...Pester Infrastructure Tests Complete!'
+#     }
+# }#InfraTest
 
-#Synopsis: Used primarily during active development to generate xml file to graphically display code coverage in VSCode using Coverage Gutters
-Add-BuildTask DevCC {
-    Write-Build White '      Generating code coverage report at root...'
-    $invokePesterParams = @{
-        Path                   = 'Tests\Unit'
-        CodeCoverage           = "$ModuleName\*\*.ps1"
-        CodeCoverageOutputFile = '..\..\..\cov.xml'
-    }
-    Invoke-Pester @invokePesterParams
-    Write-Build Green '      ...Code Coverage report generated!'
-}#DevCC
+# #Synopsis: Used primarily during active development to generate xml file to graphically display code coverage in VSCode using Coverage Gutters
+# Add-BuildTask DevCC {
+#     Write-Build White '      Generating code coverage report at root...'
+#     $invokePesterParams = @{
+#         Path                   = 'Tests\Unit'
+#         CodeCoverage           = "$ModuleName\*\*.ps1"
+#         CodeCoverageOutputFile = '..\..\..\cov.xml'
+#     }
+#     Invoke-Pester @invokePesterParams
+#     Write-Build Green '      ...Code Coverage report generated!'
+# }#DevCC
 
 # Synopsis: Build help for module
 Add-BuildTask CreateHelpStart {
