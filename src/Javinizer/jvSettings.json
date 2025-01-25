@@ -1,5 +1,5 @@
 {
-  "throttlelimit": 3,
+  "throttlelimit": 1,
   "location.input": "",
   "location.output": "",
   "location.thumbcsv": "",
