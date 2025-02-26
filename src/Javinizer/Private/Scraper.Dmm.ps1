@@ -136,7 +136,7 @@ function Get-DmmDirector {
 
     process {
         try {
-            $director = ($Webrequest.Content | Select-String -Pattern '\/article=director\/id=\d*\/"[^>]*?>(.*)<\/a>').Matches.Groups[1].Value
+            $director = ($WebRequest.Content | Select-String -Pattern '<a.*?href="[^"]*\?director=(\d+)".*?>([^<]+)</a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -152,7 +152,7 @@ function Get-DmmMaker {
 
     process {
         try {
-            $maker = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=maker\/id=\d*\/"[^>]*?>(.*)<\/a>').Matches.Groups[2].Value
+            $maker = ($WebRequest.Content | Select-String -Pattern '<a.*?href="[^"]*\?maker=(\d+)".*?>([^<]+)</a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -168,7 +168,7 @@ function Get-DmmLabel {
 
     process {
         try {
-            $label = ($Webrequest.Content | Select-String -Pattern '<a href="(\/digital\/videoa\/|(?:\/en)?\/mono\/dvd\/)-\/list\/=\/article=label\/id=\d*\/"[^>]*?>(.*)<\/a>').Matches.Groups[2].Value
+            $label = ($WebRequest.Content | Select-String -Pattern '<a.*?href="[^"]*\?label=(\d+)".*?>([^<]+)</a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -272,7 +272,7 @@ function Get-DmmActress {
         } else {
             try {
                 $actressBlock = (($Webrequest.Content -split '<td align="right" valign="top" class="nw">(出演者：|Performers:)<\/td>')[2] -split '<\/td>')[0]
-                $movieActress = ($actressBlock | Select-String -Pattern '<a.*href=".*id=(\d*)[^>]+>(.*)<\/a>' -AllMatches).Matches
+                $movieActress = ($actressBlock | Select-String -Pattern '<a.*?href="[^"]*\?actress=(\d+)".*?>([^<]+)</a>' -AllMatches).Matches
             } catch {
                 return
             }
