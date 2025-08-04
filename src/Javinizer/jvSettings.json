@@ -20,6 +20,7 @@
   "scraper.movie.javbuszh": false,
   "scraper.movie.javdb": false,
   "scraper.movie.javdbzh": false,
+  "scraper.movie.javdatabase": true,
   "scraper.movie.javlibrary": false,
   "scraper.movie.javlibraryja": false,
   "scraper.movie.javlibraryzh": false,
@@ -118,6 +119,7 @@
     "r18dev",
     "dmmja",
     "javlibrary",
+    "javdatabase",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -128,6 +130,7 @@
     "javlibrary",
     "dmmja",
     "javbus",
+    "javdatabase",
     "mgstageja",
     "aventertainment"
   ],
@@ -140,12 +143,14 @@
   "sort.metadata.priority.director": [
     "r18dev",
     "javlibrary",
+    "javdatabase",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.genre": [
     "r18dev",
     "javlibrary",
+    "javdatabase",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -153,6 +158,7 @@
   "sort.metadata.priority.id": [
     "r18dev",
     "javlibrary",
+    "javdatabase",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -161,12 +167,14 @@
   "sort.metadata.priority.label": [
     "r18dev",
     "javlibrary",
+    "javdatabase",
     "mgstageja",
     "aventertainment"
   ],
   "sort.metadata.priority.maker": [
     "r18dev",
     "javlibrary",
+    "javdatabase",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -175,6 +183,7 @@
     "r18dev",
     "javlibrary",
     "dmmja",
+    "javdatabase",
     "javbus",
     "mgstageja",
     "aventertainment"
@@ -198,6 +207,7 @@
     "aventertainment"
   ],
   "sort.metadata.priority.title": [
+    "javdatabase",
     "r18dev",
     "javlibrary",
     "javbus",
@@ -241,6 +251,7 @@
   "web.sort.manualsearch.javlibrary": true,
   "web.sort.manualsearch.javlibraryja": false,
   "web.sort.manualsearch.javlibraryzh": false,
+  "web.sort.manualsearch.javdatabase": true,
   "web.sort.manualsearch.mgstageja": false,
   "web.sort.manualsearch.r18dev": true,
   "web.sort.manualsearch.tokyohot": false,

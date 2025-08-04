@@ -47,6 +47,7 @@ $scraperSettings = @(
     'Javlibrary',
     'JavlibraryJa',
     'JavlibraryZh',
+    'Javdatabase',
     'MGStageJa',
     'R18Dev',
     'TokyoHot',
