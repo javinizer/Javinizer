@@ -112,7 +112,11 @@ function Get-JVData {
 
         [Parameter(ParameterSetName = 'Url')]
         [Parameter(ParameterSetName = 'Id')]
-        [PSObject]$JavdbSession
+        [PSObject]$JavdbSession,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Id')]
+        [Alias('scraper.movie.javdatabase')]
+        [Boolean]$Javdatabase
     )
 
     process {
@@ -129,6 +133,7 @@ function Get-JVData {
             $urlObject = $Url | Get-JVUrlLocation -Settings $Settings
         } elseif ($Settings) {
             $Jav321Ja = $Settings.'scraper.movie.jav321ja'
+            $Javdatabase = $Settings.'scraper.movie.javdatabase'
             $Javlibrary = $Settings.'scraper.movie.javlibrary'
             $JavlibraryJa = $Settings.'scraper.movie.javlibraryja'
             $JavlibraryZh = $Settings.'scraper.movie.javlibraryzh'
@@ -248,6 +253,22 @@ function Get-JVData {
                     }
                 } | Out-Null
             }
+
+            if ($Javdatabase) {
+                Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Debug -Message "[$Id] [$($MyInvocation.MyCommand.Name)] [Search - Javdatabase] [Url - $JavadatabaseUrl]"
+                Start-ThreadJob -Name "jvdata-Javdatabase" -ThrottleLimit $throttleLimit -ScriptBlock {
+                    Import-Module $using:jvModulePath
+                    if (!($using:JavadatabaseUrl)) {
+                        $jvJavdatabaseUrl = Get-JavadatabaseUrl -Id $using:Id -AllResults:$using:Allresults
+                    }
+                    if ($using:JavadatabaseUrl) {
+                        $using:JavadatabaseUrl | Get-JavadatabaseData
+                    } elseif ($jvJavdatabaseUrl) {
+                        $jvJavdatabaseUrl | Get-JavadatabaseData
+                    }
+                } | Out-Null
+            }
+
 
             if ($Javlibrary -or $JavlibraryJa -or $JavlibraryZh) {
                 if ($Javlibrary) {

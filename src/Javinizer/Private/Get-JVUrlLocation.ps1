@@ -123,6 +123,11 @@ function Get-JVUrlLocation {
                     Url    = $link
                     Source = 'r18dev'
                 }
+            } elseif ($link -match 'javdatabase.com') {
+                $testUrlObject += [PSCustomObject]@{
+                    Url    = $link
+                    Source = 'javdatabase'
+                }
             } else {
                 Write-JVLog -Write:$script:JVLogWrite -LogPath $script:JVLogPath -WriteLevel $script:JVLogWriteLevel -Level Warning -Message "[$($MyInvocation.MyCommand.Name)] [Url - $Url] not matched"
             }
