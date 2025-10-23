@@ -431,7 +431,7 @@ function Get-DmmScreenshotUrl {
         $screenshotHtml = $screenshotHtml.'outerHTML'
 
         foreach ($screenshot in $screenshotHtml) {
-            $screenshot = (($screenshot -split '<img src="')[1] -split '"')[0]
+            $screenshot = (($screenshot -split '<img.*?data-lazy="')[1] -split '"')[0]
             $screenshotUrl += $screenshot -replace '-', 'jp-'
         }
 

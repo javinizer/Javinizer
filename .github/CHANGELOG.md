@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.6.3]
+
+### Fixed
+
+- Fixed screenshot url extraction for DMMJa and R18Dev. R18Dev's screenshot now shows higher resolution.
+
 ## [2.6.0]
 
 ### Added

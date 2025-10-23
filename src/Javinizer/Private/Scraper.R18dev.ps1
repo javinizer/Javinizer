@@ -294,27 +294,29 @@ function Get-R18DevCoverUrl {
 }
 
 function Get-R18DevScreenshotUrl {
+    [CmdletBinding()]
     param (
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true)]
-        [Object]$Webrequest
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [object]$WebRequest
     )
 
     process {
-        $images = $Webrequest.gallery
+        $images = $WebRequest.gallery
+        if (-not $images) { return }
 
-        if ($images.count -gt 0) {
-            if ($null -ne $images.image_full[0]) {
-                $screenshotUrl = $images.image_full
-            } elseif ($null -ne $images.image_thumb[0]) {
-                $screenshotUrl = $images.image_thumb
+        $screenshotUrl =
+            if ($images.image_full -and $images.image_full.Count -gt 0) {
+                $images.image_full
+            } elseif ($images.image_thumb -and $images.image_thumb.Count -gt 0) {
+                $images.image_thumb
             } else {
-                $screenshotUrl = $null
+                $null
             }
-        } else {
-            return
-        }
 
-        Write-Output $screenshotUrl
+        if ($screenshotUrl) {
+            $screenshotUrl = $screenshotUrl -replace '(?<!jp)-', 'jp-'
+            Write-Output $screenshotUrl
+        }
     }
 }
 
