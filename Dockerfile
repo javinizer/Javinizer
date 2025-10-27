@@ -28,11 +28,11 @@ RUN unzip -q /home/Universal.linux-x64.1.5.13.zip -d /home/Universal/ \
 # Install mediainfo
 RUN apt-get install -y mediainfo
 
-# Install pwsh
-RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb \
-    && dpkg -i packages-microsoft-prod.deb \
-    && apt-get update \
-    && apt-get install -y powershell \
+# Install pwsh 7.3.11
+RUN wget https://github.com/PowerShell/PowerShell/releases/download/v7.3.11/powershell_7.3.11-1.deb_amd64.deb \
+    && dpkg -i powershell_7.3.11-1.deb_amd64.deb \
+    && apt-get install -f \
+    && rm powershell_7.3.11-1.deb_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install pwsh modules
