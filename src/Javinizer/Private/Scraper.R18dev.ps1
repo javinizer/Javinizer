@@ -288,6 +288,8 @@ function Get-R18DevCoverUrl {
 
     process {
         $coverUrl = $Webrequest.jacket_full_url
+        # Swap ps.jpg (poster small) with pl.jpg (poster large)
+        $coverUrl = $coverUrl -replace 'ps\.jpg', 'pl.jpg'
 
         Write-Output $coverUrl
     }

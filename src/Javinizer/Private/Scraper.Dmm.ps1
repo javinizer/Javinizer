@@ -152,7 +152,7 @@ function Get-DmmMaker {
 
     process {
         try {
-            $maker = ($WebRequest.Content | Select-String -Pattern '<a.*?href="[^"]*\?maker=(\d+)".*?>([^<]+)</a>').Matches.Groups[2].Value
+            $maker = ($WebRequest.Content | Select-String -Pattern '<a[^>]*href="[^"]*(?:\?maker=|/article=maker/id=)(\d+)[^"]*"[^>]*>([\s\S]*?)</a>').Matches.Groups[2].Value
         } catch {
             return
         }
@@ -168,7 +168,7 @@ function Get-DmmLabel {
 
     process {
         try {
-            $label = ($WebRequest.Content | Select-String -Pattern '<a.*?href="[^"]*\?label=(\d+)".*?>([^<]+)</a>').Matches.Groups[2].Value
+            $label = ($WebRequest.Content | Select-String -Pattern '<a[^>]*href="[^"]*(?:\?label=|/article=label/id=)(\d+)[^"]*"[^>]*>([\s\S]*?)</a>').Matches.Groups[2].Value
         } catch {
             return
         }
